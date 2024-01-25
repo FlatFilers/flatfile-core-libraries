@@ -12,6 +12,7 @@ import React, { Dispatch, SetStateAction, useState } from 'react'
 import { config } from './config'
 import { listener } from './listener'
 import styles from './page.module.css'
+import recordHook from '@flatfile/plugin-record-hook'
 
 const ENVIRONMENT_ID = 'us_env_6fXBNCpi'
 const PUBLISHABLE_KEY = 'pk_G3TDS1MdhufrWsZPvoqwIV6DFHq2PUSV'
@@ -21,31 +22,22 @@ const simplifiedProps = {
   publishableKey: PUBLISHABLE_KEY,
   sheet: sheet,
 }
-const onSubmit = async ({
-  job,
-  sheet,
-}: {
-  job?: any,
-  sheet?: any
-}): Promise<any> => {
-  const data = await sheet.allData()
-  console.log('onSubmit', data)
-}
-
-const onRecordHook = (record: any, event: any) => {
-  const firstName = record.get('firstName')
-  const lastName = record.get('lastName')
-  if (firstName && !lastName) {
-    record.set('lastName', 'Rock')
-    record.addInfo('lastName', 'Welcome to the Rock fam')
-  }
-  return record
-}
-
 
 const FFApp = () => {
   const { open, openPortal, closePortal } = useFlatfile()
   
+  const { useEvent, usePlugin } = useFlatfile()
+
+  useEvent('job:ready', (event) => {
+    // do something with a raw event
+  }, [])
+
+
+  usePlugin(recordHook((record) => {
+    // ?? can we unsub event lsitener
+  }), [])
+
+
   return (
     <div className={styles.main}>
       <div className={styles.description}>
@@ -60,8 +52,25 @@ const FFApp = () => {
 
       <Workbook
         sheets={[sheet]}
-        onRecordHook={onRecordHook}
-        onSubmit={onSubmit}
+        onRecordHook={(record: any, event: any) => {
+          const firstName = record.get('firstName')
+          const lastName = record.get('lastName')
+          if (firstName && !lastName) {
+            record.set('lastName', 'Rock')
+            record.addInfo('lastName', 'Welcome to the Rock fam')
+          }
+          return record
+        }}
+        onSubmit={async ({
+          job,
+          sheet,
+        }: {
+          job?: any
+          sheet?: any
+        }): Promise<any> => {
+          const data = await sheet.allData()
+          console.log('onSubmit', data)
+        }}
       />
     </div>
   )
