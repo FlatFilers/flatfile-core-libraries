@@ -12,6 +12,9 @@ export const listener = FlatfileListener.create((listener) => {
       const firstName = record.get("firstName");
       console.log({ firstName });
       record.set("lastName", "Rock");
+      if (!record.get('lastName') && record.get('firstName')) {
+        record.addError('lastName', 'lastName is required if firstName is present');
+      }
       return record;
     })
   );
