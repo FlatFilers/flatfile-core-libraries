@@ -1,0 +1,14 @@
+{
+    "name": "@flatfile/ts-config-platform-sdk",
+    "version": "0.1.0",
+    "license": "MIT",
+    "private": true,
+    "main": "index.js",
+    "files": [
+        "base.json",
+        "react-library.json"
+    ],
+    "publishConfig": {
+        "access": "restricted"
+    }
+}

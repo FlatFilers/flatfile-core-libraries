@@ -1,0 +1,14 @@
+{
+    "endpoint": "http://localhost:3000/v1",
+    "env": "us_env_6fXBNCpi",
+    "version": "10",
+    "clientId": "1caa3b3a-8616-4b6b-85c4-f7a2ecbbe808",
+    "secret": "ad75b1e4-4ebd-4205-97e8-25861d7ad84e",
+    "internal": {
+        "secret": "ad75b1e4-4ebd-4205-97e8-25861d7ad84e",
+        "endpoint": "http://localhost:3000",
+        "environmentId": "dev_env_yk5LCkpQ",
+        "deployNewSpace": "true",
+        "webhookUrl": "https://webhook.site/3f74fe0a-0899-48ad-bbde-4571aaaf7ec6"
+    }
+}

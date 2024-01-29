@@ -1,0 +1,45 @@
+h3 {
+    margin-left: auto;
+    margin-right: auto;
+    text-align: center;
+    margin-top: 48px;
+}
+
+#flatfileButton {
+    color: #ffffff;
+    background-color: #3b2fc9;
+    padding: 10px;
+    border: 1px solid #3b2fc9;
+    border-radius: 6px;
+}
+
+#flatfileButton:hover {
+    background-color: #090B2F;
+    border: 1px solid #090B2F;
+    cursor: pointer;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#raw_output {
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 50%;
+    padding: 64px;
+    margin: 32px 0;
+    border: 1px solid #c1c6d1;
+    border-radius: 4px;
+    font-family: "Monaco", monospace;
+    background-color: #31383d;
+    color: #fff;
+    height: 500px;
+}
+
+p {
+    text-align: center;
+}

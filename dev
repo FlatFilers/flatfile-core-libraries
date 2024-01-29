@@ -1,0 +1,56 @@
+#!/usr/bin/env node
+const util = require('util');
+const exec = require('child_process').exec;
+
+const args = process.argv.slice(2);
+const yellow = '\x1b[33m'
+const reset = '\x1b[0m'
+const red = '\x1b[31m'
+const green = '\x1b[32m'
+const blue = '\x1b[34m'
+const isHelp = ['help', '--help', 'h', '--h'];
+const isCommand = ['make:package']
+const helpText = `
+Usage: ./dev [options] command
+
+Options:
+  -h, --help              display help for command
+
+Commands:
+  make:package <package>  scaffold a pre-configured package
+  help                    display help for command
+`
+
+// Show help text
+if (isHelp.includes(args[0])) {
+    console.log(helpText)
+    process.exit(0)
+}
+
+// Scaffold a new package
+if (args[0] === 'make:package') {
+    const packageName = args[1] || 'new-package'
+    // Assumes that ./dev is called from root dir
+    const packageDir = `${process.cwd()}/packages`
+
+    // Change to package directory
+    process.chdir(packageDir);
+
+    // Create package scaffold
+    exec(`npx --yes degit FlatFilers/package-scaffold#main ${packageName}`, (err, stdout) => {
+        if (err) {
+            console.error(`${red}✖${reset} There was a problem scaffolding the package: ${err}`);
+            process.exit(1)
+        }
+
+        console.log(`${green}✔${reset} Created ${packageName} in packages directory`)
+        console.log(`${blue}ℹ${reset} Be sure to update relevant package.json details!`)
+        process.exit(0)
+    });
+}
+
+// Unrecognized command
+if (!isCommand.includes(args[0]) && !isHelp.includes(args[0])) {
+    console.log(`${red}✖${reset} Command not recognized. See './dev --help`)
+    process.exit(1)
+}

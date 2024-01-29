@@ -1,0 +1,55 @@
+{
+  "name": "@flatfile/embedded-utils",
+  "version": "1.1.7",
+  "description": "Shared utils for embedded",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "browser": {
+    "./dist/index.cjs": "./dist/index.browser.cjs",
+    "./dist/index.mjs": "./dist/index.browser.mjs"
+  },
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "scripts": {
+    "build": "rollup --config",
+    "dev": "rollup --config --watch",
+    "lint": "TIMING=1 eslint \"src/**/*.{ts,tsx,js,jsx}\" --fix",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+    "test": "jest --runInBand --forceExit --passWithNoTests"
+  },
+  "dependencies": {
+    "@flatfile/api": "^1.6.3",
+    "@flatfile/listener": "^0.4.0",
+    "@flatfile/util-common": "^0.2.4",
+    "pubnub": "^7.2.2"
+  },
+  "devDependencies": {
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-json": "^6.1.0",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.5",
+    "@rollup/plugin-url": "^8.0.2",
+    "@types/jest": "^28.1.4",
+    "@types/pubnub": "^7.4.0",
+    "csstype": "^3.1.2",
+    "eslint": "^8.18.0",
+    "jest": "^28.1.2",
+    "rollup-plugin-import-css": "^3.3.5",
+    "ts-jest": "^28.0.5",
+    "tsup": "^6.1.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FlatFilers/platform-sdk-mono.git"
+  },
+  "files": [
+    "dist/**"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FlatFilers/platform-sdk-mono/issues"
+  },
+  "homepage": "https://github.com/FlatFilers/platform-sdk-mono#readme"
+}

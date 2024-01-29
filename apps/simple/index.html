@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Your Page Title</title>
+    <script src="../../packages/javascript/dist/index.js"></script>
+    <link rel="stylesheet" type="text/css" href="index.css">
+    <script>
+      window.openFlatfile = ({ publishableKey, environmentId }) => {
+        const output = document.getElementById('raw_output')
+        const sheet = {
+          name: 'Contacts',
+          slug: 'contacts',
+          fields: [
+            {
+              key: 'firstName',
+              type: 'string',
+              label: 'First Name',
+            },
+            {
+              key: 'lastName',
+              type: 'string',
+              label: 'Last Name',
+            },
+            {
+              key: 'email',
+              type: 'string',
+              label: 'Email',
+            },
+          ],
+        }
+        if (!publishableKey) {
+          throw new Error(
+            'You must provide a publishable key - pass through in index.html'
+          )
+        }
+
+        const flatfileOptions = {
+          publishableKey,
+          environmentId,
+          sheet,
+          onSubmit: async ({job, sheet}) => {
+            const data = await sheet.allData()
+            output.value = JSON.stringify(data, " ", 2)
+            console.log('onSubmit', data)
+          },
+          onRecordHook: (record, event) => {
+            const firstName = record.get('firstName')
+            const lastName = record.get('lastName')
+            if (firstName && !lastName) {
+              record.set('lastName', 'Rock')
+              record.addInfo('lastName', 'Welcome to the Rock fam')
+            }
+            return record
+          },
+          onCancel: () => {
+            console.log('cancel')
+          },
+        }
+
+        window.FlatFileJavaScript.startFlatfile(flatfileOptions)
+      }
+    </script>
+  </head>
+  <body>
+    <h3>We heard you like Rocks? So do we. Tell us about this 👇</h3>
+    <div class="container">
+      <button
+              id="flatfileButton"
+              onclick="openFlatfile({ publishableKey: 'YOUR_PUBLISHABLE_KEY', environmentId: 'YOUR_ENV_ID'})"
+      >
+        Import stuff
+      </button>
+    </div>
+    <label for="raw_output"></label>
+    <textarea id="raw_output">Your raw output will appear here.</textarea>
+    <br>
+    <p>*In order for this to work properly, you must have the JavaScript package built locally.</p>
+  </body>
+</html>

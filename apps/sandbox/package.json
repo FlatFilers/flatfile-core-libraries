@@ -1,0 +1,48 @@
+{
+  "private": true,
+  "name": "@private/sandbox",
+  "version": "1.0.6",
+  "description": "",
+  "devDependencies": {
+    "@flatfile/api": "^1.5.6",
+    "@types/node": "^14.14.10",
+    "@types/react": "^17.0.0",
+    "@types/react-dom": "^17.0.0",
+    "node-fetch": "^3.3.1",
+    "process": "^0.11.10",
+    "ts-loader": "^9.3.1",
+    "tslint": "^6.1.3",
+    "tslint-config-prettier": "^1.18.0"
+  },
+  "dependencies": {
+    "@flatfile/configure": "*",
+    "@flatfile/listener": "*",
+    "@flatfile/plugin-record-hook": "^0.1.4",
+    "@flatfile/plugin-xlsx-extractor": "^1.0.0",
+    "color": "^4.2.3",
+    "flatfile": "*",
+    "react": "^17.0.1"
+  },
+  "scripts": {
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+    "deploy": "flatfile publish src/setup.ts",
+    "deploy:xdk": "flatfile publish src/xdk-simple-deploy.ts",
+    "deploy:pubsub": "flatfile deploy src/develop/pubsub.ts",
+    "dev:pubsub": "flatfile develop src/pubsub.ts --api-url=http://localhost:3000",
+    "create:env": "flatfile create:env -n",
+    "quickstart": "flatfile quickstart",
+    "lint": "TIMING=1 eslint \"src/**/*.{ts,tsx,js,jsx}\" --fix",
+    "start": "parcel -p 7088 --no-cache index.html",
+    "test": "jest --runInBand --detectOpenHandles --forceExit --passWithNoTests"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/FlatFilers/platform-sdk-mono.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/FlatFilers/platform-sdk-mono/issues"
+  },
+  "homepage": "https://github.com/FlatFilers/platform-sdk-mono#readme"
+}

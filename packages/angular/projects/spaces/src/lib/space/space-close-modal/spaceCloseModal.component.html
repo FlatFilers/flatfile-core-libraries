@@ -1,0 +1,37 @@
+<div
+data-testid="close-confirm-modal"
+class="flatfile_outer-shell"
+>
+  <div class="flatfile_inner-shell">
+    <div class="flatfile_modal">
+      <div class="flatfile_modal-heading">
+        {{this.spaceCloseModalProps.exitTitle || "Close Window"}}
+      </div>
+      
+      <div class="flatfile_modal-text">
+        {{this.spaceCloseModalProps.exitText || "Are you sure you want to exit? Any unsaved changes will be lost."}}
+      </div>
+
+      <div class="flatfile_button-group">
+        <button
+          class="flatfile_button flatfile_secondary"
+          (click)="this.spaceCloseModalProps.onCancel()"
+        >
+          <div>
+            {{ this.spaceCloseModalProps.exitSecondaryButtonText || "Cancel" }}
+          </div>
+        </button>
+
+        <button
+          class="flatfile_button flatfile_primary"
+          (click)="this.spaceCloseModalProps.onConfirm()"
+        >
+          <div>
+            {{ this.spaceCloseModalProps.exitPrimaryButtonText || "Confirm" }}
+          </div>
+        </button>
+
+      </div>
+    </div>
+  </div>
+</div>

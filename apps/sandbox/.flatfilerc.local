@@ -1,0 +1,7 @@
+{
+    "endpoint": "http://localhost:3000/v1",
+    "env": "dev_env_7WIbcPVk",
+    "version": "10",
+    "clientId": "8aa0303c-2f8b-4406-90f1-c67cf887c874",
+    "secret": "cb71db2e-127a-4447-aadb-a5e8a0bc47b2"
+}

@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Hello, world!</title>
+    <script src="https://unpkg.com/@flatfile/javascript/dist/index.js"></script>
+
+    <script src="./sheet.js"></script>
+    <link rel="stylesheet" type="text/css" href="./styles.css" />
+
+    <script>
+        start = () => {
+            const { FlatfileListener, api, RecordHookPlugin: { recordHook } } = FlatFileJavaScript
+
+            const listener = FlatfileListener.create(listener => {
+                listener.on("**", (event) => {
+                    console.log("EVENT -> ", event.topic);
+                })
+
+                listener.use(recordHook('contacts', (record) => {
+                    console.log("recordHook", record)
+                    record.set("lastName", "Rock")
+                    record.addInfo('lastName', 'Welcome to the Rock fam')
+                    return record
+                }))
+
+                // handle submit action
+                listener.on(
+                    "job:ready",
+                    { job: "workbook:submitActionFg" },
+                    async ({ context: { jobId } }) => {
+                        try {
+                            await api.jobs.ack(jobId, {
+                                info: "Getting started.",
+                                progress: 10,
+                            });
+
+                            // Make changes after cells in a Sheet have been updated
+                            console.log("Make changes here when an action is clicked");
+
+                            await api.jobs.complete(jobId, {
+                                outcome: {
+                                    acknowledge: true,
+                                    message: "This is now complete.",
+                                    next: {
+                                        type: "wait",
+                                    },
+                                },
+                            });
+                        } catch (error) {
+                            console.error("Error:", error.stack);
+
+                            await api.jobs.fail(jobId, {
+                                outcome: {
+                                    message: "This job encountered an error.",
+                                },
+                            });
+                        }
+                    }
+                );
+            })
+
+
+            FlatFileJavaScript.startFlatfile({
+                publishableKey: "pk_3626978e5f52480085a37844166d347a",
+
+                spaceBody: {
+                    namespace: "portal",
+                },
+
+                workbook: {
+                    name: "My Workbook",
+                    sheets: [
+                        blueprint
+                    ],
+                    actions: [
+                        {
+                            operation: "submitActionFg",
+                            mode: "foreground",
+                            label: "Submit foreground",
+                            description: "Submit data to webhook.site",
+                            primary: true,
+                        },
+                    ]
+                },
+
+                listener,
+            });
+        };
+    </script>
+</head>
+<body>
+    <button onClick="start()">Open Flatfile</button>
+</body>
+
+</html>

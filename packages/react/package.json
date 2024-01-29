@@ -1,0 +1,65 @@
+{
+  "name": "@flatfile/react",
+  "version": "7.7.1",
+  "description": "Flatfile React components",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "browser": {
+    "./dist/index.cjs": "./dist/index.browser.cjs",
+    "./dist/index.mjs": "./dist/index.browser.mjs"
+  },
+  "types": "./dist/index.d.ts",
+  "type": "module",
+  "author": "",
+  "license": "ISC",
+  "files": [
+    "dist/**"
+  ],
+  "scripts": {
+    "build": "rollup --config",
+    "dev": "rollup --config --watch",
+    "lint": "TIMING=1 eslint \"src/**/*.{ts,tsx,js,jsx}\" --fix",
+    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
+    "test": "jest --runInBand --forceExit --passWithNoTests"
+  },
+  "devDependencies": {
+    "@flatfile/eslint-config-platform-sdk": "*",
+    "@flatfile/ts-config-platform-sdk": "*",
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-terser": "^0.4.4",
+    "@rollup/plugin-typescript": "^11.1.1",
+    "@rollup/plugin-url": "^8.0.2",
+    "@testing-library/jest-dom": "^5.16.5",
+    "@testing-library/react-hooks": "^8.0.1",
+    "@testing-library/react": "^12.1.2",
+    "@types/jest": "^28.1.4",
+    "@types/react-dom": ">=16.9.0 <19.0.0",
+    "@types/react": ">=16.9.0 <19.0.0",
+    "@types/tinycolor2": "^1.4.3",
+    "dotenv": "^16.3.1",
+    "jest-environment-jsdom": "^29.6.4",
+    "jest": "^28.1.2",
+    "jsdom": "^21.1.0",
+    "rollup-plugin-import-css": "^3.3.5",
+    "rollup-plugin-peer-deps-external": "^2.2.4",
+    "rollup-plugin-postcss": "^4.0.2",
+    "rollup-terser": "^1.0.3",
+    "ts-jest": "^28.0.5"
+  },
+  "dependencies": {
+    "@flatfile/api": "^1.6.3",
+    "@flatfile/cross-env-config": "^0.0.5",
+    "@flatfile/embedded-utils": "^1.1.7",
+    "@flatfile/listener": "^0.4.0",
+    "@flatfile/plugin-record-hook": "^1.2.0",
+    "tinycolor2": "^1.6.0"
+  },
+  "peerDependencies": {
+    "react": "^16.0.0 || ^17.0.0 || ^18.0.0",
+    "react-dom": "^16.0.0 || ^17.0.0 || ^18.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

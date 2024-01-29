@@ -1,0 +1,69 @@
+workspaceId: f6450c99-8f00-43e8-a541-43c168224691
+workbookId: 86b256ea-17b6-40ee-8f66-667826fdf7dc
+schemaId: Contact
+schemaSlug: contact
+uploads:
+  - 29a24173-ca50-4d0f-aa1c-4ca943d64058
+  - c8f009f8-c0dc-4aae-92e7-d6fe95b9d90d
+endUser:
+  userId: 99
+  email: john@doe.com
+  company: Acme Inc.
+  companyId: 77
+env:
+  TEST_KEY: test_value
+rows:
+  - row:
+      rawData:
+        firstName: John
+        lastName: Doe
+        email: john@doe.com
+        phoneNumber: +1 719 428 9439
+        startDate: 06/17/2022
+      rowId: 1
+    info: []
+  - row:
+      rawData:
+        firstName: John
+        lastName: Doe
+        email: john@gmail.com
+        phoneNumber: +1 719 428 9439
+        startDate: 06/17/2022
+      rowId: 2
+    info: []
+  - row:
+      rawData:
+        firstName: John
+        lastName: Doe
+        email: john@doe.com
+        phoneNumber: +1 719 428 9439
+        startDate: 06/17/2022
+      rowId: 3
+    info: []
+  - row:
+      rawData:
+        firstName: John
+        lastName: Doe
+        email: john@doe.com
+        phoneNumber: +1 719 428 9439
+        startDate: 06/17/2022
+      rowId: 4
+    info: []
+  - row:
+      rawData:
+        firstName: John
+        lastName: Doe
+        email: john@doe.com
+        phoneNumber: +1 719 428 9439
+        startDate: 06/17/2022
+      rowId: 5
+    info: []
+  - row:
+      rawData:
+        firstName: John
+        lastName: Doe
+        email: john@doe.com
+        phoneNumber: +1 719 428 9439
+        startDate: 06/17/2022
+      rowId: 6
+    info: []

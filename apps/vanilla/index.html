@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>My Project</title>
+    <meta charset="UTF-8" />
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+  </head>
+
+  <body>
+    <!-- optional: initialize with button and a modal -->
+    <button onclick="initializePreloadedFlatfile('pk_3626978e5f52480085a37844166d347a')">
+      Open "Preloaded" Flatfile
+    </button>
+
+    <button onclick="initializeFlatfile('pk_3626978e5f52480085a37844166d347a')">
+      Open "On Demand" Flatfile
+    </button>
+    <script>window.addEventListener("load", (event) => {
+      preloadFlatfile()
+    });</script>
+    <script type="module" src="main.js"></script>
+  </body>
+</html>

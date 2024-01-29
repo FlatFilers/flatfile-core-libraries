@@ -1,0 +1,17 @@
+{
+  "private": true,
+  "name": "simplest-flatfile",
+  "version": "1.0.1",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "parcel index.html --no-cache"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "dotenv": "^16.3.1",
+    "parcel": "^2.3.1"
+  }
+}

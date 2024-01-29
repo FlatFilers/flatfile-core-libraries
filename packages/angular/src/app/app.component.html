@@ -1,0 +1,10 @@
+<div class="main">
+  <div class="description">
+    <button (click)="toggleSpace()">
+      {{ showSpace ? 'Close' : 'Open' }} space
+    </button>
+  </div>
+  <div class="spaceWrapper" *ngIf="showSpace">
+    <flatfile-space [spaceProps]="spaceProps"></flatfile-space>
+  </div>
+</div>
