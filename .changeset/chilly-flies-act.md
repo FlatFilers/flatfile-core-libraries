@@ -1,7 +1,4 @@
 ---
-'angular': patch
-'@flatfile/react': patch
-'@flatfile/vue': patch
 '@flatfile/javascript': patch
 ---
 
