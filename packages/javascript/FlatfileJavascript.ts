@@ -226,7 +226,7 @@ function initializeIFrameConfirmationModal(
         document.body.removeChild(item)
       }
 
-      domElement.style.display = 'none'
+      domElement.remove()
       if (onCancel) {
         onCancel()
       }
@@ -254,7 +254,7 @@ function initializeIFrameConfirmationModal(
         event.data.payload.status === 'complete' &&
         event.data.payload.operation === closeSpace?.operation
       ) {
-        domElement.style.display = 'none'
+        domElement.remove()
       }
     },
     false
