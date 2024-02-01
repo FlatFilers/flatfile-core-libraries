@@ -49,6 +49,8 @@ export const deployTopics = [
   'job:deleted',
   'job:failed',
   'job:completed',
+  'job:outcome-acknowledged',
+  'job:parts-completed',
   'job:started', // legacy
   'job:waiting', // legacy
   'action:triggered', // legacy
