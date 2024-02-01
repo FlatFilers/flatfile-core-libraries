@@ -2,15 +2,23 @@
   "name": "@flatfile/javascript",
   "version": "1.1.8",
   "description": "Flatfile embedded with vanilla javascript.",
+  "type": "module",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "node": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "browser": {
+      "require": "./dist/index.browser.cjs",
+      "import": "./dist/index.browser.mjs"
+    },
+    "default": "./dist/index.mjs"
+  },
   "source": "src/index.ts",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
-  "browser": {
-    "./dist/index.cjs": "./dist/index.browser.cjs",
-    "./dist/index.mjs": "./dist/index.browser.mjs"
-  },
   "types": "./dist/index.d.ts",
-  "type": "module",
   "engines": {
     "node": ">= 12"
   },
