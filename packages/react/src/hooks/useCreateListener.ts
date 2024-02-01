@@ -12,6 +12,7 @@ type FlatfileListenerInstance = {
   fork: () => FlatfileListenerInstance
   use: (cb: FlatfileListener) => void
   detach: () => void
+  useEvent: (event: any) => void
 }
 
 export const useCreateListener = ({
@@ -37,13 +38,17 @@ export const useCreateListener = ({
       )
   }, [listener, accessToken, apiUrl])
 
+  const useEvent = (event: any) => {
+    console.log({ event })
+  }
+
   return {
     dispatchEvent: (event: any) => {
       if (!event || !accessToken) return
 
       const eventPayload = event.src ? event.src : event
       const eventInstance = new FlatfileEvent(eventPayload, accessToken, apiUrl)
-
+      useEvent(event)
       return listener?.dispatchEvent(eventInstance)
     },
     // implement
@@ -54,8 +59,6 @@ export const useCreateListener = ({
       listener?.use(() => cb)
     },
     detach: () => {},
-    useEvent: () => {
-      
-    }
+    useEvent,
   }
 }
