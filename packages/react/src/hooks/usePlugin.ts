@@ -1,13 +1,13 @@
+import FlatfileListener from '@flatfile/listener'
 import { useEffect } from 'react'
 
 // pseudo implementation of actually being able to use listeners in react
 function usePlugin(plugin: FlatfileListener, observables?: any[]) {
   const accessToken = ''
-  const listener = useCreateListener({
-    accessToken,
-    listener: cb,
+  // Get listener from the context
+  const listener = FlatfileListener.create((client) => {
+    client.use(plugin)
   })
-
   useEffect(() => {
     const fork = listener.fork() // need to somehow get a new listener instance so we can detach and retach on resubscribe
     fork.use(plugin)
