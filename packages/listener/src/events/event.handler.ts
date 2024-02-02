@@ -61,42 +61,45 @@ export class EventHandler extends AuthenticatedClient {
   off(query: Arrayable<string>, callback: EventCallback): this
   off(
     query: Arrayable<string>,
+    filter: EventFilter,
+    callback: EventCallback
+  ): this
+
+  // Implementation
+  off(
+    query: Arrayable<string>,
     filterOrCallback: EventFilter | EventCallback,
     maybeCallback?: EventCallback
   ): this {
-    let filter: EventFilter = {}
-    let actualCallback: EventCallback
+    let filter: EventFilter | undefined = undefined
+    let callback: EventCallback
 
-    // Determine if a filter is provided based on the type of the second argument
     if (typeof filterOrCallback === 'function') {
-      actualCallback = filterOrCallback as EventCallback;
+      callback = filterOrCallback as EventCallback
     } else {
-      filter = filterOrCallback;
-      actualCallback = maybeCallback!;
+      filter = filterOrCallback
+      callback = maybeCallback!
     }
 
-    // Now filter out the listener
     this.listeners = this.listeners.filter(
       ([listenerQuery, listenerFilter, listenerCallback]) => {
-        // Convert queries to arrays for comparison, if needed
-        const listenerQueryArray = Array.isArray(listenerQuery)
+        // Normalize query for comparison
+        const normalizedListenerQuery = Array.isArray(listenerQuery)
           ? listenerQuery
           : [listenerQuery]
-        const queryArray = Array.isArray(query) ? query : [query]
+        const normalizedQuery = Array.isArray(query) ? query : [query]
 
-        // Check if the queries match
+        // Match checks
         const isQueryMatch =
-          JSON.stringify(listenerQueryArray) === JSON.stringify(queryArray)
-        // For filters, a simple existence check could suffice since filters are rarely used for removals
+          JSON.stringify(normalizedListenerQuery) ===
+          JSON.stringify(normalizedQuery)
+        const isCallbackMatch = listenerCallback === callback
         const isFilterMatch = filter
           ? JSON.stringify(listenerFilter) === JSON.stringify(filter)
           : true
-        // Ensure the callback matches
-        return !(
-          isQueryMatch &&
-          isFilterMatch &&
-          listenerCallback === actualCallback
-        )
+
+        // Keep the listener if it doesn't match all criteria for removal
+        return !(isQueryMatch && isCallbackMatch && isFilterMatch)
       }
     )
 
