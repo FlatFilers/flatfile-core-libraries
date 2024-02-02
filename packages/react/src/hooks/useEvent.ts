@@ -1,32 +1,64 @@
-import FlatfileListener from '@flatfile/listener'
+import FlatfileListener, {
+  EventCallback,
+  FlatfileEvent,
+} from '@flatfile/listener'
 import { useFlatfile } from './useFlatfile'
 import { useEffect } from 'react'
 
-export function useEvent(
+// Overload definitions for better type checking
+function useEvent(
   eventType: string,
-  callback: (event: any) => void | Promise<void>,
-  filter?: Record<string, any>, // Added filter parameter
+  callback: (event: FlatfileEvent) => void | Promise<void>,
+  dependencies?: any[]
+): void
+function useEvent(
+  eventType: string,
+  filter: Record<string, any>,
+  callback: (event: FlatfileEvent) => void | Promise<void>,
+  dependencies?: any[]
+): void
+function useEvent(
+  eventType: string,
+  filterOrCallback:
+    | Record<string, any>
+    | ((event: any) => void | Promise<void>),
+  callbackOrDependencies:
+    | ((event: FlatfileEvent) => void | Promise<void>)
+    | any[] = [],
   dependencies: any[] = []
 ) {
   const { listener } = useFlatfile()
 
-  useEffect(() => {
-    if (listener) {
-      // Check if a filter is provided and use it when registering the event
-      if (filter) {
-        listener.on(eventType, filter, callback)
-      } else {
-        listener.on(eventType, callback)
-      }
+  let callback: (event: any) => void | Promise<void>
+  let actualDependencies: any[] = dependencies
 
-      // Return a cleanup function that detaches the listener with the same filter, if provided
-      return () => {
-        if (filter) {
-          listener.off(eventType, filter, callback)
-        } else {
-          listener.off(eventType, callback)
-        }
+  // Determine if the second argument is a filter or a callback
+  if (typeof filterOrCallback === 'function') {
+    callback = filterOrCallback as EventCallback
+    actualDependencies = (callbackOrDependencies as any[]) || []
+  } else {
+    callback = callbackOrDependencies as (event: any) => void | Promise<void>
+  }
+
+  useEffect(() => {
+    if (!listener) return
+
+    // Conditionally apply the filter
+    if (typeof filterOrCallback !== 'function') {
+      listener.on(eventType, filterOrCallback, callback)
+    } else {
+      listener.on(eventType, callback)
+    }
+
+    // Cleanup
+    return () => {
+      if (typeof filterOrCallback !== 'function') {
+        listener.off(eventType, filterOrCallback, callback)
+      } else {
+        listener.off(eventType, callback)
       }
     }
-  }, [listener, eventType, callback, filter, ...dependencies]) // Ensure filter is included in dependencies
+  }, [listener, eventType, filterOrCallback, callback, ...actualDependencies])
 }
+
+export { useEvent }
