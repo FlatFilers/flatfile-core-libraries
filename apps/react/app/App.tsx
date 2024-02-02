@@ -8,8 +8,8 @@ import {
   usePlugin,
   useEvent,
 } from '@flatfile/react'
-import React, { use } from 'react'
-import { listener } from './listener'
+import React from 'react'
+import { listener as importedListener } from './listener'
 import styles from './page.module.css'
 import { recordHook } from '@flatfile/plugin-record-hook'
 import api from '@flatfile/api'
@@ -19,8 +19,7 @@ const PUBLISHABLE_KEY = 'pk_G3TDS1MdhufrWsZPvoqwIV6DFHq2PUSV'
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const FFApp = () => {
-  const { open, openPortal, closePortal, updateListener, listener } =
-    useFlatfile()
+  const { open, openPortal, closePortal } = useFlatfile()
 
   const [label, setLabel] = React.useState('Rock')
 
@@ -30,6 +29,7 @@ const FFApp = () => {
         console.log('initialListener Event => ', event.topic)
         // Handle the workbook:deleted event
       })
+      importedListener
     },
     [label]
   )
