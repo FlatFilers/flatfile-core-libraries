@@ -31,7 +31,8 @@ const Space = ({
   accessToken,
   handleCloseInstance,
   ...props
-}: SpaceComponent & ISpace & {handleCloseInstance: () => void}): JSX.Element | null => {
+}: SpaceComponent &
+  ISpace & { handleCloseInstance: () => void }): JSX.Element | null => {
   if (spaceId && spaceUrl && accessToken) {
     return (
       <SpaceContents
@@ -47,7 +48,13 @@ const Space = ({
 }
 
 export const SpaceContents = (
-  props: ISpace & { spaceId: string; spaceUrl: string; accessToken: string; handleCloseInstance: () => void }
+  props: ISpace & {
+    spaceId: string
+    spaceUrl: string
+    accessToken: string
+    handleCloseInstance: () => void
+    simple?: boolean
+  }
 ): JSX.Element => {
   const [showExitWarnModal, setShowExitWarnModal] = useState(false)
   // const context = useContext(FlatfileContext)
@@ -66,31 +73,38 @@ export const SpaceContents = (
     exitSecondaryButtonText = 'No, stay',
     apiUrl = 'https://platform.flatfile.com/api',
     displayAsModal = true,
-    handleCloseInstance
+    handleCloseInstance,
+    simple,
   } = props
+  console.log('SpaceContents', { simple })
+  if (!simple) {
+    const { dispatchEvent } = useCreateListener({
+      listener,
+      accessToken,
+      apiUrl,
+    })
 
-  const { dispatchEvent } = useCreateListener({ listener, accessToken, apiUrl })
-
-  const handlePostMessage = (event: any) => {
-    const { flatfileEvent } = event.data
-    if (!flatfileEvent) return
-    console.log('handlePostMessage', { flatfileEvent })
-    if (
-      flatfileEvent.topic === 'job:outcome-acknowledged' &&
-      flatfileEvent.payload.status === 'complete' &&
-      flatfileEvent.payload.operation === closeSpace?.operation
-    ) {
-      closeSpace?.onClose({})
+    const handlePostMessage = (event: any) => {
+      const { flatfileEvent } = event.data
+      if (!flatfileEvent) return
+      console.log('handlePostMessage', { flatfileEvent })
+      if (
+        flatfileEvent.topic === 'job:outcome-acknowledged' &&
+        flatfileEvent.payload.status === 'complete' &&
+        flatfileEvent.payload.operation === closeSpace?.operation
+      ) {
+        closeSpace?.onClose({})
+      }
+      dispatchEvent(flatfileEvent)
     }
-    dispatchEvent(flatfileEvent)
+
+    useEffect(() => {
+      window.addEventListener('message', handlePostMessage, false)
+      return () => {
+        window.removeEventListener('message', handlePostMessage)
+      }
+    }, [listener])
   }
-
-  useEffect(() => {
-    window.addEventListener('message', handlePostMessage, false)
-    return () => {
-      window.removeEventListener('message', handlePostMessage)
-    }
-  }, [listener])
 
   const buildWorkbook = async () => {
     if (props.publishableKey) {
@@ -104,9 +118,9 @@ export const SpaceContents = (
     buildWorkbook()
   }, [])
 
-  useEffect(() => {
-    console.log('SpaceContents useEffect', { open })
-  }, [open])
+  // useEffect(() => {
+  //   console.log('SpaceContents useEffect', { open })
+  // }, [open])
 
   return (
     <div
@@ -121,7 +135,10 @@ export const SpaceContents = (
     >
       {showExitWarnModal && (
         <ConfirmModal
-          onConfirm={() => { handleCloseInstance(); closeSpace?.onClose({})} }
+          onConfirm={() => {
+            handleCloseInstance()
+            closeSpace?.onClose({})
+          }}
           onCancel={() => setShowExitWarnModal(false)}
           exitText={exitText}
           exitTitle={exitTitle}
@@ -186,7 +203,7 @@ export const Workbook = ({
     data,
     sheet,
     job,
-    event
+    event,
   }: {
     data?: any
     sheet?: any
@@ -204,7 +221,7 @@ export const Workbook = ({
   useEffect(() => {
     console.log('Workbook useEffect', { space, open })
   }, [space, open])
-  console.log({ sheets })
+  // console.log({ sheets })
   let listener
   if (onSubmit || onRecordHook) {
     listener = FlatfileListener.create((client: FlatfileListener) => {
@@ -280,4 +297,23 @@ export const Workbook = ({
   return <>Workbooks are neat</>
 }
 
+export const SimpleWorkbook = ({ sheets }: { sheets: any[] }) => {
+  const { pubKey, space } = useContext(FlatfileContext)
+
+  if (space) {
+    const { id: spaceId, guestLink: spaceUrl } = space.data
+    return (
+      <SpaceContents
+        spaceId={spaceId}
+        spaceUrl={spaceUrl}
+        sheet={sheets[0]}
+        publishableKey={pubKey}
+        simple={true}
+        {...space.data}
+      />
+    )
+  }
+
+  return <>Workbooks are neat</>
+}
 export default Space

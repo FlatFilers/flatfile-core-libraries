@@ -2,9 +2,8 @@ import { dts } from 'rollup-plugin-dts'
 import commonjs from '@rollup/plugin-commonjs'
 import css from 'rollup-plugin-import-css'
 import dotenv from 'dotenv'
-import dotenv from 'dotenv'
 import json from '@rollup/plugin-json'
-import peerDepsExternal from "rollup-plugin-peer-deps-external";
+import peerDepsExternal from 'rollup-plugin-peer-deps-external'
 import postcss from 'rollup-plugin-postcss'
 import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
@@ -32,9 +31,9 @@ function commonPlugins(browser, umd = false) {
     commonjs({ requireReturnsDefault: 'auto' }),
     typescript({
       outDir: 'dist',
-      tsconfig: 'tsconfig.json',
-      declaration: false,
-      composite: false,
+      declaration: browser,
+      declarationDir: './dist',
+      composite: !browser,
     }),
     url({
       include: ['**/*.otf'],
@@ -47,6 +46,12 @@ function commonPlugins(browser, umd = false) {
 }
 
 const config = [
+
+  {
+    input: 'index.ts',
+    output: [{ file: 'dist/index.d.ts', format: 'es' }],
+    plugins: [css(), dts(), postcss()],
+  },
   // Non-browser build
   {
     input: 'src/index.ts',
@@ -92,11 +97,6 @@ const config = [
       strict: true,
     },
     plugins: commonPlugins(true, true),
-  },
-  {
-    input: 'src/index.ts',
-    output: [{ file: 'dist/index.d.ts', format: 'es' }],
-    plugins: [css(), dts(), postcss()],
   },
 ]
 
