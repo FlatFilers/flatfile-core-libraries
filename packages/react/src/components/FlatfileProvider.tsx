@@ -17,7 +17,6 @@ export const FlatfileProvider: React.FC<FlatfileProviderProps> = ({
   environmentId,
   apiUrl = 'https://platform.flatfile.com/api',
 }) => {
-
   const [space, setSpace] = useState<any>(null)
   const [open, setOpen] = useState<boolean>(false)
 

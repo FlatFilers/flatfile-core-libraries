@@ -3,12 +3,11 @@ import { sheet } from '@/utils/sheet'
 import {
   FlatfileProvider,
   useFlatfile,
-  Workbook,
   SimpleWorkbook,
   useListener,
   usePlugin,
 } from '@flatfile/react'
-import React, { Dispatch, SetStateAction, useEffect, useState } from 'react'
+import React from 'react'
 import { config } from './config'
 import { listener } from './listener'
 import styles from './page.module.css'
@@ -38,11 +37,10 @@ const FFApp = () => {
   usePlugin(
     recordHook('contacts', (record, event) => {
       console.log('recordHook', { event })
-      // ?? can we unsub event lsitener
       record.set('lastName', 'Rock')
       return record
     }),
-    [listener]
+    []
   )
 
   const listenerConfig = (label: string) => {
@@ -51,6 +49,13 @@ const FFApp = () => {
         // handle the event
         console.log(`Listener ${label} Event => `, event.topic)
       })
+      updatedListener.use(
+        recordHook('contacts', (record, event) => {
+          console.log('updated recordhook', { label })
+          record.set('lastName', label)
+          return record
+        })
+      )
     })
   }
 
@@ -67,7 +72,7 @@ const FFApp = () => {
         <button onClick={() => listenerConfig('blue')}>blue listener</button>
         <button onClick={() => listenerConfig('green')}>green listener</button>
       </div>
-      
+
       <SimpleWorkbook sheets={[sheet]} />
     </div>
   )

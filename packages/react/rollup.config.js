@@ -31,9 +31,9 @@ function commonPlugins(browser, umd = false) {
     commonjs({ requireReturnsDefault: 'auto' }),
     typescript({
       outDir: 'dist',
-      declaration: browser,
+      declaration: true,
       declarationDir: './dist',
-      composite: !browser,
+      composite: false,
     }),
     url({
       include: ['**/*.otf'],
