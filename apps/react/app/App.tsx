@@ -6,57 +6,48 @@ import {
   SimpleWorkbook,
   useListener,
   usePlugin,
+  useEvent,
 } from '@flatfile/react'
 import React from 'react'
-import { config } from './config'
 import { listener } from './listener'
 import styles from './page.module.css'
 import { recordHook } from '@flatfile/plugin-record-hook'
-import FlatfileListener from '@flatfile/listener'
+import { set } from 'lodash'
 
 const ENVIRONMENT_ID = 'us_env_6fXBNCpi'
 const PUBLISHABLE_KEY = 'pk_G3TDS1MdhufrWsZPvoqwIV6DFHq2PUSV'
-
-const simplifiedProps = {
-  environmentId: ENVIRONMENT_ID,
-  publishableKey: PUBLISHABLE_KEY,
-  sheet: sheet,
-}
 
 const FFApp = () => {
   const { open, openPortal, closePortal, updateListener, listener } =
     useFlatfile()
 
-  useListener((listener) => {
-    listener.on('**', (event) => {
-      console.log('initialListener Event => ', event.topic)
-      // Handle the workbook:deleted event
-    })
-  }, [])
+  const [label, setLabel] = React.useState('Rock')
+
+  useListener(
+    (listener) => {
+      listener.on('**', (event) => {
+        console.log('initialListener Event => ', event.topic)
+        // Handle the workbook:deleted event
+      })
+    },
+    [label]
+  )
 
   usePlugin(
     recordHook('contacts', (record, event) => {
       console.log('recordHook', { event })
-      record.set('lastName', 'Rock')
+      record.set('lastName', label)
       return record
     }),
-    []
+    [label]
   )
+  
+  useEvent('commit:created', (event) => {
+    console.log('commit:created', { event })
+  })
 
   const listenerConfig = (label: string) => {
-    updateListener((updatedListener) => {
-      updatedListener.on('**', (event) => {
-        // handle the event
-        console.log(`Listener ${label} Event => `, event.topic)
-      })
-      updatedListener.use(
-        recordHook('contacts', (record, event) => {
-          console.log('updated recordhook', { label })
-          record.set('lastName', label)
-          return record
-        })
-      )
-    })
+    setLabel(label)
   }
 
   return (

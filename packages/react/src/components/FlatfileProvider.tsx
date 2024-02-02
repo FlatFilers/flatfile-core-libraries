@@ -30,6 +30,7 @@ export const FlatfileProvider: React.FC<FlatfileProviderProps> = ({
     console.log('useFlatfileContext useEffect', { open })
   }, [open])
 
+  // TODO: need to account for re-using a space too
   const getSpace = async () => {
     const space = await initializeSpace({
       publishableKey: pubKey,
@@ -42,6 +43,7 @@ export const FlatfileProvider: React.FC<FlatfileProviderProps> = ({
 
   const [listener, setListener] = useState(new FlatfileListener())
 
+  // TODO: is this useful?
   // Function to update the listener with new event handling logic
   const updateListener = (updateFn: (cb: FlatfileListener) => void) => {
     setListener((currentListener) => {
