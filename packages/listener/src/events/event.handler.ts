@@ -178,6 +178,18 @@ export class EventHandler extends AuthenticatedClient {
   ): boolean {
     return filter ? objectMatches(event, filter) : true
   }
+
+  public detach() {
+    // Clear the listeners array
+    this.listeners = [];
+
+    // Optionally, also detach all child nodes
+    this.nodes.forEach(node => node.detach());
+    this.nodes = [];
+
+    // Additional cleanup logic, if necessary
+    // e.g., Unsubscribe from external services or event sources
+  }
 }
 
 export type EventFilter = Record<

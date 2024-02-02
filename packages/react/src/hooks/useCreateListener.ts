@@ -1,4 +1,4 @@
-import FlatfileListener, { Browser, FlatfileEvent } from '@flatfile/listener'
+import { Browser, FlatfileEvent } from '@flatfile/listener'
 import { useEffect } from 'react'
 import { IReactSpaceProps } from '../types'
 /**
@@ -9,10 +9,6 @@ import { IReactSpaceProps } from '../types'
 
 type FlatfileListenerInstance = {
   dispatchEvent: (event: any) => void
-  fork: () => FlatfileListenerInstance
-  use: (cb: FlatfileListener) => void
-  detach: () => void
-  useEvent: (event: any) => void
 }
 
 export const useCreateListener = ({
@@ -48,17 +44,7 @@ export const useCreateListener = ({
 
       const eventPayload = event.src ? event.src : event
       const eventInstance = new FlatfileEvent(eventPayload, accessToken, apiUrl)
-      useEvent(event)
       return listener?.dispatchEvent(eventInstance)
     },
-    // implement
-    fork: (): FlatfileListenerInstance => {
-      return useCreateListener({ accessToken, listener, apiUrl })
-    },
-    use: (cb: FlatfileListener) => {
-      listener?.use(() => cb)
-    },
-    detach: () => {},
-    useEvent,
   }
 }
