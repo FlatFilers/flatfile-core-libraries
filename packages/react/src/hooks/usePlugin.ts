@@ -16,5 +16,5 @@ export function usePlugin(
       // Assuming 'detach' removes all event listeners from this instance
       listener.detach()
     }
-  }, [listener, ...dependencies]) // React will re-run the effect if any dependencies change
+  }, [...dependencies]) // React will re-run the effect if any dependencies change
 }

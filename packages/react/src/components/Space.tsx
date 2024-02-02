@@ -137,6 +137,7 @@ export const SpaceContents = (
         <ConfirmModal
           onConfirm={() => {
             handleCloseInstance()
+            setShowExitWarnModal(false)
             closeSpace?.onClose({})
           }}
           onCancel={() => setShowExitWarnModal(false)}
@@ -298,7 +299,7 @@ export const Workbook = ({
 }
 
 export const SimpleWorkbook = ({ sheets }: { sheets: any[] }) => {
-  const { pubKey, space } = useContext(FlatfileContext)
+  const { pubKey, space, setOpen } = useContext(FlatfileContext)
 
   if (space) {
     const { id: spaceId, guestLink: spaceUrl } = space.data
@@ -309,6 +310,7 @@ export const SimpleWorkbook = ({ sheets }: { sheets: any[] }) => {
         sheet={sheets[0]}
         publishableKey={pubKey}
         simple={true}
+        handleCloseInstance={() => setOpen(false)}
         {...space.data}
       />
     )
