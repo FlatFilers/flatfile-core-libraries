@@ -8,14 +8,15 @@ import {
   usePlugin,
   useEvent,
 } from '@flatfile/react'
-import React from 'react'
+import React, { use } from 'react'
 import { listener } from './listener'
 import styles from './page.module.css'
 import { recordHook } from '@flatfile/plugin-record-hook'
-import { set } from 'lodash'
+import api from '@flatfile/api'
 
 const ENVIRONMENT_ID = 'us_env_6fXBNCpi'
 const PUBLISHABLE_KEY = 'pk_G3TDS1MdhufrWsZPvoqwIV6DFHq2PUSV'
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const FFApp = () => {
   const { open, openPortal, closePortal, updateListener, listener } =
@@ -41,9 +42,47 @@ const FFApp = () => {
     }),
     [label]
   )
-  
-  useEvent('commit:created', (event) => {
-    console.log('commit:created', { event })
+
+  useEvent('workbook:created', (event) => {
+    console.log('workbook:created', { event })
+  })
+
+  useEvent('*:created', (event) => {
+    console.log({ topic: event.topic })
+  })
+
+  useEvent('job:ready', { job: 'sheet:submitActionFg' }, async (event) => {
+    const { jobId } = event.context
+    try {
+      await api.jobs.ack(jobId, {
+        info: 'Getting started.',
+        progress: 10,
+      })
+
+      // Make changes after cells in a Sheet have been updated
+      console.log('Make changes here when an action is clicked')
+      const records = await event.data
+
+      console.log({ records })
+
+      await api.jobs.complete(jobId, {
+        outcome: {
+          message: 'This is now complete.',
+        },
+      })
+
+      // Probably a bad idea to close the portal here but just as an example
+      await sleep(3000)
+      closePortal()
+    } catch (error: any) {
+      console.error('Error:', error.stack)
+
+      await api.jobs.fail(jobId, {
+        outcome: {
+          message: 'This job encountered an error.',
+        },
+      })
+    }
   })
 
   const listenerConfig = (label: string) => {

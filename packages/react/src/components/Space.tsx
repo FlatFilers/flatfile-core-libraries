@@ -76,7 +76,7 @@ export const SpaceContents = (
     handleCloseInstance,
     simple,
   } = props
-  console.log('SpaceContents', { simple })
+
   if (!simple) {
     const { dispatchEvent } = useCreateListener({
       listener,
@@ -108,7 +108,6 @@ export const SpaceContents = (
 
   const buildWorkbook = async () => {
     if (props.publishableKey) {
-      console.log('buildWorkbook', { props })
       const fullAccessApi = authenticate(accessToken, apiUrl)
       await addSpaceInfo(props, spaceId, fullAccessApi)
     }
@@ -117,10 +116,6 @@ export const SpaceContents = (
   useEffect(() => {
     buildWorkbook()
   }, [])
-
-  // useEffect(() => {
-  //   console.log('SpaceContents useEffect', { open })
-  // }, [open])
 
   return (
     <div

@@ -1,6 +1,6 @@
 import { Flatfile } from '@flatfile/api'
 
-export const sheet = {
+export const sheet: Flatfile.SheetConfig = {
   name: 'Contacts',
   slug: 'contacts',
   fields: [
@@ -22,5 +22,14 @@ export const sheet = {
       label: 'Email',
       config: undefined,
     } as Flatfile.Property.String,
+  ],
+  actions: [
+    {
+      operation: 'submitActionFg',
+      mode: 'background',
+      label: 'Submit foreground',
+      description: 'Submit data to webhook.site',
+      primary: true,
+    },
   ],
 }
