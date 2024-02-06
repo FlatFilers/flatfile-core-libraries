@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- 1daeef6: fix remove listeners logic
+- 1daeef6: fix: remove listeners logic
 
 ## 1.1.7
 
