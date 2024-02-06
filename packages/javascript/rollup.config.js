@@ -20,11 +20,13 @@ const external = [
 ]
 
 // Common plugins function
-function commonPlugins() {
+function commonPlugins(umd = true) {
   return [
-    peerDepsExternal({
-      includeDependencies: true,
-    }),
+    umd
+      ? peerDepsExternal({
+          includeDependencies: true,
+        })
+      : null,
     json(),
     commonjs(),
     css(),
@@ -74,7 +76,7 @@ const config = [
       format: 'umd',
       name: 'FlatFileJavaScript',
     },
-    plugins: commonPlugins(),
+    plugins: commonPlugins(false),
     include: external,
   },
   {
