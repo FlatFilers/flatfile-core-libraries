@@ -2,13 +2,22 @@
   "name": "@flatfile/v2-shims",
   "version": "1.0.1",
   "description": "A collection of helpers for migrating from v2 to platform",
+  "type": "module",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "node": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "browser": {
+      "require": "./dist/index.browser.cjs",
+      "import": "./dist/index.browser.mjs"
+    },
+    "default": "./dist/index.mjs"
+  },
+  "source": "src/index.ts",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
-  "type": "module",
-  "browser": {
-    "./dist/index.cjs": "./dist/index.browser.cjs",
-    "./dist/index.mjs": "./dist/index.browser.mjs"
-  },
   "types": "./dist/index.d.ts",
   "scripts": {
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
