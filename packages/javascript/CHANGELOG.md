@@ -1,5 +1,11 @@
 # @flatfile/javascript
 
+## 1.1.8
+
+### Patch Changes
+
+- 1daeef6: fix remove listeners logic
+
 ## 1.1.7
 
 ### Patch Changes
