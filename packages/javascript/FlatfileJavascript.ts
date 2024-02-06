@@ -284,7 +284,6 @@ function initializeIFrameConfirmationModal(
         // Show the confirm modal instead of creating a new one
         confirmModal.style.display = 'block'
       }
-      if (removeMessageListener) removeMessageListener()
     }
 
     domElement
