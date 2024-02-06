@@ -16,6 +16,7 @@ const baseSpaceProps = {
     CreateWorkbookConfig,
     'name' | 'sheets' | 'actions'
   >,
+  handleCloseInstance: () => {}
 }
 
 describe('Space', () => {

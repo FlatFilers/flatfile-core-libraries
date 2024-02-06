@@ -59,9 +59,7 @@ describe('useSpace', () => {
 
     await waitForNextUpdate()
 
-    const { current } = result
-
-    const error = current.type === DefaultError ? current : undefined
+    const error = result?.current?.type === DefaultError ? result?.current : undefined
 
     expect(error).toBeDefined()
   })
@@ -88,8 +86,7 @@ describe('useSpace', () => {
 
     await waitForNextUpdate()
 
-    const { current } = result
-    const spaceComponent = current.type === Space ? current : undefined
+    const spaceComponent = result?.current?.type === Space ? result?.current : undefined
 
     expect(spaceComponent).toBeDefined()
   })

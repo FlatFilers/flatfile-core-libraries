@@ -1,5 +1,33 @@
 # @flatfile/javascript
 
+## 1.1.7
+
+### Patch Changes
+
+- 4528907: Remove global style overrides from sdks
+
+## 1.1.6
+
+### Patch Changes
+
+- 76284d9: remove listener after complete submit and close action
+
+## 1.1.5
+
+### Patch Changes
+
+- fa5e8fe: Update package.json structure
+- 2ed22cb: Fix to help separate types from conflicting peer dependencies
+- Updated dependencies [2ed22cb]
+  - @flatfile/embedded-utils@1.1.8
+  - @flatfile/listener@0.4.2
+
+## 1.1.4
+
+### Patch Changes
+
+- f07d0459: Update close action to be independent of user params
+
 ## 1.1.3
 
 ### Patch Changes

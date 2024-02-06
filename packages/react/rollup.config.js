@@ -1,47 +1,44 @@
-import css from 'rollup-plugin-import-css'
-import json from '@rollup/plugin-json'
-import typescript from '@rollup/plugin-typescript'
-import url from '@rollup/plugin-url'
+import { dts } from 'rollup-plugin-dts'
 import commonjs from '@rollup/plugin-commonjs'
+import css from 'rollup-plugin-import-css'
+import dotenv from 'dotenv'
+import json from '@rollup/plugin-json'
+import peerDepsExternal from 'rollup-plugin-peer-deps-external'
+import postcss from 'rollup-plugin-postcss'
 import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
-import postcss from "rollup-plugin-postcss";
-import peerDepsExternal from "rollup-plugin-peer-deps-external";
+import typescript from '@rollup/plugin-typescript'
+import url from '@rollup/plugin-url'
 
-const external = [
-  'react',
-  'react-dom',
-  // TODO:  this feels like a hack, but it's a temp fix for now 
-  //        to get the onSubmit @flatfile/api to link properly
-  // '@flatfile/api',
-  '@flatfile/embedded-utils',
-  '@flatfile/listener',
-  '@flatfile/plugin-record-hook',
-  'pubnub',
-  'pubnub-react',
-  'styled-components',
-  'tinycolor2',
-]
+dotenv.config()
+
+const PROD = process.env.NODE_ENV === 'production'
+if (!PROD) {
+  console.log('Not in production mode - skipping minification')
+}
 
 function commonPlugins(browser) {
   return [
-    peerDepsExternal(),
+    peerDepsExternal({
+      includeDependencies: true,
+    }),
     json(),
     css(),
     resolve({ browser, preferBuiltins: !browser }),
     commonjs({ requireReturnsDefault: 'auto' }),
     typescript({
       outDir: 'dist',
-      declaration: browser,
-      declarationDir: './dist',
+      tsconfig: 'tsconfig.json',
+      declaration: false,
+      composite: false,
     }),
     url({
       include: ['**/*.otf'],
       limit: Infinity,
       fileName: '[dirname][name][extname]',
     }),
-    terser(),
-    postcss()
+    PROD ? terser() : null,
+    postcss(),
   ]
 }
 
@@ -64,7 +61,6 @@ const config = [
       },
     ],
     plugins: commonPlugins(false),
-    external,
   },
   // Browser build
   {
@@ -79,7 +75,6 @@ const config = [
       },
     ],
     plugins: commonPlugins(true),
-    external,
   },
   // UMD build
   {
@@ -93,6 +88,11 @@ const config = [
       strict: true,
     },
     plugins: commonPlugins(true),
+  },
+  {
+    input: 'index.ts',
+    output: [{ file: 'dist/index.d.ts', format: 'es' }],
+    plugins: [css(), dts(), postcss()],
   },
 ]
 

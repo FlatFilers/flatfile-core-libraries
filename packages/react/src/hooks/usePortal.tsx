@@ -17,7 +17,7 @@ import { recordHook } from '@flatfile/plugin-record-hook'
 import { IReactSimpleOnboarding } from '../types/IReactSimpleOnboarding'
 import api from '@flatfile/api'
 
-export const usePortal = (props: IReactSimpleOnboarding): JSX.Element => {
+export const usePortal = (props: IReactSimpleOnboarding): JSX.Element | null => {
   const { errorTitle, loading: LoadingElement, apiUrl } = props
   const [initError, setInitError] = useState<string>()
   const [state, setState] = useState<State>({
@@ -26,6 +26,7 @@ export const usePortal = (props: IReactSimpleOnboarding): JSX.Element => {
     spaceUrl: '',
   })
   const [flatfileOptions, setFlatfileOptions] = useState(props)
+  const [closeInstance, setCloseInstance] = useState<boolean>(false)
 
   const { localSpaceId, spaceUrl, accessTokenLocal } = state
   const onSubmitSettings = { ...DefaultSubmitSettings, ...props.submitSettings }
@@ -154,6 +155,10 @@ export const usePortal = (props: IReactSimpleOnboarding): JSX.Element => {
   if (initError) {
     return errorElement
   }
+  
+  if (closeInstance) {
+    return null
+  }
 
   if (localSpaceId && spaceUrl && accessTokenLocal) {
     return (
@@ -162,6 +167,7 @@ export const usePortal = (props: IReactSimpleOnboarding): JSX.Element => {
         spaceId={localSpaceId}
         spaceUrl={spaceUrl}
         accessToken={accessTokenLocal}
+        handleCloseInstance={() => setCloseInstance(true)}
         {...flatfileOptions}
       />
     )

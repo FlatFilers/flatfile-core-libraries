@@ -1,5 +1,13 @@
 # embedded-utils
 
+## 1.1.8
+
+### Patch Changes
+
+- 2ed22cb: Fix to help separate types from conflicting peer dependencies
+- Updated dependencies [2ed22cb]
+  - @flatfile/listener@0.4.2
+
 ## 1.1.7
 
 ### Patch Changes

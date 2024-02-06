@@ -18,10 +18,12 @@ export const initializeFlatfile = (props: IReactSpaceProps): IUseSpace => {
     accessTokenLocal: '',
     spaceUrl: '',
   })
+  const [closeInstance, setCloseInstance] = useState<boolean>(false)
 
   const { localSpaceId, spaceUrl, accessTokenLocal } = state
 
   const initSpace = async () => {
+    setCloseInstance(false)
     try {
       setLoading(true)
       const { data } = props.publishableKey
@@ -78,7 +80,7 @@ export const initializeFlatfile = (props: IReactSpaceProps): IUseSpace => {
   return {
     OpenEmbed: initSpace,
     Space: () =>
-      loading ? (
+      closeInstance ? null : loading ? (
         loadingElement
       ) : initError ? (
         errorElement
@@ -88,6 +90,7 @@ export const initializeFlatfile = (props: IReactSpaceProps): IUseSpace => {
           spaceId={localSpaceId}
           spaceUrl={spaceUrl}
           accessToken={accessTokenLocal}
+          handleCloseInstance={() => setCloseInstance(true)}
           {...props}
         />
       ),

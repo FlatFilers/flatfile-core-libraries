@@ -1,5 +1,11 @@
 # @flatfile/listener
 
+## 0.4.2
+
+### Patch Changes
+
+- 2ed22cb: Fix to help separate types from conflicting peer dependencies
+
 ## 0.4.1
 
 ### Patch Changes

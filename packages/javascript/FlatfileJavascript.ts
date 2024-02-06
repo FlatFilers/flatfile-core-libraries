@@ -74,7 +74,8 @@ async function createlistener(
       flatfileEvent.payload.status === 'complete' &&
       flatfileEvent.payload.operation === closeSpace?.operation
     ) {
-      closeSpace?.onClose({})
+      closeSpace?.onClose && closeSpace?.onClose({})
+      removeEventListener('message', handlePostMessage)
     }
     dispatchEvent(flatfileEvent)
   }

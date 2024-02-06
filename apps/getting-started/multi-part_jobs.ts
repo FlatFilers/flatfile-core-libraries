@@ -117,6 +117,10 @@ export default function (listener: FlatfileListener) {
           info: `Job Split into ${total} parts.`,
           progress: 20,
         })
+        await api.jobs.ack(jobId, {
+          info: `Job Split into ${total} parts.`,
+          progress: 20,
+        })
       })
       submitLargeSheet.on('job:parts-completed', async (event) => {
         const {

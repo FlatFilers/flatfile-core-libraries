@@ -1,8 +1,11 @@
+import { Flatfile } from '@flatfile/api'
 import { IReactSpaceProps } from '../types'
 import { authenticate } from './authenticate'
 import { getErrorMessage } from '@flatfile/embedded-utils'
 
-export const initializeSpace = async (flatfileOptions: IReactSpaceProps) => {
+export const initializeSpace = async (
+  flatfileOptions: IReactSpaceProps
+): Promise<Flatfile.SpaceResponse> => {
   let space
   const {
     publishableKey,

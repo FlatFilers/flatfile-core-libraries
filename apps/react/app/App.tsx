@@ -43,10 +43,6 @@ function App() {
     loading: <LoadingComponent />,
     exitPrimaryButtonText: 'CLOSE!',
     exitSecondaryButtonText: 'KEEP IT!',
-    closeSpace: {
-      operation: 'contacts:submit',
-      onClose: () => setShowSpace(false),
-    },
   })
 
   const SimpleSpace = ({
@@ -74,10 +70,6 @@ function App() {
           record.addInfo('lastName', 'Welcome to the Rock fam')
         }
         return record
-      },
-      closeSpace: {
-        operation: 'simpleSubmitAction',
-        onClose: () => setShowSpace(false),
       },
     })
     return portal
@@ -113,11 +105,7 @@ function App() {
           {showSimplified === true ? 'Close' : 'Open'} Pre-loaded
         </button>
       </div>
-      {showSpace && (
-        <div className={styles.spaceWrapper}>
           <Space />
-        </div>
-      )}
       {showSimplified && (
         <div>
           <SimpleSpace setShowSpace={setShowSimplified} />

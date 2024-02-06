@@ -14,13 +14,14 @@ type ReusedOrObording = ReusedSpaceWithAccessToken | SimpleOnboarding
 })
 export class Space implements OnInit{
   @Input({ required: true }) spaceProps: ISpace = {} as ISpace
-  @Input() openDirectly: boolean = true
+  @Input() openDirectly: boolean = false
 
   title = 'Space';
   localSpaceData: Record<string, any> | undefined
   spaceFrameProps: SpaceFramePropsType | undefined
   error: { message: string } | undefined
-  loading: boolean = true;
+  loading: boolean = false;
+  closeInstance: boolean = false;
    
   constructor(private appService: SpaceService) {}
 
@@ -38,10 +39,16 @@ export class Space implements OnInit{
     }
   }
 
+  handleCloseInstance = () => { 
+    this.closeInstance = true;
+  }
+
   initSpace = async (spaceProps: ReusedOrObording) => {
+    this.closeInstance = false
     const { space, initializeSpace } = useInitializeSpace(spaceProps as SimpleOnboarding);
 
     try{
+      this.loading = true
       const { space, workbook } = this.spaceProps.publishableKey ? await initializeSpace() : await getSpace(spaceProps);
       const { id: spaceId, accessToken, guestLink } = space.data;
 
@@ -68,12 +75,14 @@ export class Space implements OnInit{
         ...this.spaceProps,
         ...this.localSpaceData,
         apiUrl: spaceProps.apiUrl || 'https://platform.flatfile.com/api',
-        workbook
+        workbook,
+        handleCloseInstance: this.handleCloseInstance
       } as SpaceFramePropsType;
 
       
     } catch (error) {
       this.loading = false
+      this.error = error as Error
       throw new Error(`An error has occurred: ${error}`)
     }
   }

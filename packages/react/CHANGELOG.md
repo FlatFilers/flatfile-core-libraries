@@ -1,5 +1,26 @@
 # @flatfile/react
 
+## 7.7.4
+
+### Patch Changes
+
+- 4528907: Remove global style overrides from sdks
+
+## 7.7.3
+
+### Patch Changes
+
+- 2ed22cb: Fix to help separate types from conflicting peer dependencies
+- Updated dependencies [2ed22cb]
+  - @flatfile/embedded-utils@1.1.8
+  - @flatfile/listener@0.4.2
+
+## 7.7.2
+
+### Patch Changes
+
+- f07d0459: Update close action to be independent of user params
+
 ## 7.7.1
 
 ### Patch Changes

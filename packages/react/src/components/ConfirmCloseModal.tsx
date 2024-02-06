@@ -22,7 +22,7 @@ const ConfirmModal = ({
         data-testid="close-confirm-modal"
         className="flatfile_outer-shell"
       >
-        <div className="close-confirm-modal-inner">
+        <div className="flatfile_close-confirm-modal-inner">
           <div className="flatfile_inner-shell">
             <div className="flatfile_modal-heading">
               {exitTitle}

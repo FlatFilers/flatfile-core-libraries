@@ -38,6 +38,7 @@ export const config: Pick<
           description: 'Would you like to join fields?',
           mode: 'foreground',
           confirm: true,
+          constraints: [{ type: 'hasData' }],
         },
       ],
     },
