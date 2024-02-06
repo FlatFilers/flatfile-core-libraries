@@ -7,8 +7,8 @@ import { listener } from './listener'
 import styles from './page.module.css'
 
 const SPACE_ID = 'us_sp_123456'
-const ENVIRONMENT_ID = 'us_env_O60vqdol'
-const PUBLISHABLE_KEY = 'pk_3626978e5f52480085a37844166d347a'
+const ENVIRONMENT_ID = 'us_env_123456'
+const PUBLISHABLE_KEY = 'pk_123456'
 
 const spaceProps = {
   environmentId: ENVIRONMENT_ID,
