@@ -1,6 +1,8 @@
-# @flatfile/cli
+# flatfile
 
 ## 3.5.14
+
+#### 2024-02-07
 
 ### Patch Changes
 
@@ -11,6 +13,8 @@
 
 ## 3.5.13
 
+#### 2024-01-09
+
 ### Patch Changes
 
 - Updated dependencies [1eedc59]
@@ -19,11 +23,15 @@
 
 ## 3.5.12
 
+#### 2023-12-01
+
 ### Patch Changes
 
 - a2c7953: Update Link to API Key article
 
 ## 3.5.11
+
+#### 2023-10-11
 
 ### Patch Changes
 
@@ -31,11 +39,15 @@
 
 ## 3.5.10
 
+#### 2023-09-22
+
 ### Patch Changes
 
 - bf44352: Update path sep to posix
 
 ## 3.5.9
+
+#### 2023-09-12
 
 ### Patch Changes
 
@@ -43,11 +55,15 @@
 
 ## 3.5.8
 
+#### 2023-07-19
+
 ### Patch Changes
 
 - f191fb6: Update CLI dependency
 
 ## 3.5.7
+
+#### 2023-07-17
 
 ### Patch Changes
 
@@ -61,6 +77,8 @@
   - @flatfile/listener-driver-pubsub@1.0.3
 
 ## 3.5.6
+
+#### 2023-06-28
 
 ### Patch Changes
 
