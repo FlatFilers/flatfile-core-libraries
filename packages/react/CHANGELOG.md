@@ -1,5 +1,17 @@
 # @flatfile/react
 
+## 7.8.0
+
+### Minor Changes
+
+- 56388f0: Update package.json to use exports nested entrypoints
+
+### Patch Changes
+
+- Updated dependencies [56388f0]
+  - @flatfile/listener@1.0.0
+  - @flatfile/embedded-utils@1.1.9
+
 ## 7.7.4
 
 ### Patch Changes

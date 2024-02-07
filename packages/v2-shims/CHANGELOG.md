@@ -1,5 +1,16 @@
 # @flatfile/v2-shims
 
+## 1.1.0
+
+### Minor Changes
+
+- 56388f0: Update package.json to use exports nested entrypoints
+
+### Patch Changes
+
+- Updated dependencies [56388f0]
+  - @flatfile/listener@1.0.0
+
 ## 1.0.1
 
 ### Patch Changes

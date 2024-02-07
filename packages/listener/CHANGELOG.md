@@ -1,5 +1,11 @@
 # @flatfile/listener
 
+## 1.0.0
+
+### Major Changes
+
+- 56388f0: Update package.json to use exports nested entrypoints
+
 ## 0.4.2
 
 ### Patch Changes

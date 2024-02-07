@@ -1,5 +1,12 @@
 # embedded-utils
 
+## 1.1.9
+
+### Patch Changes
+
+- Updated dependencies [56388f0]
+  - @flatfile/listener@1.0.0
+
 ## 1.1.8
 
 ### Patch Changes

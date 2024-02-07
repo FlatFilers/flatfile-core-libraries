@@ -1,7 +1,7 @@
 {
   "name": "@flatfile/vue",
   "private": false,
-  "version": "1.0.3",
+  "version": "1.0.4",
   "files": [
     "dist/**"
   ],
@@ -15,8 +15,8 @@
     "dev": "rollup --config --watch"
   },
   "dependencies": {
-    "@flatfile/embedded-utils": "1.1.8",
-    "@flatfile/listener": "^0.4.2",
+    "@flatfile/embedded-utils": "1.1.9",
+    "@flatfile/listener": "^1.0.0",
     "@flatfile/plugin-record-hook": "^1.3.0",
     "@vue/runtime-dom": "^3.3.4",
     "vue": "^3.3.4"

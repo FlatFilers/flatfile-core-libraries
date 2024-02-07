@@ -1,6 +1,6 @@
 {
   "name": "@flatfile/listener",
-  "version": "0.4.2",
+  "version": "1.0.0",
   "description": "A PubSub Listener for configuring and using Flatfile",
   "type": "module",
   "exports": {

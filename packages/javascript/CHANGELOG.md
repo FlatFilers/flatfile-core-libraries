@@ -1,5 +1,18 @@
 # @flatfile/javascript
 
+## 1.2.0
+
+### Minor Changes
+
+- 56388f0: Update package.json to use exports nested entrypoints
+
+### Patch Changes
+
+- bad8369: Include Peer Deps in Javascript UMD build
+- Updated dependencies [56388f0]
+  - @flatfile/listener@1.0.0
+  - @flatfile/embedded-utils@1.1.9
+
 ## 1.1.8
 
 ### Patch Changes
