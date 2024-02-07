@@ -1,4 +1,4 @@
-# angular
+# @flatfile/angular
 
 ## 0.1.3
 
@@ -6,7 +6,7 @@
 
 ### Patch Changes
 
-- 823596f: remove pubnub from @flatfile/angular-sdk
+- Removed PubNub from @flatfile/angular-sdk
 
 ## 0.1.2
 
@@ -14,7 +14,7 @@
 
 ### Patch Changes
 
-- f6c0122: Fixing alignment of close buttons to not be half-in the modal.
+- Fixing alignment of close button of iFrame to not be partially in the modal.
 
 ## 0.1.1
 
@@ -22,7 +22,7 @@
 
 ### Patch Changes
 
-- ad55584: enable simplified onboarding
+- Enabled simplified SDK properties like sheet, onSubmit, & onRecordHook
 
 ## 0.1.0
 
@@ -30,7 +30,7 @@
 
 ### Minor Changes
 
-- e53e359: create trigger for angular sdk
+- Create trigger for opening the SDK
 
 ## 0.0.1
 
@@ -38,4 +38,4 @@
 
 ### Patch Changes
 
-- 6574fcc: sdk build fixes
+- Initial alpha launch
