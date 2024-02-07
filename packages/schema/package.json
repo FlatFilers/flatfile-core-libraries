@@ -24,7 +24,7 @@
     "clean": true
   },
   "dependencies": {
-    "@flatfile/blueprint": "^0.0.9"
+    "@flatfile/blueprint": "^0.0.11"
   },
   "devDependencies": {
     "@flatfile/eslint-config-platform-sdk": "*",
