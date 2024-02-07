@@ -1,6 +1,6 @@
 {
   "name": "@flatfile/javascript",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "description": "Flatfile embedded with vanilla javascript.",
   "type": "module",
   "exports": {
@@ -54,7 +54,7 @@
   ],
   "dependencies": {
     "@flatfile/embedded-utils": "^1.1.9",
-    "@flatfile/listener": "^1.0.0",
+    "@flatfile/listener": "^1.0.1",
     "@flatfile/plugin-record-hook": "^1.4.1"
   }
 }

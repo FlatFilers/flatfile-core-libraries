@@ -1,5 +1,11 @@
 # @flatfile/listener
 
+## 1.0.1
+
+### Patch Changes
+
+- 9b6c7b2: Update package.json to have exports and browser
+
 ## 1.0.0
 
 #### 2024-02-07

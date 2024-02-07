@@ -1,5 +1,13 @@
 # @flatfile/react
 
+## 7.8.2
+
+### Patch Changes
+
+- 9b6c7b2: Update package.json to have exports and browser
+- Updated dependencies [9b6c7b2]
+  - @flatfile/listener@1.0.1
+
 ## 7.8.1
 
 ### Patch Changes
