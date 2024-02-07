@@ -5,15 +5,13 @@
   "type": "module",
   "exports": {
     "types": "./dist/index.d.ts",
-    "browser": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
-    },
+    "import": "./dist/index.mjs",
+    "require": "./dist/index.cjs",
     "default": "./dist/index.mjs"
   },
-  "source": "src/index.ts",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
+  "source": "./src/index.ts",
   "types": "./dist/index.d.ts",
   "engines": {
     "node": ">= 12"

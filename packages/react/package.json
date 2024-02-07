@@ -3,21 +3,19 @@
   "version": "7.8.1",
   "description": "Flatfile React components",
   "type": "module",
+  "browser": {
+    "./dist/index.cjs": "./dist/index.browser.cjs",
+    "./dist/index.mjs": "./dist/index.browser.mjs"
+  },
   "exports": {
     "types": "./dist/index.d.ts",
-    "node": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
-    },
-    "browser": {
-      "require": "./dist/index.browser.cjs",
-      "import": "./dist/index.browser.mjs"
-    },
+    "import": "./dist/index.mjs",
+    "require": "./dist/index.cjs",
     "default": "./dist/index.mjs"
   },
-  "source": "index.ts",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
+  "source": "index.ts",
   "types": "./dist/index.d.ts",
   "author": "",
   "license": "ISC",

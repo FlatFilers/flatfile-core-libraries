@@ -3,22 +3,20 @@
   "version": "1.0.0",
   "description": "A PubSub Listener for configuring and using Flatfile",
   "type": "module",
+  "browser": {
+    "./dist/index.cjs": "./dist/index.browser.cjs",
+    "./dist/index.mjs": "./dist/index.browser.mjs"
+  },
   "exports": {
     "types": "./dist/index.d.ts",
-    "node": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
-    },
-    "browser": {
-      "require": "./dist/index.browser.cjs",
-      "import": "./dist/index.browser.mjs"
-    },
+    "import": "./dist/index.mjs",
+    "require": "./dist/index.cjs",
     "default": "./dist/index.mjs"
   },
-  "source": "src/index.ts",
-  "main": "dist/index.cjs",
-  "module": "dist/index.mjs",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.mjs",
+  "source": "./src/index.ts",
+  "types": "./dist/index.d.ts",
   "scripts": {
     "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
     "build": "rollup -c",
