@@ -7,7 +7,7 @@
 - 8d62a74: Add in more event topics for deployed agents
 - Updated dependencies [56388f0]
   - @flatfile/listener@1.0.0
-  - @flatfile/listener-driver-pubsub@3.0.0
+  - @flatfile/listener-driver-pubsub@2.0.3
 
 ## 3.5.13
 
