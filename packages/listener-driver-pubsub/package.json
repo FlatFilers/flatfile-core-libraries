@@ -1,6 +1,6 @@
 {
   "name": "@flatfile/listener-driver-pubsub",
-  "version": "2.0.3",
+  "version": "2.0.4",
   "description": "A driver for streaming events from Flatfile via a pubsub pattern",
   "main": "dist/index.js",
   "module": "dist/index.mjs",
@@ -30,14 +30,14 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@flatfile/listener": "^1.0.0",
+    "@flatfile/listener": "^1.0.1",
     "@flatfile/api": "^1.5.5",
     "axios": "^1.6.0",
     "@flatfile/utils-debugger": "^0.0.5",
     "pubnub": "^7.2.2"
   },
   "peerDependencies": {
-    "@flatfile/listener": "1.0.0"
+    "@flatfile/listener": "1.0.1"
   },
   "overrides": {
     "pubnub@^7.2.2": {

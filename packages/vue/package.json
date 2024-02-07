@@ -17,7 +17,7 @@
   "dependencies": {
     "@flatfile/embedded-utils": "1.1.9",
     "@flatfile/listener": "^1.0.0",
-    "@flatfile/plugin-record-hook": "^1.4.0",
+    "@flatfile/plugin-record-hook": "^1.4.1",
     "@vue/runtime-dom": "^3.3.4",
     "vue": "^3.3.4"
   },

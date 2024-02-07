@@ -17,7 +17,7 @@
   "dependencies": {
     "@flatfile/configure": "*",
     "@flatfile/listener": "*",
-    "@flatfile/plugin-record-hook": "^0.1.4",
+    "@flatfile/plugin-record-hook": "^1.4.1",
     "@flatfile/plugin-xlsx-extractor": "^1.0.0",
     "color": "^4.2.3",
     "flatfile": "*",

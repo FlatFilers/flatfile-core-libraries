@@ -9,16 +9,18 @@ import typescript from '@rollup/plugin-typescript'
 
 dotenv.config()
 
-const PROD = process.env.NODE_ENV === 'production'
+const PROD = process.env.NODE_ENV !== 'development'
 if (!PROD) {
   console.log('Not in production mode - skipping minification')
 }
 
-function commonPlugins(browser) {
+function commonPlugins(browser, umd = false) {
   return [
-    peerDepsExternal({
-      includeDependencies: true,
-    }),
+    !umd
+      ? peerDepsExternal({
+          includeDependencies: true,
+        })
+      : null,
     json(),
     commonjs({ requireReturnsDefault: 'auto' }),
     resolve({ browser, preferBuiltins: !browser }),
@@ -85,7 +87,7 @@ export default [
         name: 'FlatFileListener',
       },
     ],
-    plugins: commonPlugins(true),
+    plugins: commonPlugins(true, true),
   },
   {
     input: 'src/index.ts',

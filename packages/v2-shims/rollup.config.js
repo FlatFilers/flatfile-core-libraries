@@ -1,15 +1,16 @@
+import { dts } from 'rollup-plugin-dts'
+import commonjs from '@rollup/plugin-commonjs'
 import css from 'rollup-plugin-import-css'
 import json from '@rollup/plugin-json'
-import typescript from '@rollup/plugin-typescript'
-import commonjs from '@rollup/plugin-commonjs'
+import peerDepsExternal from 'rollup-plugin-peer-deps-external'
 import resolve from '@rollup/plugin-node-resolve'
-import { dts } from 'rollup-plugin-dts'
 import terser from '@rollup/plugin-terser'
+import typescript from '@rollup/plugin-typescript'
 
 import dotenv from 'dotenv'
 dotenv.config()
 
-const PROD = process.env.NODE_ENV === 'production'
+const PROD = process.env.NODE_ENV !== 'development'
 if (!PROD) {
   console.log('Not in production mode - skipping minification')
 }
@@ -21,8 +22,13 @@ const external = [
   '@flatfile/plugin-record-hook',
 ]
 
-function commonPlugins(browser) {
+function commonPlugins(browser, umd = false) {
   return [
+    !umd
+      ? peerDepsExternal({
+          includeDependencies: true,
+        })
+      : null,
     json(),
     css(),
     commonjs({ requireReturnsDefault: 'auto' }),
@@ -53,14 +59,6 @@ export default [
         file: 'dist/index.mjs',
         sourcemap: true,
       },
-      {
-        exports: 'auto',
-        sourcemap: false,
-        strict: true,
-        file: 'dist/index.js',
-        format: 'umd',
-        name: 'v2Shims',
-      },
     ],
     plugins: commonPlugins(false),
     external,
@@ -82,6 +80,20 @@ export default [
     ],
     plugins: commonPlugins(true),
     external,
+  },
+  {
+    input: 'src/index.ts',
+    output: [
+      {
+        exports: 'auto',
+        sourcemap: false,
+        strict: true,
+        file: 'dist/index.js',
+        format: 'umd',
+        name: 'v2Shims',
+      },
+    ],
+    plugins: commonPlugins(true, true),
   },
   {
     input: 'src/index.ts',

@@ -2,7 +2,7 @@
     "extends": "@flatfile/ts-config-platform-sdk/base.json",
     "include": [
         "./src",
-        "index.ts"
+        "src/index.ts"
     ],
     "exclude": [
         "dist",

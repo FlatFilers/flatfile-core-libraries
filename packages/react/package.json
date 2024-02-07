@@ -1,23 +1,21 @@
 {
   "name": "@flatfile/react",
-  "version": "7.8.1",
+  "version": "7.8.2",
   "description": "Flatfile React components",
   "type": "module",
+  "browser": {
+    "./dist/index.cjs": "./dist/index.browser.cjs",
+    "./dist/index.mjs": "./dist/index.browser.mjs"
+  },
   "exports": {
     "types": "./dist/index.d.ts",
-    "node": {
-      "import": "./dist/index.mjs",
-      "require": "./dist/index.cjs"
-    },
-    "browser": {
-      "require": "./dist/index.browser.cjs",
-      "import": "./dist/index.browser.mjs"
-    },
+    "import": "./dist/index.mjs",
+    "require": "./dist/index.cjs",
     "default": "./dist/index.mjs"
   },
-  "source": "index.ts",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
+  "source": "./src/index.ts",
   "types": "./dist/index.d.ts",
   "author": "",
   "license": "ISC",
@@ -61,8 +59,8 @@
     "@flatfile/api": "^1.6.7",
     "@flatfile/cross-env-config": "^0.0.5",
     "@flatfile/embedded-utils": "^1.1.9",
-    "@flatfile/listener": "^1.0.0",
-    "@flatfile/plugin-record-hook": "^1.4.0",
+    "@flatfile/listener": "^1.0.1",
+    "@flatfile/plugin-record-hook": "^1.4.1",
     "tinycolor2": "^1.6.0"
   },
   "peerDependencies": {
