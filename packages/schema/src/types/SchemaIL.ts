@@ -1,4 +1,9 @@
-import type { Action, SheetAccess } from '@flatfile/blueprint'
+import type {
+  Action,
+  SheetAccess,
+  SheetConstraint,
+  Constraint,
+} from '@flatfile/blueprint'
 import type { FieldVisibilityTypes } from './JsonSchema'
 
 export type BaseFieldTypes = 'string' | 'number' | 'boolean' | 'composite'
@@ -21,6 +26,7 @@ interface BaseField {
   contributeToRecordCompute?: any
   getSheetCompute?: any
   blueprint?: any
+  constraints?: Array<Constraint>
 }
 
 export interface BaseSchemaILField extends BaseField {
@@ -82,4 +88,5 @@ export interface SchemaILModel<
   primary?: keyof Fields
   allowCustomFields: boolean
   actions?: Array<Action>
+  constraints: Array<SheetConstraint>
 }

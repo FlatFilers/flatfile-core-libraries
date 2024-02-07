@@ -15,7 +15,7 @@ import type {
   NumberProperty,
   Property,
   ReferenceProperty,
-  SheetConfig,
+  SheetConfigOptions,
   StringProperty,
 } from '@flatfile/blueprint'
 
@@ -24,6 +24,7 @@ const getConstraints = (field: SchemaILField): Constraint[] =>
     field.required ? { type: 'required' } : null,
     field.unique ? { type: 'unique' } : null,
     field?.stageVisibility?.mapping === false ? { type: 'computed' } : null,
+    field?.constraints
   ]) as Constraint[]
 
 const convertBase = (
@@ -128,7 +129,7 @@ export const SchemaILFieldtoProperty = (field: SchemaILField): Property => {
 
 export const SchemaILModelToSheetConfig = (
   model: SchemaILModel
-): SheetConfig => {
+): SheetConfigOptions => {
   if (model.allowCustomFields === true) {
     console.warn(
       "X doesn't yet support 'allowCustomFields', behavior may be unepxected"
@@ -142,5 +143,6 @@ export const SchemaILModelToSheetConfig = (
     readonly: model.readonly || false,
     actions: model.actions,
     access: model.access,
+    constraints: model.constraints,
   }
 }

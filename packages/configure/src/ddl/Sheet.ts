@@ -18,7 +18,7 @@ import { toPairs } from 'remeda'
 import { isFullyPresent } from '../utils/isFullyPresent'
 
 import { RecordWithLinks } from '@flatfile/api'
-import { SheetAccess, SheetConfig } from '@flatfile/blueprint'
+import { SheetAccess, SheetConfigOptions, SheetConstraint } from '@flatfile/blueprint'
 import { EventHandler, FlatfileEvent, RecordTranslater } from '../utils'
 import { Mountable } from '../utils/mountable'
 import { slugify } from '../utils/slugify'
@@ -133,6 +133,7 @@ export interface SheetOptions<FC> {
   batchRecordsCompute: RecordsComputeType
   previewFieldKey?: string
   actions?: List<Action>
+  constraints?: Array<SheetConstraint>
 }
 
 export class Sheet<FC extends FieldConfig>
@@ -380,7 +381,7 @@ export class Sheet<FC extends FieldConfig>
     return fromX.toFlatFileRecords()
   }
 
-  public toBlueprint(namespace: string, slug: string): SheetConfig {
+  public toBlueprint(namespace: string, slug: string): SheetConfigOptions {
     return SchemaILModelToSheetConfig(this.toSchemaIL(namespace, slug))
   }
 
