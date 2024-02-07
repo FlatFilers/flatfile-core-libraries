@@ -14,6 +14,8 @@ import { recordToDictionary } from '../logic/record.hook'
 export function validators(sheetSlug: string) {
   return (listener: FlatfileListener) => {
     listener.use(
+      // TODO: will be fixed in the @flatfile/plugin-record-hook
+      // @ts-ignore
       bulkRecordHook(sheetSlug, async (records, event) => {
         const sheetId = event?.context.sheetId
 
