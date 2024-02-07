@@ -17,7 +17,9 @@ import { recordHook } from '@flatfile/plugin-record-hook'
 import { IReactSimpleOnboarding } from '../types/IReactSimpleOnboarding'
 import api from '@flatfile/api'
 
-export const usePortal = (props: IReactSimpleOnboarding): JSX.Element | null => {
+export const usePortal = (
+  props: IReactSimpleOnboarding
+): JSX.Element | null => {
   const { errorTitle, loading: LoadingElement, apiUrl } = props
   const [initError, setInitError] = useState<string>()
   const [state, setState] = useState<State>({
@@ -43,8 +45,11 @@ export const usePortal = (props: IReactSimpleOnboarding): JSX.Element | null => 
             (client: FlatfileListener) => {
               if (config.onRecordHook) {
                 client.use(
+                  // TODO: will be fixed in the @flatfile/plugin-record-hook
+                  // @ts-ignore
                   recordHook(
                     config.sheet?.slug || 'slug',
+                    // @ts-ignore
                     async (
                       record: FlatfileRecord,
                       event: FlatfileEvent | undefined
@@ -155,7 +160,7 @@ export const usePortal = (props: IReactSimpleOnboarding): JSX.Element | null => 
   if (initError) {
     return errorElement
   }
-  
+
   if (closeInstance) {
     return null
   }
