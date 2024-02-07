@@ -1,5 +1,11 @@
 # @flatfile/javascript
 
+## 1.2.1
+
+### Patch Changes
+
+- d3e68f1: Update types for all packages that reference the record-hook plugin
+
 ## 1.2.0
 
 ### Minor Changes
