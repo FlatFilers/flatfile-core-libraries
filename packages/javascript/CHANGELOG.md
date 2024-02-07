@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- 9b6c7b2: Update package.json to have exports and browser
+- 9b6c7b2: Update `package.json` to have `exports` and `browser`
 - 9b6c7b2: fix typo in package.json
 - Updated dependencies [9b6c7b2]
   - @flatfile/listener@1.0.1
