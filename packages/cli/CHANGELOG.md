@@ -68,9 +68,7 @@
 ### Patch Changes
 
 - cbacf2a: Update semver version > 7.5.2
-
   resolves https://security.snyk.io/vuln/SNYK-JS-SEMVER-3247795
-
 - Updated dependencies [cbacf2a]
   - @flatfile/cross-env-config@0.0.5
   - @flatfile/listener@0.3.11
@@ -89,17 +87,23 @@
 
 ## 3.5.5
 
+#### 2023-06-26
+
 ### Patch Changes
 
 - 3b3c69f: Updates error messages when fetching environments in cli actions
 
 ## 3.5.4
 
+#### 2023-06-23
+
 ### Patch Changes
 
 - d26f2d1: Check for deployed agents before developing
 
 ## 3.5.3
+
+#### 2023-06-16
 
 ### Patch Changes
 
@@ -109,6 +113,8 @@
 
 ## 3.5.2
 
+#### 2023-06-16
+
 ### Patch Changes
 
 - e8eff5c: Update to latest version of listener
@@ -116,6 +122,8 @@
   - @flatfile/listener@0.3.9
 
 ## 3.5.1
+
+#### 2023-06-15
 
 ### Patch Changes
 
@@ -125,11 +133,15 @@
 
 ## 3.5.0
 
+#### 2023-06-14
+
 ### Minor Changes
 
 - a3f3314: Update listener
 
 ## 3.4.11
+
+#### 2023-06-13
 
 ### Patch Changes
 
@@ -139,6 +151,8 @@
 
 ## 3.4.10
 
+#### 2023-06-06
+
 ### Patch Changes
 
 - Updated dependencies [ce3ff5e]
@@ -146,17 +160,23 @@
 
 ## 3.4.9
 
+#### 2023-06-01
+
 ### Patch Changes
 
 - 0a52861: bugfix of included templates
 
 ## 3.4.8
 
+#### 2023-05-31
+
 ### Patch Changes
 
 - 841c32d: Fix bug to allow setting api url via .env file
 
 ## 3.4.7
+
+#### 2023-05-31
 
 ### Patch Changes
 
@@ -166,11 +186,15 @@
 
 ## 3.4.6
 
+#### 2023-05-26
+
 ### Patch Changes
 
 - f8fe0cc: Update @flatfile/api version
 
 ## 3.4.5
+
+#### 2023-05-26
 
 ### Patch Changes
 
@@ -178,11 +202,15 @@
 
 ## 3.4.4
 
+#### 2023-05-22
+
 ### Patch Changes
 
 - 438d908: resolve a bug with event streaming
 
 ## 3.4.3
+
+#### 2023-05-21
 
 ### Patch Changes
 
@@ -190,11 +218,15 @@
 
 ## 3.4.2
 
+#### 2023-05-21
+
 ### Patch Changes
 
 - 60a94d7: share file discovery logic
 
 ## 3.4.1
+
+#### 2023-05-21
 
 ### Patch Changes
 
@@ -202,11 +234,15 @@
 
 ## 3.4.0
 
+#### 2023-05-19
+
 ### Minor Changes
 
 - 637342b: Remove @flatfile/api from listener
 
 ## 3.3.8
+
+#### 2023-05-18
 
 ### Patch Changes
 
@@ -214,11 +250,15 @@
 
 ## 3.3.7
 
+#### 2023-05-17
+
 ### Patch Changes
 
 - 9641918: Fix develop command for using node fetch
 
 ## 3.3.6
+
+#### 2023-05-12
 
 ### Patch Changes
 
@@ -226,11 +266,15 @@
 
 ## 3.3.5
 
+#### 2023-05-05
+
 ### Patch Changes
 
 - 919c1f1: Adds backwards compatible support for legacy events
 
 ## 3.3.4
+
+#### 2023-05-02
 
 ### Patch Changes
 
@@ -238,11 +282,15 @@
 
 ## 3.3.3
 
+#### 2023-04-28
+
 ### Patch Changes
 
 - 0cbf01b: Add lower cpu compilation mode FLATFILE_COMPILE_MODE=no-minify
 
 ## 3.3.2
+
+#### 2023-04-28
 
 ### Patch Changes
 
@@ -250,11 +298,15 @@
 
 ## 3.3.1
 
+#### 2023-04-28
+
 ### Patch Changes
 
 - fe4762d: Resolve deployment bug
 
 ## 3.3.0
+
+#### 2023-04-28
 
 ### Minor Changes
 
@@ -262,11 +314,15 @@
 
 ## 3.2.3
 
+#### 2023-04-17
+
 ### Patch Changes
 
 - 55f9fff: Update API version and use configless space creation in listener example.
 
 ## 3.2.2
+
+#### 2023-04-04
 
 ### Patch Changes
 
@@ -274,11 +330,15 @@
 
 ## 3.2.1
 
+#### 2023-03-28
+
 ### Patch Changes
 
 - a66cacd: Subscribes agent deploys to all events as well
 
 ## 3.2.0
+
+#### 2023-03-21
 
 ### Minor Changes
 
@@ -286,11 +346,15 @@
 
 ## 3.1.20
 
+#### 2023-03-14
+
 ### Patch Changes
 
 - 2e25be3: Update packages with updated @flatfile/api
 
 ## 3.1.19
+
+#### 2023-03-02
 
 ### Patch Changes
 
@@ -299,11 +363,15 @@
 
 ## 3.1.18
 
+#### 2023-02-23
+
 ### Patch Changes
 
 - 51ba23e: Adds Env Vars to Agent Code
 
 ## 3.1.17
+
+#### 2023-02-13
 
 ### Patch Changes
 
@@ -311,17 +379,23 @@
 
 ## 3.1.16
 
+#### 2023-01-27
+
 ### Patch Changes
 
 - 2e82812: Move XLSX file Processing to Agent code
 
 ## 3.1.15
 
+#### 2023-01-25
+
 ### Patch Changes
 
 - 70df9ce: Add check for git and node
 
 ## 3.1.14
+
+#### 2023-01-24
 
 ### Patch Changes
 
@@ -330,11 +404,15 @@
 
 ## 3.1.13
 
+#### 2023-01-19
+
 ### Patch Changes
 
 - 4724aed: Adds a shortcut for local X deployment with the XDK
 
 ## 3.1.12
+
+#### 2023-01-04
 
 ### Patch Changes
 
@@ -344,11 +422,15 @@
 
 ## 3.1.11
 
+#### 2022-12-22
+
 ### Patch Changes
 
 - 4a12d2e: Cleanup some cruft
 
 ## 3.1.10
+
+#### 2022-12-21
 
 ### Patch Changes
 
@@ -357,11 +439,15 @@
 
 ## 3.1.9
 
+#### 2022-12-15
+
 ### Patch Changes
 
 - 8ba53bf: Adds a final update deployment mutation
 
 ## 3.1.8
+
+#### 2022-12-09
 
 ### Patch Changes
 
@@ -369,11 +455,15 @@
 
 ## 3.1.7
 
+#### 2022-12-07
+
 ### Patch Changes
 
 - 745a73e: XDK publishing
 
 ## 3.1.5
+
+#### 2022-11-18
 
 ### Patch Changes
 
@@ -381,11 +471,15 @@
 
 ## 3.1.4
 
+#### 2022-11-09
+
 ### Patch Changes
 
 - ca74bc6: fix: remove errant console log in init command
 
 ## 3.1.3
+
+#### 2022-11-02
 
 ### Patch Changes
 
@@ -393,11 +487,15 @@
 
 ## 3.1.2
 
+#### 2022-11-01
+
 ### Patch Changes
 
 - 635291a: fix bug where values passed in as options to the init command are undefined
 
 ## 3.1.1
+
+#### 2022-10-31
 
 ### Patch Changes
 
@@ -405,11 +503,15 @@
 
 ## 3.1.0
 
+#### 2022-10-27
+
 ### Minor Changes
 
-- 1792c54: Adds init command and improvments to stack traces during publish
+- 1792c54: Adds init command and improvements to stack traces during publish
 
-## 3.0.3
+### 3.0.3
+
+#### 2022-10-12
 
 ### Patch Changes
 
@@ -417,11 +519,15 @@
 
 ## 3.0.2
 
+#### 2022-09-26
+
 ### Patch Changes
 
 - d979841: Made the 'test' env the default option for deploy
 
 ## 3.0.1
+
+#### 2022-09-21
 
 ### Patch Changes
 
@@ -429,11 +535,15 @@
 
 ## 3.0.0
 
+#### 2022-08-25
+
 ### Major Changes
 
 - 56a292f: Updated from old package
 
 ## 0.2.0
+
+#### Date not provided
 
 ### Minor Changes
 
@@ -445,17 +555,23 @@
 
 ## 0.1.0
 
+#### Date not provided
+
 ### Minor Changes
 
 - 5819944: Alpha base functionality
 
 ## 0.0.3
 
+#### Date not provided
+
 ### Patch Changes
 
 - Bundle all externals
 
 ## 0.0.2
+
+#### Date not provided
 
 ### Patch Changes
 
