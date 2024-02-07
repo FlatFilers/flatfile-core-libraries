@@ -45,17 +45,16 @@ export const usePortal = (
             (client: FlatfileListener) => {
               if (config.onRecordHook) {
                 client.use(
-                  // TODO: will be fixed in the @flatfile/plugin-record-hook
-                  // @ts-ignore
                   recordHook(
                     config.sheet?.slug || 'slug',
-                    // @ts-ignore
                     async (
                       record: FlatfileRecord,
                       event: FlatfileEvent | undefined
                     ) => {
-                      // @ts-ignore - something weird with the `data` prop and the types upstream in the packages being declared in different places, but overall this is fine
-                      return config.onRecordHook(record, event)
+                      return (
+                        config.onRecordHook &&
+                        config.onRecordHook(record, event)
+                      )
                     }
                   )
                 )
