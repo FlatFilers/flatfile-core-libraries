@@ -18,7 +18,11 @@ import { toPairs } from 'remeda'
 import { isFullyPresent } from '../utils/isFullyPresent'
 
 import { RecordWithLinks } from '@flatfile/api'
-import { SheetAccess, SheetConfigOptions, SheetConstraint } from '@flatfile/blueprint'
+import {
+  SheetAccess,
+  SheetConfigOptions,
+  SheetConstraint,
+} from '@flatfile/blueprint'
 import { EventHandler, FlatfileEvent, RecordTranslater } from '../utils'
 import { Mountable } from '../utils/mountable'
 import { slugify } from '../utils/slugify'
@@ -303,6 +307,7 @@ export class Sheet<FC extends FieldConfig>
       allowCustomFields: this.options.allowCustomFields,
       readonly: this.options.readonly,
       access: this.options.access,
+      constraints: this.options.constraints || [],
       actions: this.options.actions
         ? mapObj(this.options.actions, (action) => action.options)
         : undefined,

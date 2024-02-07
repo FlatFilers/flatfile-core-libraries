@@ -256,6 +256,7 @@ export class Field<T, Unused extends Record<string, any> = {}> {
       readonly: this.options.readonly,
       annotations: {},
       blueprint: this.options.blueprint,
+      constraints: this.options.constraints,
       ...pick(this.options, [
         'description',
         'required',
