@@ -138,8 +138,11 @@ const createSimpleListener = ({
   FlatfileListener.create((client: FlatfileListener) => {
     if (onRecordHook) {
       client.use(
+        // TODO: will be fixed in the @flatfile/plugin-record-hook
+        // @ts-ignore
         recordHook(
           slug,
+          // @ts-ignore
           async (record: FlatfileRecord, event: FlatfileEvent | undefined) =>
             // @ts-ignore - something weird with the `data` prop and the types upstream in the packages being declared in different places, but overall this is fine
             onRecordHook(record, event)
