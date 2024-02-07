@@ -17,11 +17,13 @@ if (!PROD) {
   console.log('Not in production mode - skipping minification')
 }
 
-function commonPlugins(browser) {
+function commonPlugins(browser, umd = false) {
   return [
-    peerDepsExternal({
-      includeDependencies: true,
-    }),
+    !umd
+      ? peerDepsExternal({
+          includeDependencies: true,
+        })
+      : null,
     json(),
     css(),
     resolve({ browser, preferBuiltins: !browser }),
@@ -45,7 +47,7 @@ function commonPlugins(browser) {
 const config = [
   // Non-browser build
   {
-    input: 'index.ts',
+    input: 'src/index.ts',
     output: [
       {
         format: 'commonjs',
@@ -60,11 +62,11 @@ const config = [
         sourcemap: false,
       },
     ],
-    plugins: commonPlugins(false),
+    plugins: commonPlugins(false, false),
   },
   // Browser build
   {
-    input: 'index.ts',
+    input: 'src/index.ts',
     output: [
       { format: 'cjs', exports: 'auto', file: 'dist/index.browser.cjs' },
       {
@@ -74,11 +76,11 @@ const config = [
         sourcemap: false,
       },
     ],
-    plugins: commonPlugins(true),
+    plugins: commonPlugins(true, false),
   },
   // UMD build
   {
-    input: 'index.ts',
+    input: 'src/index.ts',
     output: {
       format: 'umd',
       name: 'FlatFileReact',
@@ -87,10 +89,10 @@ const config = [
       sourcemap: false,
       strict: true,
     },
-    plugins: commonPlugins(true),
+    plugins: commonPlugins(true, true),
   },
   {
-    input: 'index.ts',
+    input: 'src/index.ts',
     output: [{ file: 'dist/index.d.ts', format: 'es' }],
     plugins: [css(), dts(), postcss()],
   },
