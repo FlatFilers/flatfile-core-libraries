@@ -7,8 +7,11 @@ import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
 import typescript from '@rollup/plugin-typescript'
 import url from '@rollup/plugin-url'
+import dotenv from 'dotenv'
 
-const PROD = process.env.NODE_ENV === 'production'
+dotenv.config()
+
+const PROD = process.env.NODE_ENV !== 'development'
 if (!PROD) {
   console.log('Not in production mode - skipping minification')
 }
