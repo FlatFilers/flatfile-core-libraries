@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- d3e68f1: Update types for all packages that reference the record-hook plugin
+- d3e68f1: Update types for all packages that reference the `@flatfile/plugin-record-hook` plugin
 
 ## 1.2.0
 
