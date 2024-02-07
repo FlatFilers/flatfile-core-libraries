@@ -55,7 +55,7 @@
     "@flatfile/api": "^1.5.27",
     "@flatfile/blueprint": "^0.0.9",
     "@flatfile/listener": "^1.0.0",
-    "@flatfile/plugin-record-hook": "^1.4.0",
+    "@flatfile/plugin-record-hook": "^1.4.1",
     "dotenv-expand": "^10.0.0",
     "dotenv-flow": "^4.0.0"
   }
