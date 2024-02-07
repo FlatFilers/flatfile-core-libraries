@@ -76,6 +76,7 @@ export default {
     closeSpace: Object,
     onRecordHook: Function,
     onSubmit: Function,
+    handleCloseInstance: Function,
     document: Object,
     iframeStyles: Object,
     mountElement: String,
@@ -168,11 +169,13 @@ export default {
       sidebarConfig,
       spaceInfo,
       userInfo,
+      handleCloseInstance
     } = props
     const channel = `space.${spaceId}`
 
     const handleConfirm = () => {
       closeSpace?.onClose({})
+      handleCloseInstance && handleCloseInstance()
     }
 
     const handleCancel = () => {

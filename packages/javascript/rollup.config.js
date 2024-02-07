@@ -1,27 +1,32 @@
+import { dts } from 'rollup-plugin-dts'
+import commonjs from '@rollup/plugin-commonjs'
 import css from 'rollup-plugin-import-css'
+import json from '@rollup/plugin-json'
+import peerDepsExternal from 'rollup-plugin-peer-deps-external'
+import resolve from '@rollup/plugin-node-resolve'
+import terser from '@rollup/plugin-terser'
 import typescript from '@rollup/plugin-typescript'
 import url from '@rollup/plugin-url'
-import commonjs from '@rollup/plugin-commonjs'
-import resolve from '@rollup/plugin-node-resolve'
-import json from '@rollup/plugin-json'
-import terser from '@rollup/plugin-terser'
-import { dts } from 'rollup-plugin-dts'
 
 const PROD = process.env.NODE_ENV === 'production'
 if (!PROD) {
   console.log('Not in production mode - skipping minification')
 }
-// Consolidated external dependencies
+
 const external = [
   '@flatfile/api',
-  '@flatfile/embedded-utils',
   '@flatfile/listener',
   '@flatfile/plugin-record-hook',
 ]
 
 // Common plugins function
-function commonPlugins() {
+function commonPlugins(umd = true) {
   return [
+    umd
+      ? peerDepsExternal({
+          includeDependencies: true,
+        })
+      : null,
     json(),
     commonjs(),
     css(),
@@ -30,7 +35,7 @@ function commonPlugins() {
       tsconfig: 'tsconfig.json',
       outDir: 'dist',
       declaration: false,
-      declarationMap: false,
+      composite: false,
     }),
     url({
       include: ['**/*.otf'],
@@ -71,7 +76,8 @@ const config = [
       format: 'umd',
       name: 'FlatFileJavaScript',
     },
-    plugins: commonPlugins(),
+    plugins: commonPlugins(false),
+    include: external,
   },
   {
     input: 'index.ts',

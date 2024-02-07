@@ -1,8 +1,11 @@
+import { Flatfile } from '@flatfile/api'
 import { getErrorMessage } from '@flatfile/embedded-utils'
 import { authenticate } from './authenticate'
 import { IReactSpaceProps } from '../types'
 
-export const getSpace = async (spaceProps: IReactSpaceProps) => {
+export const getSpace = async (
+  spaceProps: IReactSpaceProps
+): Promise<Flatfile.SpaceResponse> => {
   const {
     space,
     apiUrl,

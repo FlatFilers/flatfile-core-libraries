@@ -74,7 +74,8 @@ async function createlistener(
       flatfileEvent.payload.status === 'complete' &&
       flatfileEvent.payload.operation === closeSpace?.operation
     ) {
-      closeSpace?.onClose({})
+      closeSpace?.onClose && closeSpace?.onClose({})
+      removeEventListener('message', handlePostMessage)
     }
     dispatchEvent(flatfileEvent)
   }
@@ -140,7 +141,6 @@ const createSimpleListener = ({
         recordHook(
           slug,
           async (record: FlatfileRecord, event: FlatfileEvent | undefined) =>
-            // @ts-ignore - something weird with the `data` prop and the types upstream in the packages being declared in different places, but overall this is fine
             onRecordHook(record, event)
         )
       )
@@ -226,7 +226,7 @@ function initializeIFrameConfirmationModal(
         document.body.removeChild(item)
       }
 
-      domElement.style.display = 'none'
+      domElement.remove()
       if (onCancel) {
         onCancel()
       }
@@ -254,7 +254,7 @@ function initializeIFrameConfirmationModal(
         event.data.payload.status === 'complete' &&
         event.data.payload.operation === closeSpace?.operation
       ) {
-        domElement.style.display = 'none'
+        domElement.remove()
       }
     },
     false
@@ -283,7 +283,6 @@ function initializeIFrameConfirmationModal(
         // Show the confirm modal instead of creating a new one
         confirmModal.style.display = 'block'
       }
-      if (removeMessageListener) removeMessageListener()
     }
 
     domElement

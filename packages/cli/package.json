@@ -1,6 +1,6 @@
 {
   "name": "flatfile",
-  "version": "3.5.13",
+  "version": "3.5.14",
   "description": "",
   "main": "./dist/index.js",
   "bin": {
@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@flatfile/cross-env-config": "^0.0.5",
-    "@flatfile/listener": "^0.4.0",
+    "@flatfile/listener": "^1.0.0",
     "@rollup/plugin-commonjs": "^23.0.3",
     "@rollup/plugin-json": "^5.0.2",
     "@rollup/plugin-node-resolve": "^15.0.1",
@@ -27,7 +27,7 @@
     "@rollup/plugin-typescript": "^10.0.1",
     "@types/node-fetch": "^2.6.2",
     "@vercel/ncc": "^0.36.1",
-    "axios": "^1.2.1",
+    "axios": "^1.6.0",
     "commander": "^9.3.0",
     "dotenv": "^16.0.1",
     "figlet": "^1.5.2",
@@ -48,7 +48,7 @@
     "uuid": "^9.0.0",
     "wildcard-match": "^5.1.2",
     "zod": "^3.19.1",
-    "@flatfile/listener-driver-pubsub": "^2.0.0"
+    "@flatfile/listener-driver-pubsub": "^2.0.3"
   },
   "devDependencies": {
     "@babel/preset-env": "^7.20.2",

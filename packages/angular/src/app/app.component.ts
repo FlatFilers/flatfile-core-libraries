@@ -28,10 +28,6 @@ export class AppComponent {
     publishableKey: 'sk_1234',
     workbook,
     listener,
-    closeSpace: {
-      operation: 'submitActionFg',
-      onClose: this.closeSpace.bind(this),
-    },
     userInfo: {
       name: 'my space name',
     },

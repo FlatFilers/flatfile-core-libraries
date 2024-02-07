@@ -29,7 +29,6 @@ export const createSimpleListener = ({
         recordHook(
           slug,
           async (record: FlatfileRecord, event: FlatfileEvent | undefined) =>
-            // @ts-ignore - something weird with the `data` prop and the types upstream in the packages being declared in different places, but overall this is fine
             onRecordHook(record, event)
         )
       )

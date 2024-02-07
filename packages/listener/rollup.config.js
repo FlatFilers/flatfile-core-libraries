@@ -1,11 +1,12 @@
+import { dts } from 'rollup-plugin-dts'
 import commonjs from '@rollup/plugin-commonjs'
+import dotenv from 'dotenv'
 import json from '@rollup/plugin-json'
+import peerDepsExternal from 'rollup-plugin-peer-deps-external'
 import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
 import typescript from '@rollup/plugin-typescript'
-import { dts } from 'rollup-plugin-dts'
 
-import dotenv from 'dotenv'
 dotenv.config()
 
 const PROD = process.env.NODE_ENV === 'production'
@@ -13,10 +14,11 @@ if (!PROD) {
   console.log('Not in production mode - skipping minification')
 }
 
-const external = ['ansi-colors', 'flat', 'pako', 'wildcard-match']
-
 function commonPlugins(browser) {
   return [
+    peerDepsExternal({
+      includeDependencies: true,
+    }),
     json(),
     commonjs({ requireReturnsDefault: 'auto' }),
     resolve({ browser, preferBuiltins: !browser }),
@@ -24,7 +26,7 @@ function commonPlugins(browser) {
       tsconfig: 'tsconfig.json',
       outDir: 'dist',
       declaration: false,
-      declarationMap: false,
+      composite: false,
     }),
     PROD ? terser() : null,
   ]
@@ -50,7 +52,6 @@ export default [
       },
     ],
     plugins: commonPlugins(false),
-    external,
   },
   {
     input: 'src/index.ts',
@@ -70,7 +71,6 @@ export default [
       },
     ],
     plugins: commonPlugins(true),
-    external,
   },
   {
     input: 'src/index.ts',

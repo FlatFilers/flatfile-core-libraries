@@ -40,7 +40,7 @@ export function createIframe(
   if (displayAsModal) wrapper.classList.add('flatfile_displayAsModal')
 
   const spinner = document.createElement('div')
-  spinner.classList.add('spinner')
+  spinner.classList.add('ff_spinner')
   spinner.style.display = 'block'
   wrapper.appendChild(spinner)
   wrapper.appendChild(iframe)
@@ -211,7 +211,7 @@ export function createIframe(
   color: var(--ff-secondary-color);
 }
 
-.spinner {
+.ff_spinner {
   border: 4px solid rgba(255, 255, 255, 0.7);
   border-top: 4px solid var(--ff-primary-color);
   border-radius: 50%;

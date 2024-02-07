@@ -1,4 +1,4 @@
-import { FlatfileClient } from '@flatfile/api'
+import { Flatfile, FlatfileClient } from '@flatfile/api'
 import {
   createWorkbookFromSheet,
   getErrorMessage,
@@ -10,7 +10,10 @@ export const addSpaceInfo = async (
   spaceProps: IReactSimpleOnboarding | any,
   spaceId: string,
   api: FlatfileClient
-) => {
+): Promise<{
+  space: Flatfile.SpaceResponse
+  workbook: Flatfile.WorkbookResponse | undefined
+}> => {
   const {
     workbook,
     sheet,

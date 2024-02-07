@@ -1,5 +1,39 @@
 # @flatfile/vue
 
+## 1.0.5
+
+### Patch Changes
+
+- d3e68f1: Update types for all packages that reference the record-hook plugin
+
+## 1.0.4
+
+### Patch Changes
+
+- Updated dependencies [56388f0]
+  - @flatfile/listener@1.0.0
+  - @flatfile/embedded-utils@1.1.9
+
+## 1.0.3
+
+### Patch Changes
+
+- 4528907: Remove global style overrides from sdks
+
+## 1.0.2
+
+### Patch Changes
+
+- Updated dependencies [2ed22cb]
+  - @flatfile/embedded-utils@1.1.8
+  - @flatfile/listener@0.4.2
+
+## 1.0.1
+
+### Patch Changes
+
+- f07d0459: Update close action to be independent of user params
+
 ## 1.0.0
 
 ### Major Changes

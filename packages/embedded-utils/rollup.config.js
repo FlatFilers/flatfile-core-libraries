@@ -4,31 +4,33 @@ import typescript from '@rollup/plugin-typescript'
 import commonjs from '@rollup/plugin-commonjs'
 import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
+import peerDepsExternal from 'rollup-plugin-peer-deps-external'
+import { dts } from 'rollup-plugin-dts'
+import dotenv from 'dotenv'
 
-// Consolidated external dependencies
-const external = [
-  // TODO:  this feels like a hack, but it's a temp fix for now 
-  //        to get the SheetHandler @flatfile/api to link properly
-  // '@flatfile/api',
-  '@flatfile/listener',
-  '@flatfile/util-common',
-  'pubnub',
-]
+dotenv.config()
 
+const PROD = process.env.NODE_ENV === 'production'
+if (!PROD) {
+  console.log('Not in production mode - skipping minification')
+}
 // Function to create common plugins, with a parameter to specify browser-specific settings
 function createPlugins(isBrowser) {
   return [
+    peerDepsExternal({
+      includeDependencies: true,
+    }),
     json(),
     css(),
     typescript({
       outDir: 'dist',
       tsconfig: isBrowser ? 'tsconfig.json' : undefined,
-      declaration: isBrowser,
-      declarationDir: isBrowser ? './dist' : undefined,
+      declaration: false,
+      composite: false,
     }),
     resolve({ browser: isBrowser, preferBuiltins: !isBrowser }),
     commonjs({ requireReturnsDefault: 'auto' }),
-    terser(),
+    PROD ? terser() : null,
   ]
 }
 
@@ -50,7 +52,6 @@ const config = [
       },
     ],
     plugins: createPlugins(false),
-    external,
   },
   {
     input: 'src/index.ts',
@@ -68,7 +69,11 @@ const config = [
       },
     ],
     plugins: createPlugins(true),
-    external,
+  },
+  {
+    input: 'src/index.ts',
+    output: [{ file: 'dist/index.d.ts', format: 'es' }],
+    plugins: [dts()],
   },
 ]
 

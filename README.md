@@ -1,4 +1,4 @@
-# Platform SDK
+# Flatfile Core Libraries
 
 This monorepo is configured with the following tools:
 

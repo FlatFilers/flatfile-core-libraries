@@ -7,7 +7,7 @@ import { initializeSpace } from '../utils/initializeSpace'
 import { getSpace } from '../utils/getSpace'
 import { IReactSpaceProps } from '../types'
 
-export const useSpace = (props: IReactSpaceProps): JSX.Element => {
+export const useSpace = (props: IReactSpaceProps): JSX.Element | null => {
   const {
     error: ErrorElement,
     errorTitle,
@@ -20,10 +20,12 @@ export const useSpace = (props: IReactSpaceProps): JSX.Element => {
     accessTokenLocal: '',
     spaceUrl: '',
   })
+  const [closeInstance, setCloseInstance] = useState<boolean>(false)
 
   const { localSpaceId, spaceUrl, accessTokenLocal } = state
 
   const initSpace = async () => {
+    setCloseInstance(false)
     try {
       const { data } = props.publishableKey
         ? await initializeSpace(props)
@@ -83,6 +85,10 @@ export const useSpace = (props: IReactSpaceProps): JSX.Element => {
     return errorElement
   }
 
+  if (closeInstance) {
+    return null
+  } 
+
   if (localSpaceId && spaceUrl && accessTokenLocal) {
     return (
       <Space
@@ -90,6 +96,7 @@ export const useSpace = (props: IReactSpaceProps): JSX.Element => {
         spaceId={localSpaceId}
         spaceUrl={spaceUrl}
         accessToken={accessTokenLocal}
+        handleCloseInstance={() => setCloseInstance(true)}
         {...props}
       />
     )

@@ -21,14 +21,16 @@ const Space = ({
   spaceId,
   spaceUrl,
   accessToken,
+  handleCloseInstance,
   ...props
-}: SpaceComponent & ISpace): JSX.Element | null => {
+}: SpaceComponent & ISpace & {handleCloseInstance: () => void}): JSX.Element | null => {
   if (spaceId && spaceUrl && accessToken) {
     return (
       <SpaceContents
         spaceId={spaceId}
         spaceUrl={spaceUrl}
         accessToken={accessToken}
+        handleCloseInstance={handleCloseInstance}
         {...props}
       />
     )
@@ -37,7 +39,7 @@ const Space = ({
 }
 
 export const SpaceContents = (
-  props: ISpace & { spaceId: string; spaceUrl: string; accessToken: string }
+  props: ISpace & { spaceId: string; spaceUrl: string; accessToken: string; handleCloseInstance: () => void }
 ): JSX.Element => {
   const [showExitWarnModal, setShowExitWarnModal] = useState(false)
   const {
@@ -54,6 +56,7 @@ export const SpaceContents = (
     exitSecondaryButtonText = 'No, stay',
     apiUrl = 'https://platform.flatfile.com/api',
     displayAsModal = true,
+    handleCloseInstance
   } = props
 
   const { dispatchEvent } = useCreateListener({ listener, accessToken, apiUrl })
@@ -99,7 +102,7 @@ export const SpaceContents = (
     >
       {showExitWarnModal && (
         <ConfirmModal
-          onConfirm={() => closeSpace?.onClose({})}
+          onConfirm={() => { handleCloseInstance(); closeSpace?.onClose({})} }
           onCancel={() => setShowExitWarnModal(false)}
           exitText={exitText}
           exitTitle={exitTitle}

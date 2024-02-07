@@ -1,5 +1,5 @@
 :root {
-  --brand-font-sans-serif: 'Proxima Nova', 'Helvetica', sans-serif;
+  --ff-brand-font-sans-serif: 'Proxima Nova', 'Helvetica', sans-serif;
 
   --color-electric-800: #3b2fc9;
   --color-electric-700: #4c48ef;
@@ -13,43 +13,35 @@
   --color-pigeon-200: #e8edf4;
   --color-pigeon-100: #f6f8fc;
   --color-pigeon-primary: var(--color-pigeon-800);
-  --color-text: var(--color-pigeon-primary);
-  --text-font: var(--brand-font-sans-serif);
+  --ff-color-text: var(--color-pigeon-primary);
+  --ff-text-font: var(--ff-brand-font-sans-serif);
   --ff-primary-color: #4c48ef;
   --ff-secondary-color: #616a7d;
   --ff-text-color: #090b2b;
   --ff-dialog-border-radius: 4px;
   --ff-border-radius: 5px;
   --ff-bg-fade: rgba(0, 0, 0, 0.2);
-
-  /**
-    Typography sizing
-    */
   --size-base: 15px;
-  --size-h1: 1.618em;
-  --size-h2: 1.5em;
-  --size-h3: 1.25em;
-  --size-p: 1em;
-  --size-small: 0.875em;
-  --size-mini: 0.75em;
 }
 
 @font-face {
   font-family: 'Proxima Nova';
-  src: local("Proxima Nova"), url('../fonts/proxima-nova/Proxima-Nova_Regular.otf') format("truetype");
+  src: local('Proxima Nova'),
+    url('../fonts/proxima-nova/Proxima-Nova_Regular.otf') format('truetype');
   font-weight: 400;
   font-style: normal;
 }
 @font-face {
   font-family: 'Proxima Nova';
-  src: local("Proxima Nova"), url('../fonts/proxima-nova/Proxima-Nova_Semibold.otf') format("truetype");
+  src: local('Proxima Nova'),
+    url('../fonts/proxima-nova/Proxima-Nova_Semibold.otf') format('truetype');
   font-weight: 600;
   font-style: normal;
 }
 
-body {
-  color: var(--color-text);
-  font-family: var(--text-font);
+.flatfile_iframe-wrapper {
+  color: var(ff-color-text);
+  font-family: var(--ff-text-font);
   font-size: var(--size-base);
   line-height: 1.5;
   margin: 0;
@@ -131,7 +123,7 @@ body {
 }
 .flatfile_secondary {
   border: 1px solid var(--color-pigeon-300, #d7dee8);
-  color: var(--color-text, #404857);
+  color: var(--ff-color-text, #404857);
 
   &:hover {
     background-color: var(--color-pigeon-200, #e8edf4);
@@ -151,7 +143,7 @@ body {
   font-size: 1.225em;
   font-weight: 600;
   margin-bottom: 0.4em;
-  color: var(--color-text);
+  color: var(--ff-color-text);
 }
 .flatfile_inner-shell {
   box-sizing: border-box;
@@ -163,7 +155,7 @@ body {
   min-width: 500px;
   max-width: 500px;
 }
-.close-confirm-modal-inner {
+.flatfile_close-confirm-modal-inner {
   align-items: center;
   box-sizing: border-box;
   display: flex;
@@ -195,7 +187,7 @@ body {
   display: flex;
   margin-bottom: 0;
 }
-.spinner {
+.ff_spinner {
   border: 4px solid rgba(255, 255, 255, 0.7);
   border-top: 4px solid var(--ff-primary-color);
   border-radius: 50%;

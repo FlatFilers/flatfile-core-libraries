@@ -25,6 +25,8 @@ export const initializeFlatfile = (props: ISpace) => {
   } = props
 
   const initError = ref<Error | null>(null)
+  const closeInstance = ref<boolean>(false)
+  const loading = ref<boolean>(false)
   const state = reactive<State>({
     localSpaceId: '',
     accessTokenLocal: '',
@@ -35,7 +37,9 @@ export const initializeFlatfile = (props: ISpace) => {
   const { localSpaceId, spaceUrl, accessTokenLocal, workbook } = toRefs(state)
 
   const initSpace = async () => {
+    closeInstance.value = false;
     try {
+      loading.value = true;
       const result =
         props.publishableKey && !props?.space
           ? await initializeSpace(props as SimpleOnboarding)
@@ -68,6 +72,7 @@ export const initializeFlatfile = (props: ISpace) => {
       state.accessTokenLocal = accessToken
 
       state.workbook = workbook
+      loading.value = false;
     } catch (error) {
       initError.value = error as Error
     }
@@ -79,23 +84,38 @@ export const initializeFlatfile = (props: ISpace) => {
       : h(DefaultError, { error: errorTitle || initError.value })
 
   const loadingElement = LoadingElement || h(SpinnerC)
+  const handleCloseInstance = () => { closeInstance.value = true }
 
   return {
     OpenEmbed: initSpace,
-    Space: () =>
-      localSpaceId.value && accessTokenLocal.value && spaceUrl.value
-        ? initError.value
-          ? errorElement
-          : h(SpaceC, {
-              key: localSpaceId.value,
-              spaceId: localSpaceId.value,
-              spaceUrl: spaceUrl.value,
-              accessToken: accessTokenLocal.value,
-              workbook: workbook.value,
-              apiUrl,
-              ...props,
-            })
-        : loadingElement,
+    Space: () => {
+      if (closeInstance.value) {
+        return null;
+      }
+    
+      if (loading.value) {
+        return loadingElement;
+      }
+    
+      if (initError.value) {
+        return errorElement;
+      }
+    
+      if (localSpaceId.value && accessTokenLocal.value && spaceUrl.value) {
+        return h(SpaceC, {
+          key: localSpaceId.value,
+          spaceId: localSpaceId.value,
+          spaceUrl: spaceUrl.value,
+          accessToken: accessTokenLocal.value,
+          workbook: workbook.value,
+          handleCloseInstance,
+          apiUrl,
+          ...props,
+        });
+      }
+    
+      return null;
+    }
   }
 }
 

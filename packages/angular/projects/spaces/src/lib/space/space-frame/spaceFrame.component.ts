@@ -8,7 +8,13 @@ import createSimpleListener from "../../../utils/createSimpleListener";
 import { SpaceCloseModalPropsType } from "../space-close-modal/spaceCloseModal.component";
 import { getContainerStyles, getIframeStyles } from "./embeddedStyles";
 
-export type SpaceFramePropsType = ISpace & {spaceId: string, spaceUrl: string, localAccessToken: string }
+export type SpaceFramePropsType = ISpace & { 
+  spaceId: string; 
+  spaceUrl: string; 
+  localAccessToken: string;
+  handleCloseInstance: () => void;
+  closeInstance: boolean;
+}
 
 @Component({
   selector: 'space-frame',
@@ -85,7 +91,7 @@ export class SpaceFrame implements OnInit {
       sidebarConfig,
       userInfo,
       spaceId,
-      apiUrl = "https://platform.flatfile.com/api",
+      apiUrl = "https://platform.flatfile.com/api"
     } = this.spaceFrameProps;
     
     const accessToken = this.spaceFrameProps.localAccessToken;
@@ -110,8 +116,9 @@ export class SpaceFrame implements OnInit {
   }
 
   handleConfirm() {
-    const { closeSpace } = this.spaceFrameProps
+    const { closeSpace, handleCloseInstance } = this.spaceFrameProps
     closeSpace?.onClose({})
+    handleCloseInstance && handleCloseInstance()
   }
 
   handleCancel() {

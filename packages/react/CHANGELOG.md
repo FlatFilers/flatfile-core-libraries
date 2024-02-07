@@ -1,5 +1,44 @@
 # @flatfile/react
 
+## 7.8.1
+
+### Patch Changes
+
+- d3e68f1: Update types for all packages that reference the record-hook plugin
+
+## 7.8.0
+
+### Minor Changes
+
+- 56388f0: Update package.json to use exports nested entrypoints
+
+### Patch Changes
+
+- Updated dependencies [56388f0]
+  - @flatfile/listener@1.0.0
+  - @flatfile/embedded-utils@1.1.9
+
+## 7.7.4
+
+### Patch Changes
+
+- 4528907: Remove global style overrides from sdks
+
+## 7.7.3
+
+### Patch Changes
+
+- 2ed22cb: Fix to help separate types from conflicting peer dependencies
+- Updated dependencies [2ed22cb]
+  - @flatfile/embedded-utils@1.1.8
+  - @flatfile/listener@0.4.2
+
+## 7.7.2
+
+### Patch Changes
+
+- f07d0459: Update close action to be independent of user params
+
 ## 7.7.1
 
 ### Patch Changes

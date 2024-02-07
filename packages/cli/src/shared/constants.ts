@@ -13,51 +13,62 @@ export const deployTopics = [
   'agent:deleted',
 
   'space:created',
+  'space:updated',
   'space:deleted',
-  'space:added', // legacy
-  'space:removed', // legacy
+  'space:archived',
+  'space:expired',
+  'space:guestAdded',
+  'space:guestRemoved',
 
-  'workbook:created',
-  'workbook:deleted',
+  'document:created',
+  'document:updated',
+  'document:deleted',
+
   'workbook:added', // legacy
-  'workbook:removed', // legacy
+  'workbook:created',
+  'workbook:updated',
+  'workbook:deleted',
+  'workbook:expired',
 
+  'sheet:validated', // legacy
   'sheet:created',
   'sheet:updated',
   'sheet:deleted',
-  'sheet:validated', // legacy
 
-  'record:created',
-  'record:updated',
-  'record:deleted',
-  'records:created', // legacy
-  'records:updated', // legacy
-  'records:deleted', // legacy
+  'snapshot:created',
 
+  'records:created',
+  'records:updated',
+  'records:deleted',
+
+  'upload:completed', // legacy
   'file:created',
   'file:updated',
   'file:deleted',
-  'upload:started', // legacy
-  'upload:failed', // legacy
-  'upload:completed', // legacy
 
+  'job:started', // legacy
   'job:created',
-  'job:ready',
-  'job:scheduled',
-  'job:canceled',
+  'job:waiting', // legacy
   'job:updated',
   'job:deleted',
   'job:failed',
   'job:completed',
-  'job:started', // legacy
-  'job:waiting', // legacy
-  'action:triggered', // legacy
+  'job:ready',
+  'job:scheduled',
+  'job:outcome-acknowledged',
+  'job:parts-completed',
 
   'commit:created',
   'commit:updated',
+  'commit:completed',
   'layer:created',
 
+  'secret:created',
+  'secret:updated',
+  'secret:deleted',
+
   'client:init', // legacy
+  'action:triggered', // legacy
 ] as EventTopic[]
 
 export const AUTODETECT_FILE_PATHS = [

@@ -1,15 +1,24 @@
 {
   "name": "@flatfile/react",
-  "version": "7.7.1",
+  "version": "7.8.1",
   "description": "Flatfile React components",
+  "type": "module",
+  "exports": {
+    "types": "./dist/index.d.ts",
+    "node": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    },
+    "browser": {
+      "require": "./dist/index.browser.cjs",
+      "import": "./dist/index.browser.mjs"
+    },
+    "default": "./dist/index.mjs"
+  },
+  "source": "index.ts",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",
-  "browser": {
-    "./dist/index.cjs": "./dist/index.browser.cjs",
-    "./dist/index.mjs": "./dist/index.browser.mjs"
-  },
   "types": "./dist/index.d.ts",
-  "type": "module",
   "author": "",
   "license": "ISC",
   "files": [
@@ -41,6 +50,7 @@
     "jest-environment-jsdom": "^29.6.4",
     "jest": "^28.1.2",
     "jsdom": "^21.1.0",
+    "rollup-plugin-dts": "^6.1.0",
     "rollup-plugin-import-css": "^3.3.5",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "rollup-plugin-postcss": "^4.0.2",
@@ -48,11 +58,11 @@
     "ts-jest": "^28.0.5"
   },
   "dependencies": {
-    "@flatfile/api": "^1.6.3",
+    "@flatfile/api": "^1.6.7",
     "@flatfile/cross-env-config": "^0.0.5",
-    "@flatfile/embedded-utils": "^1.1.7",
-    "@flatfile/listener": "^0.4.0",
-    "@flatfile/plugin-record-hook": "^1.2.0",
+    "@flatfile/embedded-utils": "^1.1.9",
+    "@flatfile/listener": "^1.0.0",
+    "@flatfile/plugin-record-hook": "^1.4.0",
     "tinycolor2": "^1.6.0"
   },
   "peerDependencies": {
