@@ -28,7 +28,7 @@ export const useCreateListener = ({
           fetchApi: fetch,
         })
       )
-  }, [listener])
+  }, [listener, accessToken, apiUrl])
 
   return {
     dispatchEvent: (event: any) => {
