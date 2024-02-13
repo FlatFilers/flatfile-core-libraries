@@ -1,7 +1,4 @@
-import FlatfileListener, {
-  EventCallback,
-  FlatfileEvent,
-} from '@flatfile/listener'
+import { EventCallback, FlatfileEvent } from '@flatfile/listener'
 import { useFlatfile } from './useFlatfile'
 import { useEffect } from 'react'
 

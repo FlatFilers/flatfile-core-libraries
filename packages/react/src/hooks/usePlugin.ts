@@ -1,6 +1,6 @@
-import FlatfileListener from '@flatfile/listener'
-import { useFlatfile } from './useFlatfile'
 import { useEffect } from 'react'
+import { useFlatfile } from './useFlatfile'
+import FlatfileListener from '@flatfile/listener'
 
 export function usePlugin(
   plugin: (cb: FlatfileListener) => void,
