@@ -3,65 +3,87 @@ import React, { ReactNode, useContext, useEffect, useState } from 'react'
 import FlatfileContext from './FlatfileContext'
 import { initializeSpace } from '../utils/initializeSpace'
 import FlatfileListener, { Browser } from '@flatfile/listener'
+import { getSpace } from '../utils/getSpace'
 
 interface FlatfileProviderProps {
   children: ReactNode
-  pubKey: string
+  pubKey?: string
   environmentId: string
   apiUrl?: string
+  space?: {
+    id: string
+    accessToken: string
+  }
 }
 
 export const FlatfileProvider: React.FC<FlatfileProviderProps> = ({
   children,
   pubKey,
   environmentId,
+  space,
   apiUrl = 'https://platform.flatfile.com/api',
 }) => {
-  const [space, setSpace] = useState<any>(null)
+  const [sessionSpace, setSessionSpace] = useState<any>(null)
   const [open, setOpen] = useState<boolean>(false)
 
   useEffect(() => {
     if (!!pubKey) {
-      getSpace()
+      createSpace()
+    } else if (space?.id && space?.accessToken) {
+      reUseSpace()
     }
-  }, [pubKey])
+  }, [pubKey, space])
 
   useEffect(() => {
     console.log('useFlatfileContext useEffect', { open })
   }, [open])
 
   // TODO: need to account for re-using a space too
-  const getSpace = async () => {
-    const space = await initializeSpace({
-      publishableKey: pubKey,
-      environmentId: environmentId,
-      apiUrl,
-    })
-    ;(window as any).CROSSENV_FLATFILE_API_KEY = space?.data.accessToken
-    setSpace(space)
+  const createSpace = async () => {
+    if (pubKey) {
+      const createdSpace = await initializeSpace({
+        publishableKey: pubKey,
+        environmentId: environmentId,
+        apiUrl,
+      })
+      ;(window as any).CROSSENV_FLATFILE_API_KEY =
+        createdSpace?.data.accessToken
+      setSessionSpace(createdSpace)
+    }
+  }
+
+  const reUseSpace = async () => {
+    if (space) {
+      const reUsedSpace = await getSpace({
+        space,
+        environmentId: environmentId,
+        apiUrl,
+      })
+      setSessionSpace(reUsedSpace)
+    }
   }
 
   const [listener, setListener] = useState(new FlatfileListener())
 
   // TODO: is this useful?
   // Function to update the listener with new event handling logic
-  const updateListener = (updateFn: (cb: FlatfileListener) => void) => {
-    setListener((currentListener) => {
-      const clonedListener = currentListener.fork() // Fork the current listener
+  // const updateListener = (updateFn: (cb: FlatfileListener) => void) => {
+  //   setListener((currentListener) => {
+  //     const clonedListener = currentListener.fork() // Fork the current listener
 
-      clonedListener.mount(
-        new Browser({
-          apiUrl,
-          accessToken: space?.data.accessToken,
-          fetchApi: fetch,
-        })
-      )
+  //     clonedListener.mount(
+  //       new Browser({
+  //         apiUrl,
+  //         accessToken: space?.data.accessToken,
+  //         fetchApi: fetch,
+  //       })
+  //     )
 
-      clonedListener.use(updateFn) // Apply the updates
-      // updateFn(clonedListener) // Apply the updates
-      return clonedListener // Replace the current listener with the updated one
-    })
-  }
+  //     clonedListener.use(updateFn) // Apply the updates
+  //     // updateFn(clonedListener) // Apply the updates
+  //     return clonedListener // Replace the current listener with the updated one
+  //   })
+  // }
 
   const handlePostMessage = (event: any) => {
     const { flatfileEvent } = event.data
@@ -79,28 +101,29 @@ export const FlatfileProvider: React.FC<FlatfileProviderProps> = ({
 
   useEffect(() => {
     console.log('FlatfileProvider useEffect', { space })
-    if (listener && space?.data.accessToken) {
-      console.log({ apiUrl, accessToken: space?.data.accessToken })
+    if (listener && sessionSpace?.data.accessToken) {
+      console.log({ apiUrl, accessToken: sessionSpace?.data.accessToken })
       listener.mount(
         new Browser({
           apiUrl,
-          accessToken: space?.data.accessToken,
+          accessToken: sessionSpace?.data.accessToken,
           fetchApi: fetch,
         })
       )
     }
-  }, [space?.data])
+  }, [sessionSpace?.data])
 
   return (
     <FlatfileContext.Provider
       value={{
-        pubKey,
+        ...(pubKey ? { pubKey } : {}),
+        ...(space ? { space } : {}),
         environmentId,
         open,
         setOpen,
-        space,
-        setSpace,
-        updateListener,
+        sessionSpace,
+        setSessionSpace,
+        setListener,
         listener,
       }}
     >
@@ -109,32 +132,32 @@ export const FlatfileProvider: React.FC<FlatfileProviderProps> = ({
   )
 }
 
-export const useFlatfileContext = () => {
-  const [space, setSpace] = useState<any>(null)
-  const [open, setOpen] = useState<boolean>(false)
+// export const useFlatfileContext = () => {
+//   const [space, setSpace] = useState<any>(null)
+//   const [open, setOpen] = useState<boolean>(false)
 
-  const { pubKey, environmentId } = useContext(FlatfileContext)
+//   const { pubKey, environmentId } = useContext(FlatfileContext)
 
-  useEffect(() => {
-    if (!!pubKey) {
-      getSpace()
-    }
-  }, [pubKey])
+//   useEffect(() => {
+//     if (!!pubKey) {
+//       getSpace()
+//     }
+//   }, [pubKey])
 
-  // useEffect(() => {
-  //   console.log('useFlatfileContext useEffect', { open })
-  // }, [open])
+//   // useEffect(() => {
+//   //   console.log('useFlatfileContext useEffect', { open })
+//   // }, [open])
 
-  const getSpace = async () => {
-    const space = await initializeSpace({
-      publishableKey: pubKey,
-      environmentId: environmentId,
-    })
-    // TODO: setting for use with the @flatfile/api package
-    ;(window as any).CROSSENV_FLATFILE_API_KEY = space?.data.accessToken
-    setSpace(space)
-    // setSpace(space)
-  }
+//   const getSpace = async () => {
+//     const space = await initializeSpace({
+//       publishableKey: pubKey,
+//       environmentId: environmentId,
+//     })
+//     // TODO: setting for use with the @flatfile/api package
+//     ;(window as any).CROSSENV_FLATFILE_API_KEY = space?.data.accessToken
+//     setSpace(space)
+//     // setSpace(space)
+//   }
 
-  return { space, open, setOpen, setSpace }
-}
+//   return { space, open, setOpen, setSpace }
+// }

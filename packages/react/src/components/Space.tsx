@@ -14,7 +14,6 @@ import ConfirmModal from './ConfirmCloseModal'
 import { getContainerStyles, getIframeStyles } from './embeddedStyles'
 import './style.scss'
 import FlatfileContext from './FlatfileContext'
-import { useFlatfileContext } from './FlatfileProvider'
 import { TRecordDataWithLinks, TPrimitive } from '@flatfile/hooks'
 import FlatfileListener, { FlatfileEvent } from '@flatfile/listener'
 import { FlatfileRecord, recordHook } from '@flatfile/plugin-record-hook'
@@ -211,12 +210,11 @@ export const Workbook = ({
     event?: FlatfileEvent
   ) => FlatfileRecord
 }) => {
-  const { pubKey } = useContext(FlatfileContext)
-  const { space, open } = useFlatfileContext()
+  const { pubKey, open, sessionSpace } = useContext(FlatfileContext)
 
   useEffect(() => {
-    console.log('Workbook useEffect', { space, open })
-  }, [space, open])
+    console.log('Workbook useEffect', { sessionSpace, open })
+  }, [sessionSpace, open])
   // console.log({ sheets })
   let listener
   if (onSubmit || onRecordHook) {
@@ -275,8 +273,8 @@ export const Workbook = ({
     })
   }
 
-  if (space) {
-    const { id: spaceId, guestLink: spaceUrl } = space.data
+  if (sessionSpace) {
+    const { id: spaceId, guestLink: spaceUrl } = sessionSpace.data
     return (
       <SpaceContents
         spaceId={spaceId}
@@ -285,7 +283,7 @@ export const Workbook = ({
         publishableKey={pubKey}
         onSubmit={onSubmit}
         listener={listener}
-        {...space.data}
+        {...sessionSpace.data}
       />
     )
   }
@@ -294,10 +292,10 @@ export const Workbook = ({
 }
 
 export const SimpleWorkbook = ({ sheets }: { sheets: any[] }) => {
-  const { pubKey, space, setOpen } = useContext(FlatfileContext)
+  const { pubKey, sessionSpace, setOpen } = useContext(FlatfileContext)
 
-  if (space) {
-    const { id: spaceId, guestLink: spaceUrl } = space.data
+  if (sessionSpace) {
+    const { id: spaceId, guestLink: spaceUrl } = sessionSpace.data
     return (
       <SpaceContents
         spaceId={spaceId}
@@ -306,7 +304,7 @@ export const SimpleWorkbook = ({ sheets }: { sheets: any[] }) => {
         publishableKey={pubKey}
         simple={true}
         handleCloseInstance={() => setOpen(false)}
-        {...space.data}
+        {...sessionSpace.data}
       />
     )
   }

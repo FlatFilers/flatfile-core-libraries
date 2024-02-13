@@ -34,10 +34,6 @@ export const useCreateListener = ({
       )
   }, [listener, accessToken, apiUrl])
 
-  const useEvent = (event: any) => {
-    console.log({ event })
-  }
-
   return {
     dispatchEvent: (event: any) => {
       if (!event || !accessToken) return
