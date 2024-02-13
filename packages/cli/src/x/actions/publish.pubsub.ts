@@ -3,10 +3,10 @@ import fs from 'fs'
 import path from 'path'
 import { info } from '../../legacy/ui/info'
 import { config } from '../../config'
-import { EventTopic } from '@flatfile/api'
+import { Flatfile } from '@flatfile/api'
 import { authAction } from './auth.action'
 import ora from 'ora'
-
+import { deployTopics } from '../../shared/constants'
 import { rollup } from 'rollup'
 import typescript from '@rollup/plugin-typescript'
 import commonjs from '@rollup/plugin-commonjs'
@@ -128,9 +128,7 @@ export async function publishPubSub(
     }).start()
     let environment
     try {
-      environment = await apiClient.getEnvironmentById({
-        environmentId: env,
-      })
+      environment = await apiClient.environments.get(env)
 
       envSpinner.succeed(
         `Found Environment: ${chalk.dim(environment?.data?.id)}`
@@ -156,37 +154,10 @@ export async function publishPubSub(
       text: `Create Agent`,
     }).start()
     try {
-      const topics = [
-        EventTopic.Actiontriggered,
-        EventTopic.Clientinit,
-        EventTopic.Filedeleted,
-        EventTopic.Jobcompleted,
-        EventTopic.Jobdeleted,
-        EventTopic.Jobfailed,
-        EventTopic.Jobstarted,
-        EventTopic.Jobupdated,
-        EventTopic.Jobwaiting,
-        EventTopic.Recordscreated,
-        EventTopic.Recordsdeleted,
-        EventTopic.Recordsupdated,
-        EventTopic.Sheetvalidated,
-        EventTopic.Spaceadded,
-        EventTopic.Spaceremoved,
-        EventTopic.Uploadcompleted,
-        EventTopic.Uploadfailed,
-        EventTopic.Uploadstarted,
-        EventTopic.Useradded,
-        EventTopic.Useroffline,
-        EventTopic.Useronline,
-        EventTopic.Userremoved,
-        EventTopic.Workbookadded,
-        EventTopic.Workbookremoved,
-      ]
-
-      const agent = await apiClient.createAgent({
+      const agent = await apiClient.agents.create({
         environmentId: env ?? '',
-        agentConfig: {
-          topics,
+        body: {
+          topics: deployTopics,
           compiler: 'js',
           source,
         },

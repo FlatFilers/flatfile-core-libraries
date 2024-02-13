@@ -3,7 +3,6 @@ import fs from 'fs'
 import path from 'path'
 import { info } from '../../legacy/ui/info'
 import { config } from '../../config'
-import { Blueprint, EventTopic } from '@flatfile/api'
 import { authAction } from './auth.action'
 import ora from 'ora'
 
@@ -15,6 +14,7 @@ import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
 import { Agent } from '@flatfile/configure'
 import injectProcessEnv from 'rollup-plugin-inject-process-env'
+import { deployTopics } from '../../shared/constants'
 export async function publishAction(
   file: string,
   options: Partial<{
@@ -130,9 +130,7 @@ export async function publishAction(
     }).start()
     let environment
     try {
-      environment = await apiClient.getEnvironmentById({
-        environmentId: env,
-      })
+      environment = await apiClient.environments.get(env)
 
       envSpinner.succeed(
         `Found Environment: ${chalk.dim(environment?.data?.id)}`
@@ -196,20 +194,16 @@ export async function publishAction(
                   }
                   return model.toBlueprint(wbSlug, modelSlug)
                 }),
-              } as Blueprint
+              }
             }
           ),
         }
-        const spaceConfigRes = await apiClient.addSpaceConfig({
-          spacePatternConfig,
-        })
+        const spaceRes = await apiClient.spaces.create(spacePatternConfig)
         spaceConfigSpinner.succeed(
-          `Space Config Created ${chalk.dim(spaceConfigRes?.data?.id)}`
+          `Space Created ${chalk.dim(spaceRes?.data?.id)}`
         )
         if (actionsSummary) {
-          const actionsSummarTitle = chalk.green(
-            '  This Space Config has actions 🎉:'
-          )
+          const actionsSummarTitle = chalk.green('  This Space has actions 🎉:')
           console.log(actionsSummarTitle, actionsSummary)
         }
       } catch (e) {
@@ -223,35 +217,10 @@ export async function publishAction(
       text: `Create Agent`,
     }).start()
     try {
-      const agent = await apiClient.createAgent({
+      const agent = await apiClient.agents.create({
         environmentId: env ?? '',
-        agentConfig: {
-          topics: [
-            EventTopic.Actiontriggered,
-            EventTopic.Clientinit,
-            EventTopic.Filedeleted,
-            EventTopic.Jobcompleted,
-            EventTopic.Jobdeleted,
-            EventTopic.Jobfailed,
-            EventTopic.Jobstarted,
-            EventTopic.Jobupdated,
-            EventTopic.Jobwaiting,
-            EventTopic.Recordscreated,
-            EventTopic.Recordsdeleted,
-            EventTopic.Recordsupdated,
-            EventTopic.Sheetvalidated,
-            EventTopic.Spaceadded,
-            EventTopic.Spaceremoved,
-            EventTopic.Uploadcompleted,
-            EventTopic.Uploadfailed,
-            EventTopic.Uploadstarted,
-            EventTopic.Useradded,
-            EventTopic.Useroffline,
-            EventTopic.Useronline,
-            EventTopic.Userremoved,
-            EventTopic.Workbookadded,
-            EventTopic.Workbookremoved,
-          ],
+        body: {
+          topics: deployTopics,
           compiler: 'js',
           source,
         },

@@ -1,6 +1,5 @@
-import { Configuration, DefaultApi } from '@flatfile/api'
+import { FlatfileClient } from '@flatfile/api'
 import { program } from 'commander'
-import fetch from 'node-fetch'
 import ora from 'ora'
 import prompt from 'prompts'
 import { config } from '../config'
@@ -68,20 +67,17 @@ export async function getAuth(options: any): Promise<{
             message: 'Password',
           },
         ])
-        const api = new DefaultApi(
-          new Configuration({
-            fetchApi: fetch,
-            basePath: `${apiUrl ?? docUrls.api}/v1`,
-          })
-        )
+        const api = new FlatfileClient({
+          environment: `${apiUrl ?? docUrls.api}/v1`,
+        })
         try {
-          const res = await api.createAccessToken({
-            createAccessTokenRequest: {
-              email: auth.email,
-              password: auth.password,
-            },
+          const res = await api.auth.createAccessToken({
+            type: 'userCredentials',
+            email: auth.email,
+            password: auth.password,
           })
-          apiKey = res.data?.accessToken
+
+          apiKey = res?.accessToken
         } catch (e) {
           return program.error(messages.invalidCredentials)
         }
@@ -104,7 +100,7 @@ async function getEnvironment(options: any, apiUrl: string, apiKey: string) {
   let environments
   try {
     const apiClient = apiKeyClient({ apiUrl, apiKey: apiKey! })
-    environments = await apiClient.getEnvironments({ pageSize: 100 })
+    environments = await apiClient.environments.list({ pageSize: 100 })
   } catch (e: any) {
     envSpinner.stop()
     if (!e.response) {

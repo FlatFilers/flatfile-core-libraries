@@ -1,4 +1,4 @@
-import { EventTopic } from '@flatfile/api'
+import { Flatfile } from '@flatfile/api'
 import path from 'path'
 
 export const brandHex = '#4C48EF'
@@ -69,7 +69,7 @@ export const deployTopics = [
 
   'client:init', // legacy
   'action:triggered', // legacy
-] as EventTopic[]
+] as Flatfile.EventTopic[]
 
 export const AUTODETECT_FILE_PATHS = [
   path.join(process.cwd(), 'index.js'),

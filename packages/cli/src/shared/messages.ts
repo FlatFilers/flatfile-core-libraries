@@ -8,9 +8,7 @@ export enum docUrls {
   environments = 'https://flatfile.com/docs/developer-tools/environment',
 }
 
-export function localizedMessages(
-  local: string | undefined = config().local
-): object {
+export function localizedMessages(local: string | undefined = config().local) {
   return localized[local as keyof typeof localized]
 }
 

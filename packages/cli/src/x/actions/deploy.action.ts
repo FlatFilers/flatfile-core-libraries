@@ -111,9 +111,9 @@ export async function deployAction(
         return program.error(messages.error(err))
       }
 
-      const agent = await apiClient.createAgent({
+      const agent = await apiClient.agents.create({
         environmentId: environment?.id!,
-        agentConfig: {
+        body: {
           topics: deployTopics,
           compiler: 'js',
           source: code,

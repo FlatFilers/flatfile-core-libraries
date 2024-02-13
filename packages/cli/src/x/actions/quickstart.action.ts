@@ -1,13 +1,14 @@
 import chalk from 'chalk'
 import path from 'path'
 import fs from 'fs'
-import { EventTopic } from '@flatfile/api'
+import { Flatfile } from '@flatfile/api'
 import boxen from 'boxen'
 import ora from 'ora'
 import uuid from 'uuid'
 
 import { config } from '../../config'
 import { authAction } from './auth.action'
+import UploadFile from '../../../../v2-shims/src/legacy/upload.file'
 
 export async function quickstartAction(
   options: Partial<{
@@ -57,26 +58,12 @@ export async function quickstartAction(
       text: `Create Environment`,
     }).start()
 
-    const newEnvironmentCreated = await apiClient.createEnvironment({
-      environmentConfig: {
-        name: 'Quickstart',
-        isProd: false,
-      },
+    const newEnvironmentCreated = await apiClient.environments.create({
+      name: 'Quickstart',
+      isProd: false,
     })
     const environmentId = newEnvironmentCreated?.data?.id ?? ''
     envSpinner.succeed(`Environment created:  ${chalk.dim(environmentId)}`)
-
-    // Create a Space Config
-    // TODO: Check if space config exists
-    const spaceConfig = await apiClient.addSpaceConfig({
-      spacePatternConfig: {
-        name: 'Space configuration test',
-        // TODO: Add do something better here to ensure unique space slug
-        slug: `sc-test-${uuid}`,
-        blueprints: [],
-      },
-    })
-    const spaceConfigId = spaceConfig?.data?.id || ''
 
     // Create a Space
     const spaceSpinner = ora({
@@ -84,12 +71,9 @@ export async function quickstartAction(
     }).start()
     let space
     try {
-      space = await apiClient.addSpace({
-        spaceConfig: {
-          name: `Platform SDK Space`,
-          spaceConfigId,
-          environmentId,
-        },
+      space = await apiClient.spaces.create({
+        name: `Platform SDK Space`,
+        environmentId,
       })
       if (!space?.data) {
         spaceSpinner.fail(`Failed to create space`)
@@ -108,107 +92,105 @@ export async function quickstartAction(
       text: `Create Workbook`,
     }).start()
 
-    const workbook = await apiClient.addWorkbook({
-      workbookConfig: {
-        name: `Platform SDK Workbook`,
-        spaceId,
-        environmentId,
-        sheets: [
-          {
-            fields: [
-              {
-                key: 'first_name',
-                type: 'string',
-                label: 'First Name',
-                description: 'The first name',
-                constraints: [
-                  {
-                    type: 'required',
-                  },
-                ],
-              },
-              {
-                key: 'last_name',
-                type: 'string',
-                label: 'Last Name',
-                description: 'The last name',
-              },
-              {
-                key: 'email',
-                type: 'string',
-                label: 'Email',
-                description: "The person's email",
-                constraints: [
-                  {
-                    type: 'unique',
-                  },
-                ],
-              },
-              {
-                key: 'phone',
-                type: 'string',
-                label: 'Phone Number',
-                description: "The person's phone number",
-              },
-              {
-                key: 'date of birth',
-                type: 'date',
-                label: 'Date of Birth',
-                description: "The person's birth date",
-              },
-              {
-                key: 'country',
-                type: 'string',
-                label: 'Country',
-                description: 'The formatted country code',
-              },
-              {
-                key: 'postalCode',
-                type: 'string',
-                label: 'Postal Code',
-                description: 'Zip or Postal Code',
-              },
-              {
-                key: 'subscriber',
-                type: 'boolean',
-                label: 'Subscriber?',
-                description: 'Whether the person is already a subscriber',
-              },
-              {
-                key: 'type',
-                type: 'enum',
-                label: 'Deal Status',
-                description: 'The deal status',
-                config: {
-                  options: [
-                    {
-                      value: 'new',
-                      label: 'New',
-                    },
-                    {
-                      value: 'interested',
-                      label: 'Interested',
-                    },
-                    {
-                      value: 'meeting',
-                      label: 'Meeting',
-                    },
-                    {
-                      value: 'opportunity',
-                      label: 'Opportunity',
-                    },
-                    {
-                      value: 'unqualified',
-                      label: 'Not a fit',
-                    },
-                  ],
+    const workbook = await apiClient.workbooks.create({
+      name: `Platform SDK Workbook`,
+      spaceId,
+      environmentId,
+      sheets: [
+        {
+          fields: [
+            {
+              key: 'first_name',
+              type: 'string',
+              label: 'First Name',
+              description: 'The first name',
+              constraints: [
+                {
+                  type: 'required',
                 },
+              ],
+            },
+            {
+              key: 'last_name',
+              type: 'string',
+              label: 'Last Name',
+              description: 'The last name',
+            },
+            {
+              key: 'email',
+              type: 'string',
+              label: 'Email',
+              description: "The person's email",
+              constraints: [
+                {
+                  type: 'unique',
+                },
+              ],
+            },
+            {
+              key: 'phone',
+              type: 'string',
+              label: 'Phone Number',
+              description: "The person's phone number",
+            },
+            {
+              key: 'date of birth',
+              type: 'date',
+              label: 'Date of Birth',
+              description: "The person's birth date",
+            },
+            {
+              key: 'country',
+              type: 'string',
+              label: 'Country',
+              description: 'The formatted country code',
+            },
+            {
+              key: 'postalCode',
+              type: 'string',
+              label: 'Postal Code',
+              description: 'Zip or Postal Code',
+            },
+            {
+              key: 'subscriber',
+              type: 'boolean',
+              label: 'Subscriber?',
+              description: 'Whether the person is already a subscriber',
+            },
+            {
+              key: 'type',
+              type: 'enum',
+              label: 'Deal Status',
+              description: 'The deal status',
+              config: {
+                options: [
+                  {
+                    value: 'new',
+                    label: 'New',
+                  },
+                  {
+                    value: 'interested',
+                    label: 'Interested',
+                  },
+                  {
+                    value: 'meeting',
+                    label: 'Meeting',
+                  },
+                  {
+                    value: 'opportunity',
+                    label: 'Opportunity',
+                  },
+                  {
+                    value: 'unqualified',
+                    label: 'Not a fit',
+                  },
+                ],
               },
-            ],
-            name: 'Contacts',
-          },
-        ],
-      },
+            },
+          ],
+          name: 'Contacts',
+        },
+      ],
     })
 
     const primaryWorkbookId = workbook?.data?.id || ''
@@ -217,13 +199,9 @@ export async function quickstartAction(
     )
 
     // Update the space with the primary workbook ID
-    await apiClient.updateSpaceById({
-      spaceId,
-      spaceConfig: {
-        spaceConfigId,
-        environmentId,
-        primaryWorkbookId,
-      },
+    await apiClient.spaces.update(spaceId, {
+      environmentId,
+      primaryWorkbookId,
     })
 
     spaceSpinner.succeed(`Space created:  ${chalk.dim(spaceId)}`)
@@ -244,13 +222,13 @@ export async function quickstartAction(
     const buffer = fs.readFileSync(buildFile)
     const source = buffer.toString()
     try {
-      const agent = await apiClient.createAgent({
+      const agent = await apiClient.agents.create({
         environmentId,
-        agentConfig: {
+        body: {
           topics: [
-            EventTopic.Recordscreated,
-            EventTopic.Recordsupdated,
-            EventTopic.Uploadcompleted,
+            Flatfile.EventTopic.RecordsCreated,
+            Flatfile.EventTopic.RecordsUpdated,
+            Flatfile.EventTopic.FileCreated,
           ],
           compiler: 'js',
           source,

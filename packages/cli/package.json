@@ -52,7 +52,7 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.20.2",
-    "@flatfile/api": "^0.0.21",
+    "@flatfile/api": "^1.7.1",
     "@rollup/plugin-babel": "^6.0.3",
     "@types/inquirer": "^9.0.2",
     "@types/prompts": "^2.4.4",

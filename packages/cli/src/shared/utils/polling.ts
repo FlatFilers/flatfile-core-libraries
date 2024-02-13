@@ -1,6 +1,6 @@
 import c from 'ansi-colors'
 import { EventDriver } from '@flatfile/listener'
-import { Configuration, DefaultApi } from '@flatfile/api'
+import { FlatfileClient } from '@flatfile/api'
 import fetch from 'node-fetch'
 
 const prepTargetForEvent = (event: any) => {
@@ -60,16 +60,14 @@ export class PollingEventDriver extends EventDriver {
     }
 
     try {
-      const authClient = new DefaultApi(
-        new Configuration({
-          accessToken: this.accessToken,
-          fetchApi: fetch,
-          basePath: this.apiUrl + '/v1',
-        })
-      )
+      const authClient = new FlatfileClient({
+        token: this.accessToken,
+        environment: this.apiUrl + '/v1',
+      })
+
       setInterval(() => {
-        authClient
-          .getEvents({
+        authClient.events
+          .list({
             since: lastTimestamp,
             includeAcknowledged: true,
             environmentId: this.environmentId,
