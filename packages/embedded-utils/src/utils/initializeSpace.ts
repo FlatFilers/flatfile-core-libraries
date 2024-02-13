@@ -1,15 +1,13 @@
-import authenticate from './authenticate'
-import {
-  getErrorMessage,
-  SimpleOnboarding,
-  createWorkbookFromSheet,
-} from '@flatfile/embedded-utils'
+import { SimpleOnboarding } from '../types'
 import { Flatfile } from '@flatfile/api'
+import { authenticate } from './authenticate'
+import { createWorkbookFromSheet } from './createWorkbookFromSheet'
+import { getErrorMessage } from './getErrorMessage'
 
 export const initializeSpace = async (
   flatfileOptions: SimpleOnboarding
 ): Promise<{
-  space: any
+  space: Flatfile.SpaceResponse
   workbook?: Pick<Flatfile.CreateWorkbookConfig, 'name' | 'sheets' | 'actions'>
 }> => {
   let space

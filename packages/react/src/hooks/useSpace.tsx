@@ -2,9 +2,7 @@ import React, { JSX, useEffect, useState } from 'react'
 import DefaultError from '../components/Error'
 import Space from '../components/Space'
 import Spinner from '../components/Spinner'
-import { State } from '@flatfile/embedded-utils'
-import { initializeSpace } from '../utils/initializeSpace'
-import { getSpace } from '../utils/getSpace'
+import { ReusedSpaceWithAccessToken, SimpleOnboarding, State, getSpace, initializeSpace } from '@flatfile/embedded-utils'
 import { IReactSpaceProps } from '../types'
 
 export const useSpace = (props: IReactSpaceProps): JSX.Element | null => {
@@ -27,9 +25,13 @@ export const useSpace = (props: IReactSpaceProps): JSX.Element | null => {
   const initSpace = async () => {
     setCloseInstance(false)
     try {
-      const { data } = props.publishableKey
-        ? await initializeSpace(props)
-        : await getSpace(props)
+      const existingSpace = props.space && props.space.id
+      const result =
+        props.publishableKey && !existingSpace
+          ? await initializeSpace(props as SimpleOnboarding)
+          : await getSpace(props as ReusedSpaceWithAccessToken)
+
+      const data = result?.space?.data
 
       if (!data) {
         throw new Error('Failed to initialize space')

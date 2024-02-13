@@ -1,8 +1,8 @@
 import { FlatfileClient } from '@flatfile/api'
 import { CreateWorkbookConfig, Workbook } from '@flatfile/api/api'
 import { Space } from '@flatfile/api/api/resources/spaces'
-import { mockDocument, mockWorkbook } from '../../test/mocks'
-import { addSpaceInfo } from '../addSpaceInfo'
+import { mockDocument, mockWorkbook } from './mocks'
+import { addSpaceInfo } from '../utils/addSpaceInfo'
 
 describe('addSpaceInfo', () => {
   beforeEach(() => {
@@ -67,8 +67,11 @@ describe('addSpaceInfo', () => {
     await addSpaceInfo(mockSpaceProps, mockSpaceId, mockApi)
 
     expect(mockApi.workbooks.create).toHaveBeenCalledWith({
-      ...mockWorkbook,
-      spaceId: mockSpaceId,
+      "actions": [],
+      "environmentId": "test-environment-id",
+      "name": "Test Workbook",
+      "sheets": [],
+      "spaceId": mockSpaceId,
     })
 
     expect(mockApi.spaces.update).toHaveBeenCalledWith(mockSpaceId, {

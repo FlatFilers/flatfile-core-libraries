@@ -3,8 +3,8 @@ import {
   SimpleOnboarding,
   getErrorMessage,
   createWorkbookFromSheet,
+  authenticate
 } from '@flatfile/embedded-utils'
-import authenticate from './authenticate'
 
 const useInitializeSpace = (flatfileOptions: SimpleOnboarding) => {
   const space = ref()

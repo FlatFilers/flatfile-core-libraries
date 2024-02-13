@@ -32,7 +32,9 @@
 <script>
 import { ref, onMounted } from 'vue'
 import useInitializeSpace from '../utils/useInitializeSpace'
-import getSpace from '../utils/getSpace'
+import {
+  getSpace
+} from '@flatfile/embedded-utils'
 import SpaceC from './SpaceC.vue'
 import SpinnerC from './Spinner.vue'
 import DefaultError from './DefaultError.vue'

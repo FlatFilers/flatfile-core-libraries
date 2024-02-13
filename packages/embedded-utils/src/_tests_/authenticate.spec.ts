@@ -1,5 +1,5 @@
 import { FlatfileClient } from '@flatfile/api'
-import { authenticate } from '../authenticate'
+import { authenticate } from '../utils/authenticate'
 
 describe('authenticate', () => {
   beforeEach(() => {

@@ -1,10 +1,8 @@
-import React, { JSX, useEffect, useState } from 'react'
+import React, { JSX, useState } from 'react'
 import DefaultError from '../components/Error'
 import Space from '../components/Space'
 import Spinner from '../components/Spinner'
-import { State } from '@flatfile/embedded-utils'
-import { initializeSpace } from '../utils/initializeSpace'
-import { getSpace } from '../utils/getSpace'
+import { ReusedSpaceWithAccessToken, State, getSpace, initializeSpace } from '@flatfile/embedded-utils'
 import { IReactSpaceProps } from '../types'
 
 type IUseSpace = { OpenEmbed: () => Promise<void>; Space: () => JSX.Element }
@@ -26,9 +24,11 @@ export const initializeFlatfile = (props: IReactSpaceProps): IUseSpace => {
     setCloseInstance(false)
     try {
       setLoading(true)
-      const { data } = props.publishableKey
+      const result = props.publishableKey
         ? await initializeSpace(props)
-        : await getSpace(props)
+        : await getSpace(props as ReusedSpaceWithAccessToken)
+
+      const data = result?.space?.data
 
       if (!data) {
         throw new Error('Failed to initialize space')
@@ -44,18 +44,14 @@ export const initializeFlatfile = (props: IReactSpaceProps): IUseSpace => {
         throw new Error('Missing guest link from space response')
       }
 
-      setState((prevState) => ({
-        ...prevState,
-        localSpaceId: spaceId,
-        spaceUrl: guestLink,
-      }))
-
       if (!accessToken) {
         throw new Error('Missing access token from space response')
       }
 
       setState((prevState) => ({
         ...prevState,
+        localSpaceId: spaceId,
+        spaceUrl: guestLink,
         accessTokenLocal: accessToken,
       }))
       setLoading(false)

@@ -1,8 +1,7 @@
 import { FlatfileClient } from '@flatfile/api'
-import { Space } from '@flatfile/api/api/resources/spaces'
 import { ISpace } from '@flatfile/embedded-utils'
-import { initializeSpace } from '../initializeSpace'
-import { mockDocument, mockSpace } from '../../test/mocks'
+import { initializeSpace } from '../utils/initializeSpace'
+import { mockDocument, mockSpace } from './mocks'
 
 var authenticateMock: jest.Mock = jest.fn()
 var addSpaceInfoMock: jest.Mock = jest.fn()

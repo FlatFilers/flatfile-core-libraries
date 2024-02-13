@@ -1,18 +1,16 @@
-import {
-  ReusedSpaceWithAccessToken,
-  getErrorMessage,
-} from '@flatfile/embedded-utils'
-import authenticate from './authenticate'
 import { Flatfile } from '@flatfile/api'
+import { ReusedSpaceWithAccessToken } from '../types'
+import { authenticate } from './authenticate'
+import { getErrorMessage } from './getErrorMessage'
 
 type IWorkbook = Pick<
   Flatfile.CreateWorkbookConfig,
   'name' | 'sheets' | 'actions'
 >
-const getSpace = async (
+export const getSpace = async (
   spaceProps: ReusedSpaceWithAccessToken
 ): Promise<{
-  space: any
+  space: Flatfile.SpaceResponse
   workbook?: IWorkbook
 }> => {
   const {

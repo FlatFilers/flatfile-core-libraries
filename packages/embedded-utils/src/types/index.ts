@@ -14,6 +14,7 @@ import { IThemeConfig } from './IThemeConfig'
 import { InitializePubnub } from './InitializePubnub'
 import { SpaceComponent } from './SpaceComponent'
 import { IThemeGenerator } from './ThemeGenerator'
+import { IReactSpaceProps } from './IReactSpaceProps'
 
 export type {
   ISidebarConfig,
@@ -29,6 +30,7 @@ export type {
   SimpleOnboarding,
   SpaceComponent,
   State,
+  IReactSpaceProps
 }
 
 export { DefaultSubmitSettings }
