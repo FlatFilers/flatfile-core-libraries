@@ -1,6 +1,6 @@
 import { useEffect } from 'react'
 import { useFlatfile } from './useFlatfile'
-import FlatfileListener, { Browser } from '@flatfile/listener'
+import FlatfileListener from '@flatfile/listener'
 
 export function useListener(
   cb: (cb: FlatfileListener) => void,

@@ -1,9 +1,9 @@
-import { useContext, useEffect, useState } from 'react'
+import { useContext } from 'react'
 import FlatfileContext from '../components/FlatfileContext'
 
 export const useFlatfile = () => {
   const context = useContext(FlatfileContext)
-  const { space, open, setOpen, setSpace, updateListener, listener } = context
+  const { open, setOpen, setListener, listener } = context
 
   if (!context) {
     throw new Error('useFlatfile must be used within a FlatfileProvider')
@@ -17,5 +17,5 @@ export const useFlatfile = () => {
     setOpen(false)
   }
 
-  return { openPortal, closePortal, open, updateListener, listener }
+  return { openPortal, closePortal, open, setListener, listener }
 }

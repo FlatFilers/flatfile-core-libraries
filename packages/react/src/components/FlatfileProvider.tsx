@@ -1,4 +1,4 @@
-import React, { ReactNode, useContext, useEffect, useState } from 'react'
+import React, { ReactNode, useEffect, useState } from 'react'
 
 import FlatfileContext from './FlatfileContext'
 import { initializeSpace } from '../utils/initializeSpace'
@@ -131,33 +131,3 @@ export const FlatfileProvider: React.FC<FlatfileProviderProps> = ({
     </FlatfileContext.Provider>
   )
 }
-
-// export const useFlatfileContext = () => {
-//   const [space, setSpace] = useState<any>(null)
-//   const [open, setOpen] = useState<boolean>(false)
-
-//   const { pubKey, environmentId } = useContext(FlatfileContext)
-
-//   useEffect(() => {
-//     if (!!pubKey) {
-//       getSpace()
-//     }
-//   }, [pubKey])
-
-//   // useEffect(() => {
-//   //   console.log('useFlatfileContext useEffect', { open })
-//   // }, [open])
-
-//   const getSpace = async () => {
-//     const space = await initializeSpace({
-//       publishableKey: pubKey,
-//       environmentId: environmentId,
-//     })
-//     // TODO: setting for use with the @flatfile/api package
-//     ;(window as any).CROSSENV_FLATFILE_API_KEY = space?.data.accessToken
-//     setSpace(space)
-//     // setSpace(space)
-//   }
-
-//   return { space, open, setOpen, setSpace }
-// }
