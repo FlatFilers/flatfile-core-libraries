@@ -91,6 +91,6 @@ describe('initializeSpace', () => {
 
     const result = await initializeSpace(mockSpaceProps)
 
-    expect(result).toStrictEqual({ data: mockSpace })
+    expect(result).toStrictEqual({ space: { data: mockSpace }, workbook: mockWorkbook })
   })
 })
