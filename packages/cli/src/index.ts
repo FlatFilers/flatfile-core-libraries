@@ -11,10 +11,12 @@ import { switchInit } from './switch.init'
 import { switchVersion } from './switch.version'
 import { createEnvironmentAction } from './x/actions/create.environment.action'
 import { deployAction } from './x/actions/deploy.action'
+import { deleteAction } from './x/actions/delete.action'
 import { developAction } from './x/actions/develop.action'
 import { publishAction } from './x/actions/publish.action'
 import { publishPubSub } from './x/actions/publish.pubsub'
 import { quickstartAction } from './x/actions/quickstart.action'
+import { listAgentsAction } from './x/actions/list-agents.action'
 
 dotenv.config()
 
@@ -42,6 +44,15 @@ program
   .command('deploy [file]')
   .description('Deploy your project as a Flatfile Agent')
   .option(
+    '-s, --slug <slug>',
+    'the slug of the project to deploy (or set env FLATFILE_AGENT_SLUG)'
+  )
+  .option(
+    '-t, --topics <slug>',
+    `list of the topics to listen on (or set env FLATFILE_AGENT_TOPICS)
+    eg: 'commit:created,commit:updated'`
+  )
+  .option(
     '-k, --token <url>',
     'the authentication token to use (or set env FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN)'
   )
@@ -68,6 +79,44 @@ program
     '(optional) the Environment to use (or set env FLATFILE_ENVIRONMENT_ID)'
   )
   .action(developAction)
+
+program
+  .command('delete')
+  .description('Delete an Agent')
+  .option(
+    '-s, --slug <slug>',
+    'the slug of the agent to delete'
+  )
+  .option(
+    '-ag, --agentId <slug>',
+    'the id of the agent to delete'
+  )
+  .option(
+    '-k, --token <url>',
+    'the authentication token to use (or set env FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN)'
+  )
+  .option(
+    '-h, --api-url <url>',
+    '(optional) the API URL to use (or set env FLATFILE_API_URL)'
+  )
+  .action(deleteAction)
+
+  program
+  .command('list')
+  .description('List deployed Agents')
+  .option(
+    '-k, --token <url>',
+    'the authentication token to use (or set env FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN)'
+  )
+  .option(
+    '-h, --api-url <url>',
+    '(optional) the API URL to use (or set env FLATFILE_API_URL)'
+  )
+  .option(
+    '-t, --with-topics',
+    '(optional) display the topics for each agent'
+  )
+  .action(listAgentsAction)
 
 program
   .command('init')

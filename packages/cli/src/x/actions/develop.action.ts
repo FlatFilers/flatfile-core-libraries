@@ -52,11 +52,9 @@ export async function developAction(
     // Check if any agents are listed for environment
     const apiClient = apiKeyClient({ apiUrl, apiKey: apiKey! })
 
-    const agents = await apiClient.agents.list({
-      environmentId: environment.id,
-    })
+    const agents = await apiClient.agents.list({ environmentId: environment.id })
     if (agents?.data && agents?.data?.length > 0) {
-      console.error(messages.warnDeployedAgents)
+      console.error(messages.warnDeployedAgents(agents.data))
     }
 
     const driver = new PubSubDriver(environment.id)

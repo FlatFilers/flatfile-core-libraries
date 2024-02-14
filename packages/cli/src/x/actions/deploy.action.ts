@@ -9,17 +9,23 @@ import { apiKeyClient } from './auth.action'
 // @ts-expect-error
 import readJson from 'read-package-json'
 const readPackageJson = util.promisify(require('read-package-json'))
+import { Flatfile } from '@flatfile/api'
 
 // @ts-expect-error
 import ncc from '@vercel/ncc'
-import { deployTopics } from '../../shared/constants'
+import { deployTopics, tableConfig } from '../../shared/constants'
 import { getAuth } from '../../shared/get-auth'
 import { getEntryFile } from '../../shared/get-entry-file'
 import { messages } from '../../shared/messages'
+import { agentTable } from '../helpers/agent.table'
+import prompts from 'prompts'
 
 export async function deployAction(
   file?: string | null | undefined,
   options?: Partial<{
+    slug: string
+    agentId: string
+    topics: string
     apiUrl: string
     token: string
   }>
@@ -42,6 +48,10 @@ export async function deployAction(
   if (!file) {
     return program.error(messages.noEntryFile)
   }
+
+  const slug = options?.slug || process.env.FLATFILE_AGENT_SLUG
+  const agentId = options?.agentId || process.env.FLATFILE_AGENT_ID
+  const topics = options?.topics ? options.topics : process.env.FLATFILE_AGENT_TOPICS
 
   try {
     const data = await readPackageJson(path.join(process.cwd(), 'package.json'))
@@ -97,6 +107,35 @@ export async function deployAction(
       text: `Environment "${environment?.name}" selected`,
     }).succeed()
 
+
+    const { data } = await apiClient.agents.list({ environmentId: environment?.id! })
+
+    // If there are agents and no slug or id is provided, prompt to select an agent
+    let selectedAgent 
+    if (data.length > 1 && (!slug && !agentId) ) {
+      validatingSpinner.fail(`${chalk.yellow('You already have agents in this environment!')}\n\n${agentTable(data!, false)}`)
+
+      const { selectAgent } = await prompts({
+        type: 'confirm',
+        name: 'selectAgent',
+        message: 'Would you like to select an a agent to deploy to? (y/n)',
+      })
+
+      if (!selectAgent) {
+        console.log(chalk.cyan('Tip: On deploy specify an agent by slug (-s, --slug) or id (-ag / --agent-id)'))
+        process.exit(0)
+      }
+
+      const { agent } = await prompts({
+        type: 'select',
+        name: 'agent',
+        message: 'Select an agent to deploy to to',
+        choices: data.map((a: any) => ({ title: a.slug, value: a.slug })),
+      })
+
+      selectedAgent = data.find((a: any) => a.slug === agent)
+    }
+
     const deployingSpinner = ora({
       text: `Deploying event listener to Flatfile`,
     }).start()
@@ -117,15 +156,16 @@ export async function deployAction(
       const agent = await apiClient.agents.create({
         environmentId: environment?.id!,
         body: {
-          topics: deployTopics,
+          topics: topics? topics.split(',') as Flatfile.EventTopic[] : deployTopics,
           compiler: 'js',
           source: code,
+          slug: slug ? slug : selectedAgent?.slug ? selectedAgent.slug : undefined,
         },
       })
 
       deployingSpinner.succeed(
-        `Event listener deployed and running on your environment "${
-          environment?.name
+        `Event listener "${chalk.green(agent?.data?.slug)}" deployed and running on your environment "${
+          chalk.green(environment?.name)
         }". ${chalk.dim(agent?.data?.id)}\n`
       )
     } catch (e) {
@@ -135,3 +175,6 @@ export async function deployAction(
     return program.error(messages.error(e))
   }
 }
+
+
+// TODO: Perhaps if topics are different from a deployed agent we should prompt to confirm the changes?

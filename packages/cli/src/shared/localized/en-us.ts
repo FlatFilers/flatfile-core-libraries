@@ -1,5 +1,6 @@
 import chalk from 'chalk'
 import { docUrls } from '../messages'
+import { agentTable } from '../../x/helpers/agent.table'
 
 export const en_us = {
   noEntryFile: `No entry file found
@@ -33,13 +34,15 @@ export const en_us = {
   Please reference our authentication documentation for further information:
   ${chalk.underline.blue(docUrls.authentication)}`,
 
-  warnDeployedAgents: `${chalk.yellow(
-    '[WARN] You already have deployed agents!'
-  )}
+
+  warnDeployedAgents: (agents: any) =>  {
+    return `${chalk.yellow('[WARN] You already have deployed agents!')} 
     
-  There may be unintended conflicts should you proceed with local development.
-  Please see our shared environments documentation for further information:
-  ${chalk.underline.blue(docUrls.sharedEnvironments)}`,
+${agentTable(agents, false)}
+
+There may be unintended conflicts should you proceed with local development.
+Please see our shared environments documentation for further information:
+${chalk.underline.blue(docUrls.sharedEnvironments)}\n`},
 
   noEnvironments: `No environments found
   
@@ -90,7 +93,7 @@ ${chalk.dim(text)}`,
     
   ${chalk.dim(text)}`,
 
-  error: (text: any) => `An error occurred
+  error: (text: any) => `\nAn error occurred
   
   Please check logs for details:
   ${chalk.dim(text)}`,

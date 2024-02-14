@@ -24,13 +24,11 @@ export const deployTopics = [
   'document:updated',
   'document:deleted',
 
-  // 'workbook:added', // legacy
   'workbook:created',
   'workbook:updated',
   'workbook:deleted',
   'workbook:expired',
 
-  // 'sheet:validated', // legacy
   'sheet:created',
   'sheet:updated',
   'sheet:deleted',
@@ -41,14 +39,12 @@ export const deployTopics = [
   'records:updated',
   'records:deleted',
 
-  // 'upload:completed', // legacy
   'file:created',
   'file:updated',
   'file:deleted',
+  'file:expired',
 
-  // 'job:started', // legacy
   'job:created',
-  // 'job:waiting', // legacy
   'job:updated',
   'job:deleted',
   'job:failed',
@@ -58,6 +54,9 @@ export const deployTopics = [
   'job:outcome-acknowledged',
   'job:parts-completed',
 
+  'program:created',
+  'program:updated',
+
   'commit:created',
   'commit:updated',
   'commit:completed',
@@ -66,9 +65,6 @@ export const deployTopics = [
   'secret:created',
   'secret:updated',
   'secret:deleted',
-
-  // 'client:init', // legacy
-  // 'action:triggered', // legacy
 ] as Flatfile.EventTopic[]
 
 export const AUTODETECT_FILE_PATHS = [
@@ -79,3 +75,26 @@ export const AUTODETECT_FILE_PATHS = [
   path.join(process.cwd(), '.build', 'index.js'),
   path.join(process.cwd(), 'dist', 'index.js'),
 ]
+
+export const tableConfig = {
+  border: {
+    topBody: `─`,
+    topJoin: `┬`,
+    topLeft: `┌`,
+    topRight: `┐`,
+
+    bottomBody: `─`,
+    bottomJoin: `┴`,
+    bottomLeft: `└`,
+    bottomRight: `┘`,
+
+    bodyLeft: `│`,
+    bodyRight: `│`,
+    bodyJoin: `│`,
+
+    joinBody: `─`,
+    joinLeft: `├`,
+    joinRight: `┤`,
+    joinJoin: `┼`
+  }
+}
