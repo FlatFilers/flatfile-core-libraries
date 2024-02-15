@@ -19,12 +19,13 @@ import { getEntryFile } from '../../shared/get-entry-file'
 import { messages } from '../../shared/messages'
 import { agentTable } from '../helpers/agent.table'
 import prompts from 'prompts'
+import sanctuary from 'sanctuary'
+import { table } from 'table'
 
 export async function deployAction(
   file?: string | null | undefined,
   options?: Partial<{
     slug: string
-    agentId: string
     topics: string
     apiUrl: string
     token: string
@@ -50,7 +51,6 @@ export async function deployAction(
   }
 
   const slug = options?.slug || process.env.FLATFILE_AGENT_SLUG
-  const agentId = options?.agentId || process.env.FLATFILE_AGENT_ID
   const topics = options?.topics ? options.topics : process.env.FLATFILE_AGENT_TOPICS
 
   try {
@@ -111,8 +111,8 @@ export async function deployAction(
     const { data } = await apiClient.agents.list({ environmentId: environment?.id! })
 
     // If there are agents and no slug or id is provided, prompt to select an agent
-    let selectedAgent 
-    if (data.length > 1 && (!slug && !agentId) ) {
+    let selectedAgent
+    if (data.length > 1 && !slug) {
       validatingSpinner.fail(`${chalk.yellow('You already have agents in this environment!')}\n\n${agentTable(data!, false)}`)
 
       const { selectAgent } = await prompts({
@@ -134,7 +134,48 @@ export async function deployAction(
       })
 
       selectedAgent = data.find((a: any) => a.slug === agent)
+    } else {
+      selectedAgent = data.find((a: any) => a.slug === slug)
     }
+
+    const topicsSpinner = ora({
+      text: `Checking topics...`,
+    }).start()
+
+    if (topics) {
+      topics.split(',').forEach((t) => {
+        if (!deployTopics.includes(t)) {
+          topicsSpinner.fail(
+            `${chalk.yellow(`The topic "${t}" is not a valid topic.`)}\n\n${chalk.cyan(
+              `Please see our documentation for a list of valid topics: https://flatfile.com/docs/orchestration/events#event-topics`
+            )}`
+          )
+          process.exit(0)
+        }
+      })
+    }
+
+    const sortedTopics = topics ? topics.split(',').sort() : deployTopics.sort()
+    if (selectedAgent?.topics && !sanctuary.equals(selectedAgent.topics.sort()) (sortedTopics)) {
+      const tableInfo = [['Current Topics', ['Updated Topics']], [selectedAgent.topics.join('\n'), sortedTopics.join('\n')]]
+
+      topicsSpinner.fail(`${chalk.yellow(`The topics for the agent "${selectedAgent.slug}" are different from the topics you are deploying.`)}\n\n${table(tableInfo, tableConfig)}`)
+
+
+      const { confirmTopics } = await prompts({
+        type: 'confirm',
+        name: 'confirmTopics',
+        message: `Do you want to continue with this new set of topics for ${selectedAgent.slug}? (y/n)`,
+      })
+
+
+      if (!confirmTopics) {
+        validatingSpinner.fail('Agent deploy cancelled')
+        process.exit(0)
+      }
+    }
+
+    topicsSpinner.succeed('Topics validated')
 
     const deployingSpinner = ora({
       text: `Deploying event listener to Flatfile`,
@@ -175,6 +216,3 @@ export async function deployAction(
     return program.error(messages.error(e))
   }
 }
-
-
-// TODO: Perhaps if topics are different from a deployed agent we should prompt to confirm the changes?
