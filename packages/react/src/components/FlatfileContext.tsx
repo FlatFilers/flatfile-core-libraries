@@ -14,7 +14,7 @@ export interface FlatfileContextType {
 }
 
 const FlatfileContext = createContext<FlatfileContextType>({
-  pubKey: '',
+  pubKey: undefined,
   environmentId: '',
   open: true,
   setOpen: () => {},

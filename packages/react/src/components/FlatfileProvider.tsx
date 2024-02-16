@@ -5,49 +5,62 @@ import { initializeSpace } from '../utils/initializeSpace'
 import FlatfileListener, { Browser } from '@flatfile/listener'
 import { getSpace } from '../utils/getSpace'
 
-interface FlatfileProviderProps {
+type Exclusive<T, U> =
+  | (T & Partial<Record<Exclude<keyof U, keyof T>, never>>)
+  | (U & Partial<Record<Exclude<keyof T, keyof U>, never>>)
+
+interface CreateSpaceWithPublishableKey {
   children: ReactNode
-  pubKey?: string
+  publishableKey: string
   environmentId: string
   apiUrl?: string
-  space?: {
+}
+
+interface ReusedSpace {
+  children: ReactNode
+  environmentId: string
+  apiUrl?: string
+  space: {
     id: string
     accessToken: string
   }
 }
 
-export const FlatfileProvider: React.FC<FlatfileProviderProps> = ({
+// Use the Exclusive type for your props
+type ExclusiveFlatfileProviderProps = Exclusive<
+  CreateSpaceWithPublishableKey,
+  ReusedSpace
+>
+
+export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   children,
-  pubKey,
+  publishableKey,
   environmentId,
   space,
   apiUrl = 'https://platform.flatfile.com/api',
 }) => {
   const [sessionSpace, setSessionSpace] = useState<any>(null)
+  const [accessToken, setAccessToken] = useState<any>(null)
   const [open, setOpen] = useState<boolean>(false)
 
   useEffect(() => {
-    if (!!pubKey) {
+    if (!!publishableKey) {
       createSpace()
-    } else if (space?.id && space?.accessToken) {
+    } else if (space) {
       reUseSpace()
     }
-  }, [pubKey, space])
+  }, [publishableKey, space])
 
-  useEffect(() => {
-    console.log('useFlatfileContext useEffect', { open })
-  }, [open])
-
-  // TODO: need to account for re-using a space too
   const createSpace = async () => {
-    if (pubKey) {
+    if (publishableKey) {
       const createdSpace = await initializeSpace({
-        publishableKey: pubKey,
-        environmentId: environmentId,
+        publishableKey,
+        environmentId,
         apiUrl,
       })
       ;(window as any).CROSSENV_FLATFILE_API_KEY =
         createdSpace?.data.accessToken
+      setAccessToken(createdSpace?.data.accessToken)
       setSessionSpace(createdSpace)
     }
   }
@@ -56,34 +69,15 @@ export const FlatfileProvider: React.FC<FlatfileProviderProps> = ({
     if (space) {
       const reUsedSpace = await getSpace({
         space,
-        environmentId: environmentId,
+        environmentId,
         apiUrl,
       })
+      setAccessToken(space.accessToken)
       setSessionSpace(reUsedSpace)
     }
   }
 
   const [listener, setListener] = useState(new FlatfileListener())
-
-  // TODO: is this useful?
-  // Function to update the listener with new event handling logic
-  // const updateListener = (updateFn: (cb: FlatfileListener) => void) => {
-  //   setListener((currentListener) => {
-  //     const clonedListener = currentListener.fork() // Fork the current listener
-
-  //     clonedListener.mount(
-  //       new Browser({
-  //         apiUrl,
-  //         accessToken: space?.data.accessToken,
-  //         fetchApi: fetch,
-  //       })
-  //     )
-
-  //     clonedListener.use(updateFn) // Apply the updates
-  //     // updateFn(clonedListener) // Apply the updates
-  //     return clonedListener // Replace the current listener with the updated one
-  //   })
-  // }
 
   const handlePostMessage = (event: any) => {
     const { flatfileEvent } = event.data
@@ -100,23 +94,21 @@ export const FlatfileProvider: React.FC<FlatfileProviderProps> = ({
   }, [listener])
 
   useEffect(() => {
-    console.log('FlatfileProvider useEffect', { space })
-    if (listener && sessionSpace?.data.accessToken) {
-      console.log({ apiUrl, accessToken: sessionSpace?.data.accessToken })
+    if (listener && accessToken) {
       listener.mount(
         new Browser({
           apiUrl,
-          accessToken: sessionSpace?.data.accessToken,
+          accessToken,
           fetchApi: fetch,
         })
       )
     }
-  }, [sessionSpace?.data])
+  }, [listener, accessToken])
 
   return (
     <FlatfileContext.Provider
       value={{
-        ...(pubKey ? { pubKey } : {}),
+        ...(publishableKey ? { publishableKey } : {}),
         ...(space ? { space } : {}),
         environmentId,
         open,
