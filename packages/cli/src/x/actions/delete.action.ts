@@ -67,7 +67,7 @@ export async function deleteAction(
     const { deleteAgent } = await  prompt({
       type: 'confirm',
       name: `deleteAgent`,
-      message: `Are you sure you want to delete agent ${agent.slug + ': ' + agent.id}? (y/n)`,
+      message: chalk.red(`Are you sure you want to delete agent ${agent.slug + ': ' + agent.id}? (y/n)`),
     })
 
     if (!deleteAgent) {
