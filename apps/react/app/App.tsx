@@ -110,7 +110,14 @@ const FFApp = () => {
 
 const App = () => {
   return (
-    <FlatfileProvider pubKey={PUBLISHABLE_KEY} environmentId={ENVIRONMENT_ID}>
+    <FlatfileProvider
+      environmentId={ENVIRONMENT_ID}
+      // publishableKey={PUBLISHABLE_KEY}
+      space={{
+        id: 'us_sp_123456',
+        accessToken: 'ey123456.123456',
+      }}
+    >
       <FFApp />
     </FlatfileProvider>
   )
