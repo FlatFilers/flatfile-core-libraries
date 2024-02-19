@@ -17,7 +17,7 @@ export type SpaceCloseModalPropsType = {
 export class SpaceCloseModal implements OnInit {
   title = 'space-close-modal'
 
-  @Input({ required: true }) spaceCloseModalProps: SpaceCloseModalPropsType =
+  @Input() spaceCloseModalProps: SpaceCloseModalPropsType =
     {} as SpaceCloseModalPropsType
   ngOnInit(): void {}
 }

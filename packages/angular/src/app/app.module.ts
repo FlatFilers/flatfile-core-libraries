@@ -1,9 +1,8 @@
-import { NgModule } from '@angular/core'
-import { BrowserModule } from '@angular/platform-browser'
+import { NgModule } from '@angular/core';
+import { BrowserModule } from '@angular/platform-browser';
 
-import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SpaceModule, SpaceService } from '@flatfile/angular';
+import { SpaceModule } from 'angular-sdk';
 
 @NgModule({
   declarations: [
@@ -11,10 +10,9 @@ import { SpaceModule, SpaceService } from '@flatfile/angular';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule,
     SpaceModule
   ],
-  providers: [ SpaceService ],
-  bootstrap: [ AppComponent ]
+  providers: [],
+  bootstrap: [AppComponent]
 })
-export class AppModule {}
+export class AppModule { }

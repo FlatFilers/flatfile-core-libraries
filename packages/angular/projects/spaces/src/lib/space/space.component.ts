@@ -13,7 +13,7 @@ type ReusedOrObording = ReusedSpaceWithAccessToken | SimpleOnboarding
   styleUrls: ['./space.component.scss'],
 })
 export class Space implements OnInit{
-  @Input({ required: true }) spaceProps: ISpace = {} as ISpace
+  @Input() spaceProps: ISpace = {} as ISpace
   @Input() openDirectly: boolean = false
 
   title = 'Space';
