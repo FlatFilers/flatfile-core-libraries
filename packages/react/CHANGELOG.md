@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- b3fa3ee: Fixes a bug with updating the listener authentication
+- b3fa3ee: Fixes a bug with updating the `@flatfile/listener` authentication token
 
 ## 7.8.2
 
