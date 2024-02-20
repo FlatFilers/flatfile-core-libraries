@@ -63,6 +63,9 @@ export async function developAction(
 
     const watcher = ncc(file, {
       watch: true,
+      // TODO: add debug flag to add this and other debug options
+      quiet: true,
+      // debugLog: false
     })
 
     watcher.handler(async ({ err, code }: { err: any; code: any }) => {

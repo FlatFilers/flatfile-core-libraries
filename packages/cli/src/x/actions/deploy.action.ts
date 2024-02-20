@@ -106,6 +106,9 @@ export async function deployAction(
         minify: liteMode,
         target: 'es2020',
         cache: false,
+        // TODO: add debug flag to add this and other debug options
+        quiet: true,
+        // debugLog: false
       })
       if (err) {
         return program.error(messages.error(err))
