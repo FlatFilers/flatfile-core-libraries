@@ -54,11 +54,12 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.20.2",
-    "@flatfile/api": "^1.7.1",
+    "@flatfile/api": "^1.7.5",
     "@rollup/plugin-babel": "^6.0.3",
     "@types/inquirer": "^9.0.2",
     "@types/prompts": "^2.4.4",
     "@types/rc": "^1.2.1",
+    "@types/sanctuary": "^3.1.4",
     "@types/simple-mock": "^0.8.2",
     "@types/uuid": "^9.0.0",
     "boxen": "^7.0.0",
