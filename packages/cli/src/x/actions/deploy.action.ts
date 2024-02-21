@@ -20,6 +20,59 @@ import { messages } from '../../shared/messages'
 
 const readPackageJson = util.promisify(require('read-package-json'))
 
+async function handleAgentSelection(
+  data: Flatfile.Agent[] | undefined,
+  slug: string | undefined,
+  validatingSpinner: ora.Ora
+) {
+  // Directly return if there's no data or if a slug is already provided
+  if (!data || slug) {
+    return data?.find((a) => a.slug === slug)
+  }
+
+  if (data.length > 1) {
+    // Inform the user about multiple agents in the environment
+    validatingSpinner.fail(
+      `${chalk.yellow(
+        'You already have agents in this environment!'
+      )}\n\n${agentTable(data, false)}`
+    )
+
+    // Confirm if the user wants to select an agent
+    const { selectAgent } = await prompts({
+      type: 'confirm',
+      name: 'selectAgent',
+      message: 'Would you like to select an agent to deploy to? (y/n)',
+    })
+
+    if (!selectAgent) {
+      console.log(
+        chalk.cyan(
+          'Tip: On deploy specify an agent by slug (-s, --slug) or id (-ag / --agent-id)'
+        )
+      )
+      process.exit(0)
+    }
+
+    // Allow the user to select an agent
+    const { agent } = await prompts({
+      type: 'select',
+      name: 'agent',
+      message: 'Select an agent to deploy to',
+      choices: data.map((a) => ({
+        title: a.slug || '<no-slug>',
+        value: a.slug,
+      })),
+    })
+
+    // Find and return the selected agent
+    return data.find((a) => a.slug === agent)
+  } else {
+    // If there's only one agent and no slug is provided, return the first agent
+    return data[0]
+  }
+}
+
 export async function deployAction(
   file?: string | null | undefined,
   options?: Partial<{
@@ -111,59 +164,11 @@ export async function deployAction(
       environmentId: environment?.id!,
     })
 
-    async function handleAgentSelection(
-      data: Flatfile.Agent[] | undefined,
-      slug: string | undefined
-    ) {
-      // Directly return if there's no data or if a slug is already provided
-      if (!data || slug) {
-        return data?.find((a) => a.slug === slug)
-      }
-
-      if (data.length > 1) {
-        // Inform the user about multiple agents in the environment
-        validatingSpinner.fail(
-          `${chalk.yellow(
-            'You already have agents in this environment!'
-          )}\n\n${agentTable(data, false)}`
-        )
-
-        // Confirm if the user wants to select an agent
-        const { selectAgent } = await prompts({
-          type: 'confirm',
-          name: 'selectAgent',
-          message: 'Would you like to select an agent to deploy to? (y/n)',
-        })
-
-        if (!selectAgent) {
-          console.log(
-            chalk.cyan(
-              'Tip: On deploy specify an agent by slug (-s, --slug) or id (-ag / --agent-id)'
-            )
-          )
-          process.exit(0)
-        }
-
-        // Allow the user to select an agent
-        const { agent } = await prompts({
-          type: 'select',
-          name: 'agent',
-          message: 'Select an agent to deploy to',
-          choices: data.map((a) => ({
-            title: a.slug || '<no-slug>',
-            value: a.slug,
-          })),
-        })
-
-        // Find and return the selected agent
-        return data.find((a) => a.slug === agent)
-      } else {
-        // If there's only one agent and no slug is provided, return the first agent
-        return data[0]
-      }
-    }
-
-    const selectedAgent = await handleAgentSelection(data, slug)
+    const selectedAgent = await handleAgentSelection(
+      data,
+      slug,
+      validatingSpinner
+    )
 
     const topicsSpinner = ora({
       text: `Checking topics...`,
