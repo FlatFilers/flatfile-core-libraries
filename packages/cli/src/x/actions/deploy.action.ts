@@ -8,7 +8,7 @@ import ncc from '@vercel/ncc'
 import ora from 'ora'
 import path from 'path'
 import prompts from 'prompts'
-import sanctuary from 'sanctuary'
+import { equals } from 'remeda'
 import util from 'util'
 
 import { agentTable } from '../helpers/agent.table'
@@ -192,7 +192,7 @@ export async function deployAction(
     const sortedTopics = topics ? topics.split(',').sort() : deployTopics.sort()
     if (
       selectedAgent?.topics &&
-      !sanctuary.equals(selectedAgent.topics.sort() as string[])(sortedTopics)
+      !equals(selectedAgent.topics.sort())(sortedTopics)
     ) {
       const tableInfo = [
         ['Current Topics', ['Updated Topics']],
