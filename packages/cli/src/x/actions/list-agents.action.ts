@@ -1,21 +1,17 @@
-import chalk from 'chalk'
 import { program } from 'commander'
 import ora from 'ora'
 import { apiKeyClient } from './auth.action'
 import { getAuth } from '../../shared/get-auth'
 import { messages } from '../../shared/messages'
-import { table } from 'table'
-import { tableConfig } from '../../shared/constants'
 import { agentTable } from '../helpers/agent.table'
 
 export async function listAgentsAction(
   options?: Partial<{
-    withTopics: string
+    withTopics: boolean
     token: string
     apiUrl: string
   }>
 ): Promise<void> {
-
   let authRes
   try {
     authRes = await getAuth(options)
@@ -30,18 +26,19 @@ export async function listAgentsAction(
   const validatingSpinner = ora({
     text: `Checking for deployed agents...`,
   }).start()
-  
+
   try {
-    const { data } = await apiClient.agents.list({ environmentId: environment?.id! })
-    
-    if (!data.length) {
+    const { data } = await apiClient.agents.list({
+      environmentId: environment?.id!,
+    })
+
+    if (!data || data.length === 0) {
       validatingSpinner.fail('No agents found')
       process.exit(1)
     }
 
     validatingSpinner.succeed(`Deployed Agents:\n`)
-    console.log(agentTable(data, options?.withTopics))
-
+    console.log(agentTable(data, !!options?.withTopics))
   } catch (e) {
     return program.error(messages.error(e))
   }

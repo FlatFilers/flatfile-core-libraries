@@ -14,8 +14,7 @@ export async function deleteAction(
     apiUrl: string
   }>
 ): Promise<void> {
-
-  const { slug, agentId } = options
+  const { slug, agentId } = options ?? {}
 
   let authRes
   try {
@@ -36,16 +35,16 @@ export async function deleteAction(
   const validatingSpinner = ora({
     text: `Checking for deployed agents...`,
   }).start()
-  
+
   try {
-    const { data } = await apiClient.agents.list({ environmentId: environment?.id! })
-    
-    if (!data.length) {
+    const { data } = await apiClient.agents.list({
+      environmentId: environment?.id!,
+    })
+
+    if (!data || data.length === 0) {
       validatingSpinner.fail('No agents found')
       process.exit(1)
     }
-
-    // console.log('LOG: Agents:', data?.map((agent) => agent.slug))
 
     const agent: any = data.find((agent) => {
       if (slug) {
@@ -55,19 +54,21 @@ export async function deleteAction(
       }
     })
 
-    // console.log('LOG: Agent:', agent)
-
     if (agent.lne) {
       validatingSpinner.fail('No agent matching slug or agentId found')
       process.exit(1)
     }
 
     validatingSpinner.succeed(`Found agent match, ${agent.slug}`)
- 
-    const { deleteAgent } = await  prompt({
+
+    const { deleteAgent } = await prompt({
       type: 'confirm',
       name: `deleteAgent`,
-      message: chalk.red(`Are you sure you want to delete agent ${agent.slug + ': ' + agent.id}? (y/n)`),
+      message: chalk.red(
+        `Are you sure you want to delete agent ${
+          agent.slug + ': ' + agent.id
+        }? (y/n)`
+      ),
     })
 
     if (!deleteAgent) {
@@ -80,12 +81,13 @@ export async function deleteAction(
     }).start()
 
     try {
-      await apiClient.agents.delete(agent.id, { environmentId: environment?.id!} )
+      await apiClient.agents.delete(agent.id, {
+        environmentId: environment?.id!,
+      })
       deleteSpinner.succeed(`Deleted agent ${agent.id}`)
     } catch (e) {
       return program.error(messages.error(e))
     }
-
   } catch (e) {
     return program.error(messages.error(e))
   }

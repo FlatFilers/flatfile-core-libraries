@@ -81,17 +81,10 @@ program
   .action(developAction)
 
 program
-  .command('delete-agent')
-  .alias('da')
+  .command('delete')
   .description('Delete an Agent')
-  .option(
-    '-s, --slug <slug>',
-    'the slug of the agent to delete'
-  )
-  .option(
-    '-ag, --agentId <slug>',
-    'the id of the agent to delete'
-  )
+  .option('-s, --slug <slug>', 'the slug of the agent to delete')
+  .option('-ag, --agentId <slug>', 'the id of the agent to delete')
   .option(
     '-k, --token <url>',
     'the authentication token to use (or set env FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN)'
@@ -102,9 +95,8 @@ program
   )
   .action(deleteAction)
 
-  program
-  .command('list-agents')
-  .alias('la')
+program
+  .command('list')
   .description('List deployed Agents')
   .option(
     '-k, --token <url>',
@@ -114,10 +106,7 @@ program
     '-h, --api-url <url>',
     '(optional) the API URL to use (or set env FLATFILE_API_URL)'
   )
-  .option(
-    '-t, --with-topics',
-    '(optional) display the topics for each agent'
-  )
+  .option('-t, --with-topics', '(optional) display the topics for each agent')
   .action(listAgentsAction)
 
 program
