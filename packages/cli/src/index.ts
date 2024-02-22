@@ -65,7 +65,7 @@ program
 program
   .command('develop [file]')
   .alias('dev [file]')
-  .description('Deploy your project as a Flatfile Agent')
+  .description('Run your project as a Flatfile listener')
   .option(
     '-k, --token <string>',
     'the authentication token to use (or set env FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN)'
@@ -81,7 +81,8 @@ program
   .action(developAction)
 
 program
-  .command('delete')
+  .command('delete-agent')
+  .alias('da')
   .description('Delete an Agent')
   .option(
     '-s, --slug <slug>',
@@ -102,7 +103,8 @@ program
   .action(deleteAction)
 
   program
-  .command('list')
+  .command('list-agents')
+  .alias('la')
   .description('List deployed Agents')
   .option(
     '-k, --token <url>',
