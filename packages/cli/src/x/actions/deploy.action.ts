@@ -237,18 +237,12 @@ export async function deployAction(
       }
 
       const agent = await apiClient.agents.create({
-        environmentId: environment?.id!,
+        environmentId: environment!.id, // Assuming environment is always defined; otherwise, check for its existence before.
         body: {
-          topics: topics
-            ? (topics.split(',') as Flatfile.EventTopic[])
-            : deployTopics,
+          topics: (topics?.split(',') as Flatfile.EventTopic[]) ?? deployTopics,
           compiler: 'js',
           source: code,
-          slug: slug
-            ? slug
-            : selectedAgent?.slug
-            ? selectedAgent.slug
-            : undefined,
+          slug: slug ?? selectedAgent?.slug,
         },
       })
 
