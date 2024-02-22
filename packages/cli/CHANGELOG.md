@@ -1,8 +1,8 @@
 # flatfile
 
-## 3.6.0
+## 3.5.15
 
-### Minor Changes
+### Patch Changes
 
 - 22c4837: Update to use the latest @flatfile/api version 1.7.1
 
