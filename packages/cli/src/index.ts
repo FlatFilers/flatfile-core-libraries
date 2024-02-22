@@ -48,12 +48,12 @@ program
     'the slug of the project to deploy (or set env FLATFILE_AGENT_SLUG)'
   )
   .option(
-    '-t, --topics <slug>',
+    '-t, --topics <topics>',
     `list of the topics to listen on (or set env FLATFILE_AGENT_TOPICS)
     eg: 'commit:created,commit:updated'`
   )
   .option(
-    '-k, --token <url>',
+    '-k, --token <token>',
     'the authentication token to use (or set env FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN)'
   )
   .option(
@@ -75,7 +75,7 @@ program
     '(optional) the API URL to use (or set env FLATFILE_API_URL)'
   )
   .option(
-    '-e, --env <string>',
+    '-e, --env <env-id>',
     '(optional) the Environment to use (or set env FLATFILE_ENVIRONMENT_ID)'
   )
   .action(developAction)
@@ -84,9 +84,9 @@ program
   .command('delete')
   .description('Delete an Agent')
   .option('-s, --slug <slug>', 'the slug of the agent to delete')
-  .option('-ag, --agentId <slug>', 'the id of the agent to delete')
+  .option('-ag, --agentId <id>', 'the id of the agent to delete')
   .option(
-    '-k, --token <url>',
+    '-k, --token <token>',
     'the authentication token to use (or set env FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN)'
   )
   .option(
@@ -99,7 +99,7 @@ program
   .command('list')
   .description('List deployed Agents')
   .option(
-    '-k, --token <url>',
+    '-k, --token <token>',
     'the authentication token to use (or set env FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN)'
   )
   .option(
