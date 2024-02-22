@@ -4,11 +4,9 @@ import fs from 'fs'
 import { Flatfile } from '@flatfile/api'
 import boxen from 'boxen'
 import ora from 'ora'
-import uuid from 'uuid'
 
 import { config } from '../../config'
 import { authAction } from './auth.action'
-import UploadFile from '../../../../v2-shims/src/legacy/upload.file'
 
 export async function quickstartAction(
   options: Partial<{

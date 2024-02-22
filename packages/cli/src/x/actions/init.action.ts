@@ -141,11 +141,9 @@ export const init = async (options: XInitOptions) => {
           text: `Create Environment`,
         }).start()
 
-        const newEnvironmentCreated = await apiClient.createEnvironment({
-          environmentConfig: {
-            name: environment || 'dev',
-            isProd: isProd ?? false,
-          },
+        const newEnvironmentCreated = await apiClient.environments.create({
+          name: environment || 'dev',
+          isProd: isProd ?? false,
         })
         const environmentId = newEnvironmentCreated?.data?.id ?? ''
         envSpinner.succeed(`Environment created:  ${chalk.dim(environmentId)}`)
