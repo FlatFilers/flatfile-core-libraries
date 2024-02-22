@@ -34,7 +34,7 @@ export const createWorkbook = async (data: UpdateSpaceInfo) => {
 export const createWorkbookFromSheet = (
   sheet: Flatfile.SheetConfig,
   onSubmit?: boolean
-): Pick<Flatfile.CreateWorkbookConfig, 'name' | 'sheets' | 'actions'> => {
+): Flatfile.CreateWorkbookConfig => {
   const blueprint = {
     name: sheet?.name || 'Embedded Importer',
     sheets: [sheet],

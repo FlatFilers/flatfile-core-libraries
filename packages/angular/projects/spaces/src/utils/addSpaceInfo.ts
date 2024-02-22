@@ -22,11 +22,9 @@ const addSpaceInfo = async (
   try {
     if (workbook) {
       const localWorkbook = await api.workbooks.create({
-        sheets: workbook.sheets,
-        name: workbook.name,
-        actions: workbook.actions,
         spaceId,
         environmentId,
+        ...workbook,
       })
       if (!localWorkbook || !localWorkbook.data || !localWorkbook.data.id) {
         throw new Error('Failed to create workbook')

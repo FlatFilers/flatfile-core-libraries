@@ -11,9 +11,7 @@ type useInitializeSpaceReturn = {
   space: Flatfile.SpaceResponse | undefined
   initializeSpace: () => Promise<{
     space: Flatfile.SpaceResponse
-    workbook:
-      | Pick<Flatfile.CreateWorkbookConfig, 'name' | 'sheets' | 'actions'>
-      | undefined
+    workbook?: Flatfile.CreateWorkbookConfig
   }>
 }
 

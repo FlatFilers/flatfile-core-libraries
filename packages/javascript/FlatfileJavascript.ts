@@ -88,7 +88,7 @@ async function createlistener(
 export interface UpdateSpaceInfo {
   apiUrl: string
   publishableKey?: string
-  workbook?: Pick<Flatfile.CreateWorkbookConfig, 'name' | 'sheets' | 'actions'>
+  workbook?: Flatfile.CreateWorkbookConfig
   spaceId: string
   environmentId: string
   mountElement: string

@@ -59,7 +59,7 @@ export interface NewSpaceFromPublishableKey extends BaseSpace {
    * Shape of data you will be receiving:
    * Required
    */
-  workbook?: Pick<Flatfile.CreateWorkbookConfig, 'name' | 'sheets' | 'actions'>
+  workbook?: Flatfile.CreateWorkbookConfig
   /**
    * Publishable key accessed via auth/api-keys or Flatfile dashboard > Developer
    * Required
@@ -103,7 +103,7 @@ export interface SimpleOnboarding extends NewSpaceFromPublishableKey {
     data,
     sheet,
     job,
-    event
+    event,
   }: {
     data?: any
     sheet?: any
