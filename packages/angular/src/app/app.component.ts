@@ -1,5 +1,5 @@
 import { Component } from '@angular/core';
-import { ISpace, SpaceService } from '@flatfile/angular'
+import { ISpace, SpaceService } from '@flatfile/angular-sdk'
 import { workbook } from "./workbook";
 import { listener } from "./listener";
 
@@ -24,8 +24,8 @@ export class AppComponent {
 
   spaceProps: ISpace = {
     name: 'Trste!',
-    environmentId: 'us_env_1234',
-    publishableKey: 'sk_1234',
+    environmentId: 'us_env_3f4Kgm7f',
+    publishableKey: 'pk_pNXu3NvhxVbVCYvbArTiKjAWgVMtdRJA',
     workbook,
     listener,
     userInfo: {

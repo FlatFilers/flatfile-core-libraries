@@ -1,9 +1,24 @@
-# @flatfile/angular-sdk
+# Spaces
 
-Embedded Flatfile in Angular is an SDK wrapper that enables you to seamlessly integrate a secure and user-friendly data import experience into your client-side application. With full customization options for colors, logos, and fonts, you can tailor the import interface to match your brand identity.
+This library was generated with [Angular CLI](https://github.com/angular/angular-cli) version 14.2.0.
 
-By utilizing embedded Flatfile, you can empower your users with a self-serve data import process. If you're looking for alternative integration paths that better suit your business requirements, refer to our [use cases](https://flatfile.com/docs/core-paths/).
+## Code scaffolding
 
-### Get started
+Run `ng generate component component-name --project spaces` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module --project spaces`.
+> Note: Don't forget to add `--project spaces` or else it will be added to the default project in your `angular.json` file. 
 
-Follow [this guide](https://flatfile.com/docs/core-paths/embedding) to configure a Flatfile embedded import experience.
+## Build
+
+Run `ng build spaces` to build the project. The build artifacts will be stored in the `dist/` directory.
+
+## Publishing
+
+After building your library with `ng build spaces`, go to the dist folder `cd dist/spaces` and run `npm publish`.
+
+## Running unit tests
+
+Run `ng test spaces` to execute the unit tests via [Karma](https://karma-runner.github.io).
+
+## Further help
+
+To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.io/cli) page.
