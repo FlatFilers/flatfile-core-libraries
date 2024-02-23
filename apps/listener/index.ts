@@ -22,7 +22,7 @@ export default (client: Client) => {
     async (event: FlatfileEvent) => {
       RecordHook(event, async (record: FlatfileRecord) => {
         const firstName = record.get('firstName')
-        // Gettign the real types here would be nice but seems tricky
+        // Getting the real types here would be nice but seems tricky
         record.set('middleName', 'Alex Rock ' + firstName)
         return record
       })

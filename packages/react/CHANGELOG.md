@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.8.3
+
+### Patch Changes
+
+- b3fa3ee: Fixes a bug with updating the `@flatfile/listener` authentication token
+
 ## 7.8.2
 
 #### 2024-02-07

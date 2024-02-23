@@ -1,5 +1,17 @@
 # flatfile
 
+## 3.6.0
+
+### Minor Changes
+
+- 7b8ae50: Adds the ability to list, delete and deploy agents with slugs
+
+## 3.5.15
+
+### Patch Changes
+
+- 22c4837: Update to use the latest @flatfile/api version 1.7.1
+
 ## 3.5.14
 
 #### 2024-02-07
