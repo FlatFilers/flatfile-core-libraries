@@ -93,7 +93,7 @@ ${chalk.dim(text)}`,
     
   ${chalk.dim(text)}`,
 
-  error: (text: any) => `\nAn error occurred
+  error: (text: any) => `An error occurred
   
   Please check logs for details:
   ${chalk.dim(text)}`,

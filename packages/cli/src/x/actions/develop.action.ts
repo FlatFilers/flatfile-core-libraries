@@ -59,19 +59,20 @@ export async function developAction(
     })
     if (agents?.data && agents?.data?.length > 0) {
       console.error(messages.warnDeployedAgents(agents.data))
-    }
+  
+      const { developLocally } = await prompts({
+        type: 'confirm',
+        name: 'developLocally',
+        message: 'Would you like to proceed listening locally? (y/n)',
+      })
 
-    const { developLocally } = await prompts({
-      type: 'confirm',
-      name: 'developLocally',
-      message: 'Would you like to proceed listening locally? (y/n)',
-    })
+      if (!developLocally) {
+        ora({
+          text: `Local development aborted`,
+        }).fail()
+        process.exit(1)
+      }
 
-    if (!developLocally) {
-      ora({
-        text: `Local development aborted`,
-      }).fail()
-      process.exit(1)
     }
 
     const driver = new PubSubDriver(environment.id)
