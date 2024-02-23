@@ -30,8 +30,8 @@ export class SpaceFrame implements OnInit {
   iframeStyle = {}
   handlePostMessageInstance: ((event: MessageEvent<{ flatfileEvent: FlatfileEvent }>) => void) = () => {}
 
-  @Input({required: true}) spaceFrameProps: SpaceFramePropsType  = {} as SpaceFramePropsType
-  @Input({required: true}) loading: boolean = false
+  @Input() spaceFrameProps: SpaceFramePropsType  = {} as SpaceFramePropsType
+  @Input() loading: boolean = false
 
   async created() {
     const { listener, apiUrl, closeSpace, workbook } = this.spaceFrameProps;

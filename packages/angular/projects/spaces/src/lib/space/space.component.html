@@ -1,8 +1,8 @@
 <div *ngIf="!this.closeInstance">
-  <spinner *ngIf="this.loading"/>
+  <spinner *ngIf="this.loading"></spinner>
 
   <div *ngIf="this.spaceFrameProps !== undefined;else error_content">
-    <space-frame *ngIf="this.spaceFrameProps.localAccessToken" [loading]="this.loading" [spaceFrameProps]="this.spaceFrameProps" />
+    <space-frame *ngIf="this.spaceFrameProps.localAccessToken" [loading]="this.loading" [spaceFrameProps]="this.spaceFrameProps"></space-frame>
   </div>
   <ng-template #error_content>
     <div *ngIf="this.error" class="ff_error_container">

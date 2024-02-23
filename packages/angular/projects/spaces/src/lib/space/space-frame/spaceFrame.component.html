@@ -4,7 +4,7 @@
   data-testid="space-contents"
   [ngStyle]="this.iframeWrapperStyle"
 >
-  <space-close-modal *ngIf="this.showExitWarnModal" [spaceCloseModalProps]="this.spaceCloseModalProps"/>
+  <space-close-modal *ngIf="this.showExitWarnModal" [spaceCloseModalProps]="this.spaceCloseModalProps"></space-close-modal>
   <iframe *ngIf="this.spaceFrameProps.spaceUrl"
     [ngClass]="{ 'flatfile_iFrameContainer': this.spaceFrameProps.mountElement }"
     [attr.data-testid]="this.spaceFrameProps.mountElement && 'flatfile_iFrameContainer'"
