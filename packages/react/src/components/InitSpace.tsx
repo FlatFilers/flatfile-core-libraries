@@ -1,16 +1,15 @@
 import {
-  ISpace,
   InitState,
-  SpaceComponent,
-  State,
+  ReusedSpaceWithAccessToken,
+  SimpleOnboarding,
+  getSpace,
+  initializeSpace,
+  addSpaceInfo,
+  authenticate
 } from '@flatfile/embedded-utils'
-import React, { JSX, useEffect, useRef, useState } from 'react'
+import React, { JSX, useEffect, useState } from 'react'
 import { useCreateListener } from '../hooks/useCreateListener'
 import { IReactInitSpaceProps } from '../types'
-import { addSpaceInfo } from '../utils/addSpaceInfo'
-import { authenticate } from '../utils/authenticate'
-import { getSpace } from '../utils/getSpace'
-import { initializeSpace } from '../utils/initializeSpace'
 import ConfirmModal from './ConfirmCloseModal'
 import DefaultError from './Error'
 import { getContainerStyles, getIframeStyles } from './embeddedStyles'
@@ -72,9 +71,12 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
 
       const existingSpace = props.space && props.space.id
 
-      const { data } = existingSpace
-        ? await getSpace(props)
-        : await initializeSpace(props)
+      const result =
+        props.publishableKey && !existingSpace
+          ? await initializeSpace(props as SimpleOnboarding)
+          : await getSpace(props as ReusedSpaceWithAccessToken)
+
+      const data = result?.space?.data
 
       if (!data) {
         throw new Error('Failed to initialize space')
@@ -94,7 +96,7 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
         throw new Error('Missing access token from space response')
       }
 
-      if (!existingSpace) {
+      if (props.publishableKey && !existingSpace) {
         const fullAccessApi = authenticate(accessToken, apiUrl)
         await addSpaceInfo(props, data.id, fullAccessApi)
       }

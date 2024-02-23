@@ -1,9 +1,6 @@
-import { Flatfile } from '@flatfile/api'
-import { ISpace, SpaceComponent } from '@flatfile/embedded-utils'
+import { ISpace, SpaceComponent, authenticate, addSpaceInfo } from '@flatfile/embedded-utils'
 import React, { JSX, useEffect, useState } from 'react'
 import { useCreateListener } from '../hooks/useCreateListener'
-import { addSpaceInfo } from '../utils/addSpaceInfo'
-import { authenticate } from '../utils/authenticate'
 import ConfirmModal from './ConfirmCloseModal'
 import {
   getContainerStyles,

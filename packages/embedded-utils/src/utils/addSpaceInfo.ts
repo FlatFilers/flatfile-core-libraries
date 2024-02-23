@@ -1,50 +1,30 @@
-import { Flatfile, FlatfileClient } from '@flatfile/api'
-import {
-  createWorkbookFromSheet,
-  getErrorMessage,
-} from '@flatfile/embedded-utils'
-import { IReactSimpleOnboarding } from '../types/IReactSimpleOnboarding'
+import { NewSpaceFromPublishableKey } from '../types'
+import { FlatfileClient } from '@flatfile/api'
+import { getErrorMessage } from './getErrorMessage'
 
-// Given the space is created, add workbook, metadata and document to the space
 export const addSpaceInfo = async (
-  spaceProps: IReactSimpleOnboarding | any,
+  spaceProps: NewSpaceFromPublishableKey,
   spaceId: string,
   api: FlatfileClient
-): Promise<{
-  space: Flatfile.SpaceResponse
-  workbook: Flatfile.WorkbookResponse | undefined
-}> => {
+): Promise<void> => {
   const {
     workbook,
-    sheet,
     environmentId,
     document,
     themeConfig,
     sidebarConfig,
     spaceInfo,
     userInfo,
-    spaceBody,
   } = spaceProps
-  let localWorkbook
 
   try {
-    if (!workbook && sheet) {
-      const createdWorkbook = createWorkbookFromSheet(sheet)
-      localWorkbook = await api.workbooks.create({
-        spaceId,
-        environmentId,
-        ...createdWorkbook,
-      })
-
-      if (!localWorkbook || !localWorkbook.data || !localWorkbook.data.id) {
-        throw new Error('Failed to create workbook')
-      }
-    }
     if (workbook) {
-      localWorkbook = await api.workbooks.create({
+      const localWorkbook = await api.workbooks.create({
+        sheets: workbook.sheets,
+        name: workbook.name,
+        actions: workbook.actions,
         spaceId,
         environmentId,
-        ...workbook,
       })
 
       if (!localWorkbook || !localWorkbook.data || !localWorkbook.data.id) {
@@ -56,10 +36,9 @@ export const addSpaceInfo = async (
       environmentId,
       metadata: {
         theme: themeConfig,
-        sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
+        sidebarConfig: sidebarConfig || { showSidebar: false },
         userInfo,
         spaceInfo,
-        ...(spaceBody?.metadata || {}),
       },
     })
 
@@ -81,12 +60,10 @@ export const addSpaceInfo = async (
         throw new Error('Failed to create document')
       }
     }
-    return {
-      space: updatedSpace,
-      workbook: localWorkbook,
-    }
   } catch (error) {
     const message = getErrorMessage(error)
     throw new Error(`Error adding workbook to space: ${message}`)
   }
 }
+
+export default addSpaceInfo

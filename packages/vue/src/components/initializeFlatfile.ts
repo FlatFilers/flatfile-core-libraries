@@ -1,10 +1,10 @@
 import { ref, reactive, toRefs, h } from 'vue'
-import { initializeSpace } from '../utils/initializeSpace'
-import getSpace from '../utils/getSpace'
 import {
   ISpace,
   ReusedSpaceWithAccessToken,
   SimpleOnboarding,
+  getSpace,
+  initializeSpace
 } from '@flatfile/embedded-utils'
 import SpaceC from './SpaceC.vue'
 import SpinnerC from './Spinner.vue'

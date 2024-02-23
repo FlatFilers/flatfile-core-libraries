@@ -1,6 +1,6 @@
 import { FlatfileClient } from '@flatfile/api'
 
-const authenticate = (
+export const authenticate = (
   key: string,
   apiUrl = 'https://platform.flatfile.com/api'
 ) =>
@@ -8,5 +8,3 @@ const authenticate = (
     token: key,
     environment: `${apiUrl}/v1`,
   })
-
-export default authenticate

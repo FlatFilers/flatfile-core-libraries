@@ -8,9 +8,8 @@ import {
   SheetHandler,
   createWorkbookFromSheet,
   DefaultSubmitSettings,
+  initializeSpace
 } from '@flatfile/embedded-utils'
-import { initializeSpace } from '../utils/initializeSpace'
-import { getSpace } from '../utils/getSpace'
 import { FlatfileRecord } from '@flatfile/hooks'
 import { FlatfileEvent, FlatfileListener } from '@flatfile/listener'
 import { recordHook } from '@flatfile/plugin-record-hook'
@@ -106,9 +105,10 @@ export const usePortal = (
           )
         }
       }
-      const { data } = props.publishableKey
-        ? await initializeSpace(config)
-        : await getSpace(config)
+
+      const result = props.publishableKey && await initializeSpace(props)
+
+      const data = result && result?.space?.data
 
       if (!data) {
         throw new Error('Failed to initialize space')

@@ -59,11 +59,13 @@
 import { ref, watch, onMounted, onUnmounted } from 'vue'
 import { Flatfile } from '@flatfile/api'
 import ConfirmModal from './ConfirmCloseModal.vue'
-import authenticate from '../utils/authenticate'
 import { Browser, FlatfileEvent } from '@flatfile/listener'
-import addSpaceInfo from '../utils/addSpaceInfo'
+import {
+  addSpaceInfo,
+  createSimpleListener,
+  authenticate
+} from '@flatfile/embedded-utils'
 import { getIframeStyles, getContainerStyles } from './embeddedStyles'
-import { createSimpleListener } from '../utils/createSimpleListener'
 
 export default {
   props: {
