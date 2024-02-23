@@ -1,7 +1,7 @@
 import {
   getErrorMessage,
   SimpleOnboarding,
-  createWorkbookFromSheet
+  createWorkbookFromSheet,
 } from '@flatfile/embedded-utils'
 import authenticate from './authenticate'
 import { Flatfile } from '@flatfile/api'
@@ -29,7 +29,7 @@ const useInitializeSpace = (
         name = 'Embedded Space',
         spaceBody,
         apiUrl,
-        spaceUrl = 'https://platform.flatfile.com/space/',
+        spaceUrl = 'https://platform.flatfile.com/s/',
         workbook,
         sheet,
         onSubmit,

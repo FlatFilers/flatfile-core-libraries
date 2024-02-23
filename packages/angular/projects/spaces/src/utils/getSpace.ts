@@ -12,7 +12,7 @@ const getSpace = async (spaceProps: ISpace): Promise<GetSpaceReturn> => {
     space,
     apiUrl,
     environmentId,
-    spaceUrl = 'https://platform.flatfile.com/space',
+    spaceUrl = 'https://platform.flatfile.com/s',
   } = spaceProps
   let spaceResponse
   let workbookResponse
