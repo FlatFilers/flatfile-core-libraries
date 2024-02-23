@@ -19,7 +19,7 @@ const getSpace = async (
     space,
     apiUrl,
     environmentId,
-    spaceUrl = 'https://spaces.flatfile.com/',
+    spaceUrl = 'https://platform.flatfile.com/space/',
   } = spaceProps
   let spaceResponse
   let workbookResponse

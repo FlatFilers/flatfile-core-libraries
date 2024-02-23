@@ -1,10 +1,7 @@
 import {
-  ISpace,
-  InitState,
-  SpaceComponent,
-  State,
+  InitState
 } from '@flatfile/embedded-utils'
-import React, { JSX, useEffect, useRef, useState } from 'react'
+import React, { JSX, useEffect, useState } from 'react'
 import { useCreateListener } from '../hooks/useCreateListener'
 import { IReactInitSpaceProps } from '../types'
 import { addSpaceInfo } from '../utils/addSpaceInfo'
@@ -22,7 +19,7 @@ import './style.scss'
  * @param props
  */
 
-const defaultSpaceUrl = 'https://spaces.flatfile.com/space-init'
+const defaultSpaceUrl = 'https://platform.flatfile.com/space/space-init'
 const initialState = {
   localSpaceId: null,
   accessTokenLocal: null,
