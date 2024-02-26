@@ -1,5 +1,11 @@
 # @flatfile/javascript
 
+## 1.2.3
+
+### Patch Changes
+
+- c92bcdb: Updates default spaces url to https://platform.flatfile.com/s in order to avoid unnecessary preflight requests.
+
 ## 1.2.2
 
 ### Patch Changes

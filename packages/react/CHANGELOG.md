@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.8.4
+
+### Patch Changes
+
+- c92bcdb: Updates default spaces url to https://platform.flatfile.com/s in order to avoid unnecessary preflight requests.
+
 ## 7.8.3
 
 ### Patch Changes
