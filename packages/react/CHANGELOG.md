@@ -1,5 +1,13 @@
 # @flatfile/react
 
+## 7.8.5
+
+### Patch Changes
+
+- 399a9f4: Update Workbook types to include all params
+- Updated dependencies [399a9f4]
+  - @flatfile/embedded-utils@1.1.10
+
 ## 7.8.4
 
 ### Patch Changes

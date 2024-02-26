@@ -1,10 +1,18 @@
 # @flatfile/javascript
 
+## 1.2.4
+
+### Patch Changes
+
+- 399a9f4: Update Workbook types to include all params
+- Updated dependencies [399a9f4]
+  - @flatfile/embedded-utils@1.1.10
+
 ## 1.2.3
 
 ### Patch Changes
 
-- c92bcdb: Updates default spaces url to https://platform.flatfile.com/s in order to avoid unnecessary preflight requests. 
+- c92bcdb: Updates default spaces url to https://platform.flatfile.com/s in order to avoid unnecessary preflight requests.
 
 ## 1.2.2
 

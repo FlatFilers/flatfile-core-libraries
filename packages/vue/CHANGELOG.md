@@ -1,5 +1,13 @@
 ## 1.0.5
 
+## 1.0.6
+
+### Patch Changes
+
+- 399a9f4: Update Workbook types to include all params
+- Updated dependencies [399a9f4]
+  - @flatfile/embedded-utils@1.1.10
+
 #### 2024-02-07
 
 ### Patch Changes
