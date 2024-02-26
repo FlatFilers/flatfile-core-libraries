@@ -455,7 +455,7 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
             topic: 'portal:initialize',
             payload: {
               status: 'complete',
-              spaceUrl: `${spacesUrl}/space/${
+              spaceUrl: `${targetOrigin}/space/${
                 spaceData.id
               }?token=${encodeURIComponent(spaceData.accessToken)}`,
             },

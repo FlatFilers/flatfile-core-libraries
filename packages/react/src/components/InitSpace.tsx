@@ -95,7 +95,7 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
       }
 
       if (iFrameEl) {
-        const targetOrigin = new URL(guestLink).origin
+        const targetOrigin = new URL(spaceUrl).origin
         iFrameEl.contentWindow?.postMessage(
           {
             flatfileEvent: {
