@@ -1,4 +1,5 @@
 import {
+  ISpace,
   getErrorMessage,
   SimpleOnboarding,
   createWorkbookFromSheet,
@@ -29,7 +30,7 @@ const useInitializeSpace = (
         name = 'Embedded Space',
         spaceBody,
         apiUrl,
-        spaceUrl = 'https://platform.flatfile.com/s/',
+        spaceUrl = 'https://spaces.flatfile.com/',
         workbook,
         sheet,
         onSubmit,

@@ -18,7 +18,7 @@ const useInitializeSpace = (flatfileOptions: SimpleOnboarding) => {
         name = 'Embedded Space',
         spaceBody,
         apiUrl,
-        spaceUrl = 'https://platform.flatfile.com/s/',
+        spaceUrl = 'https://spaces.flatfile.com/',
         workbook,
         sheet,
         onSubmit,

@@ -19,7 +19,7 @@ export const initializeSpace = async (
     name = 'Embedded Space',
     spaceBody,
     apiUrl,
-    spaceUrl = 'https://platform.flatfile.com/s/',
+    spaceUrl = 'https://spaces.flatfile.com/',
     workbook,
     sheet,
     onSubmit,
