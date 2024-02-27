@@ -69,6 +69,15 @@ export const deployTopics = [
 
 export const allTopics = [
   ...deployTopics, 
+  // Add legacy topics
+  'workbook:added',
+  'sheet:validated',
+  'upload:completed',
+  'job:waiting',
+  'job:started',
+  'client:init',
+  'action:triggered',
+  // Add cron topics
   'cron:5-minutes',
   'cron:hourly',
   'cron:daily',
