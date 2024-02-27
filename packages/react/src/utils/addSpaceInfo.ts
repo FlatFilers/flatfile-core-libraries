@@ -11,7 +11,6 @@ export const addSpaceInfo = async (
   spaceId: string,
   api: FlatfileClient
 ): Promise<{
-  space: Flatfile.SpaceResponse
   workbook: Flatfile.WorkbookResponse | undefined
 }> => {
   const {
@@ -19,11 +18,6 @@ export const addSpaceInfo = async (
     sheet,
     environmentId,
     document,
-    themeConfig,
-    sidebarConfig,
-    spaceInfo,
-    userInfo,
-    spaceBody,
   } = spaceProps
   let localWorkbook
 
@@ -52,20 +46,6 @@ export const addSpaceInfo = async (
       }
     }
 
-    const updatedSpace = await api.spaces.update(spaceId, {
-      environmentId,
-      metadata: {
-        theme: themeConfig,
-        sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
-        userInfo,
-        spaceInfo,
-        ...(spaceBody?.metadata || {}),
-      },
-    })
-
-    if (!updatedSpace) {
-      throw new Error('Failed to update space')
-    }
 
     if (document) {
       const createdDocument = await api.documents.create(spaceId, {
@@ -82,7 +62,6 @@ export const addSpaceInfo = async (
       }
     }
     return {
-      space: updatedSpace,
       workbook: localWorkbook,
     }
   } catch (error) {
