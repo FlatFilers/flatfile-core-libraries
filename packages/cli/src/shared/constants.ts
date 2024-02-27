@@ -67,6 +67,14 @@ export const deployTopics = [
   'secret:deleted',
 ] as Flatfile.EventTopic[]
 
+export const allTopics = [
+  ...deployTopics, 
+  'cron:5-minutes',
+  'cron:hourly',
+  'cron:daily',
+  'cron:weekly',
+] as Flatfile.EventTopic[]
+
 export const AUTODETECT_FILE_PATHS = [
   path.join(process.cwd(), 'index.js'),
   path.join(process.cwd(), 'index.ts'),
