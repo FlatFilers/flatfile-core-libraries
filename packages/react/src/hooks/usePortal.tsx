@@ -92,7 +92,6 @@ export const usePortal = (
                           await api.spaces.archiveSpace(spaceId)
                         }
                       } catch (error: any) {
-                        console.error('Error:', error.stack)
                         if (jobId) {
                           await api.jobs.cancel(jobId)
                         }

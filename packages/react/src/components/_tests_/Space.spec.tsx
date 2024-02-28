@@ -2,12 +2,15 @@
  * @jest-environment jsdom
  */
 
-import { render, screen } from '@testing-library/react'
 import React from 'react'
+import { render, screen } from '@testing-library/react'
 import Space, { SpaceContents } from '../Space'
 import { mockWorkbook } from '../../test/mocks'
 import { CreateWorkbookConfig } from '@flatfile/api/api'
 import '@testing-library/jest-dom'
+import { FlatfileClient } from '@flatfile/api'
+
+console.error = jest.fn()
 
 const baseSpaceProps = {
   name: 'Embedded space',
@@ -16,7 +19,7 @@ const baseSpaceProps = {
     CreateWorkbookConfig,
     'name' | 'sheets' | 'actions'
   >,
-  handleCloseInstance: () => {}
+  handleCloseInstance: () => {},
 }
 
 describe('Space', () => {
@@ -24,6 +27,11 @@ describe('Space', () => {
     const spaceId = 'spaceId'
     const spaceUrl = 'spaceUrl'
     const accessToken = 'accessToken'
+
+    jest.spyOn(FlatfileClient.prototype.workbooks, 'create').mockResolvedValue({
+      data: mockWorkbook,
+    })
+
     render(
       <Space
         spaceId={spaceId}

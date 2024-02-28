@@ -3,6 +3,7 @@ import { ISpace } from '@flatfile/embedded-utils'
 import { initializeSpace } from '../initializeSpace'
 import { mockDocument, mockSpace } from '../../test/mocks'
 
+console.error = jest.fn()
 var authenticateMock: jest.Mock = jest.fn()
 var addSpaceInfoMock: jest.Mock = jest.fn()
 
