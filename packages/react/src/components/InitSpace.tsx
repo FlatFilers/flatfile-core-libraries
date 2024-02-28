@@ -65,9 +65,9 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
         return
       }
 
-      const existingSpace = props.space && props.space.id
+      const isReusingSpace = props.space && props.space.id
 
-      const { data } = existingSpace
+      const { data } = isReusingSpace
         ? await getSpace(props)
         : await initializeSpace(props)
 
@@ -89,7 +89,7 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
         throw new Error('Missing access token from space response')
       }
 
-      if (!existingSpace) {
+      if (!isReusingSpace && props.publishableKey) {
         const fullAccessApi = authenticate(accessToken, apiUrl)
         await addSpaceInfo(props, data.id, fullAccessApi)
       }

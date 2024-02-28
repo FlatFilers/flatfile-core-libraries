@@ -4,7 +4,6 @@ import {
   getErrorMessage,
 } from '@flatfile/embedded-utils'
 import { IReactSimpleOnboarding } from '../types/IReactSimpleOnboarding'
-import { metadata } from '../../../../apps/react/app/layout'
 
 // Given the space is created, add workbook, metadata and document to the space
 export const addSpaceInfo = async (
