@@ -155,12 +155,9 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
   }, [unmountIFrame])
 
   const handleCloseModal = () => {
-    // If users closes and there is an error / reset the modal entirely - otherwise, keep iFrame navigated to created space
-    if (initError) {
-      setInitError(undefined)
-      setState({ ...initialState })
-      setUnmountIFrame(true)
-    }
+    setInitError(undefined)
+    setState({ ...initialState })
+    setUnmountIFrame(true)
     setShowExitWarnModal(false)
     closeSpace?.onClose({})
   }
