@@ -13,6 +13,7 @@
   "dependencies": {
     "@flatfile/api": "^1.6.7",
     "@flatfile/listener": "*",
+    "@flatfile/plugin-record-hook": "^1.4.4",
     "@flatfile/react": "*",
     "@rollup/plugin-json": "^6.1.0",
     "@types/node": "20.4.5",

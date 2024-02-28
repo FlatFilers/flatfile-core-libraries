@@ -7,8 +7,10 @@ import { listener } from './listener'
 import styles from './page.module.css'
 
 const SPACE_ID = 'us_sp_123456'
-const ENVIRONMENT_ID = 'us_env_123456'
-const PUBLISHABLE_KEY = 'pk_123456'
+// const ENVIRONMENT_ID = 'us_env_123456'
+// const PUBLISHABLE_KEY = 'pk_123456'
+const ENVIRONMENT_ID = 'us_env_dDWwJwQt'
+const PUBLISHABLE_KEY = 'pk_5b30aa8c32744651b017622bfa180f13'
 
 const spaceProps = {
   environmentId: ENVIRONMENT_ID,
@@ -23,6 +25,7 @@ const spaceProps = {
   listener: listener,
   publishableKey: PUBLISHABLE_KEY,
   workbook: config,
+  namespace: 'contacts',
 }
 
 const simplifiedProps = {
@@ -105,7 +108,7 @@ function App() {
           {showSimplified === true ? 'Close' : 'Open'} Pre-loaded
         </button>
       </div>
-          <Space />
+      <Space />
       {showSimplified && (
         <div>
           <SimpleSpace setShowSpace={setShowSimplified} />

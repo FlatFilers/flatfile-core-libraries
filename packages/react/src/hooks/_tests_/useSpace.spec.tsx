@@ -72,10 +72,6 @@ describe('useSpace', () => {
       data: mockWorkbook,
     })
 
-    jest.spyOn(FlatfileClient.prototype.spaces, 'update').mockResolvedValue({
-      data: mockSpace,
-    })
-
     jest.spyOn(FlatfileClient.prototype.documents, 'create').mockResolvedValue({
       data: mockDocument,
     })

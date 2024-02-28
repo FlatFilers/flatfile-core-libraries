@@ -1,5 +1,4 @@
 import { FlatfileClient } from '@flatfile/api'
-import { Space } from '@flatfile/api/api/resources/spaces'
 import { ISpace } from '@flatfile/embedded-utils'
 import { initializeSpace } from '../initializeSpace'
 import { mockDocument, mockSpace } from '../../test/mocks'
@@ -80,10 +79,6 @@ describe('initializeSpace', () => {
 
     jest.spyOn(FlatfileClient.prototype.workbooks, 'create').mockResolvedValue({
       data: mockWorkbook,
-    })
-
-    jest.spyOn(FlatfileClient.prototype.spaces, 'update').mockResolvedValue({
-      data: mockSpace,
     })
 
     jest.spyOn(FlatfileClient.prototype.documents, 'create').mockResolvedValue({

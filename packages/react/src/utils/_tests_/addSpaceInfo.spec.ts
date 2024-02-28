@@ -50,10 +50,6 @@ describe('addSpaceInfo', () => {
       } as Workbook,
     })
 
-    jest.spyOn(mockApi.spaces, 'update').mockResolvedValueOnce({
-      data: { ...mockSpaceResponse } as Space,
-    })
-
     jest.spyOn(mockApi.documents, 'create').mockResolvedValueOnce({
       data: {
         id: 'test-document-id',
