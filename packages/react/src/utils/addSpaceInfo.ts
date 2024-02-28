@@ -4,21 +4,17 @@ import {
   getErrorMessage,
 } from '@flatfile/embedded-utils'
 import { IReactSimpleOnboarding } from '../types/IReactSimpleOnboarding'
+import { metadata } from '../../../../apps/react/app/layout'
 
 // Given the space is created, add workbook, metadata and document to the space
 export const addSpaceInfo = async (
-  spaceProps: IReactSimpleOnboarding | any,
+  spaceProps: IReactSimpleOnboarding,
   spaceId: string,
   api: FlatfileClient
 ): Promise<{
   workbook: Flatfile.WorkbookResponse | undefined
 }> => {
-  const {
-    workbook,
-    sheet,
-    environmentId,
-    document,
-  } = spaceProps
+  const { workbook, sheet, environmentId, document } = spaceProps
   let localWorkbook
 
   try {
@@ -45,7 +41,6 @@ export const addSpaceInfo = async (
         throw new Error('Failed to create workbook')
       }
     }
-
 
     if (document) {
       const createdDocument = await api.documents.create(spaceId, {

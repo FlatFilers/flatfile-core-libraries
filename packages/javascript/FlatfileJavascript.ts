@@ -15,7 +15,6 @@ import {
 } from '@flatfile/embedded-utils'
 import { createIframe } from './src/createIframe'
 import { createDocument } from './src/services/document'
-import { updateSpace } from './src/services/space'
 import { createWorkbook } from './src/services/workbook'
 
 import { FlatfileRecord } from '@flatfile/hooks'
@@ -109,7 +108,6 @@ const updateSpaceInfo = async (data: UpdateSpaceInfo) => {
     if (workbook) {
       await createWorkbook(data)
     }
-    await updateSpace(data)
 
     if (documentConfig) {
       await createDocument(data)
