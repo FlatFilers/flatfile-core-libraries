@@ -67,15 +67,6 @@ describe('addSpaceInfo', () => {
       spaceId: mockSpaceId,
     })
 
-    expect(mockApi.spaces.update).toHaveBeenCalledWith(mockSpaceId, {
-      environmentId: mockSpaceProps.environmentId,
-      metadata: {
-        theme: {},
-        sidebarConfig: {},
-        spaceInfo: {},
-      },
-    })
-
     expect(mockApi.documents.create).toHaveBeenCalledWith(mockSpaceId, {
       title: mockDocument.title,
       body: mockDocument.body,
@@ -115,22 +106,5 @@ describe('addSpaceInfo', () => {
     ).rejects.toThrow(
       'Error adding workbook to space: Failed to create document'
     )
-  })
-
-  it('should throw an error if updating space fails', async () => {
-    jest.spyOn(mockApi.workbooks, 'create').mockResolvedValueOnce({
-      data: {
-        id: 'test-workbook-id',
-        ...innerWorkbook,
-      } as Workbook,
-    })
-
-    jest
-      .spyOn(mockApi.spaces, 'update')
-      .mockRejectedValueOnce(new Error('Failed to update space'))
-
-    await expect(
-      addSpaceInfo(mockSpaceProps, mockSpaceId, mockApi)
-    ).rejects.toThrow('Error adding workbook to space: Failed to update space')
   })
 })
