@@ -34,6 +34,7 @@ export interface NewSpaceFromPublishableKey extends BaseSpace {
   document?: Flatfile.DocumentConfig
   /**
    * @deprecated use params up one level instead
+   *
    * Additional props when creating a Space
    * Optional
    */
@@ -87,6 +88,12 @@ export interface ReusedSpaceWithAccessToken extends BaseSpace {
   spaceInfo?: never
   userInfo?: never
   workbook?: never
+  /**
+   * @deprecated use params up one level instead
+   *
+   * Additional props when creating a Space
+   * Optional
+   */
   spaceBody?: never
 }
 
@@ -213,9 +220,9 @@ interface BaseSpace {
   errorTitle?: string
   metadata?: any
   namespace?: string
-  labels?: string[];
-  translationsPath?: string;
-  languageOverride?: string;
+  labels?: string[]
+  translationsPath?: string
+  languageOverride?: string
 }
 
 export interface IUserInfo {

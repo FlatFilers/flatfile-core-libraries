@@ -316,6 +316,11 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
     userInfo,
     spaceInfo,
     listener,
+    namespace,
+    metadata,
+    labels,
+    translationsPath,
+    languageOverride,
   } = options
   const simpleOnboardingOptions = options as SimpleOnboarding
   const isReusingSpace = !!(space?.id && space?.accessToken)
@@ -340,13 +345,17 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
       const spaceRequestBody = {
         name: name || 'Embedded Space',
         autoConfigure: false,
-        labels: ['embedded'],
         ...spaceBody,
+        labels: ['embedded', ...(labels || [])],
+        namespace,
+        translationsPath,
+        languageOverride,
         metadata: {
           theme: themeConfig,
           sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
           userInfo,
           ...(spaceBody?.metadata || {}),
+          ...(metadata || {}),
         },
       }
 
@@ -414,10 +423,7 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
       await updateSpaceInfo({
         apiUrl,
         publishableKey,
-        workbook: createdWorkbook as Pick<
-          CreateWorkbookConfig,
-          'name' | 'sheets' | 'actions'
-        >,
+        workbook: createdWorkbook as CreateWorkbookConfig,
         spaceId: spaceData.id,
         accessToken: spaceData.accessToken,
         environmentId,

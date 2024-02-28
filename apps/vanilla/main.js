@@ -73,6 +73,7 @@ const BASE_OPTIONS = {
     showSidebar: true,
   },
   listener,
+  namespace: 'my-namespace',
 }
 // ---Create a new Space + Workbook and load an iFrame
 window.initializeFlatfile = async (publishableKey) => {

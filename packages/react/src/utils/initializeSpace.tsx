@@ -21,6 +21,9 @@ export const initializeSpace = async (
     userInfo,
     metadata,
     namespace,
+    labels,
+    translationsPath,
+    languageOverride,
   } = flatfileOptions
 
   try {
@@ -38,7 +41,10 @@ export const initializeSpace = async (
       namespace,
       autoConfigure: false,
       environmentId,
-      labels: ['embedded'],
+      ...spaceBody,
+      labels: ['embedded', ...(labels || [])],
+      translationsPath,
+      languageOverride,
       metadata: {
         ...metadata,
         theme: themeConfig,
@@ -46,8 +52,8 @@ export const initializeSpace = async (
         userInfo,
         spaceInfo,
         ...(spaceBody?.metadata || {}),
+        ...(metadata || {}),
       },
-      ...spaceBody,
     }
 
     if (!workbook) {
