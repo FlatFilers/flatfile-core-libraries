@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- c33d934: Develop does not need confirmation if there are no deployed agents
+- c33d934: `flatfile develop` does not need confirmation if there are no deployed agents
 
 ## 3.6.0
 
