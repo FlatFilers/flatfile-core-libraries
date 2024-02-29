@@ -43,16 +43,15 @@ export const initializeSpace = async (
       ...spaceBody,
       labels: ['embedded', ...(labels || [])],
       ...(namespace ? { namespace } : {}),
-      ...(translationsPath ? { translationsPath } : {}),
       ...(languageOverride ? { languageOverride } : {}),
+      ...(translationsPath ? { translationsPath } : {}),
       metadata: {
-        ...metadata,
-        theme: themeConfig,
         sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
-        userInfo,
-        spaceInfo,
-        ...(spaceBody?.metadata || {}),
         ...(metadata || {}),
+        ...(spaceBody?.metadata || {}),
+        ...(spaceInfo ? { spaceInfo } : {}),
+        ...(themeConfig ? { theme: themeConfig } : {}),
+        ...(userInfo ? { userInfo } : {}),
       },
     }
 

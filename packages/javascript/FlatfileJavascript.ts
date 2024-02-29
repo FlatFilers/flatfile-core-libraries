@@ -343,17 +343,19 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
       const spaceRequestBody = {
         name: name || 'Embedded Space',
         autoConfigure: false,
+        environmentId,
         ...spaceBody,
         labels: ['embedded', ...(labels || [])],
         ...(namespace ? { namespace } : {}),
-        ...(translationsPath ? { translationsPath } : {}),
         ...(languageOverride ? { languageOverride } : {}),
+        ...(translationsPath ? { translationsPath } : {}),
         metadata: {
-          theme: themeConfig,
           sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
-          userInfo,
-          ...(spaceBody?.metadata || {}),
           ...(metadata || {}),
+          ...(spaceBody?.metadata || {}),
+          ...(spaceInfo ? { spaceInfo } : {}),
+          ...(themeConfig ? { theme: themeConfig } : {}),
+          ...(userInfo ? { userInfo } : {}),
         },
       }
 
