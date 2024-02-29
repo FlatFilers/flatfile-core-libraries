@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- 5110854: Only prompt for validation if topics are passed
+- 5110854: Only prompt for validation if topics are passed in by the user
 
 ## 3.6.1
 
