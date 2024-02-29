@@ -170,11 +170,12 @@ export async function deployAction(
       validatingSpinner
     )
 
-    const topicsSpinner = ora({
-      text: `Checking topics...`,
-    }).start()
-
     if (topics) {
+      const topicsSpinner = ora({
+        text: `Checking topics...`,
+      }).start()
+
+
       topics.split(',').forEach((t) => {
         if (!deployTopics.some((topic) => topic === t)) {
           topicsSpinner.fail(
@@ -187,37 +188,37 @@ export async function deployAction(
           process.exit(0)
         }
       })
-    }
 
-    const sortedTopics = topics ? topics.split(',').sort() : deployTopics.sort()
-    if (
-      selectedAgent?.topics &&
-      !equals(selectedAgent.topics.sort())(sortedTopics)
-    ) {
-      const tableInfo = [
-        ['Current Topics', ['Updated Topics']],
-        [selectedAgent.topics.join('\n'), sortedTopics.join('\n')],
-      ]
+      const sortedTopics = topics ? topics.split(',').sort() : deployTopics.sort()
+      if (
+        selectedAgent?.topics &&
+        !equals(selectedAgent.topics.sort())(sortedTopics)
+      ) {
+        const tableInfo = [
+          ['Current Topics', ['Updated Topics']],
+          [selectedAgent.topics.join('\n'), sortedTopics.join('\n')],
+        ]
 
-      topicsSpinner.fail(
-        `${chalk.yellow(
-          `The topics for the agent "${selectedAgent.slug}" are different from the topics you are deploying.`
-        )}\n\n${table(tableInfo, tableConfig)}`
-      )
+        topicsSpinner.fail(
+          `${chalk.yellow(
+            `The topics for the agent "${selectedAgent.slug}" are different from the topics you are deploying.`
+          )}\n\n${table(tableInfo, tableConfig)}`
+        )
 
-      const { confirmTopics } = await prompts({
-        type: 'confirm',
-        name: 'confirmTopics',
-        message: `Do you want to continue with this new set of topics for ${selectedAgent.slug}? (y/n)`,
-      })
+        const { confirmTopics } = await prompts({
+          type: 'confirm',
+          name: 'confirmTopics',
+          message: `Do you want to continue with this new set of topics for ${selectedAgent.slug}? (y/n)`,
+        })
 
-      if (!confirmTopics) {
-        validatingSpinner.fail('Agent deploy cancelled')
-        process.exit(0)
+        if (!confirmTopics) {
+          validatingSpinner.fail('Agent deploy cancelled')
+          process.exit(0)
+        }
       }
-    }
 
-    topicsSpinner.succeed('Topics validated')
+      topicsSpinner.succeed('Topics validated')
+    }
 
     const deployingSpinner = ora({
       text: `Deploying event listener to Flatfile`,
