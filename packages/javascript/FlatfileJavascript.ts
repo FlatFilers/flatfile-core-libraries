@@ -345,9 +345,9 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
         autoConfigure: false,
         ...spaceBody,
         labels: ['embedded', ...(labels || [])],
-        namespace,
-        translationsPath,
-        languageOverride,
+        ...(namespace ? { namespace } : {}),
+        ...(translationsPath ? { translationsPath } : {}),
+        ...(languageOverride ? { languageOverride } : {}),
         metadata: {
           theme: themeConfig,
           sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },

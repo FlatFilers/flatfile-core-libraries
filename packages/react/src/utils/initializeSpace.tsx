@@ -38,13 +38,13 @@ export const initializeSpace = async (
     const limitedAccessApi = authenticate(publishableKey, apiUrl)
     const createSpaceRequest = {
       name,
-      namespace,
       autoConfigure: false,
       environmentId,
       ...spaceBody,
       labels: ['embedded', ...(labels || [])],
-      translationsPath,
-      languageOverride,
+      ...(namespace ? { namespace } : {}),
+      ...(translationsPath ? { translationsPath } : {}),
+      ...(languageOverride ? { languageOverride } : {}),
       metadata: {
         ...metadata,
         theme: themeConfig,
