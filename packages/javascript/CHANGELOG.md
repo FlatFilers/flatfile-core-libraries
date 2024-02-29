@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- 5263f5b: Fix to only include defined params in the space creation request
+- 5263f5b: Fix to only include defined params in the space creation request 
 
 ## 1.2.5
 
