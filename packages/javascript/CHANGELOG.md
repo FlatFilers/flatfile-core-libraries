@@ -1,5 +1,13 @@
 # @flatfile/javascript
 
+## 1.2.5
+
+### Patch Changes
+
+- ab0388b: Update params for the embedded wrapper initializers
+- Updated dependencies [ab0388b]
+  - @flatfile/embedded-utils@1.1.11
+
 ## 1.2.4
 
 ### Patch Changes

@@ -1,6 +1,6 @@
 {
   "name": "@flatfile/embedded-utils",
-  "version": "1.1.10",
+  "version": "1.1.11",
   "description": "Shared utils for embedded",
   "main": "./dist/index.cjs",
   "module": "./dist/index.mjs",

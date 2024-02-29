@@ -1,10 +1,16 @@
 # embedded-utils
 
+## 1.1.11
+
+### Patch Changes
+
+- ab0388b: Update params for the embedded wrapper initializers
+
 ## 1.1.10
 
 ### Patch Changes
 
-- 399a9f4: Update Workbook types to include all params 
+- 399a9f4: Update Workbook types to include all params
 
 ## 1.1.9
 

@@ -1,5 +1,13 @@
 # @flatfile/react
 
+## 7.8.6
+
+### Patch Changes
+
+- ab0388b: Update params for the embedded wrapper initializers
+- Updated dependencies [ab0388b]
+  - @flatfile/embedded-utils@1.1.11
+
 ## 7.8.5
 
 ### Patch Changes
