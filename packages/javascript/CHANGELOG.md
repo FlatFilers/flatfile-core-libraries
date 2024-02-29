@@ -1,5 +1,11 @@
 # @flatfile/javascript
 
+## 1.2.6
+
+### Patch Changes
+
+- 5263f5b: Fix to only include defined params in the space creation request
+
 ## 1.2.5
 
 ### Patch Changes

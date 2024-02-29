@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.8.7
+
+### Patch Changes
+
+- 5263f5b: Fix to only include defined params in the space creation request
+
 ## 7.8.6
 
 ### Patch Changes

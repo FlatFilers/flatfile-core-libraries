@@ -1,6 +1,6 @@
 {
   "name": "@flatfile/javascript",
-  "version": "1.2.5",
+  "version": "1.2.6",
   "description": "Flatfile embedded with vanilla javascript.",
   "type": "module",
   "exports": {
