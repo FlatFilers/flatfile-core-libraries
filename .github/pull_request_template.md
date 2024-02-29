@@ -1,4 +1,4 @@
-## Please tell Chat GPT how to summarize this PR:
+## Please explain how to summarize this PR for the Changelog:
 
 ## Tell code reviewer how and what to test:
 
