@@ -1,5 +1,11 @@
 # flatfile
 
+## 3.6.2
+
+### Patch Changes
+
+- 5110854: Only prompt for validation if topics are passed
+
 ## 3.6.1
 
 ### Patch Changes
