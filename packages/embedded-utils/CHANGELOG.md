@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- ab0388b: Update params for the embedded wrapper initializers
+- ab0388b: Update params for the embedded sdk initializers
 
 ## 1.1.10
 
