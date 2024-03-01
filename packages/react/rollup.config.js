@@ -48,7 +48,7 @@ function commonPlugins(browser, umd = false) {
 const config = [
 
   {
-    input: 'index.ts',
+    input: 'src/index.ts',
     output: [{ file: 'dist/index.d.ts', format: 'es' }],
     plugins: [css(), dts(), postcss()],
   },
