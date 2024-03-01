@@ -210,7 +210,7 @@ export const Workbook = ({
     event?: FlatfileEvent
   ) => FlatfileRecord
 }) => {
-  const { pubKey, open, sessionSpace } = useContext(FlatfileContext)
+  const { publishableKey, open, sessionSpace } = useContext(FlatfileContext)
 
   useEffect(() => {
     console.log('Workbook useEffect', { sessionSpace, open })
@@ -280,7 +280,7 @@ export const Workbook = ({
         spaceId={spaceId}
         spaceUrl={spaceUrl}
         sheet={sheets[0]}
-        publishableKey={pubKey}
+        publishableKey={publishableKey}
         onSubmit={onSubmit}
         listener={listener}
         {...sessionSpace.data}
@@ -292,7 +292,7 @@ export const Workbook = ({
 }
 
 export const SimpleWorkbook = ({ sheets }: { sheets: any[] }) => {
-  const { pubKey, sessionSpace, setOpen } = useContext(FlatfileContext)
+  const { publishableKey, sessionSpace, setOpen } = useContext(FlatfileContext)
 
   if (sessionSpace) {
     const { id: spaceId, guestLink: spaceUrl } = sessionSpace.data
@@ -301,7 +301,7 @@ export const SimpleWorkbook = ({ sheets }: { sheets: any[] }) => {
         spaceId={spaceId}
         spaceUrl={spaceUrl}
         sheet={sheets[0]}
-        publishableKey={pubKey}
+        publishableKey={publishableKey}
         simple={true}
         handleCloseInstance={() => setOpen(false)}
         {...sessionSpace.data}
