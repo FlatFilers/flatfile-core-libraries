@@ -39,17 +39,10 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   space,
   apiUrl = 'https://platform.flatfile.com/api',
 }) => {
-  const [sessionSpace, setSessionSpace] = useState<any>(null)
   const [accessToken, setAccessToken] = useState<any>(null)
+  const [listener, setListener] = useState(new FlatfileListener())
   const [open, setOpen] = useState<boolean>(false)
-
-  useEffect(() => {
-    if (!!publishableKey) {
-      createSpace()
-    } else if (space) {
-      reUseSpace()
-    }
-  }, [publishableKey, space])
+  const [sessionSpace, setSessionSpace] = useState<any>(null)
 
   const createSpace = async () => {
     if (publishableKey) {
@@ -77,14 +70,20 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     }
   }
 
-  const [listener, setListener] = useState(new FlatfileListener())
-
   const handlePostMessage = (event: any) => {
     const { flatfileEvent } = event.data
     if (!flatfileEvent) return
 
     listener.dispatchEvent(flatfileEvent)
   }
+
+  useEffect(() => {
+    if (!!publishableKey) {
+      createSpace()
+    } else if (space) {
+      reUseSpace()
+    }
+  }, [publishableKey, space])
 
   useEffect(() => {
     window.addEventListener('message', handlePostMessage, false)

@@ -47,6 +47,7 @@
     "dotenv": "^16.3.2",
     "jest": "^28.1.2",
     "jest-environment-jsdom": "^29.6.4",
+    "jest-fetch-mock": "^3.0.3",
     "jsdom": "^21.1.0",
     "rollup-plugin-dts": "^6.1.0",
     "rollup-plugin-import-css": "^3.3.5",

@@ -2,7 +2,7 @@ import FlatfileListener from '@flatfile/listener'
 import { createContext } from 'react'
 
 export interface FlatfileContextType {
-  pubKey?: string
+  publishableKey?: string
   environmentId: string
   open: boolean
   setOpen: (open: boolean) => void
@@ -14,7 +14,7 @@ export interface FlatfileContextType {
 }
 
 const FlatfileContext = createContext<FlatfileContextType>({
-  pubKey: undefined,
+  publishableKey: undefined,
   environmentId: '',
   open: true,
   setOpen: () => {},
