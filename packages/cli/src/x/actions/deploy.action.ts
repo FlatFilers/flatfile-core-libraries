@@ -13,7 +13,7 @@ import util from 'util'
 
 import { agentTable } from '../helpers/agent.table'
 import { apiKeyClient } from './auth.action'
-import { deployTopics, tableConfig } from '../../shared/constants'
+import { deployTopics, allTopics, tableConfig } from '../../shared/constants'
 import { getAuth } from '../../shared/get-auth'
 import { getEntryFile } from '../../shared/get-entry-file'
 import { messages } from '../../shared/messages'
@@ -177,7 +177,7 @@ export async function deployAction(
 
 
       topics.split(',').forEach((t) => {
-        if (!deployTopics.some((topic) => topic === t)) {
+        if (!allTopics.some((topic) => topic === t)) {
           topicsSpinner.fail(
             `${chalk.yellow(
               `The topic "${t}" is not a valid topic.`
