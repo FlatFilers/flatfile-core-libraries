@@ -4,6 +4,7 @@ import { createContext } from 'react'
 export interface FlatfileContextType {
   publishableKey?: string
   environmentId?: string
+  apiUrl: string
   open: boolean
   setOpen: (open: boolean) => void
   space?: { id: string; accessToken: string }
@@ -16,6 +17,7 @@ export interface FlatfileContextType {
 const FlatfileContext = createContext<FlatfileContextType>({
   publishableKey: undefined,
   environmentId: undefined,
+  apiUrl: '',
   open: true,
   setOpen: () => {},
   space: undefined,

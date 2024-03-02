@@ -75,7 +75,6 @@ export const SpaceContents = (
     handleCloseInstance,
     simple,
   } = props
-
   if (!simple) {
     const { dispatchEvent } = useCreateListener({
       listener,
@@ -293,7 +292,8 @@ export const Workbook = ({
 }
 
 export const SimpleWorkbook = ({ sheets }: { sheets: any[] }) => {
-  const { publishableKey, sessionSpace, setOpen } = useContext(FlatfileContext)
+  const { publishableKey, sessionSpace, setOpen, apiUrl } =
+    useContext(FlatfileContext)
 
   if (sessionSpace) {
     const { id: spaceId, guestLink: spaceUrl } = sessionSpace.data
@@ -305,6 +305,7 @@ export const SimpleWorkbook = ({ sheets }: { sheets: any[] }) => {
         publishableKey={publishableKey}
         simple={true}
         handleCloseInstance={() => setOpen(false)}
+        apiUrl={apiUrl}
         {...sessionSpace.data}
       />
     )
