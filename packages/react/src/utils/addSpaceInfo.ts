@@ -18,13 +18,13 @@ export const addSpaceInfo = async (
 
   try {
     if (!workbook && sheet) {
+      console.log({ workbook, sheet })
       const createdWorkbook = createWorkbookFromSheet(sheet, !!onSubmit)
       localWorkbook = await api.workbooks.create({
         spaceId,
         ...(environmentId !== undefined && { environmentId }),
         ...createdWorkbook,
       })
-      console.log({ localWorkbook })
 
       if (!localWorkbook || !localWorkbook.data || !localWorkbook.data.id) {
         throw new Error('Failed to create workbook')

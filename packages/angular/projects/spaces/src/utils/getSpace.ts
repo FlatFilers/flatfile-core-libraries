@@ -25,9 +25,9 @@ const getSpace = async (spaceProps: ISpace): Promise<GetSpaceReturn> => {
       throw new Error('Missing required accessToken for Space')
     }
 
-    if (!environmentId) {
-      throw new Error('Missing required environment id')
-    }
+    // if (!environmentId) {
+    //   throw new Error('Missing required environment id')
+    // }
 
     const limitedAccessApi = authenticate(space?.accessToken, apiUrl)
     try {

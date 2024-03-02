@@ -3,7 +3,7 @@ import { createContext } from 'react'
 
 export interface FlatfileContextType {
   publishableKey?: string
-  environmentId: string
+  environmentId?: string
   open: boolean
   setOpen: (open: boolean) => void
   space?: { id: string; accessToken: string }
@@ -15,7 +15,7 @@ export interface FlatfileContextType {
 
 const FlatfileContext = createContext<FlatfileContextType>({
   publishableKey: undefined,
-  environmentId: '',
+  environmentId: undefined,
   open: true,
   setOpen: () => {},
   space: undefined,

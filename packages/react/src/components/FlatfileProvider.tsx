@@ -12,13 +12,13 @@ type Exclusive<T, U> =
 interface CreateSpaceWithPublishableKey {
   children: ReactNode
   publishableKey: string
-  environmentId: string
+  environmentId?: string
   apiUrl?: string
 }
 
 interface ReusedSpace {
   children: ReactNode
-  environmentId: string
+  environmentId?: string
   apiUrl?: string
   space: {
     id: string
