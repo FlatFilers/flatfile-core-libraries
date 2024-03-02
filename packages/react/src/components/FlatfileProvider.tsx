@@ -102,13 +102,14 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         })
       )
     }
-  }, [listener, accessToken])
+  }, [listener, accessToken, apiUrl])
 
   return (
     <FlatfileContext.Provider
       value={{
         ...(publishableKey ? { publishableKey } : {}),
         ...(space ? { space } : {}),
+        apiUrl,
         environmentId,
         open,
         setOpen,

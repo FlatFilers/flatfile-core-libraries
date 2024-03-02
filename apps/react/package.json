@@ -11,7 +11,7 @@
     "postinstall": "npx next telemetry disable"
   },
   "dependencies": {
-    "@flatfile/api": "^1.6.7",
+    "@flatfile/api": "^1.7.8",
     "@flatfile/listener": "*",
     "@flatfile/plugin-record-hook": "^1.4.4",
     "@flatfile/react": "*",
