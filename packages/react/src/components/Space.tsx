@@ -106,6 +106,7 @@ export const SpaceContents = (
   }
 
   const buildWorkbook = async () => {
+    console.log('buildWorkbook', { props })
     if (props.publishableKey) {
       const fullAccessApi = authenticate(accessToken, apiUrl)
       await addSpaceInfo(props, spaceId, fullAccessApi)
@@ -273,7 +274,7 @@ export const Workbook = ({
     })
   }
 
-  if (sessionSpace) {
+  if (!!sessionSpace) {
     const { id: spaceId, guestLink: spaceUrl } = sessionSpace.data
     return (
       <SpaceContents

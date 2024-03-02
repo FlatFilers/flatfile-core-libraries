@@ -14,8 +14,8 @@ import styles from './page.module.css'
 import { recordHook } from '@flatfile/plugin-record-hook'
 import api from '@flatfile/api'
 
-const ENVIRONMENT_ID = 'us_env_6fXBNCpi'
-const PUBLISHABLE_KEY = 'pk_G3TDS1MdhufrWsZPvoqwIV6DFHq2PUSV'
+// const ENVIRONMENT_ID = 'us_env_123456'
+const PUBLISHABLE_KEY = 'pk_123456'
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const FFApp = () => {
@@ -110,14 +110,7 @@ const FFApp = () => {
 
 const App = () => {
   return (
-    <FlatfileProvider
-      environmentId={ENVIRONMENT_ID}
-      // publishableKey={PUBLISHABLE_KEY}
-      space={{
-        id: 'us_sp_123456',
-        accessToken: 'ey123456.123456',
-      }}
-    >
+    <FlatfileProvider publishableKey={PUBLISHABLE_KEY}>
       <FFApp />
     </FlatfileProvider>
   )
