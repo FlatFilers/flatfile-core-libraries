@@ -105,7 +105,6 @@ export const SpaceContents = (
   }
 
   const buildWorkbook = async () => {
-    console.log('buildWorkbook', { props })
     if (props.publishableKey) {
       const fullAccessApi = authenticate(accessToken, apiUrl)
       await addSpaceInfo(props, spaceId, fullAccessApi)
@@ -188,7 +187,7 @@ export const SpaceContents = (
   )
 }
 
-export const Workbook = ({
+export const SimplifiedWorkbook = ({
   sheets,
   onSubmit,
   onRecordHook,
@@ -210,12 +209,9 @@ export const Workbook = ({
     event?: FlatfileEvent
   ) => FlatfileRecord
 }) => {
-  const { publishableKey, open, sessionSpace } = useContext(FlatfileContext)
+  const { publishableKey, open, sessionSpace, apiUrl } =
+    useContext(FlatfileContext)
 
-  useEffect(() => {
-    console.log('Workbook useEffect', { sessionSpace, open })
-  }, [sessionSpace, open])
-  // console.log({ sheets })
   let listener
   if (onSubmit || onRecordHook) {
     listener = FlatfileListener.create((client: FlatfileListener) => {
@@ -280,6 +276,7 @@ export const Workbook = ({
         spaceId={spaceId}
         spaceUrl={spaceUrl}
         sheet={sheets[0]}
+        apiUrl={apiUrl}
         publishableKey={publishableKey}
         onSubmit={onSubmit}
         listener={listener}
@@ -287,11 +284,9 @@ export const Workbook = ({
       />
     )
   }
-
-  return <>Workbooks are neat</>
 }
 
-export const SimpleWorkbook = ({ sheets }: { sheets: any[] }) => {
+export const Sheet = ({ config }: { config: Flatfile.SheetConfig }) => {
   const { publishableKey, sessionSpace, setOpen, apiUrl } =
     useContext(FlatfileContext)
 
@@ -301,7 +296,7 @@ export const SimpleWorkbook = ({ sheets }: { sheets: any[] }) => {
       <SpaceContents
         spaceId={spaceId}
         spaceUrl={spaceUrl}
-        sheet={sheets[0]}
+        sheet={config}
         publishableKey={publishableKey}
         simple={true}
         handleCloseInstance={() => setOpen(false)}
@@ -310,7 +305,5 @@ export const SimpleWorkbook = ({ sheets }: { sheets: any[] }) => {
       />
     )
   }
-
-  return <>Workbooks are neat</>
 }
 export default Space

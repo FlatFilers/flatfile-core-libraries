@@ -12,6 +12,8 @@ export interface FlatfileContextType {
   setSessionSpace: (space: any) => void
   listener: FlatfileListener
   setListener: (space: any) => void
+  accessToken?: string
+  setAccessToken: (accessToken: string) => void
 }
 
 const FlatfileContext = createContext<FlatfileContextType>({
@@ -25,6 +27,8 @@ const FlatfileContext = createContext<FlatfileContextType>({
   setSessionSpace: () => {},
   listener: new FlatfileListener(),
   setListener: () => {},
+  accessToken: undefined,
+  setAccessToken: () => {},
 })
 
 export default FlatfileContext
