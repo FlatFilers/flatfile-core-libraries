@@ -39,36 +39,10 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   space,
   apiUrl = 'https://platform.flatfile.com/api',
 }) => {
-  const [accessToken, setAccessToken] = useState<any>(null)
+  const [accessToken, setAccessToken] = useState<string | undefined>(undefined)
   const [listener, setListener] = useState(new FlatfileListener())
   const [open, setOpen] = useState<boolean>(false)
   const [sessionSpace, setSessionSpace] = useState<any>(null)
-
-  const createSpace = async () => {
-    if (publishableKey) {
-      const createdSpace = await initializeSpace({
-        publishableKey,
-        environmentId,
-        apiUrl,
-      })
-      ;(window as any).CROSSENV_FLATFILE_API_KEY =
-        createdSpace?.data.accessToken
-      setAccessToken(createdSpace?.data.accessToken)
-      setSessionSpace(createdSpace)
-    }
-  }
-
-  const reUseSpace = async () => {
-    if (space) {
-      const reUsedSpace = await getSpace({
-        space,
-        environmentId,
-        apiUrl,
-      })
-      setAccessToken(space.accessToken)
-      setSessionSpace(reUsedSpace)
-    }
-  }
 
   const handlePostMessage = (event: any) => {
     const { flatfileEvent } = event.data
@@ -76,14 +50,6 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
 
     listener.dispatchEvent(flatfileEvent)
   }
-
-  useEffect(() => {
-    if (!!publishableKey) {
-      createSpace()
-    } else if (space) {
-      reUseSpace()
-    }
-  }, [publishableKey, space])
 
   useEffect(() => {
     window.addEventListener('message', handlePostMessage, false)
@@ -117,6 +83,8 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         setSessionSpace,
         setListener,
         listener,
+        accessToken,
+        setAccessToken,
       }}
     >
       {children}

@@ -3,7 +3,7 @@ import { sheet } from '@/utils/sheet'
 import {
   FlatfileProvider,
   useFlatfile,
-  SimpleWorkbook,
+  Sheet,
   useListener,
   usePlugin,
   useEvent,
@@ -15,7 +15,8 @@ import { recordHook } from '@flatfile/plugin-record-hook'
 import api from '@flatfile/api'
 
 // const ENVIRONMENT_ID = 'us_env_123456'
-const PUBLISHABLE_KEY = 'pk_123456'
+// const PUBLISHABLE_KEY = 'pk_123456'
+const PUBLISHABLE_KEY = 'pk_1b2bf107e6794589887c3a64c4367173'
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const FFApp = () => {
@@ -88,7 +89,6 @@ const FFApp = () => {
   const listenerConfig = (label: string) => {
     setLabel(label)
   }
-
   return (
     <div className={styles.main}>
       <div className={styles.description}>
@@ -103,14 +103,14 @@ const FFApp = () => {
         <button onClick={() => listenerConfig('green')}>green listener</button>
       </div>
 
-      <SimpleWorkbook sheets={[sheet]} />
+      <Sheet config={sheet} />
     </div>
   )
 }
 
 const App = () => {
   return (
-    <FlatfileProvider publishableKey={PUBLISHABLE_KEY}>
+    <FlatfileProvider publishableKey={PUBLISHABLE_KEY} apiUrl='http://localhost:3000'>
       <FFApp />
     </FlatfileProvider>
   )
