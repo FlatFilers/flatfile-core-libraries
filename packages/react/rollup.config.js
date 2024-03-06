@@ -1,14 +1,17 @@
 import { dts } from 'rollup-plugin-dts'
 import commonjs from '@rollup/plugin-commonjs'
-import css from 'rollup-plugin-import-css'
+// import css from 'rollup-plugin-import-css'
 import dotenv from 'dotenv'
 import json from '@rollup/plugin-json'
 import peerDepsExternal from 'rollup-plugin-peer-deps-external'
-import postcss from 'rollup-plugin-postcss'
+// import postcss from 'rollup-plugin-postcss'
 import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
 import typescript from '@rollup/plugin-typescript'
 import url from '@rollup/plugin-url'
+import ignoreImport from 'rollup-plugin-ignore-import'
+
+import styles from 'rollup-plugin-styles'
 
 dotenv.config()
 
@@ -26,7 +29,10 @@ function commonPlugins(browser, umd = false) {
         })
       : null,
     json(),
-    css(),
+    // css(),
+    ignoreImport({
+      extensions: ['.scss', '.css'],
+    }),
     resolve({ browser, preferBuiltins: !browser }),
     commonjs({ requireReturnsDefault: 'auto' }),
     typescript({
@@ -41,7 +47,7 @@ function commonPlugins(browser, umd = false) {
       fileName: '[dirname][name][extname]',
     }),
     PROD ? terser() : null,
-    postcss(),
+    // postcss(),
   ]
 }
 
@@ -95,7 +101,23 @@ const config = [
   {
     input: 'src/index.ts',
     output: [{ file: 'dist/index.d.ts', format: 'es' }],
-    plugins: [css(), dts(), postcss()],
+    plugins: [
+      dts(),
+      ignoreImport({
+        extensions: ['.scss', '.css'],
+      }),
+    ],
+  },
+  {
+    input: 'src/components/style.scss',
+    output: {
+      file: 'dist/style.css',
+    },
+    plugins: [
+      styles({
+        mode: 'extract',
+      }),
+    ],
   },
 ]
 

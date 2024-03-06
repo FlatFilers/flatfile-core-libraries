@@ -1,3 +1,6 @@
+/* TODO: not quite right but something like this would be great */
+@import '@flatfile/react/dist/assets/style-7a7c9809.css';
+
 :root {
   --max-width: 1100px;
   --border-radius: 12px;
