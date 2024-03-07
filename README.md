@@ -122,14 +122,14 @@ We believe in building a vibrant, open, and welcoming community. Whether you're 
 
 Dive into our **Slack community** where you can chat with the Flatfile developers and other community members in real-time. It's the perfect place to ask questions, share your projects, or get help with challenges you're facing. 
 
-[Click here to join our Slack community!](#your-slack-invite-link)
+[Click here to join our Slack community!](https://flatfile.com/join-slack/)
 
 ### 📅 Weekly Developer Office Hours
 
 Don't miss out on our **Weekly Developer Office Hours Webinar** every Thursday! It's a fantastic opportunity to connect directly with the Flatfile team. Bring your questions, share your feedback, or simply listen in on the conversation about the latest in Flatfile development.
 
 - **When**: Every Thursday
-- **Where**: [Zoom/Webinar link](#your-webinar-link) - Bookmark this link!
+- **Where**: [Zoom/Webinar link](https://flatfile.com/resources/webinars/developer-office-hours/) - Bookmark this link!
 - **Why**: Get direct support, insider tips, and exclusive insights on the Flatfile Core Libraries.
 
 Whether you're new to Flatfile or a seasoned user, we welcome you to join the conversation and become an active participant in our community. Let's build something amazing together!
