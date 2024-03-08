@@ -20,7 +20,6 @@ const mockWorkbook = {
 
 const mockSpaceProps: ISpace = {
   publishableKey: 'your-publishable-key',
-  environmentId: 'your-environment-id',
   name: 'your-space-name',
   workbook: mockWorkbook,
 }
@@ -42,19 +41,6 @@ describe('initializeSpace', () => {
 
     await expect(initializeSpace(invalidSpaceProps)).rejects.toThrowError(
       'Missing required publishable key'
-    )
-    expect(authenticateMock).not.toHaveBeenCalled()
-    expect(addSpaceInfoMock).not.toHaveBeenCalled()
-  })
-
-  it('should throw an error when environment id is missing', async () => {
-    const invalidSpaceProps: ISpace = {
-      ...mockSpaceProps,
-      environmentId: '',
-    }
-
-    await expect(initializeSpace(invalidSpaceProps)).rejects.toThrowError(
-      'Missing required environment id'
     )
     expect(authenticateMock).not.toHaveBeenCalled()
     expect(addSpaceInfoMock).not.toHaveBeenCalled()

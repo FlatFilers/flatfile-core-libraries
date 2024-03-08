@@ -1,18 +1,16 @@
-import api, { Flatfile } from '@flatfile/api'
+import api from '@flatfile/api'
 import { Browser, FlatfileEvent, FlatfileListener } from '@flatfile/listener'
 
 import {
   DefaultSubmitSettings,
-  ISidebarConfig,
   ISpace,
-  IThemeConfig,
-  IUserInfo,
   JobHandler,
   NewSpaceFromPublishableKey,
   SheetHandler,
   SimpleOnboarding,
   createWorkbookFromSheet,
 } from '@flatfile/embedded-utils'
+
 import { createIframe } from './src/createIframe'
 import { createDocument } from './src/services/document'
 import { createWorkbook } from './src/services/workbook'
@@ -21,6 +19,7 @@ import { FlatfileRecord } from '@flatfile/hooks'
 import { recordHook } from '@flatfile/plugin-record-hook'
 import { createModal } from './src/createModal'
 import { CreateWorkbookConfig } from '@flatfile/api/api'
+import { UpdateSpaceInfo } from './src/types'
 
 const displayError = (errorTitle: string, errorMessage: string) => {
   const display = document.createElement('div')
@@ -82,23 +81,6 @@ async function createlistener(
   window.addEventListener('message', handlePostMessage, false)
   const removeListener = () => removeEventListener('message', handlePostMessage)
   return removeListener
-}
-
-export interface UpdateSpaceInfo {
-  apiUrl: string
-  publishableKey?: string
-  workbook?: Flatfile.CreateWorkbookConfig
-  spaceId: string
-  environmentId: string
-  mountElement: string
-  errorTitle: string
-  themeConfig?: IThemeConfig
-  document?: Flatfile.DocumentConfig
-  sidebarConfig?: ISidebarConfig
-  userInfo?: Partial<IUserInfo>
-  spaceInfo?: Partial<IUserInfo>
-  accessToken: string
-  spaceBody?: any
 }
 
 const updateSpaceInfo = async (data: UpdateSpaceInfo) => {
@@ -342,8 +324,9 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
     const createSpace = async () => {
       const spaceRequestBody = {
         name: name || 'Embedded Space',
-        autoConfigure: false,
         ...spaceBody,
+        autoConfigure: !createdWorkbook && !simpleOnboardingOptions?.sheet,
+        ...(environmentId ? { environmentId } : {}),
         labels: ['embedded', ...(labels || [])],
         ...(namespace ? { namespace } : {}),
         ...(translationsPath ? { translationsPath } : {}),
@@ -355,10 +338,6 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
           ...(spaceBody?.metadata || {}),
           ...(metadata || {}),
         },
-      }
-
-      if (!createdWorkbook && !simpleOnboardingOptions?.sheet) {
-        spaceRequestBody.autoConfigure = true
       }
 
       if (!createdWorkbook && simpleOnboardingOptions?.sheet) {

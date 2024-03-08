@@ -9,7 +9,6 @@ export const getSpace = async (
   const {
     space,
     apiUrl,
-    environmentId,
     spaceUrl = 'https://platform.flatfile.com/s/',
   } = spaceProps
   let spaceResponse
@@ -19,10 +18,6 @@ export const getSpace = async (
     }
     if (!space?.accessToken) {
       throw new Error('Missing required accessToken for Space')
-    }
-
-    if (!environmentId) {
-      throw new Error('Missing required environment id')
     }
 
     const limitedAccessApi = authenticate(space?.accessToken, apiUrl)

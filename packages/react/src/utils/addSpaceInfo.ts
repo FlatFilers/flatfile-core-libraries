@@ -21,7 +21,7 @@ export const addSpaceInfo = async (
       const createdWorkbook = createWorkbookFromSheet(sheet)
       localWorkbook = await api.workbooks.create({
         spaceId,
-        environmentId,
+        ...(environmentId !== undefined && { environmentId }),
         ...createdWorkbook,
       })
 
@@ -32,7 +32,7 @@ export const addSpaceInfo = async (
     if (workbook) {
       localWorkbook = await api.workbooks.create({
         spaceId,
-        environmentId,
+        ...(environmentId !== undefined && { environmentId }),
         ...workbook,
       })
 

@@ -1,4 +1,4 @@
-import { UpdateSpaceInfo } from '../..'
+import { UpdateSpaceInfo } from '../types'
 
 export const createDocument = async (data: UpdateSpaceInfo) => {
   const { apiUrl, accessToken, document, spaceId } = data

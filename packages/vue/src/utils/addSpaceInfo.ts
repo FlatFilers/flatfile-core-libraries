@@ -23,7 +23,7 @@ const addSpaceInfo = async (
     if (workbook) {
       const localWorkbook = await api.workbooks.create({
         spaceId,
-        environmentId,
+        ...(environmentId !== undefined && { environmentId }),
         ...workbook,
       })
 
@@ -33,7 +33,7 @@ const addSpaceInfo = async (
     }
 
     const updatedSpace = await api.spaces.update(spaceId, {
-      environmentId,
+      ...(environmentId !== undefined && { environmentId }),
       metadata: {
         theme: themeConfig,
         sidebarConfig: sidebarConfig || { showSidebar: false },

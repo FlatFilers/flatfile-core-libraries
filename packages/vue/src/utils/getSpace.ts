@@ -5,20 +5,15 @@ import {
 import authenticate from './authenticate'
 import { Flatfile } from '@flatfile/api'
 
-type IWorkbook = Pick<
-  Flatfile.CreateWorkbookConfig,
-  'name' | 'sheets' | 'actions'
->
 const getSpace = async (
   spaceProps: ReusedSpaceWithAccessToken
 ): Promise<{
   space: any
-  workbook?: IWorkbook
+  workbook?: Flatfile.CreateWorkbookConfig
 }> => {
   const {
     space,
     apiUrl,
-    environmentId,
     spaceUrl = 'https://spaces.flatfile.com/',
   } = spaceProps
   let spaceResponse
@@ -29,10 +24,6 @@ const getSpace = async (
     }
     if (!space?.accessToken) {
       throw new Error('Missing required accessToken for Space')
-    }
-
-    if (!environmentId) {
-      throw new Error('Missing required environment id')
     }
 
     const limitedAccessApi = authenticate(space?.accessToken, apiUrl)
@@ -59,7 +50,7 @@ const getSpace = async (
           name: workbookResponse.data[0].name,
           sheets: workbookResponse.data[0].sheets,
           actions: workbookResponse.data[0].actions,
-        } as IWorkbook)
+        } as Flatfile.CreateWorkbookConfig)
       : undefined
 
     return { space: spaceResponse, workbook }

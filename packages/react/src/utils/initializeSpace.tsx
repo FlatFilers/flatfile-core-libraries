@@ -31,36 +31,27 @@ export const initializeSpace = async (
       throw new Error('Missing required publishable key')
     }
 
-    if (!environmentId) {
-      throw new Error('Missing required environment id')
-    }
-
     const limitedAccessApi = authenticate(publishableKey, apiUrl)
-    const createSpaceRequest = {
-      name,
-      autoConfigure: false,
-      environmentId,
-      ...spaceBody,
-      labels: ['embedded', ...(labels || [])],
-      ...(namespace ? { namespace } : {}),
-      ...(translationsPath ? { translationsPath } : {}),
-      ...(languageOverride ? { languageOverride } : {}),
-      metadata: {
-        ...metadata,
-        theme: themeConfig,
-        sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
-        userInfo,
-        spaceInfo,
-        ...(spaceBody?.metadata || {}),
-        ...(metadata || {}),
-      },
-    }
 
-    if (!workbook) {
-      createSpaceRequest.autoConfigure = true
-    }
     try {
-      space = await limitedAccessApi.spaces.create(createSpaceRequest)
+      space = await limitedAccessApi.spaces.create({
+        name,
+        autoConfigure: !workbook,
+        ...spaceBody,
+        labels: ['embedded', ...(labels || [])],
+        ...(environmentId !== undefined && { environmentId }),
+        ...(namespace ? { namespace } : {}),
+        ...(translationsPath ? { translationsPath } : {}),
+        ...(languageOverride ? { languageOverride } : {}),
+        metadata: {
+          theme: themeConfig,
+          sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
+          userInfo,
+          spaceInfo,
+          ...(spaceBody?.metadata || {}),
+          ...(metadata || {}),
+        },
+      })
     } catch (error) {
       throw new Error(`Failed to create space: ${getErrorMessage(error)}`)
     }

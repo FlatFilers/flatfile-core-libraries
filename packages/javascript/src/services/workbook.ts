@@ -1,4 +1,4 @@
-import { UpdateSpaceInfo } from '../..'
+import { UpdateSpaceInfo } from '../types'
 import { Flatfile } from '@flatfile/api'
 
 export const createWorkbook = async (data: UpdateSpaceInfo) => {
@@ -13,7 +13,7 @@ export const createWorkbook = async (data: UpdateSpaceInfo) => {
     },
     body: JSON.stringify({
       spaceId,
-      environmentId,
+      ...(environmentId !== undefined && { environmentId }),
       ...workbook,
     }),
   })

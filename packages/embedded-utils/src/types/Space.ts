@@ -131,7 +131,7 @@ interface BaseSpace {
    * Identifier for environment
    * Required
    */
-  environmentId: string
+  environmentId?: string
   /**
    * Listener for advanced functionality
    * Optional

@@ -28,10 +28,6 @@ const useInitializeSpace = (flatfileOptions: SimpleOnboarding) => {
         throw new Error('Missing required publishable key')
       }
 
-      if (!environmentId) {
-        throw new Error('Missing required environment id')
-      }
-
       const limitedAccessApi = authenticate(publishableKey, apiUrl)
       const spaceRequestBody = {
         name,
@@ -50,7 +46,7 @@ const useInitializeSpace = (flatfileOptions: SimpleOnboarding) => {
 
       try {
         space.value = await limitedAccessApi.spaces.create({
-          environmentId,
+          ...(environmentId !== undefined && { environmentId }),
           ...spaceRequestBody,
         })
       } catch (error) {

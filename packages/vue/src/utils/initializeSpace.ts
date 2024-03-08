@@ -10,7 +10,7 @@ export const initializeSpace = async (
   flatfileOptions: SimpleOnboarding
 ): Promise<{
   space: any
-  workbook?: Pick<Flatfile.CreateWorkbookConfig, 'name' | 'sheets' | 'actions'>
+  workbook?: Flatfile.CreateWorkbookConfig
 }> => {
   let space
   const {
@@ -28,10 +28,6 @@ export const initializeSpace = async (
   try {
     if (!publishableKey) {
       throw new Error('Missing required publishable key')
-    }
-
-    if (!environmentId) {
-      throw new Error('Missing required environment id')
     }
 
     const limitedAccessApi = authenticate(publishableKey, apiUrl)
@@ -53,7 +49,7 @@ export const initializeSpace = async (
 
     try {
       space = await limitedAccessApi.spaces.create({
-        environmentId,
+        ...(environmentId !== undefined && { environmentId }),
         ...spaceRequestBody,
       })
     } catch (error) {

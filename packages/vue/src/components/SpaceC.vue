@@ -171,7 +171,6 @@ export default {
       userInfo,
       handleCloseInstance
     } = props
-    const channel = `space.${spaceId}`
 
     const handleConfirm = () => {
       closeSpace?.onClose({})
