@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- 10b4d14: Fixes a bug where the embedded iframe would not be removed if there was an error
+- 10b4d14: Fixes a bug where the embedded iframe would not be removed if there was an error.
 
 ## 7.8.7
 
