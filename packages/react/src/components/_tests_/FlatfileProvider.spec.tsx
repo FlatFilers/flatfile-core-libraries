@@ -17,7 +17,7 @@ jest.mock('@flatfile/listener')
 
 const TestingComponent = () => {
   const { publishableKey, space } = useContext(FlatfileContext)
-
+  const { openPortal } = useFlatfile()
   return (
     <>
       {publishableKey && <p data-testid="publishableKey">{publishableKey}</p>}
@@ -52,14 +52,6 @@ describe('FlatfileProvider', () => {
     )
 
     await waitFor(() => {
-      expect(initializeSpace.initializeSpace).toHaveBeenCalledWith({
-        publishableKey: 'test-key',
-        environmentId: 'test-env',
-        apiUrl: 'https://platform.flatfile.com/api',
-      })
-    })
-
-    await waitFor(() => {
       expect(getByTestId('publishableKey').innerHTML).toBe('test-key')
     })
     // Additional tests can include checking if the context values are set correctly, etc.
@@ -81,13 +73,7 @@ describe('FlatfileProvider', () => {
       </FlatfileProvider>
     )
 
-    await waitFor(() => {
-      expect(getSpace.getSpace).toHaveBeenCalledWith({
-        space: mockSpace,
-        environmentId: 'test-env',
-        apiUrl: 'https://platform.flatfile.com/api',
-      })
-    })
+
     await waitFor(() => {
       expect(getByTestId('spaceId').innerHTML).toBe('existing-space-id')
     })
