@@ -85,7 +85,6 @@ export const SpaceContents = (
     const handlePostMessage = (event: any) => {
       const { flatfileEvent } = event.data
       if (!flatfileEvent) return
-      console.log('handlePostMessage', { flatfileEvent })
       if (
         flatfileEvent.topic === 'job:outcome-acknowledged' &&
         flatfileEvent.payload.status === 'complete' &&
