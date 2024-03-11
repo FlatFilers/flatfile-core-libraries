@@ -1,6 +1,7 @@
 import api from '@flatfile/api'
 import { Browser, FlatfileEvent, FlatfileListener } from '@flatfile/listener'
 
+import { Environment, Guest, Space, User, Workbook } from '@flatfile/api/api'
 import {
   DefaultSubmitSettings,
   ISpace,
@@ -10,16 +11,10 @@ import {
   SimpleOnboarding,
   createWorkbookFromSheet,
 } from '@flatfile/embedded-utils'
-
-import { createIframe } from './src/createIframe'
-import { createDocument } from './src/services/document'
-import { createWorkbook } from './src/services/workbook'
-
 import { FlatfileRecord } from '@flatfile/hooks'
 import { recordHook } from '@flatfile/plugin-record-hook'
+import { createIframe } from './src/createIframe'
 import { createModal } from './src/createModal'
-import { CreateWorkbookConfig } from '@flatfile/api/api'
-import { UpdateSpaceInfo } from './src/types'
 
 const displayError = (errorTitle: string, errorMessage: string) => {
   const display = document.createElement('div')
@@ -82,25 +77,6 @@ async function createlistener(
   const removeListener = () => removeEventListener('message', handlePostMessage)
   return removeListener
 }
-
-const updateSpaceInfo = async (data: UpdateSpaceInfo) => {
-  const { mountElement, errorTitle, document: documentConfig, workbook } = data
-
-  try {
-    if (workbook) {
-      await createWorkbook(data)
-    }
-
-    if (documentConfig) {
-      await createDocument(data)
-    }
-  } catch (error) {
-    const wrapper = document.getElementById(mountElement)
-    const errorMessage = displayError(errorTitle, error as string)
-    wrapper?.appendChild(errorMessage)
-  }
-}
-
 interface SimpleListenerType
   extends Pick<
     SimpleOnboarding,
@@ -271,13 +247,109 @@ function initializeIFrameConfirmationModal(
   }
 }
 
+type InitSpaceType = ISpace & {
+  isAutoConfig: boolean
+}
+
+// TODO: Replace hardcoded type with imported type from Platform
+export interface InitialResourceData {
+  workbooks: Workbook[] | null
+  documents: Document[] | null
+  space: Space
+  actor: User | Guest | undefined
+  entitlements: any[]
+  environment: Partial<Environment> & {
+    hasAccess: boolean
+  }
+}
+
+/**
+ * Full-service utility which takes incoming space configuration data and calls the internal backend-for-frontend
+ * endpoint to create the space, workbook, and document in a single request.
+ *
+ * The resulting response is the full set of initial resources needed to render the UI experience
+ * @param param0
+ * @returns
+ */
+const initNewSpace = async ({
+  publishableKey,
+  apiUrl,
+  name,
+  environmentId,
+  spaceBody,
+  namespace,
+  translationsPath,
+  languageOverride,
+  themeConfig,
+  sidebarConfig,
+  labels,
+  metadata,
+  userInfo,
+  workbook,
+  document,
+  isAutoConfig,
+}: InitSpaceType): Promise<InitialResourceData> => {
+  const createSpaceEndpoint = `${apiUrl}/v1/internal/spaces/init`
+
+  let spaceRequestBody: any = {
+    space: {
+      name: name || 'Embedded Space',
+      ...spaceBody,
+      autoConfigure: isAutoConfig,
+      ...(environmentId ? { environmentId } : {}),
+      labels: ['embedded', ...(labels || [])],
+      ...(namespace ? { namespace } : {}),
+      ...(translationsPath ? { translationsPath } : {}),
+      ...(languageOverride ? { languageOverride } : {}),
+      metadata: {
+        theme: themeConfig,
+        sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
+        userInfo,
+        ...(spaceBody?.metadata || {}),
+        ...(metadata || {}),
+      },
+    },
+  }
+
+  if (workbook) {
+    spaceRequestBody = {
+      ...spaceRequestBody,
+      workbook,
+    }
+  }
+
+  if (document) {
+    spaceRequestBody = {
+      ...spaceRequestBody,
+      document,
+    }
+  }
+
+  const response = await fetch(createSpaceEndpoint, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${publishableKey}`,
+    },
+    body: JSON.stringify(spaceRequestBody),
+  })
+
+  const result = await response.json()
+  if (!response.ok) {
+    const errorMessage = result?.errors[0]?.message || 'Failed to create space'
+    throw new Error(errorMessage)
+  }
+
+  return result.data
+}
+
 export async function startFlatfile(options: SimpleOnboarding | ISpace) {
   const {
     publishableKey,
     displayAsModal = true,
     mountElement = 'flatfile_iFrameContainer',
     space,
-    spaceBody = null,
+    spaceBody = undefined,
     apiUrl = 'https://platform.flatfile.com/api',
     baseUrl = 'https://platform.flatfile.com/s',
     spaceUrl = 'https://platform.flatfile.com/s',
@@ -319,56 +391,50 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
   }
 
   try {
-    const createSpaceEndpoint = `${apiUrl}/v1/spaces`
+    let spaceResult: any
+    let initialResourceResponse
     let createdWorkbook = workbook
-    const createSpace = async () => {
-      const spaceRequestBody = {
-        name: name || 'Embedded Space',
-        ...spaceBody,
-        autoConfigure: !createdWorkbook && !simpleOnboardingOptions?.sheet,
-        ...(environmentId ? { environmentId } : {}),
-        labels: ['embedded', ...(labels || [])],
-        ...(namespace ? { namespace } : {}),
-        ...(translationsPath ? { translationsPath } : {}),
-        ...(languageOverride ? { languageOverride } : {}),
-        metadata: {
-          theme: themeConfig,
-          sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
-          userInfo,
-          ...(spaceBody?.metadata || {}),
-          ...(metadata || {}),
-        },
-      }
+    let isAutoConfig = false
 
-      if (!createdWorkbook && simpleOnboardingOptions?.sheet) {
+    if (!createdWorkbook) {
+      if (!simpleOnboardingOptions.sheet) {
+        isAutoConfig = true
+      } else {
         createdWorkbook = createWorkbookFromSheet(
-          simpleOnboardingOptions?.sheet,
-          !!simpleOnboardingOptions?.onSubmit
+          simpleOnboardingOptions.sheet,
+          !!simpleOnboardingOptions.onSubmit
         )
       }
-
-      const response = await fetch(createSpaceEndpoint, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          Authorization: `Bearer ${publishableKey}`,
-        },
-        body: JSON.stringify(spaceRequestBody),
-      })
-
-      const result = await response.json()
-      if (!response.ok) {
-        const errorMessage =
-          result?.errors[0]?.message || 'Failed to create space'
-        throw new Error(errorMessage)
-      }
-
-      return result.data
     }
 
-    const spaceData = isReusingSpace ? space : await createSpace()
+    if (isReusingSpace) {
+      spaceResult = space
+    }
+    // Initialize new space / workbook / document and obtain response used to "initial resources" to hydrate embedded UI
+    else if (publishableKey) {
+      initialResourceResponse = await initNewSpace({
+        publishableKey,
+        apiUrl,
+        name,
+        spaceBody,
+        namespace,
+        environmentId,
+        translationsPath,
+        languageOverride,
+        themeConfig,
+        sidebarConfig,
+        labels,
+        metadata,
+        userInfo,
+        workbook: createdWorkbook,
+        document: documentConfig,
+        isAutoConfig,
+      })
 
-    if (!spaceData?.id || !spaceData?.accessToken) {
+      spaceResult = initialResourceResponse.space
+    }
+
+    if (!spaceResult?.id || !spaceResult?.accessToken) {
       throw new Error('Unable to create space, please try again.')
     }
 
@@ -379,14 +445,14 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
 
     if (listener) {
       removeMessageListener = await createlistener(
-        spaceData.accessToken,
+        spaceResult.accessToken,
         apiUrl,
         listener,
         closeSpace
       )
     } else {
       removeMessageListener = await createlistener(
-        spaceData.accessToken,
+        spaceResult.accessToken,
         apiUrl,
         createSimpleListener({
           onRecordHook: simpleOnboardingOptions?.onRecordHook,
@@ -395,23 +461,6 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
         }),
         closeSpace
       )
-    }
-    if (!isReusingSpace) {
-      await updateSpaceInfo({
-        apiUrl,
-        publishableKey,
-        workbook: createdWorkbook as CreateWorkbookConfig,
-        spaceId: spaceData.id,
-        accessToken: spaceData.accessToken,
-        environmentId,
-        mountElement,
-        errorTitle,
-        themeConfig,
-        document: documentConfig,
-        sidebarConfig,
-        userInfo,
-        spaceInfo,
-      })
     }
 
     /**
@@ -425,13 +474,16 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
       mountIFrameWrapper = createIframe(
         mountElement,
         displayAsModal,
-        spaceData.id,
-        spaceData.accessToken,
-        spaceData?.guestLink ?? spacesUrl,
+        spaceResult.id,
+        spaceResult.accessToken,
+        spaceResult?.guestLink ?? spacesUrl,
         isReusingSpace
       )
     } else {
       const targetOrigin = new URL(spacesUrl).origin
+      const initialResources = initialResourceResponse
+        ? initialResourceResponse
+        : null
       mountIFrameElement.contentWindow?.postMessage(
         {
           flatfileEvent: {
@@ -439,8 +491,9 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
             payload: {
               status: 'complete',
               spaceUrl: `${targetOrigin}/space/${
-                spaceData.id
-              }?token=${encodeURIComponent(spaceData.accessToken)}`,
+                spaceResult.id
+              }?token=${encodeURIComponent(spaceResult.accessToken)}`,
+              initialResources,
             },
           },
         },
@@ -462,7 +515,7 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
       )
     }
 
-    return { spaceId: spaceData.id }
+    return { spaceId: spaceResult.id }
   } catch (error) {
     const wrapper = document.getElementById(mountElement)
     const errorMessage = displayError(errorTitle, error as string)
