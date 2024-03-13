@@ -9,17 +9,18 @@ type Exclusive<T, U> =
   | (T & Partial<Record<Exclude<keyof U, keyof T>, never>>)
   | (U & Partial<Record<Exclude<keyof T, keyof U>, never>>)
 
-interface CreateSpaceWithPublishableKey {
+interface BaseSpace {
   children: ReactNode
-  publishableKey: string
   environmentId?: string
   apiUrl?: string
+  options?: object
+}
+
+interface CreateSpaceWithPublishableKey extends BaseSpace {
+  publishableKey: string
 }
 
 interface ReusedSpace {
-  children: ReactNode
-  environmentId?: string
-  apiUrl?: string
   space: {
     id: string
     accessToken: string
@@ -38,11 +39,14 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   environmentId,
   space,
   apiUrl = 'https://platform.flatfile.com/api',
+  options = {},
 }) => {
   const [accessToken, setAccessToken] = useState<string | undefined>(undefined)
   const [listener, setListener] = useState(new FlatfileListener())
   const [open, setOpen] = useState<boolean>(false)
   const [sessionSpace, setSessionSpace] = useState<any>(null)
+  const [flatfileConfiguration, setFlatfileConfiguration] =
+    useState<any>(options)
 
   const handlePostMessage = (event: any) => {
     const { flatfileEvent } = event.data
@@ -85,6 +89,8 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         listener,
         accessToken,
         setAccessToken,
+        flatfileConfiguration,
+        setFlatfileConfiguration,
       }}
     >
       {children}

@@ -1,5 +1,7 @@
 'use client'
 import { sheet } from '@/utils/sheet'
+import { workbook } from '@/utils/workbook'
+import { document } from '@/utils/document'
 import {
   FlatfileProvider,
   useFlatfile,
@@ -7,8 +9,10 @@ import {
   useListener,
   usePlugin,
   useEvent,
+  SimplifiedWorkbook,
+  Workbook,
 } from '@flatfile/react'
-import React from 'react'
+import React, { useEffect } from 'react'
 import { listener as importedListener } from './listener'
 import styles from './page.module.css'
 import { recordHook } from '@flatfile/plugin-record-hook'
@@ -16,24 +20,49 @@ import api from '@flatfile/api'
 
 // const ENVIRONMENT_ID = 'us_env_123456'
 // const PUBLISHABLE_KEY = 'pk_123456'
-const PUBLISHABLE_KEY = 'pk_1b2bf107e6794589887c3a64c4367173'
+const PUBLISHABLE_KEY = 'pk_cb0449ee1f034c13b34b31e9577fc06a'
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const FFApp = () => {
-  const { open, openPortal, closePortal } = useFlatfile()
+  const {
+    open,
+    openPortal,
+    closePortal,
+    flatfileConfiguration,
+    setFlatfileConfiguration,
+  } = useFlatfile()
 
   const [label, setLabel] = React.useState('Rock')
 
-  useListener(
-    (listener) => {
-      listener.on('**', (event) => {
-        console.log('initialListener Event => ', event.topic)
-        // Handle the workbook:deleted event
+  // useEffect(() => {
+  //   console.log('FFApp useEffect', { flatfileConfiguration })
+  //   setFlatfileConfiguration({...flatfileConfiguration, sidebarConfig: {
+  //     showSidebar: true
+  //   }})
+  // }, [flatfileConfiguration])
+
+  useListener((listener) => {
+    // currentListener
+    listener.on('**', (event) => {
+      console.log('FFApp useListener Event => ', event.topic)
+      // Handle the workbook:deleted event
+    })
+    // importedListener
+  }, [])
+
+  useListener(importedListener, [])
+
+  useListener((client) => {
+    client.use(
+      recordHook('contacts', (record) => {
+        const firstName = record.get('firstName')
+        console.log({ firstName })
+        // Gettign the real types here would be nice but seems tricky
+        record.set('email', 'Rock')
+        return record
       })
-      importedListener
-    },
-    [label]
-  )
+    )
+  }, [])
 
   usePlugin(
     recordHook('contacts', (record, event) => {
@@ -103,14 +132,35 @@ const FFApp = () => {
         <button onClick={() => listenerConfig('green')}>green listener</button>
       </div>
 
-      <Sheet config={sheet} />
+      {/* <Sheet config={sheet} /> */}
+      
+      {/* <SimplifiedWorkbook
+        sheets={[sheet]}
+        onRecordHook={(record, event) => {
+          console.log('onRecordHook', { record, event })
+          record.set('email', 'alex@nasa.com')
+          return record
+        }}
+        onSubmit={({ data, sheet, job, event }) => {
+          console.log('onSubmit', { data, sheet, job, event })
+        }}
+      /> */}
+
+      <Workbook workbook={workbook} document={document} />
     </div>
   )
 }
 
 const App = () => {
   return (
-    <FlatfileProvider publishableKey={PUBLISHABLE_KEY} apiUrl='http://localhost:3000'>
+    <FlatfileProvider
+      publishableKey={PUBLISHABLE_KEY}
+      options={{
+        sidebarConfig: {
+          showSidebar: true,
+        },
+      }}
+    >
       <FFApp />
     </FlatfileProvider>
   )

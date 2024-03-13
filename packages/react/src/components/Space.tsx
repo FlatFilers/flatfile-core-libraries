@@ -1,12 +1,5 @@
-import api, { Flatfile } from '@flatfile/api'
-import {
-  ISpace,
-  JobHandler,
-  SheetHandler,
-  SpaceComponent,
-  createWorkbookFromSheet,
-} from '@flatfile/embedded-utils'
-import React, { JSX, useContext, useEffect, useMemo, useState } from 'react'
+import { ISpace, SpaceComponent } from '@flatfile/embedded-utils'
+import React, { JSX, useContext, useEffect, useState } from 'react'
 import { useCreateListener } from '../hooks/useCreateListener'
 import { addSpaceInfo } from '../utils/addSpaceInfo'
 import { authenticate } from '../utils/authenticate'
@@ -14,9 +7,6 @@ import ConfirmModal from './ConfirmCloseModal'
 import { getContainerStyles, getIframeStyles } from './embeddedStyles'
 import './style.scss'
 import FlatfileContext from './FlatfileContext'
-import { TRecordDataWithLinks, TPrimitive } from '@flatfile/hooks'
-import FlatfileListener, { FlatfileEvent } from '@flatfile/listener'
-import { FlatfileRecord, recordHook } from '@flatfile/plugin-record-hook'
 
 /**
  * @name Space
@@ -57,7 +47,8 @@ export const SpaceContents = (
 ): JSX.Element => {
   const [showExitWarnModal, setShowExitWarnModal] = useState(false)
   // const context = useContext(FlatfileContext)
-  const { open } = useContext(FlatfileContext)
+  const context = useContext(FlatfileContext)
+  const { open } = context
   const {
     spaceId,
     spaceUrl,
@@ -106,6 +97,7 @@ export const SpaceContents = (
   const buildWorkbook = async () => {
     if (props.publishableKey) {
       const fullAccessApi = authenticate(accessToken, apiUrl)
+      console.log('addSpaceInfo', { props, spaceId, context })
       await addSpaceInfo(props, spaceId, fullAccessApi)
     }
   }
@@ -186,123 +178,4 @@ export const SpaceContents = (
   )
 }
 
-export const SimplifiedWorkbook = ({
-  sheets,
-  onSubmit,
-  onRecordHook,
-}: {
-  sheets: any[]
-  onSubmit?: ({
-    data,
-    sheet,
-    job,
-    event,
-  }: {
-    data?: any
-    sheet?: any
-    job?: any
-    event?: FlatfileEvent
-  }) => void
-  onRecordHook?: (
-    record: FlatfileRecord<TRecordDataWithLinks<TPrimitive>>,
-    event?: FlatfileEvent
-  ) => FlatfileRecord
-}) => {
-  const { publishableKey, open, sessionSpace, apiUrl } =
-    useContext(FlatfileContext)
-
-  let listener
-  if (onSubmit || onRecordHook) {
-    listener = FlatfileListener.create((client: FlatfileListener) => {
-      if (onRecordHook) {
-        client.use(
-          recordHook(
-            sheets[0]?.slug || 'slug',
-            async (
-              record: FlatfileRecord,
-              event: FlatfileEvent | undefined
-            ) => {
-              // @ts-ignore - something weird with the `data` prop and the types upstream in the packages being declared in different places, but overall this is fine
-              return onRecordHook(record, event)
-            }
-          )
-        )
-      }
-      if (onSubmit) {
-        client.filter({ job: 'workbook:simpleSubmitAction' }, (configure) => {
-          configure.on('job:ready', async (event) => {
-            const { jobId, spaceId, workbookId } = event.context
-            try {
-              await api.jobs.ack(jobId, {
-                info: 'Starting job',
-                progress: 10,
-              })
-
-              const job = new JobHandler(jobId)
-              const { data: workbookSheets } = await api.sheets.list({
-                workbookId,
-              })
-
-              // this assumes we are only allowing 1 sheet here (which we've talked about doing initially)
-              const sheet = new SheetHandler(workbookSheets[0].id)
-
-              if (onSubmit) {
-                await onSubmit({ job, sheet, event })
-              }
-
-              await api.jobs.complete(jobId, {
-                outcome: {
-                  message: 'complete',
-                },
-              })
-            } catch (error: any) {
-              console.error('Error:', error.stack)
-              if (jobId) {
-                await api.jobs.cancel(jobId)
-              }
-              console.error('Error:', error.stack)
-            }
-          })
-        })
-      }
-    })
-  }
-
-  if (!!sessionSpace) {
-    const { id: spaceId, guestLink: spaceUrl } = sessionSpace.data
-    return (
-      <SpaceContents
-        spaceId={spaceId}
-        spaceUrl={spaceUrl}
-        sheet={sheets[0]}
-        apiUrl={apiUrl}
-        publishableKey={publishableKey}
-        onSubmit={onSubmit}
-        listener={listener}
-        {...sessionSpace.data}
-      />
-    )
-  }
-}
-
-export const Sheet = ({ config }: { config: Flatfile.SheetConfig }) => {
-  const { publishableKey, sessionSpace, setOpen, apiUrl } =
-    useContext(FlatfileContext)
-
-  if (sessionSpace) {
-    const { id: spaceId, guestLink: spaceUrl } = sessionSpace.data
-    return (
-      <SpaceContents
-        spaceId={spaceId}
-        spaceUrl={spaceUrl}
-        sheet={config}
-        publishableKey={publishableKey}
-        simple={true}
-        handleCloseInstance={() => setOpen(false)}
-        apiUrl={apiUrl}
-        {...sessionSpace.data}
-      />
-    )
-  }
-}
 export default Space
