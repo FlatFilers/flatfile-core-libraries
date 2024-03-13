@@ -289,7 +289,7 @@ const initNewSpace = async ({
   document,
   isAutoConfig,
 }: InitSpaceType): Promise<InitialResourceData> => {
-  const createSpaceEndpoint = `${apiUrl}/v1/internal/spaces/init`
+  const createSpaceEndpoint = `${apiUrl}/v1/internal/spaces/init?publishableKey=${publishableKey}`
 
   let spaceRequestBody: any = {
     space: {
@@ -328,8 +328,8 @@ const initNewSpace = async ({
   const response = await fetch(createSpaceEndpoint, {
     method: 'POST',
     headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${publishableKey}`,
+      Accept: 'text/plain',
+      'Content-Type': 'text/plain',
     },
     body: JSON.stringify(spaceRequestBody),
   })
