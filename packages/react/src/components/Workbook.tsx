@@ -129,17 +129,12 @@ export const SimplifiedWorkbook = ({
     event?: FlatfileEvent
   ) => FlatfileRecord
 }) => {
-  const {
-    publishableKey,
-    sessionSpace,
-    apiUrl,
-    flatfileConfiguration,
-    setFlatfileConfiguration,
-  } = useContext(FlatfileContext)
+  const { publishableKey, sessionSpace, apiUrl, flatfileConfiguration, setFlatfileConfiguration } =
+    useContext(FlatfileContext)
 
   useEffect(() => {
     setFlatfileConfiguration({
-      ...flatfileConfiguration,
+        ...flatfileConfiguration,
       sheet: sheets[0],
       onSubmit,
     })
@@ -231,7 +226,7 @@ export const Sheet = ({ config }: { config: Flatfile.SheetConfig }) => {
 
   useEffect(() => {
     setFlatfileConfiguration({
-      ...flatfileConfiguration,
+        ...flatfileConfiguration,
       sheet: config,
     })
   }, [config])
