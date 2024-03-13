@@ -1,5 +1,12 @@
+import { Flatfile } from '@flatfile/api'
 import FlatfileListener from '@flatfile/listener'
 import { createContext } from 'react'
+
+type CreateNewSpace = Partial<Flatfile.SpaceConfig>
+type ReUseSpace = Partial<Flatfile.SpaceConfig> & {
+  id: string
+  accessToken: string
+}
 
 export interface FlatfileContextType {
   publishableKey?: string
@@ -7,7 +14,7 @@ export interface FlatfileContextType {
   apiUrl: string
   open: boolean
   setOpen: (open: boolean) => void
-  space?: { id: string; accessToken: string }
+  space?: CreateNewSpace | ReUseSpace
   sessionSpace?: any
   setSessionSpace: (space: any) => void
   listener: FlatfileListener

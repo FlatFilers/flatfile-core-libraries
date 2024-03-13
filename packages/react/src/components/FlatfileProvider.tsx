@@ -1,9 +1,8 @@
 import React, { ReactNode, useEffect, useState } from 'react'
 
 import FlatfileContext from './FlatfileContext'
-import { initializeSpace } from '../utils/initializeSpace'
 import FlatfileListener, { Browser } from '@flatfile/listener'
-import { getSpace } from '../utils/getSpace'
+import { Flatfile } from '@flatfile/api'
 
 type Exclusive<T, U> =
   | (T & Partial<Record<Exclude<keyof U, keyof T>, never>>)
@@ -18,13 +17,11 @@ interface BaseSpace {
 
 interface CreateSpaceWithPublishableKey extends BaseSpace {
   publishableKey: string
+  space?: Partial<Flatfile.SpaceConfig>
 }
 
-interface ReusedSpace {
-  space: {
-    id: string
-    accessToken: string
-  }
+interface ReusedSpace extends BaseSpace {
+  space: Partial<Flatfile.SpaceConfig> & { id: string; accessToken: string }
 }
 
 // Use the Exclusive type for your props
@@ -47,6 +44,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   const [sessionSpace, setSessionSpace] = useState<any>(null)
   const [flatfileConfiguration, setFlatfileConfiguration] =
     useState<any>(options)
+  const [spaceConfig, setSpaceConfig] = useState<any>(null)
 
   const handlePostMessage = (event: any) => {
     const { flatfileEvent } = event.data
