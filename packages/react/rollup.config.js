@@ -12,6 +12,8 @@ import url from '@rollup/plugin-url'
 
 dotenv.config()
 
+const internal = ['@flatfile/api', '@flatfile/listener']
+
 const PROD = process.env.NODE_ENV !== 'development'
 
 if (!PROD) {
@@ -20,18 +22,20 @@ if (!PROD) {
 
 function commonPlugins(browser, umd = false) {
   return [
-    !umd
-      ? peerDepsExternal({
-          includeDependencies: true,
-        })
-      : null,
+    !umd ? peerDepsExternal({
+      includeDependencies: true,
+    }) : undefined,
     json(),
     css(),
     resolve({ browser, preferBuiltins: !browser }),
-    commonjs({ requireReturnsDefault: 'auto' }),
+    commonjs({
+      // include: '**/node_modules/**',
+      requireReturnsDefault: 'preferred',
+      esmExternals: true,
+    }),
     typescript({
       outDir: 'dist',
-      declaration: true,
+      declaration: false,
       declarationDir: './dist',
       composite: false,
     }),
@@ -46,7 +50,6 @@ function commonPlugins(browser, umd = false) {
 }
 
 const config = [
-
   {
     input: 'src/index.ts',
     output: [{ file: 'dist/index.d.ts', format: 'es' }],
@@ -84,6 +87,7 @@ const config = [
       },
     ],
     plugins: commonPlugins(true, false),
+    // external: internal,
   },
   // UMD build
   {
@@ -97,6 +101,7 @@ const config = [
       strict: true,
     },
     plugins: commonPlugins(true, true),
+    // internal,
   },
 ]
 
