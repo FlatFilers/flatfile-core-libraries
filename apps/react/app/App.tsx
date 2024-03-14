@@ -18,8 +18,7 @@ import styles from './page.module.css'
 import { recordHook } from '@flatfile/plugin-record-hook'
 import api from '@flatfile/api'
 // const ENVIRONMENT_ID = 'us_env_123456'
-const PUBLISHABLE_KEY = 'pk_123456'
-
+const PUBLISHABLE_KEY = 'pk_cb0449ee1f034c13b34b31e9577fc06a'
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const FFApp = () => {
@@ -139,7 +138,7 @@ const FFApp = () => {
         }}
       /> */}
 
-      <Workbook workbook={workbook} document={document} />
+      <Workbook workbook={workbook} document={document} exitText='Sup!' />
     </div>
   )
 }

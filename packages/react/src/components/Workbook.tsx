@@ -1,7 +1,12 @@
 import { FlatfileClient } from '@flatfile/api'
 import type { Flatfile } from '@flatfile/api'
-import { ISpace, JobHandler, SheetHandler } from '@flatfile/embedded-utils'
-import { TRecordDataWithLinks, TPrimitive } from '@flatfile/hooks'
+import {
+  DefaultSubmitSettings,
+  ISpace,
+  JobHandler,
+  SheetHandler,
+  SimpleOnboarding,
+} from '@flatfile/embedded-utils'
 import { FlatfileEvent } from '@flatfile/listener'
 import { FlatfileRecord, recordHook } from '@flatfile/plugin-record-hook'
 import React, { useState, useContext, useEffect } from 'react'
@@ -9,21 +14,36 @@ import { useListener } from '../hooks'
 import ConfirmModal from './ConfirmCloseModal'
 import FlatfileContext from './FlatfileContext'
 import { getContainerStyles, getIframeStyles } from './embeddedStyles'
+import SheetConfig from '@flatfile/blueprint'
+
+type IFrameTypes = Partial<
+  Pick<
+    ISpace,
+    | 'iframeStyles'
+    | 'mountElement'
+    | 'exitText'
+    | 'exitTitle'
+    | 'exitPrimaryButtonText'
+    | 'exitSecondaryButtonText'
+    | 'displayAsModal'
+    | 'closeSpace'
+  >
+>
 
 const NewSpaceContents = (
-  props: ISpace & {
-    spaceId: string
-    spaceUrl: string
-    accessToken: string
+  props: Partial<IFrameTypes> & {
     handleCloseInstance: () => void
-    simple?: boolean
   }
 ): JSX.Element => {
   const [showExitWarnModal, setShowExitWarnModal] = useState(false)
 
-  const { open } = useContext(FlatfileContext)
+  const { open, sessionSpace } = useContext(FlatfileContext)
+  if (!sessionSpace?.guestLink) {
+    throw new Error('No guest link found')
+  }
+  const { guestLink: spaceUrl } = sessionSpace
+
   const {
-    spaceUrl,
     closeSpace,
     iframeStyles,
     mountElement = 'flatfile_iFrameContainer',
@@ -60,12 +80,14 @@ const NewSpaceContents = (
           exitSecondaryButtonText={exitSecondaryButtonText}
         />
       )}
-      <iframe
-        data-testid={mountElement}
-        className={mountElement}
-        style={getIframeStyles(iframeStyles!)}
-        src={spaceUrl}
-      />
+      {open && (
+        <iframe
+          data-testid={mountElement}
+          className={mountElement}
+          style={getIframeStyles(iframeStyles!)}
+          src={spaceUrl}
+        />
+      )}
       <button
         onClick={() => setShowExitWarnModal(true)}
         data-testid="flatfile-close-button"
@@ -107,39 +129,31 @@ const NewSpaceContents = (
   )
 }
 
-export const SimplifiedWorkbook = ({
-  sheets,
-  onSubmit,
-  onRecordHook,
-}: {
-  sheets: any[]
-  onSubmit?: ({
-    data,
-    sheet,
-    job,
-    event,
-  }: {
-    data?: any
-    sheet?: any
-    job?: any
-    event?: FlatfileEvent
-  }) => void
-  onRecordHook?: (
-    record: FlatfileRecord<TRecordDataWithLinks<TPrimitive>>,
-    event?: FlatfileEvent
-  ) => FlatfileRecord
-}) => {
-  const { publishableKey, sessionSpace, apiUrl, flatfileConfiguration, setFlatfileConfiguration } =
-    useContext(FlatfileContext)
+type Simplified = { sheets: Flatfile.SheetConfig[] } & Omit<
+  SimpleOnboarding,
+  'publishableKey' | 'sheet'
+> &
+  IFrameTypes
+
+export const SimplifiedWorkbook = (props: Simplified) => {
+  const { sheets, onSubmit, onRecordHook, ...simplifiedProps } = props
+
+  const {
+    sessionSpace,
+    flatfileConfiguration,
+    setFlatfileConfiguration,
+    setOpen,
+  } = useContext(FlatfileContext)
 
   useEffect(() => {
     setFlatfileConfiguration({
-        ...flatfileConfiguration,
+      ...flatfileConfiguration,
       sheet: sheets[0],
       onSubmit,
     })
   }, [sheets[0]])
 
+  const onSubmitSettings = { ...DefaultSubmitSettings, ...props.submitSettings }
   // let simpleListener
   if (onSubmit || onRecordHook) {
     useListener((client) => {
@@ -185,6 +199,9 @@ export const SimplifiedWorkbook = ({
                   message: 'complete',
                 },
               })
+              if (onSubmitSettings.deleteSpaceAfterSubmit) {
+                await FlatfileAPI.spaces.archiveSpace(spaceId)
+              }
             } catch (error: any) {
               console.error('Error:', error.stack)
               if (jobId) {
@@ -199,67 +216,55 @@ export const SimplifiedWorkbook = ({
   }
 
   if (!!sessionSpace) {
-    const { id: spaceId, guestLink: spaceUrl } = sessionSpace
     return (
       <NewSpaceContents
-        spaceId={spaceId}
-        spaceUrl={spaceUrl}
-        sheet={sheets[0]}
-        apiUrl={apiUrl}
-        publishableKey={publishableKey}
-        onSubmit={onSubmit}
+        handleCloseInstance={() => setOpen(false)}
         {...sessionSpace}
+        {...simplifiedProps}
       />
     )
   }
 }
 
-export const Sheet = ({ config }: { config: Flatfile.SheetConfig }) => {
+export const Sheet = (
+  props: { config: Flatfile.SheetConfig } & IFrameTypes
+) => {
+  const { config, ...sheetProps } = props
   const {
-    publishableKey,
     sessionSpace,
     setOpen,
-    apiUrl,
     flatfileConfiguration,
     setFlatfileConfiguration,
   } = useContext(FlatfileContext)
 
   useEffect(() => {
     setFlatfileConfiguration({
-        ...flatfileConfiguration,
+      ...flatfileConfiguration,
       sheet: config,
     })
   }, [config])
 
-  if (sessionSpace) {
-    const { id: spaceId, guestLink: spaceUrl } = sessionSpace
+  if (!!sessionSpace) {
     return (
       <NewSpaceContents
-        spaceId={spaceId}
-        spaceUrl={spaceUrl}
-        sheet={config}
-        publishableKey={publishableKey}
-        simple={true}
         handleCloseInstance={() => setOpen(false)}
-        apiUrl={apiUrl}
         {...sessionSpace}
+        {...sheetProps}
       />
     )
   }
 }
 
-export const Workbook = ({
-  workbook,
-  document,
-}: {
-  workbook: Flatfile.CreateWorkbookConfig
-  document: Flatfile.DocumentConfig
-}) => {
+export const Workbook = (
+  props: {
+    workbook: Flatfile.CreateWorkbookConfig
+    document: Flatfile.DocumentConfig
+  } & IFrameTypes
+) => {
+  const { workbook, document, ...workbookProps } = props
   const {
-    publishableKey,
     sessionSpace,
     setOpen,
-    apiUrl,
     flatfileConfiguration,
     setFlatfileConfiguration,
   } = useContext(FlatfileContext)
@@ -272,16 +277,12 @@ export const Workbook = ({
     })
   }, [workbook, document])
 
-  if (sessionSpace) {
-    const { id: spaceId, guestLink: spaceUrl } = sessionSpace
+  if (!!sessionSpace) {
     return (
       <NewSpaceContents
-        spaceId={spaceId}
-        spaceUrl={spaceUrl}
-        publishableKey={publishableKey}
         handleCloseInstance={() => setOpen(false)}
-        apiUrl={apiUrl}
         {...sessionSpace}
+        {...workbookProps}
       />
     )
   }
