@@ -7,7 +7,6 @@ type ReUseSpace = Partial<Flatfile.SpaceConfig> & {
   id: string
   accessToken: string
 }
-
 export interface FlatfileContextType {
   publishableKey?: string
   environmentId?: string

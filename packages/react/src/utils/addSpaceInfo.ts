@@ -15,10 +15,8 @@ export const addSpaceInfo = async (
 }> => {
   const { workbook, sheet, environmentId, document, onSubmit } = spaceProps
   let localWorkbook
-  console.log('adding info to space: ', spaceId)
   try {
     if (!workbook && sheet) {
-      console.log('Creating workbook from sheet', { spaceProps })
       const createdWorkbook = createWorkbookFromSheet(sheet, !!onSubmit)
       localWorkbook = await api.workbooks.create({
         spaceId,
@@ -30,7 +28,6 @@ export const addSpaceInfo = async (
       }
     }
     if (workbook && !sheet) {
-      console.log('Creating workbook from workbook')
       localWorkbook = await api.workbooks.create({
         spaceId,
         ...(environmentId !== undefined && { environmentId }),
@@ -41,10 +38,9 @@ export const addSpaceInfo = async (
         throw new Error('Failed to create workbook')
       }
     }
-    console.log({ localWorkbook })
-    await api.spaces.update(spaceId, {
-      primaryWorkbookId: localWorkbook?.data.id,
-    })
+    // await api.spaces.update(spaceId, {
+    //   primaryWorkbookId: localWorkbook?.data.id,
+    // })
     if (document) {
       const createdDocument = await api.documents.create(spaceId, {
         title: document.title,

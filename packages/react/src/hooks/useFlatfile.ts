@@ -22,7 +22,6 @@ export const useFlatfile = () => {
     accessToken,
     setAccessToken,
     flatfileConfiguration,
-    setFlatfileConfiguration,
   } = context
 
   const createSpace = async () => {
@@ -36,7 +35,6 @@ export const useFlatfile = () => {
         ...space,
         ...flatfileConfiguration,
       })
-
 
       if (createdSpace?.accessToken) {
         ;(window as any).CROSSENV_FLATFILE_API_KEY = createdSpace?.accessToken
@@ -78,6 +76,7 @@ export const useFlatfile = () => {
 
   const closePortal = () => {
     setOpen(false)
+    // TODO: Remove the iFrame from the DOM?
   }
 
   return {
@@ -86,7 +85,5 @@ export const useFlatfile = () => {
     open,
     setListener,
     listener,
-    flatfileConfiguration,
-    setFlatfileConfiguration,
   }
 }

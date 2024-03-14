@@ -12,7 +12,7 @@ import {
   SimplifiedWorkbook,
   Workbook,
 } from '@flatfile/react'
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { listener as importedListener } from './listener'
 import styles from './page.module.css'
 import { recordHook } from '@flatfile/plugin-record-hook'
@@ -23,15 +23,9 @@ const PUBLISHABLE_KEY = 'pk_123456'
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const FFApp = () => {
-  const {
-    open,
-    openPortal,
-    closePortal,
-    flatfileConfiguration,
-    setFlatfileConfiguration,
-  } = useFlatfile()
+  const { open, openPortal, closePortal } = useFlatfile()
 
-  const [label, setLabel] = React.useState('Rock')
+  const [label, setLabel] = useState('Rock')
 
   // useEffect(() => {
   //   console.log('FFApp useEffect', { flatfileConfiguration })
@@ -125,15 +119,15 @@ const FFApp = () => {
             open ? closePortal() : openPortal()
           }}
         >
-          OPEN PORTAL
+          {open ? 'CLOSE' : 'OPEN'} PORTAL
         </button>
         <button onClick={() => listenerConfig('blue')}>blue listener</button>
         <button onClick={() => listenerConfig('green')}>green listener</button>
       </div>
+{/* 
+      <Sheet config={sheet} />
 
-      {/* <Sheet config={sheet} /> */}
-
-      {/* <SimplifiedWorkbook
+      <SimplifiedWorkbook
         sheets={[sheet]}
         onRecordHook={(record, event) => {
           console.log('onRecordHook', { record, event })
@@ -155,8 +149,6 @@ const App = () => {
     <FlatfileProvider
       publishableKey={PUBLISHABLE_KEY}
       space={{
-        // id: 'asdf',
-        // accessToken: 'asdf',
         metadata: {
           sidebarConfig: {
             showSidebar: true,

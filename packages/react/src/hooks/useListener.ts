@@ -3,15 +3,20 @@ import { useFlatfile } from './useFlatfile'
 import FlatfileListener from '@flatfile/listener'
 
 export function useListener(
-  cb: (cb: FlatfileListener) => void,
+  cb: FlatfileListener | ((cb: FlatfileListener) => void),
   dependencies: any[] = []
 ) {
   const { listener } = useFlatfile()
   useEffect(() => {
     if (!listener) return
 
+    if (typeof cb === 'function') {
+      cb(listener)
+    } else {
+      // Assume cb is a listener instance
+      listener.use(() => cb)
+    }
     // Call the callback with the listener to set up event handling
-    cb(listener)
 
     return () => {
       // Assuming 'detach' removes all event listeners from this instance
