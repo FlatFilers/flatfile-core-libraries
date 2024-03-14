@@ -1,7 +1,4 @@
-import api from '@flatfile/api'
-import { Browser, FlatfileEvent, FlatfileListener } from '@flatfile/listener'
-
-import { Environment, Guest, Space, User, Workbook } from '@flatfile/api/api'
+import api, { Flatfile } from '@flatfile/api'
 import {
   DefaultSubmitSettings,
   ISpace,
@@ -12,6 +9,7 @@ import {
   createWorkbookFromSheet,
 } from '@flatfile/embedded-utils'
 import { FlatfileRecord } from '@flatfile/hooks'
+import { Browser, FlatfileEvent, FlatfileListener } from '@flatfile/listener'
 import { recordHook } from '@flatfile/plugin-record-hook'
 import { createIframe } from './src/createIframe'
 import { createModal } from './src/createModal'
@@ -253,12 +251,12 @@ type InitSpaceType = ISpace & {
 
 // TODO: Replace hardcoded type with imported type from Platform
 export interface InitialResourceData {
-  workbooks: Workbook[] | null
-  documents: Document[] | null
-  space: Space
-  actor: User | Guest | undefined
+  workbooks: Flatfile.Workbook[] | null
+  documents: Flatfile.Document[] | null
+  space: Flatfile.Space
+  actor: Flatfile.User | Flatfile.Guest | undefined
   entitlements: any[]
-  environment: Partial<Environment> & {
+  environment: Partial<Flatfile.Environment> & {
     hasAccess: boolean
   }
 }
