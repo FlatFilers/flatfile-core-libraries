@@ -45,7 +45,6 @@ export const SpaceContents = (
   }
 ): JSX.Element => {
   const [showExitWarnModal, setShowExitWarnModal] = useState(false)
-  // const context = useContext(FlatfileContext)
   const context = useContext(FlatfileContext)
   const { open } = context
   const {

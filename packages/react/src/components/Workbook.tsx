@@ -203,11 +203,10 @@ export const SimplifiedWorkbook = (props: Simplified) => {
                 await FlatfileAPI.spaces.archiveSpace(spaceId)
               }
             } catch (error: any) {
-              console.error('Error:', error.stack)
               if (jobId) {
                 await FlatfileAPI.jobs.cancel(jobId)
               }
-              console.error('Error:', error.stack)
+              console.log('Error:', error.stack)
             }
           })
         })

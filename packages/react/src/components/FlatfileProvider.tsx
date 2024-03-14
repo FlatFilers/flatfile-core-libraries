@@ -45,8 +45,10 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   const [flatfileConfiguration, setFlatfileConfiguration] =
     useState<any>(options)
 
-  const handlePostMessage = (event: any) => {
-    const { flatfileEvent } = event.data
+  const handlePostMessage = (message: {
+    data: { flatfileEvent: Record<string, any> }
+  }) => {
+    const { flatfileEvent } = message.data
     if (!flatfileEvent) return
 
     listener.dispatchEvent(flatfileEvent)

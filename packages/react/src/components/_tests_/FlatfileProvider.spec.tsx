@@ -1,13 +1,8 @@
 import React, { useContext } from 'react'
-import { render, waitFor, screen } from '@testing-library/react'
+import { render, waitFor } from '@testing-library/react'
 import { FlatfileProvider } from '../FlatfileProvider'
 import FlatfileContext from '../FlatfileContext'
-import * as initializeSpace from '../../utils/initializeSpace'
-import * as getSpace from '../../utils/getSpace'
-// import FlatfileListener from '@flatfile/listener'
 import fetchMock from 'jest-fetch-mock'
-import { useFlatfile } from '../../hooks/useFlatfile'
-
 fetchMock.enableMocks()
 console.error = jest.fn()
 
@@ -17,7 +12,6 @@ jest.mock('@flatfile/listener')
 
 const TestingComponent = (props: { ReUsingSpace?: boolean }) => {
   const { publishableKey, space } = useContext(FlatfileContext)
-  const { openPortal } = useFlatfile()
 
   if (props.ReUsingSpace) {
     return (
@@ -82,8 +76,5 @@ describe('FlatfileProvider', () => {
     await waitFor(() => {
       expect(getByTestId('spaceId').innerHTML).toBe('existing-space-id')
     })
-    // Additional tests can include checking if the context values are set correctly, etc.
   })
-
-  // Further tests can be added to cover other functionalities such as postMessage handling, etc.
 })
