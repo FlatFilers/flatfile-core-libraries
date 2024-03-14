@@ -7,7 +7,6 @@ export const initializeSpace = async (
   flatfileOptions: IReactSpaceProps & { sheet?: Flatfile.SheetConfig }
 ): Promise<Flatfile.SpaceResponse> => {
   let space
-  console.log('initializeSpace', { flatfileOptions })
   const {
     publishableKey,
     environmentId,

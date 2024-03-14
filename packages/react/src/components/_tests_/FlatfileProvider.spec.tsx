@@ -15,15 +15,21 @@ jest.mock('../../utils/initializeSpace')
 jest.mock('../../utils/getSpace')
 jest.mock('@flatfile/listener')
 
-const TestingComponent = () => {
+const TestingComponent = (props: { ReUsingSpace?: boolean }) => {
   const { publishableKey, space } = useContext(FlatfileContext)
   const { openPortal } = useFlatfile()
-  return (
-    <>
-      {publishableKey && <p data-testid="publishableKey">{publishableKey}</p>}
-      {space && <p data-testid="spaceId">{space.id}</p>}
-    </>
-  )
+
+  if (!!props.ReUsingSpace) {
+    return (
+      <>{space && 'id' in space && <p data-testid="spaceId">{space.id}</p>}</>
+    )
+  } else {
+    return (
+      <>
+        {publishableKey && <p data-testid="publishableKey">{publishableKey}</p>}
+      </>
+    )
+  }
 }
 
 describe('FlatfileProvider', () => {
@@ -69,10 +75,9 @@ describe('FlatfileProvider', () => {
 
     const { getByTestId } = render(
       <FlatfileProvider space={mockSpace} environmentId="test-env">
-        <TestingComponent />
+        <TestingComponent ReUsingSpace />
       </FlatfileProvider>
     )
-
 
     await waitFor(() => {
       expect(getByTestId('spaceId').innerHTML).toBe('existing-space-id')
