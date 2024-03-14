@@ -9,7 +9,7 @@ import {
 } from '@flatfile/embedded-utils'
 import { FlatfileEvent } from '@flatfile/listener'
 import { FlatfileRecord, recordHook } from '@flatfile/plugin-record-hook'
-import React, { useState, useContext, useEffect } from 'react'
+import React, { JSX, useState, useContext, useEffect } from 'react'
 import { useListener } from '../hooks'
 import ConfirmModal from './ConfirmCloseModal'
 import FlatfileContext from './FlatfileContext'
@@ -215,7 +215,7 @@ export const SimplifiedWorkbook = (props: Simplified) => {
     }, [])
   }
 
-  if (!!sessionSpace) {
+  if (sessionSpace) {
     return (
       <NewSpaceContents
         handleCloseInstance={() => setOpen(false)}
@@ -244,7 +244,7 @@ export const Sheet = (
     })
   }, [config])
 
-  if (!!sessionSpace) {
+  if (sessionSpace) {
     return (
       <NewSpaceContents
         handleCloseInstance={() => setOpen(false)}
@@ -277,7 +277,7 @@ export const Workbook = (
     })
   }, [workbook, document])
 
-  if (!!sessionSpace) {
+  if (sessionSpace) {
     return (
       <NewSpaceContents
         handleCloseInstance={() => setOpen(false)}
