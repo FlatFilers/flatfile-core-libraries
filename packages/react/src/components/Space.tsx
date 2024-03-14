@@ -42,7 +42,6 @@ export const SpaceContents = (
     spaceUrl: string
     accessToken: string
     handleCloseInstance: () => void
-    simple?: boolean
   }
 ): JSX.Element => {
   const [showExitWarnModal, setShowExitWarnModal] = useState(false)
@@ -64,35 +63,32 @@ export const SpaceContents = (
     apiUrl = 'https://platform.flatfile.com/api',
     displayAsModal = true,
     handleCloseInstance,
-    simple,
   } = props
-  if (!simple) {
-    const { dispatchEvent } = useCreateListener({
-      listener,
-      accessToken,
-      apiUrl,
-    })
+  const { dispatchEvent } = useCreateListener({
+    listener,
+    accessToken,
+    apiUrl,
+  })
 
-    const handlePostMessage = (event: any) => {
-      const { flatfileEvent } = event.data
-      if (!flatfileEvent) return
-      if (
-        flatfileEvent.topic === 'job:outcome-acknowledged' &&
-        flatfileEvent.payload.status === 'complete' &&
-        flatfileEvent.payload.operation === closeSpace?.operation
-      ) {
-        closeSpace?.onClose({})
-      }
-      dispatchEvent(flatfileEvent)
+  const handlePostMessage = (event: any) => {
+    const { flatfileEvent } = event.data
+    if (!flatfileEvent) return
+    if (
+      flatfileEvent.topic === 'job:outcome-acknowledged' &&
+      flatfileEvent.payload.status === 'complete' &&
+      flatfileEvent.payload.operation === closeSpace?.operation
+    ) {
+      closeSpace?.onClose({})
     }
-
-    useEffect(() => {
-      window.addEventListener('message', handlePostMessage, false)
-      return () => {
-        window.removeEventListener('message', handlePostMessage)
-      }
-    }, [listener])
+    dispatchEvent(flatfileEvent)
   }
+
+  useEffect(() => {
+    window.addEventListener('message', handlePostMessage, false)
+    return () => {
+      window.removeEventListener('message', handlePostMessage)
+    }
+  }, [listener])
 
   const buildWorkbook = async () => {
     if (props.publishableKey) {

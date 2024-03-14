@@ -7,19 +7,21 @@ import { addSpaceInfo } from '../utils/addSpaceInfo'
 
 export const useFlatfile = () => {
   const context = useContext(FlatfileContext)
-  const { open, setOpen, setListener, listener } = context
 
   if (!context) {
     throw new Error('useFlatfile must be used within a FlatfileProvider')
   }
 
   const {
+    open,
+    setOpen,
+    setListener,
+    listener,
     publishableKey,
     environmentId,
     apiUrl,
     space,
     setSessionSpace,
-    accessToken,
     setAccessToken,
     flatfileConfiguration,
   } = context
@@ -32,18 +34,19 @@ export const useFlatfile = () => {
         publishableKey,
         environmentId,
         apiUrl,
-        ...space,
+        ...(space ? { space } : {}),
         ...flatfileConfiguration,
       })
 
       if (createdSpace?.accessToken) {
         ;(window as any).CROSSENV_FLATFILE_API_KEY = createdSpace?.accessToken
+
         setAccessToken(createdSpace?.accessToken)
         setSessionSpace(createdSpace)
 
         const fullAccessApi = authenticate(createdSpace?.accessToken, apiUrl)
 
-        // Remove this when we have a 1 endpoint solution
+        // TODO: Remove this when we have a 1 endpoint solution
         await addSpaceInfo(
           flatfileConfiguration,
           createdSpace?.id,
@@ -55,12 +58,16 @@ export const useFlatfile = () => {
 
   const reUseSpace = async () => {
     if (space && 'accessToken' in space) {
+      // TODO: Do we want to update the Space metadata / documents here if they pass that information? Feels like a no.
       const { data: reUsedSpace } = await getSpace({
         space,
         environmentId,
         apiUrl,
       })
+
+      ;(window as any).CROSSENV_FLATFILE_API_KEY = space.accessToken
       setAccessToken(space.accessToken)
+      
       setSessionSpace(reUsedSpace)
     }
   }

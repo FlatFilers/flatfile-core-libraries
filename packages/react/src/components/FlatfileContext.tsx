@@ -1,4 +1,5 @@
 import { Flatfile } from '@flatfile/api'
+import { ISpace } from '@flatfile/embedded-utils'
 import FlatfileListener from '@flatfile/listener'
 import { createContext } from 'react'
 
@@ -14,14 +15,14 @@ export interface FlatfileContextType {
   open: boolean
   setOpen: (open: boolean) => void
   space?: CreateNewSpace | ReUseSpace
-  sessionSpace?: any
-  setSessionSpace: (space: any) => void
+  sessionSpace?: Flatfile.Space
+  setSessionSpace: (space: Flatfile.Space) => void
   listener: FlatfileListener
-  setListener: (space: any) => void
+  setListener: (listener: FlatfileListener) => void
   accessToken?: string
   setAccessToken: (accessToken: string) => void
   flatfileConfiguration?: any
-  setFlatfileConfiguration: (space: any) => void
+  setFlatfileConfiguration: (config: any) => void
 }
 
 const FlatfileContext = createContext<FlatfileContextType>({
