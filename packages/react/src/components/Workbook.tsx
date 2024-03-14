@@ -258,7 +258,7 @@ export const Sheet = (
 export const Workbook = (
   props: {
     workbook: Flatfile.CreateWorkbookConfig
-    document: Flatfile.DocumentConfig
+    document?: Flatfile.DocumentConfig
   } & IFrameTypes
 ) => {
   const { workbook, document, ...workbookProps } = props

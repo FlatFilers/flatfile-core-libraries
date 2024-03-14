@@ -17,8 +17,8 @@ import { listener as importedListener } from './listener'
 import styles from './page.module.css'
 import { recordHook } from '@flatfile/plugin-record-hook'
 import api from '@flatfile/api'
-// const ENVIRONMENT_ID = 'us_env_123456'
-const PUBLISHABLE_KEY = 'pk_cb0449ee1f034c13b34b31e9577fc06a'
+
+const PUBLISHABLE_KEY = 'pk_123456'
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const FFApp = () => {
@@ -123,8 +123,8 @@ const FFApp = () => {
         <button onClick={() => listenerConfig('blue')}>blue listener</button>
         <button onClick={() => listenerConfig('green')}>green listener</button>
       </div>
-{/* 
-      <Sheet config={sheet} />
+
+      {/* <Sheet config={sheet} /> */}
 
       <SimplifiedWorkbook
         sheets={[sheet]}
@@ -136,9 +136,9 @@ const FFApp = () => {
         onSubmit={({ data, sheet, job, event }) => {
           console.log('onSubmit', { data, sheet, job, event })
         }}
-      /> */}
+      />
 
-      <Workbook workbook={workbook} document={document} exitText='Sup!' />
+      {/* <Workbook workbook={workbook}/> */}
     </div>
   )
 }
@@ -146,8 +146,10 @@ const FFApp = () => {
 const App = () => {
   return (
     <FlatfileProvider
-      publishableKey={PUBLISHABLE_KEY}
+      // publishableKey={PUBLISHABLE_KEY}
       space={{
+        id: 'us_sp_123456',
+        accessToken: 'ey123456.ey123456',
         metadata: {
           sidebarConfig: {
             showSidebar: true,

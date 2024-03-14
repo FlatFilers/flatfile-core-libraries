@@ -34,7 +34,7 @@ export const useFlatfile = () => {
         publishableKey,
         environmentId,
         apiUrl,
-        ...(space ? { space } : {}),
+        ...space,
         ...flatfileConfiguration,
       })
 
