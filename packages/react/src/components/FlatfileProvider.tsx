@@ -44,7 +44,6 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   const [sessionSpace, setSessionSpace] = useState<any>(null)
   const [flatfileConfiguration, setFlatfileConfiguration] =
     useState<any>(options)
-  const [spaceConfig, setSpaceConfig] = useState<any>(null)
 
   const handlePostMessage = (event: any) => {
     const { flatfileEvent } = event.data

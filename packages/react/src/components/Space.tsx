@@ -97,7 +97,6 @@ export const SpaceContents = (
   const buildWorkbook = async () => {
     if (props.publishableKey) {
       const fullAccessApi = authenticate(accessToken, apiUrl)
-      console.log('addSpaceInfo', { props, spaceId, context })
       await addSpaceInfo(props, spaceId, fullAccessApi)
     }
   }

@@ -36,7 +36,7 @@ export const initializeSpace = async (
     try {
       space = await limitedAccessApi.spaces.create({
         name,
-        autoConfigure: false,
+        autoConfigure: !workbook,
         ...spaceBody,
         labels: ['embedded', ...(labels || [])],
         ...(environmentId !== undefined && { environmentId }),
