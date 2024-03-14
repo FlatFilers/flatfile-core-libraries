@@ -73,7 +73,7 @@ export const useFlatfile = () => {
   }
 
   const openPortal = () => {
-    if (!!publishableKey) {
+    if (publishableKey) {
       createSpace()
     } else if (space) {
       reUseSpace()

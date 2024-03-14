@@ -19,7 +19,7 @@ const TestingComponent = (props: { ReUsingSpace?: boolean }) => {
   const { publishableKey, space } = useContext(FlatfileContext)
   const { openPortal } = useFlatfile()
 
-  if (!!props.ReUsingSpace) {
+  if (props.ReUsingSpace) {
     return (
       <>{space && 'id' in space && <p data-testid="spaceId">{space.id}</p>}</>
     )
