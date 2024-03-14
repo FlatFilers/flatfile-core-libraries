@@ -13,7 +13,7 @@ import {
   Workbook,
 } from '@flatfile/react'
 import React, { useEffect, useState } from 'react'
-import { listener as importedListener } from './listener'
+import { listener as importedListener, plainListener } from './listener'
 import styles from './page.module.css'
 import { recordHook } from '@flatfile/plugin-record-hook'
 import api from '@flatfile/api'
@@ -42,7 +42,12 @@ const FFApp = () => {
     // importedListener
   }, [])
 
+  // Both of these work:
+  // FlatfileListener.create((client) => {
   useListener(importedListener, [])
+
+  // (listener: FlatfileListener) => {
+  useListener(plainListener, [])
 
   useListener((client) => {
     client.use(

@@ -38,9 +38,6 @@ export const addSpaceInfo = async (
         throw new Error('Failed to create workbook')
       }
     }
-    // await api.spaces.update(spaceId, {
-    //   primaryWorkbookId: localWorkbook?.data.id,
-    // })
     if (document) {
       const createdDocument = await api.documents.create(spaceId, {
         title: document.title,
