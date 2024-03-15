@@ -1,5 +1,13 @@
 # @flatfile/react
 
+## 7.8.9
+
+### Patch Changes
+
+- 6952740: Make environmentId optional
+- Updated dependencies [6952740]
+  - @flatfile/embedded-utils@1.1.12
+
 ## 7.8.8
 
 ### Patch Changes
