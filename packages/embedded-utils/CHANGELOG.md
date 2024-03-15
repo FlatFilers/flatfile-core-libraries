@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- 6952740: Make environmentId optional
+- 6952740: Make environmentId optional in embedded types
 
 ## 1.1.11
 
