@@ -5,8 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build @flatfile/angular",
-    "watch": "ng build --watch --configuration development",
-    "postinstall": "cd projects/spaces && npm install"
+    "watch": "ng build --watch --configuration development"
   },
   "private": true,
   "dependencies": {
@@ -19,8 +18,8 @@
     "@angular/platform-browser-dynamic": "^16.2.0",
     "@angular/router": "^16.2.0",
     "@flatfile/api": "^1.8.5",
-    "@flatfile/embedded-utils": "^1.2.1",
-    "@flatfile/listener": "^1.0.2",
+    "@flatfile/embedded-utils": "^1.2.2",
+    "@flatfile/listener": "^1.0.3",
     "@flatfile/plugin-record-hook": "^1.5.2",
     "rxjs": "~7.8.0",
     "symbol-observable": "^4.0.0",

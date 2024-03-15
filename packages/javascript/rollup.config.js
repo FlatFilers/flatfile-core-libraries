@@ -5,10 +5,9 @@ import json from '@rollup/plugin-json'
 import peerDepsExternal from 'rollup-plugin-peer-deps-external'
 import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
-import typescript from '@rollup/plugin-typescript'
 import url from '@rollup/plugin-url'
 import dotenv from 'dotenv'
-
+import sucrase from '@rollup/plugin-sucrase'
 dotenv.config()
 
 const PROD = process.env.NODE_ENV !== 'development'
@@ -30,16 +29,14 @@ function commonPlugins(umd = true) {
           includeDependencies: true,
         })
       : null,
+    resolve({ browser: true, extensions: ['.ts'] }),
+    sucrase({
+      exclude: ['node_modules/**'],
+      transforms: ['typescript'],
+    }),
     json(),
     commonjs(),
     css(),
-    resolve({ browser: true }),
-    typescript({
-      tsconfig: 'tsconfig.json',
-      outDir: 'dist',
-      declaration: false,
-      composite: false,
-    }),
     url({
       include: ['**/*.otf'],
       limit: Infinity,

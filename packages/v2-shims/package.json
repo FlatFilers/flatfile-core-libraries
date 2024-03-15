@@ -37,6 +37,7 @@
     "@rollup/plugin-commonjs": "^25.0.7",
     "@rollup/plugin-json": "^6.1.0",
     "@rollup/plugin-node-resolve": "^15.2.3",
+    "@rollup/plugin-sucrase": "^5.0.2",
     "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^11.1.5",
     "@types/async": "^3.2.21",
@@ -48,8 +49,7 @@
     "rollup-plugin-import-css": "^3.3.5",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "ts-jest": "^29.1.0",
-    "tslib": "^2.4.1",
-    "typescript": "^5.0.4"
+    "tslib": "^2.4.1"
   },
   "dependencies": {
     "@flatfile/api": "^1.8.5",

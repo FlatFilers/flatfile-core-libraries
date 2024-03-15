@@ -27,7 +27,6 @@
     "ts-jest": "^29.1.0",
     "tslib": "^2.4.1",
     "tsup": "^6.1.3",
-    "typescript": "^5.0.4",
     "axios": "^1.6.0"
   },
   "dependencies": {

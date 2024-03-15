@@ -1,6 +1,6 @@
 import css from 'rollup-plugin-import-css'
 import json from '@rollup/plugin-json'
-import typescript from '@rollup/plugin-typescript'
+import sucrase from '@rollup/plugin-sucrase'
 import commonjs from '@rollup/plugin-commonjs'
 import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
@@ -22,11 +22,9 @@ function createPlugins(isBrowser) {
     }),
     json(),
     css(),
-    typescript({
-      outDir: 'dist',
-      tsconfig: isBrowser ? 'tsconfig.json' : undefined,
-      declaration: false,
-      composite: false,
+    sucrase({
+      exclude: ['node_modules/**'],
+      transforms: ['typescript'],
     }),
     resolve({ browser: isBrowser, preferBuiltins: !isBrowser }),
     commonjs({ requireReturnsDefault: 'auto' }),
@@ -72,7 +70,7 @@ const config = [
   },
   {
     input: 'src/index.ts',
-    output: [{ file: 'dist/index.d.ts', format: 'es' }],
+    output: [{ file: 'dist/index.d.ts' }],
     plugins: [dts()],
   },
 ]

@@ -5,7 +5,7 @@ import json from '@rollup/plugin-json'
 import peerDepsExternal from 'rollup-plugin-peer-deps-external'
 import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
-import typescript from '@rollup/plugin-typescript'
+import sucrase from '@rollup/plugin-sucrase'
 
 import dotenv from 'dotenv'
 dotenv.config()
@@ -33,11 +33,9 @@ function commonPlugins(browser, umd = false) {
     css(),
     commonjs({ requireReturnsDefault: 'auto' }),
     resolve({ browser, preferBuiltins: !browser }),
-    typescript({
-      tsconfig: 'tsconfig.json',
-      outDir: 'dist',
-      declaration: false,
-      declarationMap: false,
+    sucrase({
+      exclude: ['node_modules/**'],
+      transforms: ['typescript'],
     }),
     PROD ? terser() : null,
   ]
