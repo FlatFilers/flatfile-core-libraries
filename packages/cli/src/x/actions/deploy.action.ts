@@ -1,6 +1,6 @@
 import { Flatfile } from '@flatfile/api'
+import { Client } from '@flatfile/listener'
 import { program } from 'commander'
-import { table } from 'table'
 import chalk from 'chalk'
 import fs from 'fs'
 // @ts-expect-error
@@ -8,17 +8,17 @@ import ncc from '@vercel/ncc'
 import ora from 'ora'
 import path from 'path'
 import prompts from 'prompts'
-import { equals } from 'remeda'
 import util from 'util'
 
 import { agentTable } from '../helpers/agent.table'
 import { apiKeyClient } from './auth.action'
-import { deployTopics, tableConfig } from '../../shared/constants'
 import { getAuth } from '../../shared/get-auth'
 import { getEntryFile } from '../../shared/get-entry-file'
 import { messages } from '../../shared/messages'
 
 const readPackageJson = util.promisify(require('read-package-json'))
+
+type ListenerTopics = Flatfile.EventTopic | '**'
 
 async function handleAgentSelection(
   data: Flatfile.Agent[] | undefined,
@@ -73,6 +73,30 @@ async function handleAgentSelection(
   }
 }
 
+function findActiveTopics(allTopics: ListenerTopics[], client: any, topicsWithListeners = new Set()) {
+  client.listeners?.forEach((listener: ListenerTopics[]) => {
+    const listenerTopic = listener[0]
+    if (listenerTopic === '**') {
+      allTopics.forEach(topic => topicsWithListeners.add(topic))
+    } else if (listenerTopic.includes('**')) {
+      const [prefix] = listenerTopic.split(':')
+      allTopics.forEach(topic => { if (topic.split(':')[0] === prefix) topicsWithListeners.add(topic) })
+    } else if (allTopics.includes(listenerTopic)) {
+      topicsWithListeners.add(listenerTopic)
+    }
+  })
+  client.nodes?.forEach((nestedClient: any) => findActiveTopics(allTopics, nestedClient, topicsWithListeners))
+  return topicsWithListeners
+}
+
+async function getActiveTopics(file: string): Promise<Flatfile.EventTopic[]>{
+  const allTopics = Object.values(Flatfile.events.EventTopic)
+
+  const mount = await import(file);
+  return Array.from(findActiveTopics(allTopics, Client.create(mount.default))) as Flatfile.EventTopic[];
+}
+
+
 export async function deployAction(
   file?: string | null | undefined,
   options?: Partial<{
@@ -102,9 +126,6 @@ export async function deployAction(
   }
 
   const slug = options?.slug || process.env.FLATFILE_AGENT_SLUG
-  const topics = options?.topics
-    ? options.topics
-    : process.env.FLATFILE_AGENT_TOPICS
 
   try {
     const data = await readPackageJson(path.join(process.cwd(), 'package.json'))
@@ -170,56 +191,6 @@ export async function deployAction(
       validatingSpinner
     )
 
-    if (topics) {
-      const topicsSpinner = ora({
-        text: `Checking topics...`,
-      }).start()
-
-
-      topics.split(',').forEach((t) => {
-        if (!deployTopics.some((topic) => topic === t)) {
-          topicsSpinner.fail(
-            `${chalk.yellow(
-              `The topic "${t}" is not a valid topic.`
-            )}\n\n${chalk.cyan(
-              `Please see our documentation for a list of valid topics: https://flatfile.com/docs/orchestration/events#event-topics`
-            )}`
-          )
-          process.exit(0)
-        }
-      })
-
-      const sortedTopics = topics ? topics.split(',').sort() : deployTopics.sort()
-      if (
-        selectedAgent?.topics &&
-        !equals(selectedAgent.topics.sort())(sortedTopics)
-      ) {
-        const tableInfo = [
-          ['Current Topics', ['Updated Topics']],
-          [selectedAgent.topics.join('\n'), sortedTopics.join('\n')],
-        ]
-
-        topicsSpinner.fail(
-          `${chalk.yellow(
-            `The topics for the agent "${selectedAgent.slug}" are different from the topics you are deploying.`
-          )}\n\n${table(tableInfo, tableConfig)}`
-        )
-
-        const { confirmTopics } = await prompts({
-          type: 'confirm',
-          name: 'confirmTopics',
-          message: `Do you want to continue with this new set of topics for ${selectedAgent.slug}? (y/n)`,
-        })
-
-        if (!confirmTopics) {
-          validatingSpinner.fail('Agent deploy cancelled')
-          process.exit(0)
-        }
-      }
-
-      topicsSpinner.succeed('Topics validated')
-    }
-
     const deployingSpinner = ora({
       text: `Deploying event listener to Flatfile`,
     }).start()
@@ -233,6 +204,9 @@ export async function deployAction(
         quiet: true,
         // debugLog: false
       })
+
+      const activeTopics: Flatfile.EventTopic[] = await getActiveTopics(file)
+
       if (err) {
         return program.error(messages.error(err))
       }
@@ -240,7 +214,7 @@ export async function deployAction(
       const agent = await apiClient.agents.create({
         environmentId: environment!.id, // Assuming environment is always defined; otherwise, check for its existence before.
         body: {
-          topics: (topics?.split(',') as Flatfile.EventTopic[]) ?? deployTopics,
+          topics: activeTopics,
           compiler: 'js',
           source: code,
           slug: slug ?? selectedAgent?.slug,
