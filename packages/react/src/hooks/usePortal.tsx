@@ -1,21 +1,21 @@
+import api from '@flatfile/api'
+import {
+  DefaultSubmitSettings,
+  JobHandler,
+  SheetHandler,
+  State,
+  createWorkbookFromSheet,
+} from '@flatfile/embedded-utils'
+import { FlatfileRecord } from '@flatfile/hooks'
+import { FlatfileEvent, FlatfileListener } from '@flatfile/listener'
+import { recordHook } from '@flatfile/plugin-record-hook'
 import React, { JSX, useEffect, useState } from 'react'
 import DefaultError from '../components/Error'
 import Space from '../components/Space'
 import Spinner from '../components/Spinner'
-import {
-  State,
-  JobHandler,
-  SheetHandler,
-  createWorkbookFromSheet,
-  DefaultSubmitSettings,
-} from '@flatfile/embedded-utils'
-import { initializeSpace } from '../utils/initializeSpace'
-import { getSpace } from '../utils/getSpace'
-import { FlatfileRecord } from '@flatfile/hooks'
-import { FlatfileEvent, FlatfileListener } from '@flatfile/listener'
-import { recordHook } from '@flatfile/plugin-record-hook'
 import { IReactSimpleOnboarding } from '../types/IReactSimpleOnboarding'
-import api from '@flatfile/api'
+import { getSpace } from '../utils/getSpace'
+import { initializeSpace } from '../utils/initializeSpace'
 
 export const usePortal = (
   props: IReactSimpleOnboarding
@@ -40,70 +40,69 @@ export const usePortal = (
           config.sheet,
           !!props.onSubmit
         )
-        if (!config.listener && (config.onSubmit || config.onRecordHook)) {
-          config.listener = FlatfileListener.create(
-            (client: FlatfileListener) => {
-              if (config.onRecordHook) {
-                client.use(
-                  recordHook(
-                    config.sheet?.slug || 'slug',
-                    async (
-                      record: FlatfileRecord,
-                      event: FlatfileEvent | undefined
-                    ) => {
-                      return (
-                        config.onRecordHook &&
-                        config.onRecordHook(record, event)
-                      )
-                    }
-                  )
-                )
-              }
-              if (config.onSubmit) {
-                client.filter(
-                  { job: 'workbook:simpleSubmitAction' },
-                  (configure) => {
-                    configure.on('job:ready', async (event) => {
-                      const { jobId, spaceId, workbookId } = event.context
-                      try {
-                        await api.jobs.ack(jobId, {
-                          info: 'Starting job',
-                          progress: 10,
-                        })
-
-                        const job = new JobHandler(jobId)
-                        const { data: workbookSheets } = await api.sheets.list({
-                          workbookId,
-                        })
-
-                        // this assumes we are only allowing 1 sheet here (which we've talked about doing initially)
-                        const sheet = new SheetHandler(workbookSheets[0].id)
-
-                        if (config.onSubmit) {
-                          await config.onSubmit({ job, sheet, event })
-                        }
-
-                        await api.jobs.complete(jobId, {
-                          outcome: {
-                            message: 'complete',
-                          },
-                        })
-                        if (onSubmitSettings.deleteSpaceAfterSubmit) {
-                          await api.spaces.archiveSpace(spaceId)
-                        }
-                      } catch (error: any) {
-                        if (jobId) {
-                          await api.jobs.cancel(jobId)
-                        }
-                        console.error('Error:', error.stack)
-                      }
-                    })
+      }
+      if (!config.listener && (config.onSubmit || config.onRecordHook)) {
+        config.listener = FlatfileListener.create(
+          (client: FlatfileListener) => {
+            if (config.onRecordHook) {
+              client.use(
+                recordHook(
+                  config.sheet?.slug || 'slug',
+                  async (
+                    record: FlatfileRecord,
+                    event: FlatfileEvent | undefined
+                  ) => {
+                    return (
+                      config.onRecordHook && config.onRecordHook(record, event)
+                    )
                   }
                 )
-              }
+              )
             }
-          )
-        }
+            if (config.onSubmit) {
+              client.filter(
+                { job: 'workbook:simpleSubmitAction' },
+                (configure) => {
+                  configure.on('job:ready', async (event) => {
+                    const { jobId, spaceId, workbookId } = event.context
+                    try {
+                      await api.jobs.ack(jobId, {
+                        info: 'Starting job',
+                        progress: 10,
+                      })
+
+                      const job = new JobHandler(jobId)
+                      const { data: workbookSheets } = await api.sheets.list({
+                        workbookId,
+                      })
+
+                      // this assumes we are only allowing 1 sheet here (which we've talked about doing initially)
+                      const sheet = new SheetHandler(workbookSheets[0].id)
+
+                      if (config.onSubmit) {
+                        await config.onSubmit({ job, sheet, event })
+                      }
+
+                      await api.jobs.complete(jobId, {
+                        outcome: {
+                          message: 'complete',
+                        },
+                      })
+                      if (onSubmitSettings.deleteSpaceAfterSubmit) {
+                        await api.spaces.archiveSpace(spaceId)
+                      }
+                    } catch (error: any) {
+                      if (jobId) {
+                        await api.jobs.cancel(jobId)
+                      }
+                      console.error('Error:', error.stack)
+                    }
+                  })
+                }
+              )
+            }
+          }
+        )
       }
       const { data } = props.publishableKey
         ? await initializeSpace(config)
