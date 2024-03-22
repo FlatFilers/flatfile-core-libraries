@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- 16c42ce: Fix bug with onSubmit
+- 16c42ce: Fix bug with onSubmit() in the usePortal hook
 
 ## 7.8.9
 
