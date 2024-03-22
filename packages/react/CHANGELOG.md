@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.8.10
+
+### Patch Changes
+
+- 16c42ce: Fix bug with onSubmit
+
 ## 7.8.9
 
 ### Patch Changes
