@@ -1,14 +1,14 @@
+import { dts } from 'rollup-plugin-dts'
 import commonjs from '@rollup/plugin-commonjs'
+import css from 'rollup-plugin-import-css'
+import dotenv from 'dotenv'
 import json from '@rollup/plugin-json'
+import peerDepsExternal from 'rollup-plugin-peer-deps-external'
+import postcss from 'rollup-plugin-postcss'
 import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
 import typescript from '@rollup/plugin-typescript'
 import url from '@rollup/plugin-url'
-import dotenv from 'dotenv'
-import { dts } from 'rollup-plugin-dts'
-import css from 'rollup-plugin-import-css'
-import peerDepsExternal from 'rollup-plugin-peer-deps-external'
-import postcss from 'rollup-plugin-postcss'
 
 dotenv.config()
 
@@ -20,7 +20,11 @@ if (!PROD) {
 
 function commonPlugins(browser, umd = false) {
   return [
-    !umd ? peerDepsExternal() : null,
+    !umd
+      ? peerDepsExternal({
+          includeDependencies: true,
+        })
+      : null,
     json(),
     css(),
     resolve({ browser, preferBuiltins: !browser }),
