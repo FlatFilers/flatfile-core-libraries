@@ -15,7 +15,10 @@ import { FlatfileRecord } from '@flatfile/hooks'
 import { FlatfileEvent, FlatfileListener } from '@flatfile/listener'
 import { recordHook } from '@flatfile/plugin-record-hook'
 import { IReactSimpleOnboarding } from '../types/IReactSimpleOnboarding'
-import api from '@flatfile/api'
+
+// Bug where the default export function is not being used properly in some build tooling
+import { FlatfileClient } from '@flatfile/api'
+const api = new FlatfileClient()
 
 export const usePortal = (
   props: IReactSimpleOnboarding

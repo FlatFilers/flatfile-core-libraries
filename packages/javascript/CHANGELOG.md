@@ -1,10 +1,22 @@
 # @flatfile/javascript
 
+## 1.3.0
+
+### Minor Changes
+
+- e07368c: incorporate new init capability for preload - resulting in single-endpoint requests when creating spaces, workbooks, and documents
+
+### Patch Changes
+
+- 6952740: Make environmentId optional
+- Updated dependencies [6952740]
+  - @flatfile/embedded-utils@1.1.12
+
 ## 1.2.6
 
 ### Patch Changes
 
-- 5263f5b: Fix to only include defined params in the space creation request 
+- 5263f5b: Fix to only include defined params in the space creation request
 
 ## 1.2.5
 
