@@ -1,6 +1,6 @@
 export type BaseCustomThemeProps = {
   root?: {
-    fontFamily: string
+    fontFamily?: string
     primaryColor?: string
     dangerColor?: string
     warningColor?: string
@@ -125,7 +125,7 @@ export type BaseCustomTableThemeProps = {
 
   indexColumn: {
     backgroundColor: string
-    color: string
+    color?: string
     selected: {
       color: string
       backgroundColor: string
