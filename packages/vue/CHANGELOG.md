@@ -1,5 +1,13 @@
 ## 1.0.5
 
+## 1.0.8
+
+### Patch Changes
+
+- 6952740: Make environmentId optional
+- Updated dependencies [6952740]
+  - @flatfile/embedded-utils@1.1.12
+
 ## 1.0.7
 
 ### Patch Changes
