@@ -1,12 +1,11 @@
-import api from '@flatfile/api'
-import { RecordsWithLinks } from '@flatfile/api/api'
+import { Flatfile, FlatfileClient } from '@flatfile/api'
 import { processRecords } from '@flatfile/util-common'
 // TODO - might want to change the records type
 
 type DataWithMetadata = {
   sheetId: string
   workbookId: string
-  records: RecordsWithLinks
+  records: Flatfile.RecordsWithLinks
 }
 
 interface InChunksOptions {
@@ -15,43 +14,47 @@ interface InChunksOptions {
 
 export class JobHandler {
   private readonly jobId: string
+  private readonly api: FlatfileClient
 
   constructor(jobId: string) {
     this.jobId = jobId
+    this.api = new FlatfileClient()
   }
 
   async ack() {
-    await api.jobs.ack(this.jobId)
+    await this.api.jobs.ack(this.jobId)
   }
 
   async cancel() {
-    await api.jobs.cancel(this.jobId)
+    await this.api.jobs.cancel(this.jobId)
   }
 
   async complete() {
-    await api.jobs.complete(this.jobId)
+    await this.api.jobs.complete(this.jobId)
   }
 
   async fail() {
-    await api.jobs.fail(this.jobId)
+    await this.api.jobs.fail(this.jobId)
   }
 
   async get() {
-    await api.jobs.get(this.jobId)
+    await this.api.jobs.get(this.jobId)
   }
 }
 
 export class SheetHandler {
   private readonly sheetId: string
   private static readonly defaultCount: number = 1000
+  private readonly api: FlatfileClient
 
   constructor(sheetId: string) {
     this.sheetId = sheetId
+    this.api = new FlatfileClient()
   }
 
   async allData(): Promise<DataWithMetadata> {
-    const { data } = await api.sheets.get(this.sheetId)
-    const records = await api.records.get(this.sheetId)
+    const { data } = await this.api.sheets.get(this.sheetId)
+    const records = await this.api.records.get(this.sheetId)
 
     return {
       sheetId: this.sheetId,
@@ -61,8 +64,10 @@ export class SheetHandler {
   }
 
   async validData(): Promise<DataWithMetadata> {
-    const { data } = await api.sheets.get(this.sheetId)
-    const records = await api.records.get(this.sheetId, { filter: 'valid' })
+    const { data } = await this.api.sheets.get(this.sheetId)
+    const records = await this.api.records.get(this.sheetId, {
+      filter: 'valid',
+    })
 
     return {
       sheetId: this.sheetId,
@@ -72,8 +77,10 @@ export class SheetHandler {
   }
 
   async errorData(): Promise<DataWithMetadata> {
-    const { data } = await api.sheets.get(this.sheetId)
-    const records = await api.records.get(this.sheetId, { filter: 'error' })
+    const { data } = await this.api.sheets.get(this.sheetId)
+    const records = await this.api.records.get(this.sheetId, {
+      filter: 'error',
+    })
 
     return {
       sheetId: this.sheetId,
@@ -82,7 +89,7 @@ export class SheetHandler {
     }
   }
 
-  async stream(cb: (data: RecordsWithLinks) => void) {
+  async stream(cb: (data: Flatfile.RecordsWithLinks) => void) {
     return await processRecords(
       this.sheetId,
       async (records) => {
@@ -93,7 +100,7 @@ export class SheetHandler {
   }
 
   async inChunks(
-    cb: (data: RecordsWithLinks) => void,
+    cb: (data: Flatfile.RecordsWithLinks) => void,
     options: InChunksOptions
   ) {
     return await processRecords(
