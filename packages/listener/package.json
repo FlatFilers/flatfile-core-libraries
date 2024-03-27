@@ -46,8 +46,7 @@
     "rollup-plugin-dts": "^6.1.0",
     "rollup-plugin-peer-deps-external": "^2.2.4",
     "ts-jest": "^29.1.0",
-    "tslib": "^2.4.1",
-    "typescript": "^5.0.4"
+    "tslib": "^2.4.1"
   },
   "dependencies": {
     "ansi-colors": "^4.1.3",

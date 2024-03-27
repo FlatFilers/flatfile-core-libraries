@@ -5,8 +5,7 @@
     "ng": "ng",
     "start": "ng serve",
     "build": "ng build @flatfile/angular",
-    "watch": "ng build --watch --configuration development",
-    "postinstall": "cd projects/spaces && npm install"
+    "watch": "ng build --watch --configuration development"
   },
   "private": true,
   "dependencies": {
