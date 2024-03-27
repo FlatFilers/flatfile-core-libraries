@@ -109,3 +109,8 @@ a {
     color-scheme: dark;
   }
 }
+
+
+.flatfile_iframe-wrapper {
+  top: 100px !important;
+}

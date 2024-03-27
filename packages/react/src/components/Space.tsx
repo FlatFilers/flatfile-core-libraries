@@ -1,15 +1,12 @@
-import { Flatfile } from '@flatfile/api'
 import { ISpace, SpaceComponent } from '@flatfile/embedded-utils'
-import React, { JSX, useEffect, useState } from 'react'
+import React, { JSX, useContext, useEffect, useState } from 'react'
 import { useCreateListener } from '../hooks/useCreateListener'
 import { addSpaceInfo } from '../utils/addSpaceInfo'
 import { authenticate } from '../utils/authenticate'
 import ConfirmModal from './ConfirmCloseModal'
-import {
-  getContainerStyles,
-  getIframeStyles,
-} from './embeddedStyles'
+import { getContainerStyles, getIframeStyles } from './embeddedStyles'
 import './style.scss'
+import FlatfileContext from './FlatfileContext'
 
 /**
  * @name Space
@@ -23,7 +20,8 @@ const Space = ({
   accessToken,
   handleCloseInstance,
   ...props
-}: SpaceComponent & ISpace & {handleCloseInstance: () => void}): JSX.Element | null => {
+}: SpaceComponent &
+  ISpace & { handleCloseInstance: () => void }): JSX.Element | null => {
   if (spaceId && spaceUrl && accessToken) {
     return (
       <SpaceContents
@@ -39,9 +37,16 @@ const Space = ({
 }
 
 export const SpaceContents = (
-  props: ISpace & { spaceId: string; spaceUrl: string; accessToken: string; handleCloseInstance: () => void }
+  props: ISpace & {
+    spaceId: string
+    spaceUrl: string
+    accessToken: string
+    handleCloseInstance: () => void
+  }
 ): JSX.Element => {
   const [showExitWarnModal, setShowExitWarnModal] = useState(false)
+  const context = useContext(FlatfileContext)
+  const { open } = context
   const {
     spaceId,
     spaceUrl,
@@ -56,10 +61,13 @@ export const SpaceContents = (
     exitSecondaryButtonText = 'No, stay',
     apiUrl = 'https://platform.flatfile.com/api',
     displayAsModal = true,
-    handleCloseInstance
+    handleCloseInstance,
   } = props
-
-  const { dispatchEvent } = useCreateListener({ listener, accessToken, apiUrl })
+  const { dispatchEvent } = useCreateListener({
+    listener,
+    accessToken,
+    apiUrl,
+  })
 
   const handlePostMessage = (event: any) => {
     const { flatfileEvent } = event.data
@@ -97,12 +105,19 @@ export const SpaceContents = (
       className={`flatfile_iframe-wrapper ${
         displayAsModal ? 'flatfile_displayAsModal' : ''
       }`}
-      style={getContainerStyles(displayAsModal)}
+      style={{
+        ...getContainerStyles(displayAsModal),
+        display: open ? 'flex' : 'none',
+      }}
       data-testid="space-contents"
     >
       {showExitWarnModal && (
         <ConfirmModal
-          onConfirm={() => { handleCloseInstance(); closeSpace?.onClose({})} }
+          onConfirm={() => {
+            handleCloseInstance()
+            setShowExitWarnModal(false)
+            closeSpace?.onClose({})
+          }}
           onCancel={() => setShowExitWarnModal(false)}
           exitText={exitText}
           exitTitle={exitTitle}

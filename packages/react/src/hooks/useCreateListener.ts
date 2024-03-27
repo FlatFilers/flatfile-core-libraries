@@ -7,14 +7,18 @@ import { IReactSpaceProps } from '../types'
  * @param { Pick<ISpace, 'accessToken'| 'listener'> }
  */
 
+type FlatfileListenerInstance = {
+  dispatchEvent: (event: any) => void
+}
+
 export const useCreateListener = ({
   accessToken,
   listener,
   apiUrl = 'https://platform.flatfile.com/api',
 }: Pick<IReactSpaceProps, 'listener'> & {
   accessToken: string | null
-  apiUrl: string
-}) => {
+  apiUrl?: string
+}): FlatfileListenerInstance => {
   // set the api key to fully authenticate into Flatfile api
   // todo: should we use CrossEnvConfig here?
   ;(window as any).CROSSENV_FLATFILE_API_KEY = accessToken
@@ -36,7 +40,6 @@ export const useCreateListener = ({
 
       const eventPayload = event.src ? event.src : event
       const eventInstance = new FlatfileEvent(eventPayload, accessToken, apiUrl)
-
       return listener?.dispatchEvent(eventInstance)
     },
   }

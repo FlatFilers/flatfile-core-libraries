@@ -38,15 +38,16 @@
     "@rollup/plugin-typescript": "^11.1.1",
     "@rollup/plugin-url": "^8.0.2",
     "@testing-library/jest-dom": "^5.16.5",
-    "@testing-library/react-hooks": "^8.0.1",
     "@testing-library/react": "^12.1.2",
+    "@testing-library/react-hooks": "^8.0.1",
     "@types/jest": "^28.1.4",
-    "@types/react-dom": ">=16.9.0 <19.0.0",
     "@types/react": ">=16.9.0 <19.0.0",
+    "@types/react-dom": ">=16.9.0 <19.0.0",
     "@types/tinycolor2": "^1.4.3",
-    "dotenv": "^16.3.1",
-    "jest-environment-jsdom": "^29.6.4",
+    "dotenv": "^16.3.2",
     "jest": "^28.1.2",
+    "jest-environment-jsdom": "^29.6.4",
+    "jest-fetch-mock": "^3.0.3",
     "jsdom": "^21.1.0",
     "rollup-plugin-dts": "^6.1.0",
     "rollup-plugin-import-css": "^3.3.5",
@@ -56,7 +57,7 @@
     "ts-jest": "^28.0.5"
   },
   "dependencies": {
-    "@flatfile/api": "^1.6.7",
+    "@flatfile/api": "^1.7.4",
     "@flatfile/cross-env-config": "^0.0.5",
     "@flatfile/embedded-utils": "^1.1.12",
     "@flatfile/listener": "^1.0.1",
@@ -66,6 +67,7 @@
   "peerDependencies": {
     "react": "^16.0.0 || ^17.0.0 || ^18.0.0",
     "react-dom": "^16.0.0 || ^17.0.0 || ^18.0.0"
+    
   },
   "publishConfig": {
     "access": "public"

@@ -24,15 +24,18 @@ function commonPlugins(browser, umd = false) {
       ? peerDepsExternal({
           includeDependencies: true,
         })
-      : null,
+      : undefined,
     json(),
     css(),
     resolve({ browser, preferBuiltins: !browser }),
-    commonjs({ requireReturnsDefault: 'auto' }),
+    commonjs({
+      requireReturnsDefault: 'preferred',
+      esmExternals: true,
+    }),
     typescript({
       outDir: 'dist',
-      tsconfig: 'tsconfig.json',
       declaration: false,
+      declarationDir: './dist',
       composite: false,
     }),
     url({
@@ -46,6 +49,11 @@ function commonPlugins(browser, umd = false) {
 }
 
 const config = [
+  {
+    input: 'src/index.ts',
+    output: [{ file: 'dist/index.d.ts', format: 'es' }],
+    plugins: [css(), dts(), postcss()],
+  },
   // Non-browser build
   {
     input: 'src/index.ts',
@@ -91,11 +99,6 @@ const config = [
       strict: true,
     },
     plugins: commonPlugins(true, true),
-  },
-  {
-    input: 'src/index.ts',
-    output: [{ file: 'dist/index.d.ts', format: 'es' }],
-    plugins: [css(), dts(), postcss()],
   },
 ]
 

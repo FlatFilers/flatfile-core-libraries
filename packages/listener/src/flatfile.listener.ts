@@ -76,6 +76,10 @@ export class FlatfileListener extends EventHandler {
     driver.mountEventHandler(this)
     return this
   }
+
+  fork() {
+    return new FlatfileListener()
+  }
 }
 
 type SubFn<T extends FlatfileListener> = (client: T) => void

@@ -58,6 +58,54 @@ export class EventHandler extends AuthenticatedClient {
     return this
   }
 
+  off(query: Arrayable<string>, callback: EventCallback): this
+  off(
+    query: Arrayable<string>,
+    filter: EventFilter,
+    callback: EventCallback
+  ): this
+
+  // Implementation
+  off(
+    query: Arrayable<string>,
+    filterOrCallback: EventFilter | EventCallback,
+    maybeCallback?: EventCallback
+  ): this {
+    let filter: EventFilter | undefined = undefined
+    let callback: EventCallback
+
+    if (typeof filterOrCallback === 'function') {
+      callback = filterOrCallback as EventCallback
+    } else {
+      filter = filterOrCallback
+      callback = maybeCallback!
+    }
+
+    this.listeners = this.listeners.filter(
+      ([listenerQuery, listenerFilter, listenerCallback]) => {
+        // Normalize query for comparison
+        const normalizedListenerQuery = Array.isArray(listenerQuery)
+          ? listenerQuery
+          : [listenerQuery]
+        const normalizedQuery = Array.isArray(query) ? query : [query]
+
+        // Match checks
+        const isQueryMatch =
+          JSON.stringify(normalizedListenerQuery) ===
+          JSON.stringify(normalizedQuery)
+        const isCallbackMatch = listenerCallback === callback
+        const isFilterMatch = filter
+          ? JSON.stringify(listenerFilter) === JSON.stringify(filter)
+          : true
+
+        // Keep the listener if it doesn't match all criteria for removal
+        return !(isQueryMatch && isCallbackMatch && isFilterMatch)
+      }
+    )
+
+    return this
+  }
+
   /**
    * Add child nodes to send this event to as well
    *
@@ -178,6 +226,18 @@ export class EventHandler extends AuthenticatedClient {
   ): boolean {
     return filter ? objectMatches(event, filter) : true
   }
+
+  public detach() {
+    // Clear the listeners array
+    this.listeners = []
+
+    // Optionally, also detach all child nodes
+    this.nodes.forEach((node) => node.detach())
+    this.nodes = []
+
+    // Additional cleanup logic, if necessary
+    // e.g., Unsubscribe from external services or event sources
+  }
 }
 
 export type EventFilter = Record<
@@ -192,4 +252,12 @@ export type Listener = {
   query: string | string[]
   filter: any
   callback: EventCallback
+}
+
+// Utility function to compare queries/filters
+function isEqual(a: any, b: any): boolean {
+  // Implement comparison logic based on your application's needs
+  // This could be as simple as JSON.stringify(a) === JSON.stringify(b) for shallow comparison
+  // Or more complex deep comparison logic for nested objects
+  return JSON.stringify(a) === JSON.stringify(b)
 }

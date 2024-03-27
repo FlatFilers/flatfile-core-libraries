@@ -1,129 +1,171 @@
 'use client'
 import { sheet } from '@/utils/sheet'
-import { InitSpace, initializeFlatfile, usePortal } from '@flatfile/react'
-import React, { Dispatch, SetStateAction, useState } from 'react'
-import { config } from './config'
-import { listener } from './listener'
+import { workbook } from '@/utils/workbook'
+import { document } from '@/utils/document'
+import {
+  FlatfileProvider,
+  useFlatfile,
+  Sheet,
+  useListener,
+  usePlugin,
+  useEvent,
+  SimplifiedWorkbook,
+  Workbook,
+} from '@flatfile/react'
+import React, { useEffect, useState } from 'react'
+import { listener as importedListener, plainListener } from './listener'
 import styles from './page.module.css'
+import { recordHook } from '@flatfile/plugin-record-hook'
+import api from '@flatfile/api'
 
-const SPACE_ID = 'us_sp_123456'
-const ENVIRONMENT_ID = 'us_env_123456'
 const PUBLISHABLE_KEY = 'pk_123456'
+const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
-const spaceProps = {
-  environmentId: ENVIRONMENT_ID,
-  iframeStyles: {
-    borderRadius: '12px',
-    width: '100%',
-    height: '750px',
-    borderWidth: ' 0px',
-    background: 'rgb(255, 255, 255)',
-    padding: '16px',
-  },
-  listener: listener,
-  publishableKey: PUBLISHABLE_KEY,
-  workbook: config,
-  namespace: 'my-namespace',
-}
+const FFApp = () => {
+  const { open, openPortal, closePortal } = useFlatfile()
 
-const simplifiedProps = {
-  environmentId: ENVIRONMENT_ID,
-  publishableKey: PUBLISHABLE_KEY,
-  sheet: sheet,
-}
+  const [label, setLabel] = useState('Rock')
 
-const LoadingComponent = () => <label>Loading data....</label>
+  // useEffect(() => {
+  //   console.log('FFApp useEffect', { flatfileConfiguration })
+  //   setFlatfileConfiguration({...flatfileConfiguration, sidebarConfig: {
+  //     showSidebar: true
+  //   }})
+  // }, [flatfileConfiguration])
 
-function App() {
-  const [showSpace, setShowSpace] = useState(false)
-  const [showSimplified, setShowSimplified] = useState(false)
-  const [activatePreloaded, setActivatePreloaded] = useState(false)
+  useListener((listener) => {
+    // currentListener
+    listener.on('**', (event) => {
+      console.log('FFApp useListener Event => ', event.topic)
+      // Handle the workbook:deleted event
+    })
+    // importedListener
+  }, [])
 
-  const { Space, OpenEmbed } = initializeFlatfile({
-    ...spaceProps,
-    loading: <LoadingComponent />,
-    exitPrimaryButtonText: 'CLOSE!',
-    exitSecondaryButtonText: 'KEEP IT!',
+  // Both of these work:
+  // FlatfileListener.create((client) => {
+  useListener(importedListener, [])
+
+  // (listener: FlatfileListener) => {
+  useListener(plainListener, [])
+
+  useListener((client) => {
+    client.use(
+      recordHook('contacts', (record) => {
+        const firstName = record.get('firstName')
+        console.log({ firstName })
+        // Gettign the real types here would be nice but seems tricky
+        record.set('email', 'Rock')
+        return record
+      })
+    )
+  }, [])
+
+  usePlugin(
+    recordHook('contacts', (record, event) => {
+      console.log('recordHook', { event })
+      record.set('lastName', label)
+      return record
+    }),
+    [label]
+  )
+
+  useEvent('workbook:created', (event) => {
+    console.log('workbook:created', { event })
   })
 
-  const SimpleSpace = ({
-    setShowSpace,
-  }: {
-    setShowSpace: Dispatch<SetStateAction<boolean>>
-  }) => {
-    const portal = usePortal({
-      ...simplifiedProps,
-      onSubmit: async ({
-        job,
-        sheet,
-      }: {
-        job?: any
-        sheet?: any
-      }): Promise<any> => {
-        const data = await sheet.allData()
-        console.log('onSubmit', data)
-      },
-      onRecordHook: (record: any, event: any) => {
-        const firstName = record.get('firstName')
-        const lastName = record.get('lastName')
-        if (firstName && !lastName) {
-          record.set('lastName', 'Rock')
-          record.addInfo('lastName', 'Welcome to the Rock fam')
-        }
-        return record
-      },
-    })
-    return portal
-  }
+  useEvent('*:created', (event) => {
+    console.log({ topic: event.topic })
+  })
 
+  useEvent('job:ready', { job: 'sheet:submitActionFg' }, async (event) => {
+    const { jobId } = event.context
+    try {
+      await api.jobs.ack(jobId, {
+        info: 'Getting started.',
+        progress: 10,
+      })
+
+      // Make changes after cells in a Sheet have been updated
+      console.log('Make changes here when an action is clicked')
+      const records = await event.data
+
+      console.log({ records })
+
+      await api.jobs.complete(jobId, {
+        outcome: {
+          message: 'This is now complete.',
+        },
+      })
+
+      // Probably a bad idea to close the portal here but just as an example
+      await sleep(3000)
+      closePortal()
+    } catch (error: any) {
+      console.error('Error:', error.stack)
+
+      await api.jobs.fail(jobId, {
+        outcome: {
+          message: 'This job encountered an error.',
+        },
+      })
+    }
+  })
+
+  const listenerConfig = (label: string) => {
+    setLabel(label)
+  }
   return (
     <div className={styles.main}>
       <div className={styles.description}>
         <button
-          onClick={async () => {
-            setShowSpace(!showSpace)
-            await OpenEmbed()
-          }}
-        >
-          {showSpace === true ? 'Close' : 'Open'} space
-        </button>
-      </div>
-      <div className={styles.description}>
-        <button
           onClick={() => {
-            setShowSimplified(!showSimplified)
+            open ? closePortal() : openPortal()
           }}
         >
-          {showSimplified === true ? 'Close' : 'Open'} Simplified
+          {open ? 'CLOSE' : 'OPEN'} PORTAL
         </button>
+        <button onClick={() => listenerConfig('blue')}>blue listener</button>
+        <button onClick={() => listenerConfig('green')}>green listener</button>
       </div>
-      <div className={styles.description}>
-        <button
-          onClick={() => {
-            setActivatePreloaded(!showSimplified)
-          }}
-        >
-          {showSimplified === true ? 'Close' : 'Open'} Pre-loaded
-        </button>
-      </div>
-      <Space />
-      {showSimplified && (
-        <div>
-          <SimpleSpace setShowSpace={setShowSimplified} />
-        </div>
-      )}
-      <InitSpace
-        {...spaceProps}
-        activated={activatePreloaded}
-        loading={<LoadingComponent />}
-        exitPrimaryButtonText={'CLOSE!'}
-        exitSecondaryButtonText={'KEEP IT!'}
-        closeSpace={{
-          operation: 'contacts:submit',
-          onClose: () => setActivatePreloaded(false),
+
+      {/* <Sheet config={sheet} /> */}
+
+      <SimplifiedWorkbook
+        sheets={[sheet]}
+        onRecordHook={(record, event) => {
+          console.log('onRecordHook', { record, event })
+          record.set('email', 'alex@nasa.com')
+          return record
+        }}
+        onSubmit={({ data, sheet, job, event }) => {
+          console.log('onSubmit', { data, sheet, job, event })
         }}
       />
+
+      {/* <Workbook workbook={workbook}/> */}
     </div>
+  )
+}
+
+const App = () => {
+  return (
+    <FlatfileProvider
+      // publishableKey={PUBLISHABLE_KEY}
+      space={{
+        id: 'us_sp_123456',
+        accessToken: 'ey123456.ey123456',
+        metadata: {
+          sidebarConfig: {
+            showSidebar: true,
+          },
+        },
+        namespace: 'test',
+        name: 'Test Space',
+      }}
+    >
+      <FFApp />
+    </FlatfileProvider>
   )
 }
 

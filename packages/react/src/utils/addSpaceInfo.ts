@@ -13,23 +13,21 @@ export const addSpaceInfo = async (
 ): Promise<{
   workbook: Flatfile.WorkbookResponse | undefined
 }> => {
-  const { workbook, sheet, environmentId, document } = spaceProps
+  const { workbook, sheet, environmentId, document, onSubmit } = spaceProps
   let localWorkbook
-
   try {
     if (!workbook && sheet) {
-      const createdWorkbook = createWorkbookFromSheet(sheet)
+      const createdWorkbook = createWorkbookFromSheet(sheet, !!onSubmit)
       localWorkbook = await api.workbooks.create({
         spaceId,
         ...(environmentId !== undefined && { environmentId }),
         ...createdWorkbook,
       })
-
       if (!localWorkbook || !localWorkbook.data || !localWorkbook.data.id) {
         throw new Error('Failed to create workbook')
       }
     }
-    if (workbook) {
+    if (workbook && !sheet) {
       localWorkbook = await api.workbooks.create({
         spaceId,
         ...(environmentId !== undefined && { environmentId }),
@@ -40,7 +38,6 @@ export const addSpaceInfo = async (
         throw new Error('Failed to create workbook')
       }
     }
-
     if (document) {
       const createdDocument = await api.documents.create(spaceId, {
         title: document.title,
