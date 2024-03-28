@@ -1,9 +1,7 @@
-import { useContext, useEffect } from 'react'
+import { useContext } from 'react'
 import FlatfileContext from '../components/FlatfileContext'
-import { initializeSpace } from '../utils/initializeSpace'
 import { getSpace } from '../utils/getSpace'
-import { authenticate } from '../utils/authenticate'
-import { addSpaceInfo } from '../utils/addSpaceInfo'
+import { createSpaceInternal } from '../utils/createSpaceInternal'
 
 export const useFlatfile = () => {
   const context = useContext(FlatfileContext)
@@ -23,44 +21,27 @@ export const useFlatfile = () => {
     space,
     setSessionSpace,
     setAccessToken,
-    flatfileConfiguration,
+    createSpace,
   } = context
 
-  useEffect(() => {
-    console.log('useFlatfile useEffect', { flatfileConfiguration })
-  }, [flatfileConfiguration])
-
-  const createSpace = async () => {
-    // if Workbook child is available then create space with Workbook
-    // if Space Document child is available then create space with Document
-    if (publishableKey) {
-      const { data: createdSpace } = await initializeSpace({
-        publishableKey,
-        environmentId,
-        apiUrl,
-        ...space,
-        ...flatfileConfiguration,
-      })
-
-      if (createdSpace?.accessToken) {
-        ;(window as any).CROSSENV_FLATFILE_API_KEY = createdSpace?.accessToken
-
-        setAccessToken(createdSpace?.accessToken)
-        setSessionSpace(createdSpace)
-
-        const fullAccessApi = authenticate(createdSpace?.accessToken, apiUrl)
-        console.log('createSpace', { flatfileConfiguration })
-        // TODO: Remove this when we have a 1 endpoint solution
-        await addSpaceInfo(
-          flatfileConfiguration,
-          createdSpace?.id,
-          fullAccessApi
-        )
-      }
-    }
+  const handleCreateSpace = async () => {
+    if (!publishableKey) return
+    const autoConfigure = createSpace.workbook && createSpace.workbook.sheets
+    const { data: createdSpace } = await createSpaceInternal({
+      apiUrl,
+      publishableKey,
+      space: { ...createSpace.space, autoConfigure: !autoConfigure },
+      workbook: createSpace.workbook,
+      document: createSpace.document,
+    })
+    console.log('createdSpace', { createdSpace })
+    setAccessToken(createdSpace.space.accessToken)
+    setSessionSpace(createdSpace.space)
+    // A bit of a hack to wire up the Flatfile API key to the window object for internal client side @flatfile/api usage
+    ;(window as any).CROSSENV_FLATFILE_API_KEY = createdSpace.space.accessToken
   }
 
-  const reUseSpace = async () => {
+  const handleReUseSpace = async () => {
     if (space && 'accessToken' in space) {
       // TODO: Do we want to update the Space metadata / documents here if they pass that information? Feels like a no.
       const { data: reUsedSpace } = await getSpace({
@@ -78,9 +59,9 @@ export const useFlatfile = () => {
 
   const openPortal = () => {
     if (publishableKey) {
-      createSpace()
+      handleCreateSpace()
     } else if (space) {
-      reUseSpace()
+      handleReUseSpace()
     }
     setOpen(true)
   }

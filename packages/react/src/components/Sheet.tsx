@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useCallback } from 'react'
 import { Flatfile, FlatfileClient } from '@flatfile/api'
 import { useContext, useEffect } from 'react'
 import FlatfileContext from './FlatfileContext'
@@ -13,29 +13,25 @@ import {
 import { FlatfileEvent } from '@flatfile/listener'
 import { recordHook, FlatfileRecord } from '@flatfile/plugin-record-hook'
 import { usePlugin, useEvent } from '../hooks'
+import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
 
 export const Sheet = (
-  props: { config: Flatfile.SheetConfig } & IFrameTypes &
-    Pick<Simplified, 'onRecordHook' | 'onSubmit' | 'submitSettings'>
+  props: { config: Flatfile.SheetConfig } & Pick<
+    Simplified,
+    'onRecordHook' | 'onSubmit' | 'submitSettings'
+  >
 ) => {
   const { config, onRecordHook, onSubmit, ...sheetProps } = props
-  const {
-    sessionSpace,
-    setOpen,
-    flatfileConfiguration,
-    setFlatfileConfiguration,
-  } = useContext(FlatfileContext)
+  const { addSheet } = useContext(FlatfileContext)
 
-  useEffect(() => {
+
+  const callback = useCallback(() => {
     console.log('Sheet useEffect', { slug: config.slug })
-    setFlatfileConfiguration({
-      ...flatfileConfiguration,
-      sheets: [...(flatfileConfiguration.sheets ?? []), config],
-      onSubmit,
-    })
-  }, [])
+    addSheet(config)
+  }, [config, addSheet])
 
-  //   let simpleListener
+  useDeepCompareEffect(callback, [config])
+
   if (onRecordHook) {
     if (!config) {
       throw new Error(
@@ -100,14 +96,5 @@ export const Sheet = (
       }
     )
   }
-
-  if (sessionSpace) {
-    return (
-      <EmbeddedIFrameWrapper
-        handleCloseInstance={() => setOpen(false)}
-        {...sessionSpace}
-        {...sheetProps}
-      />
-    )
-  }
+  return <></>
 }

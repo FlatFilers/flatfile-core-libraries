@@ -1,7 +1,7 @@
 import { Flatfile } from '@flatfile/api'
 import { ISpace } from '@flatfile/embedded-utils'
 import FlatfileListener from '@flatfile/listener'
-import { createContext } from 'react'
+import { createContext, useContext } from 'react'
 
 type CreateNewSpace = Partial<Flatfile.SpaceConfig>
 type ReUseSpace = Partial<Flatfile.SpaceConfig> & {
@@ -23,6 +23,16 @@ export interface FlatfileContextType {
   setAccessToken: (accessToken: string) => void
   flatfileConfiguration?: any
   setFlatfileConfiguration: (config: any) => void
+  addSheet: (config: any) => void
+  updateSheet: (
+    sheetSlug: string,
+    sheetUpdates: Partial<Flatfile.SheetConfig>
+  ) => void
+  updateWorkbook: (config: any) => void
+  updateDocument: (config: any) => void
+  createSpace: any
+  setCreateSpace: (config: any) => void
+  updateSpace: (config: any) => void
 }
 
 const FlatfileContext = createContext<FlatfileContextType>({
@@ -40,6 +50,13 @@ const FlatfileContext = createContext<FlatfileContextType>({
   setAccessToken: () => {},
   flatfileConfiguration: undefined,
   setFlatfileConfiguration: () => {},
+  addSheet: () => {},
+  updateSheet: () => {},
+  updateWorkbook: () => {},
+  updateDocument: () => {},
+  createSpace: undefined,
+  setCreateSpace: () => {},
+  updateSpace: () => {},
 })
-
+export const useFlatfileInternal = () => useContext(FlatfileContext)
 export default FlatfileContext

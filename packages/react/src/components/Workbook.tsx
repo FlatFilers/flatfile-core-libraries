@@ -1,40 +1,144 @@
-import { EmbeddedIFrameWrapper } from './EmbeddedIFrameWrapper'
-import { IFrameTypes } from '../types'
 import FlatfileContext from './FlatfileContext'
-import React, { useContext, useEffect } from 'react'
-import type { Flatfile } from '@flatfile/api'
+import React, { useCallback, useContext, useEffect, useRef } from 'react'
+import { FlatfileClient, type Flatfile } from '@flatfile/api'
+import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
+import { sheets } from '@flatfile/api/api'
+import { TRecordDataWithLinks, TPrimitive } from '@flatfile/hooks'
+import { FlatfileEvent } from '@flatfile/listener'
+import { FlatfileRecord, recordHook } from '@flatfile/plugin-record-hook'
+import { useEvent, usePlugin } from '../hooks'
+import { Simplified } from './SimplifiedWorkbook'
+import {
+  DefaultSubmitSettings,
+  JobHandler,
+  SheetHandler,
+} from '@flatfile/embedded-utils'
+
+type onRecordHook<T> = (record: T, event?: FlatfileEvent) => FlatfileRecord
+
+// type onRecordHooks<T> = Array<onRecordHook<T>>
+type HookConfig<T> = [string, onRecordHook<T>] | [onRecordHook<T>]
+
+type onRecordHooks<T> = HookConfig<T>[]
 
 export const Workbook = (
   props: {
-    workbook: Flatfile.CreateWorkbookConfig
-    document?: Flatfile.DocumentConfig
-  } & IFrameTypes
+    config: Flatfile.CreateWorkbookConfig
+    children?: React.ReactNode
+  } & Pick<Simplified, 'onSubmit' | 'submitSettings'> & {
+      onRecordHooks?: onRecordHooks<
+        FlatfileRecord<TRecordDataWithLinks<TPrimitive>>
+      >
+    }
 ) => {
-  const { workbook, document, ...workbookProps } = props
-  const {
-    sessionSpace,
-    setOpen,
-    flatfileConfiguration,
-    setFlatfileConfiguration,
-  } = useContext(FlatfileContext)
+  const { config, children, onRecordHooks, onSubmit } = props
+  const { updateWorkbook, createSpace } = useContext(FlatfileContext)
+  const { sheets } = createSpace.workbook
+  // Accept a workbook onSubmit function and add it to the workbook actions
 
-  useEffect(() => {
-    setFlatfileConfiguration({
-      ...flatfileConfiguration,
-      workbook,
-      document,
+  const callback = useCallback(() => {
+    if (!!onSubmit) {
+      config.actions = [
+        {
+          operation: 'simpleSubmitAction',
+          mode: 'foreground',
+          label: 'Submit data',
+          description: 'Action for handling data inside of onSubmit',
+          primary: true,
+        },
+        ...(config.actions ? config.actions : []),
+      ]
+    }
+    updateWorkbook(config)
+  }, [config, updateWorkbook])
+
+  useDeepCompareEffect(callback, [config])
+
+  if (onRecordHooks) {
+    onRecordHooks.forEach(([slug, hook], index) => {
+      if (typeof slug === 'function') {
+        usePlugin(
+          recordHook(
+            sheets?.[index].slug || '**',
+            async (
+              record: FlatfileRecord,
+              event: FlatfileEvent | undefined
+            ) => {
+              // @ts-ignore - something weird with the `data` prop and the types upstream in the packages being declared in different places, but overall this is fine
+              return slug(record, event)
+            }
+          ),
+          []
+        )
+      } else if (typeof slug === 'string') {
+        usePlugin(
+          recordHook(
+            slug,
+            async (
+              record: FlatfileRecord,
+              event: FlatfileEvent | undefined
+            ) => {
+              // @ts-ignore - something weird with the `data` prop and the types upstream in the packages being declared in different places, but overall this is fine
+              return hook(record, event)
+            }
+          ),
+          []
+        )
+      }
     })
-  }, [workbook, document])
+  }
 
-  if (sessionSpace) {
-    return (
-      <EmbeddedIFrameWrapper
-        handleCloseInstance={() => setOpen(false)}
-        {...sessionSpace}
-        {...workbookProps}
-      />
+  if (onSubmit) {
+    const onSubmitSettings = {
+      ...DefaultSubmitSettings,
+      ...props.submitSettings,
+    }
+    useEvent(
+      'job:ready',
+      { job: 'workbook:simpleSubmitAction' },
+      async (event) => {
+        const { jobId, spaceId, workbookId } = event.context
+        const FlatfileAPI = new FlatfileClient()
+        try {
+          await FlatfileAPI.jobs.ack(jobId, {
+            info: 'Starting job',
+            progress: 10,
+          })
+
+          const job = new JobHandler(jobId)
+          const { data: workbookSheets } = await FlatfileAPI.sheets.list({
+            workbookId,
+          })
+
+          // this assumes we are only allowing 1 sheet here (which we've talked about doing initially)
+          const sheet = new SheetHandler(workbookSheets[0].id)
+
+          if (onSubmit) {
+            await onSubmit({ job, sheet, event })
+          }
+
+          await FlatfileAPI.jobs.complete(jobId, {
+            outcome: {
+              message: 'complete',
+            },
+          })
+          if (onSubmitSettings.deleteSpaceAfterSubmit) {
+            await FlatfileAPI.spaces.archiveSpace(spaceId)
+          }
+        } catch (error: any) {
+          if (jobId) {
+            await FlatfileAPI.jobs.cancel(jobId)
+          }
+          console.log('Error:', error.stack)
+        }
+      }
     )
   }
+
+  if (children) {
+    return children
+  }
+  return null
 }
 
 // Example Usage:

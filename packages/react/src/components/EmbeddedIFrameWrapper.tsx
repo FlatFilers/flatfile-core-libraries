@@ -65,7 +65,7 @@ export const EmbeddedIFrameWrapper = (
           src={spaceUrl}
         />
       )}
-      <CloseButton onClick={() => setShowExitWarnModal(true)} />
+      <CloseButton handler={() => setShowExitWarnModal(true)} />
     </div>
   )
 }
