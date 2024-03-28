@@ -4,7 +4,7 @@ import FlatfileContext from './FlatfileContext'
 import FlatfileListener, { Browser } from '@flatfile/listener'
 import { Flatfile } from '@flatfile/api'
 
-type Exclusive<T, U> =
+export type Exclusive<T, U> =
   | (T & Partial<Record<Exclude<keyof U, keyof T>, never>>)
   | (U & Partial<Record<Exclude<keyof T, keyof U>, never>>)
 

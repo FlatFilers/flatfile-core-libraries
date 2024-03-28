@@ -1,11 +1,11 @@
 import React, { JSX, useEffect, useState } from 'react'
-import DefaultError from '../components/Error'
-import Space from '../components/Space'
-import Spinner from '../components/Spinner'
+import DefaultError from '../../components/Error'
+import Space from '../../components/legacy/Space'
+import Spinner from '../../components/Spinner'
 import { State } from '@flatfile/embedded-utils'
-import { initializeSpace } from '../utils/initializeSpace'
-import { getSpace } from '../utils/getSpace'
-import { IReactSpaceProps } from '../types'
+import { initializeSpace } from '../../utils/initializeSpace'
+import { getSpace } from '../../utils/getSpace'
+import { IReactSpaceProps } from '../../types'
 
 type IUseSpace = { OpenEmbed: () => Promise<void>; Space: () => JSX.Element }
 

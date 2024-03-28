@@ -6,10 +6,10 @@ import { FlatfileClient } from '@flatfile/api'
 import '@testing-library/jest-dom'
 import { renderHook } from '@testing-library/react-hooks'
 import DefaultError from '../../components/Error'
-import Space from '../../components/Space'
+import Space from '../../components/legacy/Space'
 import { mockDocument, mockSpace, mockWorkbook } from '../../test/mocks'
 import { ISpace } from '@flatfile/embedded-utils'
-import useSpace from '../useSpace'
+import useSpace from '../legacy/useSpace'
 
 console.error = jest.fn()
 

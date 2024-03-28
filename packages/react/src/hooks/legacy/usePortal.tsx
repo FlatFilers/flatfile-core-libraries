@@ -1,7 +1,7 @@
 import React, { JSX, useEffect, useState } from 'react'
-import DefaultError from '../components/Error'
-import Space from '../components/Space'
-import Spinner from '../components/Spinner'
+import DefaultError from '../../components/Error'
+import Space from '../../components/legacy/Space'
+import Spinner from '../../components/Spinner'
 import {
   State,
   JobHandler,
@@ -9,12 +9,12 @@ import {
   createWorkbookFromSheet,
   DefaultSubmitSettings,
 } from '@flatfile/embedded-utils'
-import { initializeSpace } from '../utils/initializeSpace'
-import { getSpace } from '../utils/getSpace'
+import { initializeSpace } from '../../utils/initializeSpace'
+import { getSpace } from '../../utils/getSpace'
 import { FlatfileRecord } from '@flatfile/hooks'
 import { FlatfileEvent, FlatfileListener } from '@flatfile/listener'
 import { recordHook } from '@flatfile/plugin-record-hook'
-import { IReactSimpleOnboarding } from '../types/IReactSimpleOnboarding'
+import { IReactSimpleOnboarding } from '../../types/IReactSimpleOnboarding'
 import api from '@flatfile/api'
 
 export const usePortal = (

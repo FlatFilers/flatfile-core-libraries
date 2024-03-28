@@ -1,6 +1,6 @@
 import { Browser, FlatfileEvent } from '@flatfile/listener'
 import { useEffect } from 'react'
-import { IReactSpaceProps } from '../types'
+import { IReactSpaceProps } from '../../types'
 /**
  * @name useCreateListener
  * @description Listener
