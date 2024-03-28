@@ -1,4 +1,4 @@
-import { useContext } from 'react'
+import { useContext, useEffect } from 'react'
 import FlatfileContext from '../components/FlatfileContext'
 import { initializeSpace } from '../utils/initializeSpace'
 import { getSpace } from '../utils/getSpace'
@@ -26,6 +26,10 @@ export const useFlatfile = () => {
     flatfileConfiguration,
   } = context
 
+  useEffect(() => {
+    console.log('useFlatfile useEffect', { flatfileConfiguration })
+  }, [flatfileConfiguration])
+
   const createSpace = async () => {
     // if Workbook child is available then create space with Workbook
     // if Space Document child is available then create space with Document
@@ -45,7 +49,7 @@ export const useFlatfile = () => {
         setSessionSpace(createdSpace)
 
         const fullAccessApi = authenticate(createdSpace?.accessToken, apiUrl)
-
+        console.log('createSpace', { flatfileConfiguration })
         // TODO: Remove this when we have a 1 endpoint solution
         await addSpaceInfo(
           flatfileConfiguration,
@@ -67,7 +71,7 @@ export const useFlatfile = () => {
 
       ;(window as any).CROSSENV_FLATFILE_API_KEY = space.accessToken
       setAccessToken(space.accessToken)
-      
+
       setSessionSpace(reUsedSpace)
     }
   }

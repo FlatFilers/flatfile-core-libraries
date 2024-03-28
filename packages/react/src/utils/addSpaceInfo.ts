@@ -1,23 +1,33 @@
 import { Flatfile, FlatfileClient } from '@flatfile/api'
 import {
-  createWorkbookFromSheet,
+  createWorkbookFromSheets,
   getErrorMessage,
 } from '@flatfile/embedded-utils'
 import { IReactSimpleOnboarding } from '../types/IReactSimpleOnboarding'
 
 // Given the space is created, add workbook, metadata and document to the space
 export const addSpaceInfo = async (
-  spaceProps: IReactSimpleOnboarding,
+  spaceProps: IReactSimpleOnboarding & { sheets?: Flatfile.SheetConfig[] },
   spaceId: string,
   api: FlatfileClient
 ): Promise<{
   workbook: Flatfile.WorkbookResponse | undefined
 }> => {
-  const { workbook, sheet, environmentId, document, onSubmit } = spaceProps
+  const { workbook, sheet, sheets, environmentId, document, onSubmit } =
+    spaceProps
   let localWorkbook
+  const combinedSheets = [...(sheet ? [sheet] : []), ...(sheets || [])]
+  console.log('addSpaceInfo', {
+    workbook: !!workbook,
+    combinedSheets: !!combinedSheets,
+  })
   try {
-    if (!workbook && sheet) {
-      const createdWorkbook = createWorkbookFromSheet(sheet, !!onSubmit)
+    if (!workbook && combinedSheets.length > 0) {
+      console.log('!workbook && combinedSheets.length > 0')
+      const createdWorkbook = createWorkbookFromSheets(
+        combinedSheets,
+        !!onSubmit
+      )
       localWorkbook = await api.workbooks.create({
         spaceId,
         ...(environmentId !== undefined && { environmentId }),
@@ -27,7 +37,8 @@ export const addSpaceInfo = async (
         throw new Error('Failed to create workbook')
       }
     }
-    if (workbook && !sheet) {
+    if (workbook && !combinedSheets) {
+      console.log('workbook && !combinedSheets')
       localWorkbook = await api.workbooks.create({
         spaceId,
         ...(environmentId !== undefined && { environmentId }),

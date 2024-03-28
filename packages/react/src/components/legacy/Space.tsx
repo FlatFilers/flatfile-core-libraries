@@ -1,12 +1,12 @@
 import { ISpace, SpaceComponent } from '@flatfile/embedded-utils'
 import React, { JSX, useContext, useEffect, useState } from 'react'
-import { useCreateListener } from '../hooks/useCreateListener'
-import { addSpaceInfo } from '../utils/addSpaceInfo'
-import { authenticate } from '../utils/authenticate'
-import ConfirmModal from './ConfirmCloseModal'
-import { getContainerStyles, getIframeStyles } from './embeddedStyles'
-import './style.scss'
-import FlatfileContext from './FlatfileContext'
+import { useCreateListener } from '../../hooks/legacy/useCreateListener'
+import { addSpaceInfo } from '../../utils/addSpaceInfo'
+import { authenticate } from '../../utils/authenticate'
+import ConfirmModal from '../ConfirmCloseModal'
+import { getContainerStyles, getIframeStyles } from '../embeddedStyles'
+import '../style.scss'
+import FlatfileContext from '../FlatfileContext'
 
 /**
  * @name Space
