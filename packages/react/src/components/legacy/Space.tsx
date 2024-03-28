@@ -1,12 +1,12 @@
+import { Flatfile } from '@flatfile/api'
 import { ISpace, SpaceComponent } from '@flatfile/embedded-utils'
-import React, { JSX, useContext, useEffect, useState } from 'react'
+import React, { JSX, useEffect, useState } from 'react'
 import { useCreateListener } from '../../hooks/legacy/useCreateListener'
 import { addSpaceInfo } from '../../utils/addSpaceInfo'
 import { authenticate } from '../../utils/authenticate'
 import ConfirmModal from '../ConfirmCloseModal'
 import { getContainerStyles, getIframeStyles } from '../embeddedStyles'
 import '../style.scss'
-import FlatfileContext from '../FlatfileContext'
 
 /**
  * @name Space
@@ -45,8 +45,6 @@ export const SpaceContents = (
   }
 ): JSX.Element => {
   const [showExitWarnModal, setShowExitWarnModal] = useState(false)
-  const context = useContext(FlatfileContext)
-  const { open } = context
   const {
     spaceId,
     spaceUrl,
@@ -63,11 +61,8 @@ export const SpaceContents = (
     displayAsModal = true,
     handleCloseInstance,
   } = props
-  const { dispatchEvent } = useCreateListener({
-    listener,
-    accessToken,
-    apiUrl,
-  })
+
+  const { dispatchEvent } = useCreateListener({ listener, accessToken, apiUrl })
 
   const handlePostMessage = (event: any) => {
     const { flatfileEvent } = event.data
@@ -105,17 +100,13 @@ export const SpaceContents = (
       className={`flatfile_iframe-wrapper ${
         displayAsModal ? 'flatfile_displayAsModal' : ''
       }`}
-      style={{
-        ...getContainerStyles(displayAsModal),
-        display: open ? 'flex' : 'none',
-      }}
+      style={getContainerStyles(displayAsModal)}
       data-testid="space-contents"
     >
       {showExitWarnModal && (
         <ConfirmModal
           onConfirm={() => {
             handleCloseInstance()
-            setShowExitWarnModal(false)
             closeSpace?.onClose({})
           }}
           onCancel={() => setShowExitWarnModal(false)}

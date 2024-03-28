@@ -1,44 +1,35 @@
 import { Flatfile, FlatfileClient } from '@flatfile/api'
 import {
-  createWorkbookFromSheets,
+  createWorkbookFromSheet,
   getErrorMessage,
 } from '@flatfile/embedded-utils'
 import { IReactSimpleOnboarding } from '../types/IReactSimpleOnboarding'
 
 // Given the space is created, add workbook, metadata and document to the space
 export const addSpaceInfo = async (
-  spaceProps: IReactSimpleOnboarding & { sheets?: Flatfile.SheetConfig[] },
+  spaceProps: IReactSimpleOnboarding,
   spaceId: string,
   api: FlatfileClient
 ): Promise<{
   workbook: Flatfile.WorkbookResponse | undefined
 }> => {
-  const { workbook, sheet, sheets, environmentId, document, onSubmit } =
-    spaceProps
+  const { workbook, sheet, environmentId, document } = spaceProps
   let localWorkbook
-  const combinedSheets = [...(sheet ? [sheet] : []), ...(sheets || [])]
-  console.log('addSpaceInfo', {
-    workbook: !!workbook,
-    combinedSheets: !!combinedSheets,
-  })
+
   try {
-    if (!workbook && combinedSheets.length > 0) {
-      console.log('!workbook && combinedSheets.length > 0')
-      const createdWorkbook = createWorkbookFromSheets(
-        combinedSheets,
-        !!onSubmit
-      )
+    if (!workbook && sheet) {
+      const createdWorkbook = createWorkbookFromSheet(sheet)
       localWorkbook = await api.workbooks.create({
         spaceId,
         ...(environmentId !== undefined && { environmentId }),
         ...createdWorkbook,
       })
+
       if (!localWorkbook || !localWorkbook.data || !localWorkbook.data.id) {
         throw new Error('Failed to create workbook')
       }
     }
-    if (workbook && !combinedSheets) {
-      console.log('workbook && !combinedSheets')
+    if (workbook) {
       localWorkbook = await api.workbooks.create({
         spaceId,
         ...(environmentId !== undefined && { environmentId }),
@@ -49,6 +40,7 @@ export const addSpaceInfo = async (
         throw new Error('Failed to create workbook')
       }
     }
+
     if (document) {
       const createdDocument = await api.documents.create(spaceId, {
         title: document.title,

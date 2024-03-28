@@ -33,7 +33,7 @@ export interface FlatfileContextType {
   updateSpace: (config: any) => void
 }
 
-const FlatfileContext = createContext<FlatfileContextType>({
+export const FlatfileContext = createContext<FlatfileContextType>({
   publishableKey: undefined,
   environmentId: undefined,
   apiUrl: '',

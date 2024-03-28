@@ -30,7 +30,6 @@ export const useSpace = (props: IReactSpaceProps): JSX.Element | null => {
       const { data } = props.publishableKey
         ? await initializeSpace(props)
         : await getSpace(props)
-
       if (!data) {
         throw new Error('Failed to initialize space')
       }
@@ -87,7 +86,7 @@ export const useSpace = (props: IReactSpaceProps): JSX.Element | null => {
 
   if (closeInstance) {
     return null
-  } 
+  }
 
   if (localSpaceId && spaceUrl && accessTokenLocal) {
     return (

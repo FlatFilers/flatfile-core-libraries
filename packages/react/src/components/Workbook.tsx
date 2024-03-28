@@ -149,10 +149,7 @@ export const Workbook = (
     )
   }
 
-  if (children) {
-    return children
-  }
-  return null
+  return <>{children}</>
 }
 
 // Example Usage:

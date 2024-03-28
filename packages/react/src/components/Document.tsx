@@ -1,3 +1,4 @@
+import React from 'react'
 import FlatfileContext from './FlatfileContext'
 import { useCallback, useContext } from 'react'
 import type { Flatfile } from '@flatfile/api'
@@ -13,5 +14,5 @@ export const Document = (props: { config: Flatfile.DocumentConfig }) => {
 
   useDeepCompareEffect(callback, [config])
 
-  return null
+  return <></>
 }
