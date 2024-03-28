@@ -151,21 +151,3 @@ export const Workbook = (
 
   return <>{children}</>
 }
-
-// Example Usage:
-// const App = () => {
-//   useListener((client) => {
-//     client.on('**', (event) => {
-//       console.log('App useListener Event => ', event.topic)
-//     })
-//   }, [])
-//   return <Workbook workbook={workbook} />
-// }
-
-// const Main = () => {
-//   return (
-//     <FlatfileProvider publishableKey={PUBLISHABLE_KEY}>
-//       <App />
-//     </FlatfileProvider>
-//   )
-// }

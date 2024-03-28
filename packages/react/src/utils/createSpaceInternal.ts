@@ -36,16 +36,20 @@ export const createSpaceInternal = async ({
   }
 
   console.log('createSpaceInternal', { createSpaceEndpoint, spaceRequestBody })
-
-  const response = await fetch(createSpaceEndpoint, {
-    method: 'POST',
-    headers: {
-      Accept: 'text/plain',
-      'Content-Type': 'text/plain',
-    },
-    body: JSON.stringify(spaceRequestBody),
-  })
-
-  const result = await response.json()
-  return result
+  try {
+    const response = await fetch(createSpaceEndpoint, {
+      method: 'POST',
+      headers: {
+        Accept: 'text/plain',
+        'Content-Type': 'text/plain',
+      },
+      body: JSON.stringify(spaceRequestBody),
+    })
+    console.log('createSpaceInternal response', response)
+    const result = await response.json()
+    return result
+  } catch (e) {
+    console.error('Error creating space', e)
+    throw e
+  }
 }

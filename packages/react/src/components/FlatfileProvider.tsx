@@ -1,35 +1,9 @@
-import React, { ReactNode, isValidElement, useEffect, useState } from 'react'
-
+import React, { useEffect, useState } from 'react'
 import FlatfileContext from './FlatfileContext'
 import FlatfileListener, { Browser } from '@flatfile/listener'
 import { Flatfile } from '@flatfile/api'
 import { EmbeddedIFrameWrapper } from './EmbeddedIFrameWrapper'
-import { IFrameTypes } from '../types'
-
-export type Exclusive<T, U> =
-  | (T & Partial<Record<Exclude<keyof U, keyof T>, never>>)
-  | (U & Partial<Record<Exclude<keyof T, keyof U>, never>>)
-
-interface BaseSpace {
-  children: ReactNode
-  environmentId?: string
-  apiUrl?: string
-  config?: IFrameTypes
-}
-
-interface CreateSpaceWithPublishableKey extends BaseSpace {
-  publishableKey: string
-}
-
-interface ReusedSpace extends BaseSpace {
-  accessToken: string
-}
-
-// Use the Exclusive type for your props
-type ExclusiveFlatfileProviderProps = Exclusive<
-  CreateSpaceWithPublishableKey,
-  ReusedSpace
->
+import { ExclusiveFlatfileProviderProps } from '../types'
 
 export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   children,
