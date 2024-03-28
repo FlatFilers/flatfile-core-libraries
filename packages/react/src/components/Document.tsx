@@ -1,13 +1,10 @@
 import FlatfileContext from './FlatfileContext'
-import React, { useCallback, useContext, useEffect, useRef } from 'react'
+import { useCallback, useContext } from 'react'
 import type { Flatfile } from '@flatfile/api'
 import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
 
-export const Document = (props: {
-  config: Flatfile.DocumentConfig
-  children?: React.ReactNode
-}) => {
-  const { config, children } = props
+export const Document = (props: { config: Flatfile.DocumentConfig }) => {
+  const { config } = props
   const { updateDocument } = useContext(FlatfileContext)
 
   const callback = useCallback(() => {

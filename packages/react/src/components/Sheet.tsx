@@ -1,14 +1,12 @@
 import React, { useCallback } from 'react'
 import { Flatfile, FlatfileClient } from '@flatfile/api'
-import { useContext, useEffect } from 'react'
+import { useContext } from 'react'
 import FlatfileContext from './FlatfileContext'
-import { IFrameTypes } from '../types'
-import { EmbeddedIFrameWrapper } from './EmbeddedIFrameWrapper'
-import { Simplified } from './SimplifiedWorkbook'
 import {
   DefaultSubmitSettings,
   JobHandler,
   SheetHandler,
+  SimpleOnboarding,
 } from '@flatfile/embedded-utils'
 import { FlatfileEvent } from '@flatfile/listener'
 import { recordHook, FlatfileRecord } from '@flatfile/plugin-record-hook'
@@ -17,13 +15,12 @@ import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
 
 export const Sheet = (
   props: { config: Flatfile.SheetConfig } & Pick<
-    Simplified,
+    SimpleOnboarding,
     'onRecordHook' | 'onSubmit' | 'submitSettings'
   >
 ) => {
   const { config, onRecordHook, onSubmit, ...sheetProps } = props
   const { addSheet } = useContext(FlatfileContext)
-
 
   const callback = useCallback(() => {
     console.log('Sheet useEffect', { slug: config.slug })

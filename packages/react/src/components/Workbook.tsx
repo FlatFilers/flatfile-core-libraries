@@ -1,17 +1,16 @@
 import FlatfileContext from './FlatfileContext'
-import React, { useCallback, useContext, useEffect, useRef } from 'react'
+import React, { useCallback, useContext } from 'react'
 import { FlatfileClient, type Flatfile } from '@flatfile/api'
 import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
-import { sheets } from '@flatfile/api/api'
 import { TRecordDataWithLinks, TPrimitive } from '@flatfile/hooks'
 import { FlatfileEvent } from '@flatfile/listener'
 import { FlatfileRecord, recordHook } from '@flatfile/plugin-record-hook'
 import { useEvent, usePlugin } from '../hooks'
-import { Simplified } from './SimplifiedWorkbook'
 import {
   DefaultSubmitSettings,
   JobHandler,
   SheetHandler,
+  SimpleOnboarding,
 } from '@flatfile/embedded-utils'
 
 type onRecordHook<T> = (record: T, event?: FlatfileEvent) => FlatfileRecord
@@ -23,9 +22,9 @@ type onRecordHooks<T> = HookConfig<T>[]
 
 export const Workbook = (
   props: {
-    config: Flatfile.CreateWorkbookConfig
+    config?: Flatfile.CreateWorkbookConfig
     children?: React.ReactNode
-  } & Pick<Simplified, 'onSubmit' | 'submitSettings'> & {
+  } & Pick<SimpleOnboarding, 'onSubmit' | 'submitSettings'> & {
       onRecordHooks?: onRecordHooks<
         FlatfileRecord<TRecordDataWithLinks<TPrimitive>>
       >
@@ -37,19 +36,34 @@ export const Workbook = (
   // Accept a workbook onSubmit function and add it to the workbook actions
 
   const callback = useCallback(() => {
+    let tmp
     if (!!onSubmit) {
-      config.actions = [
-        {
-          operation: 'simpleSubmitAction',
-          mode: 'foreground',
-          label: 'Submit data',
-          description: 'Action for handling data inside of onSubmit',
-          primary: true,
-        },
-        ...(config.actions ? config.actions : []),
-      ]
+      if (!config?.actions) {
+        tmp = {
+          actions: [
+            {
+              operation: 'simpleSubmitAction',
+              mode: 'foreground',
+              label: 'Submit data',
+              description: 'Action for handling data inside of onSubmit',
+              primary: true,
+            },
+          ],
+        }
+      } else {
+        config.actions = [
+          {
+            operation: 'simpleSubmitAction',
+            mode: 'foreground',
+            label: 'Submit data',
+            description: 'Action for handling data inside of onSubmit',
+            primary: true,
+          },
+          ...(config.actions ? config.actions : []),
+        ]
+      }
     }
-    updateWorkbook(config)
+    updateWorkbook(tmp ?? config)
   }, [config, updateWorkbook])
 
   useDeepCompareEffect(callback, [config])

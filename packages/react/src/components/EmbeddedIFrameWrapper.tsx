@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useRef, useEffect } from 'react'
 import { IFrameTypes } from '../types'
 import ConfirmModal from './ConfirmCloseModal'
 import FlatfileContext from './FlatfileContext'
@@ -11,14 +11,9 @@ export const EmbeddedIFrameWrapper = (
   }
 ): JSX.Element => {
   const { open, sessionSpace } = useContext(FlatfileContext)
-
-  if (!sessionSpace?.guestLink) {
-    throw new Error('No guest link found')
-  }
+  const iRef = useRef<HTMLIFrameElement | null>(null)
 
   const [showExitWarnModal, setShowExitWarnModal] = useState(false)
-
-  const { guestLink: spaceUrl } = sessionSpace
 
   const {
     closeSpace,
@@ -30,7 +25,35 @@ export const EmbeddedIFrameWrapper = (
     exitSecondaryButtonText = 'No, stay',
     displayAsModal = true,
     handleCloseInstance,
+    preload = true,
+    spaceUrl,
   } = props
+  const spacesUrl = spaceUrl || 'https://platform.flatfile.com/s'
+  const preloadUrl = `${spacesUrl}/space-init`
+
+  useEffect(() => {
+    if (sessionSpace && iRef.current) {
+      const targetOrigin = new URL(spacesUrl).origin
+
+      iRef.current.contentWindow?.postMessage(
+        {
+          flatfileEvent: {
+            topic: 'portal:initialize',
+            payload: {
+              status: 'complete',
+              spaceUrl: `${targetOrigin}/space/${
+                sessionSpace.space.id
+              }?token=${encodeURIComponent(sessionSpace.space.accessToken)}`,
+              initialResources: sessionSpace,
+            },
+          },
+        },
+        targetOrigin
+      )
+    }
+  }, [sessionSpace])
+
+  const spaceLink = sessionSpace?.space?.guestLink || null
 
   return (
     <div
@@ -57,12 +80,18 @@ export const EmbeddedIFrameWrapper = (
           exitSecondaryButtonText={exitSecondaryButtonText}
         />
       )}
-      {open && (
+      {(open || preload) && (
         <iframe
           data-testid={mountElement}
           className={mountElement}
-          style={getIframeStyles(iframeStyles!)}
-          src={spaceUrl}
+          style={{
+            ...getIframeStyles(iframeStyles!),
+            ...(preload
+              ? { display: open ? 'block' : 'none' }
+              : { display: 'block' }),
+          }}
+          src={preload ? preloadUrl : spaceLink}
+          ref={iRef}
         />
       )}
       <CloseButton handler={() => setShowExitWarnModal(true)} />

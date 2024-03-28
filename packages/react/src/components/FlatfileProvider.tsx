@@ -3,7 +3,6 @@ import React, { ReactNode, isValidElement, useEffect, useState } from 'react'
 import FlatfileContext from './FlatfileContext'
 import FlatfileListener, { Browser } from '@flatfile/listener'
 import { Flatfile } from '@flatfile/api'
-import { CombinedWorkbook } from './CombinedWorkbook'
 import { EmbeddedIFrameWrapper } from './EmbeddedIFrameWrapper'
 import { IFrameTypes } from '../types'
 
@@ -15,7 +14,7 @@ interface BaseSpace {
   children: ReactNode
   environmentId?: string
   apiUrl?: string
-  options?: IFrameTypes
+  config?: IFrameTypes
 }
 
 interface CreateSpaceWithPublishableKey extends BaseSpace {
@@ -38,27 +37,14 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   accessToken,
   environmentId,
   apiUrl = 'https://platform.flatfile.com/api',
-  options,
+  config,
 }) => {
-  // let workbookCount = 0
-  // React.Children.forEach(children, (child) => {
-  //   if (isValidElement(child) && child.type === CombinedWorkbook) {
-  //     workbookCount += 1
-  //   }
-  // })
-  // if (workbookCount > 1) {
-  //   throw new Error(
-  //     "ParentComponent can only contain one 'UniqueChild' component."
-  //   )
-  // }
   const [internalAccessToken, setAccessToken] = useState<string | undefined>(
     accessToken
   )
   const [listener, setListener] = useState(new FlatfileListener())
   const [open, setOpen] = useState<boolean>(false)
   const [sessionSpace, setSessionSpace] = useState<any>(null)
-  const [flatfileConfiguration, setFlatfileConfiguration] =
-    useState<any>(options)
 
   const [createSpace, setCreateSpace] = useState<{
     document: any
@@ -191,8 +177,6 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         setListener,
         listener,
         setAccessToken,
-        flatfileConfiguration,
-        setFlatfileConfiguration,
         addSheet,
         updateSheet,
         updateWorkbook,
@@ -203,12 +187,11 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       }}
     >
       {children}
-      {sessionSpace && (
-        <EmbeddedIFrameWrapper
-          handleCloseInstance={() => setOpen(false)}
-          {...options}
-        />
-      )}
+
+      <EmbeddedIFrameWrapper
+        handleCloseInstance={() => setOpen(false)}
+        {...config}
+      />
     </FlatfileContext.Provider>
   )
 }

@@ -9,8 +9,6 @@ import {
   useListener,
   usePlugin,
   useEvent,
-  SimplifiedWorkbook,
-  CombinedWorkbook,
   Workbook,
   Space,
   Document,
@@ -20,7 +18,6 @@ import { listener as importedListener, plainListener } from './listener'
 import styles from './page.module.css'
 import { recordHook } from '@flatfile/plugin-record-hook'
 import api from '@flatfile/api'
-import { metadata } from './layout'
 
 const PUBLISHABLE_KEY = 'pk_123456'
 const ACCESS_TOKEN = 'ey.123445'
@@ -125,88 +122,6 @@ const FFApp = () => {
         {/* <button onClick={() => listenerConfig('blue')}>blue listener</button>
         <button onClick={() => listenerConfig('green')}>green listener</button> */}
       </div>
-
-      {/* <Sheet config={sheet} /> */}
-      {/* 
-      <SimplifiedWorkbook
-        sheets={[sheet]}
-        onRecordHook={(record, event) => {
-          console.log('onRecordHook', { record, event })
-          record.set('email', 'alex@nasa.com')
-          return record
-        }}
-        onSubmit={({ data, sheet, job, event }) => {
-          console.log('onSubmit', { data, sheet, job, event })
-        }}
-      /> */}
-
-      {/* <Workbook workbook={workbook} />
-      <CombinedWorkbook
-        sheets={[sheet]}
-        onRecordHook={(record, event) => {
-          console.log('onRecordHook', { record, event })
-          record.set('email', 'alex@nasa.com')
-          return record
-        }}
-        onRecordHooks={[
-          [
-            'slug',
-            (record, event) => {
-              console.log('onRecordHook', { record, event })
-              record.set('email', 'alex@nasa.com')
-              return record
-            },
-          ],
-          [
-            (record, event) => {
-              console.log('onRecordHook', { record, event })
-              record.set('email', 'alex@nasa.com')
-              return record
-            },
-          ],
-        ]}
-      /> */}
-      {/* <CombinedWorkbook
-        {...workbook}
-        // sheets={[sheet, { ...sheet, name: 'Contacts 2', slug: 'contacts2' }]}
-        onRecordHooks={[
-          [
-            (record, event) => {
-              console.log('onRecordHook', { record, event })
-              record.set('email', 'alex@contacts.com')
-              return record
-            },
-          ],
-          [
-            (record, event) => {
-              console.log('onRecordHook', { record, event })
-              record.set('email', 'alex@contacts2.com')
-              return record
-            },
-          ],
-        ]}
-      />
-      <CombinedWorkbook
-        {...workbook}
-        // sheets={[sheet, { ...sheet, name: 'Contacts 2', slug: 'contacts2' }]}
-        onRecordHooks={[
-          [
-            (record, event) => {
-              console.log('onRecordHook', { record, event })
-              record.set('email', 'alex@contacts.com')
-              return record
-            },
-          ],
-          [
-            (record, event) => {
-              console.log('onRecordHook', { record, event })
-              record.set('email', 'alex@contacts2.com')
-              return record
-            },
-          ],
-        ]}
-      /> */}
-      {/* <Workbook {...workbook} sheets={undefined}> */}
       {/* <Sheet
         config={sheet}
         onRecordHook={(record) => {
@@ -227,6 +142,7 @@ const FFApp = () => {
           console.log('onSubmit', { sheet })
         }}
       />
+      
       {/* <Sheet config={workbook.sheets![1]} />
       </Workbook> */}
       {/* <Space
@@ -240,8 +156,9 @@ const FFApp = () => {
           name: 'Test Space',
         }}
       > */}
-      {/* <Document config={document} />
-      <NewSpace
+      {/* Creating a Space, Document, Workbook and Sheet */}
+      <Document config={document} />
+      <Space
         config={{
           metadata: {
             sidebarConfig: {
@@ -265,7 +182,10 @@ const FFApp = () => {
           />
           <Sheet config={{ ...sheet, name: 'Contacts 2', slug: 'contacts2' }} />
         </Workbook>
-      </NewSpace> */}
+      </Space>
+
+      {/* Re-using a Space */}
+      {/* 
       <Space
         config={{
           id: 'us_sp_GfO7IfNM',
@@ -275,7 +195,7 @@ const FFApp = () => {
             },
           },
         }}
-      />
+      /> */}
     </div>
   )
 }
@@ -284,15 +204,15 @@ const App = () => {
   return (
     <FlatfileProvider
       // Just `key` and accept PURCHASED_KEY, ACCESS_TOKEN, SECRET_KEY (but not securely)?
-      // publishableKey={PUBLISHABLE_KEY}
-      accessToken={ACCESS_TOKEN}
+      publishableKey={PUBLISHABLE_KEY}
+      // accessToken={ACCESS_TOKEN}
       // space={
       //   {
       //     // id: 'us_sp_123456',
       //     // accessToken: 'ey123456.ey123456',
       //   }
       // }
-      options={{
+      config={{
         mountElement: 'alex-rock',
         exitText: 'Alex',
         exitTitle: 'Alex',

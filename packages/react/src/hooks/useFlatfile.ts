@@ -37,7 +37,7 @@ export const useFlatfile = () => {
       document: createSpace.document,
     })
     setAccessToken(createdSpace.space.accessToken)
-    setSessionSpace(createdSpace.space)
+    setSessionSpace(createdSpace)
     // A bit of a hack to wire up the Flatfile API key to the window object for internal client side @flatfile/api usage
     ;(window as any).CROSSENV_FLATFILE_API_KEY = createdSpace.space.accessToken
   }
@@ -56,7 +56,7 @@ export const useFlatfile = () => {
         setAccessToken(reUsedSpace.accessToken)
       }
 
-      setSessionSpace(reUsedSpace)
+      setSessionSpace({ space: reUsedSpace })
     }
   }
 

@@ -15,14 +15,12 @@ export interface FlatfileContextType {
   open: boolean
   setOpen: (open: boolean) => void
   space?: CreateNewSpace | ReUseSpace
-  sessionSpace?: Flatfile.Space
-  setSessionSpace: (space: Flatfile.Space) => void
+  sessionSpace?: any
+  setSessionSpace: (space: any) => void
   listener: FlatfileListener
   setListener: (listener: FlatfileListener) => void
   accessToken?: string
   setAccessToken: (accessToken: string) => void
-  flatfileConfiguration?: any
-  setFlatfileConfiguration: (config: any) => void
   addSheet: (config: any) => void
   updateSheet: (
     sheetSlug: string,
@@ -48,8 +46,6 @@ const FlatfileContext = createContext<FlatfileContextType>({
   setListener: () => {},
   accessToken: undefined,
   setAccessToken: () => {},
-  flatfileConfiguration: undefined,
-  setFlatfileConfiguration: () => {},
   addSheet: () => {},
   updateSheet: () => {},
   updateWorkbook: () => {},
