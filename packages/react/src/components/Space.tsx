@@ -3,8 +3,8 @@ import React, { useCallback, useContext, useEffect, useRef } from 'react'
 import type { Flatfile } from '@flatfile/api'
 import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
 
-export const NewSpace = (props: {
-  config: Flatfile.SpaceConfig
+export const Space = (props: {
+  config: Flatfile.SpaceConfig & { id?: string }
   children?: React.ReactNode
 }) => {
   const { config, children } = props

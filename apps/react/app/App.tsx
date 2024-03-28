@@ -12,7 +12,7 @@ import {
   SimplifiedWorkbook,
   CombinedWorkbook,
   Workbook,
-  NewSpace,
+  Space,
   Document,
 } from '@flatfile/react'
 import React, { useEffect, useState } from 'react'
@@ -22,7 +22,8 @@ import { recordHook } from '@flatfile/plugin-record-hook'
 import api from '@flatfile/api'
 import { metadata } from './layout'
 
-const PUBLISHABLE_KEY = 'pk_0d40167fccfc47e9a4ec0223e9787e63'
+const PUBLISHABLE_KEY = 'pk_123456'
+const ACCESS_TOKEN = 'ey.123445'
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const FFApp = () => {
@@ -239,7 +240,7 @@ const FFApp = () => {
           name: 'Test Space',
         }}
       > */}
-      <Document config={document} />
+      {/* <Document config={document} />
       <NewSpace
         config={{
           metadata: {
@@ -264,7 +265,17 @@ const FFApp = () => {
           />
           <Sheet config={{ ...sheet, name: 'Contacts 2', slug: 'contacts2' }} />
         </Workbook>
-      </NewSpace>
+      </NewSpace> */}
+      <Space
+        config={{
+          id: 'us_sp_GfO7IfNM',
+          metadata: {
+            sidebarConfig: {
+              showSidebar: true,
+            },
+          },
+        }}
+      />
     </div>
   )
 }
@@ -273,7 +284,8 @@ const App = () => {
   return (
     <FlatfileProvider
       // Just `key` and accept PURCHASED_KEY, ACCESS_TOKEN, SECRET_KEY (but not securely)?
-      publishableKey={PUBLISHABLE_KEY}
+      // publishableKey={PUBLISHABLE_KEY}
+      accessToken={ACCESS_TOKEN}
       // space={
       //   {
       //     // id: 'us_sp_123456',

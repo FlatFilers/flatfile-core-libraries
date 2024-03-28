@@ -18,23 +18,24 @@ export const useFlatfile = () => {
     publishableKey,
     environmentId,
     apiUrl,
-    space,
     setSessionSpace,
+    accessToken,
     setAccessToken,
     createSpace,
   } = context
 
   const handleCreateSpace = async () => {
     if (!publishableKey) return
-    const autoConfigure = createSpace.workbook && createSpace.workbook.sheets
+    // autoConfigure if no workbook or workbook.sheets are provided as they should be handled in the listener space:configure event
+
+    const autoConfigure = !(createSpace.workbook && createSpace.workbook.sheets)
     const { data: createdSpace } = await createSpaceInternal({
       apiUrl,
       publishableKey,
-      space: { ...createSpace.space, autoConfigure: !autoConfigure },
+      space: { ...createSpace.space, autoConfigure },
       workbook: createSpace.workbook,
       document: createSpace.document,
     })
-    console.log('createdSpace', { createdSpace })
     setAccessToken(createdSpace.space.accessToken)
     setSessionSpace(createdSpace.space)
     // A bit of a hack to wire up the Flatfile API key to the window object for internal client side @flatfile/api usage
@@ -42,16 +43,18 @@ export const useFlatfile = () => {
   }
 
   const handleReUseSpace = async () => {
-    if (space && 'accessToken' in space) {
+    if (accessToken && 'id' in createSpace.space) {
+      createSpace.space.accessToken = accessToken
       // TODO: Do we want to update the Space metadata / documents here if they pass that information? Feels like a no.
       const { data: reUsedSpace } = await getSpace({
-        space,
-        environmentId,
+        space: createSpace.space,
         apiUrl,
       })
 
-      ;(window as any).CROSSENV_FLATFILE_API_KEY = space.accessToken
-      setAccessToken(space.accessToken)
+      if (!!reUsedSpace.accessToken) {
+        ;(window as any).CROSSENV_FLATFILE_API_KEY = reUsedSpace.accessToken
+        setAccessToken(reUsedSpace.accessToken)
+      }
 
       setSessionSpace(reUsedSpace)
     }
@@ -60,7 +63,7 @@ export const useFlatfile = () => {
   const openPortal = () => {
     if (publishableKey) {
       handleCreateSpace()
-    } else if (space) {
+    } else if (accessToken) {
       handleReUseSpace()
     }
     setOpen(true)
