@@ -5,12 +5,13 @@ import App from './App'
 import { FlatfileProvider } from '@flatfile/react'
 
 export default function Home() {
-  const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_FLATFILE_PUBLISHABLE_KEY
-  if (!PUBLISHABLE_KEY) return <>No Publishable Key Available</>
+  const ACCESS_TOKEN = process.env.NEXT_PUBLIC_FLATFILE_API_KEY
+  if (!ACCESS_TOKEN) return <>No ACCESS_TOKEN Available</>
   return (
     <FlatfileProvider
-      publishableKey={PUBLISHABLE_KEY}
+      accessToken={ACCESS_TOKEN}
       config={{
+        preload: false,
         mountElement: 'example-mount-class',
       }}
     >

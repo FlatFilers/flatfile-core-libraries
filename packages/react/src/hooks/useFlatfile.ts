@@ -24,9 +24,11 @@ export const useFlatfile = () => {
   } = context
 
   const handleCreateSpace = async () => {
-    if (!publishableKey) return
-    // autoConfigure if no workbook or workbook.sheets are provided as they should be handled in the listener space:configure event
+    if (!publishableKey) {
+      return
+    }
 
+    // autoConfigure if no workbook or workbook.sheets are provided as they should be handled in the listener space:configure event
     const autoConfigure = !(createSpace.workbook && createSpace.workbook.sheets)
     const { data: createdSpace } = await createSpaceInternal({
       apiUrl,
@@ -70,7 +72,7 @@ export const useFlatfile = () => {
 
   const closePortal = () => {
     setOpen(false)
-    // TODO: Remove the iFrame from the DOM?
+    // TODO: Do we want to do any cleanup / remove the iFrame from the DOM?
   }
 
   return {
