@@ -16,7 +16,6 @@ export const useFlatfile = () => {
     setListener,
     listener,
     publishableKey,
-    environmentId,
     apiUrl,
     setSessionSpace,
     accessToken,

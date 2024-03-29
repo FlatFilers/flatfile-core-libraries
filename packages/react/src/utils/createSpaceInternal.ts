@@ -35,7 +35,6 @@ export const createSpaceInternal = async ({
     }
   }
 
-  console.log('createSpaceInternal', { createSpaceEndpoint, spaceRequestBody })
   try {
     const response = await fetch(createSpaceEndpoint, {
       method: 'POST',

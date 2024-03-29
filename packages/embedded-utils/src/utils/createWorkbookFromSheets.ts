@@ -13,7 +13,8 @@ export const createWorkbookFromSheets = (
     }
     return sheet
   }
-  const name = workbookName || sheets.length === 1 ? sheets[0].name : 'Embedded Importer'
+  const name =
+    workbookName || (sheets.length === 1 ? sheets[0].name : 'Embedded Importer')
   const blueprint = {
     name,
     sheets: sheets.map((sheet) => returnSheetWithSlug(sheet)),

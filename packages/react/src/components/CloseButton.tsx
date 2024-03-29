@@ -7,6 +7,7 @@ export const CloseButton = ({ handler }: { handler: React.MouseEventHandler<HTML
       data-testid="flatfile-close-button"
       type="button"
       className="flatfile-close-button"
+      aria-label="Close"
       style={{
         position: 'absolute',
         margin: '30px',

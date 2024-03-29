@@ -12,6 +12,10 @@ import {
   Workbook,
   Space,
   Document,
+  usePortal,
+  initializeFlatfile,
+  useSpace,
+  LegacySpace
 } from '@flatfile/react'
 import React, { useEffect, useState } from 'react'
 import { listener as importedListener, plainListener } from './listener'

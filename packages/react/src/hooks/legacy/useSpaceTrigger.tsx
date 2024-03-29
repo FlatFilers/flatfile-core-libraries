@@ -1,4 +1,4 @@
-import React, { JSX, useEffect, useState } from 'react'
+import React, { JSX, useState } from 'react'
 import DefaultError from '../../components/Error'
 import Space from '../../components/legacy/LegacySpace'
 import Spinner from '../../components/Spinner'
