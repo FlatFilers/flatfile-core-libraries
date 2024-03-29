@@ -10,7 +10,10 @@ import { IReactSpaceProps } from '../../types'
 type FlatfileListenerInstance = {
   dispatchEvent: (event: any) => void
 }
-
+/**
+ * @deprecated - use useListener, useEvent and usePlugin hooks instead
+ * This hook is used to create a listener instance
+ **/
 export const useCreateListener = ({
   accessToken,
   listener,

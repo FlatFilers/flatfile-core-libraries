@@ -11,7 +11,7 @@ import { waitFor } from '@testing-library/react'
 import DefaultError from '../../../components/Error'
 import { mockDocument, mockSpace, mockWorkbook } from '../../../test/mocks'
 import useSpace from '../useSpace'
-import Space from '../../../components/legacy/Space'
+import Space from '../../../components/legacy/LegacySpace'
 
 console.error = jest.fn()
 

@@ -12,6 +12,7 @@ import { getContainerStyles, getIframeStyles } from '../embeddedStyles'
 import '../style.scss'
 
 /**
+ * @deprecated - use FlatfileProvider and Space components instead
  * @name InitSpace
  * @description Flatfile Embedded Space component which pre-loads an iFrame, improving the load time of the embedded sheet when opened by a user
  * @param props

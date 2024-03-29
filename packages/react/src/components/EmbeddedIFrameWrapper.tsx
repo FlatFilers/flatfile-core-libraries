@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef, useEffect } from 'react'
+import React, { useState, useContext, useRef, useEffect, JSX } from 'react'
 import { IFrameTypes } from '../types'
 import ConfirmModal from './ConfirmCloseModal'
 import FlatfileContext from './FlatfileContext'

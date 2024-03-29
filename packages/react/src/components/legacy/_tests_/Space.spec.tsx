@@ -4,7 +4,7 @@
 
 import React from 'react'
 import { render, screen, waitFor } from '@testing-library/react'
-import Space, { SpaceContents } from '../Space'
+import Space, { SpaceContents } from '../LegacySpace'
 import { mockWorkbook } from '../../../test/mocks'
 import { CreateWorkbookConfig } from '@flatfile/api/api'
 import '@testing-library/jest-dom'

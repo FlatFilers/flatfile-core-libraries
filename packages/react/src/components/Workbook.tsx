@@ -37,7 +37,7 @@ export const Workbook = (
 
   const callback = useCallback(() => {
     let tmp
-    if (!!onSubmit) {
+    if (onSubmit) {
       if (!config?.actions) {
         tmp = {
           actions: [

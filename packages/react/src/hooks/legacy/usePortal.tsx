@@ -1,6 +1,6 @@
 import React, { JSX, useEffect, useState } from 'react'
 import DefaultError from '../../components/Error'
-import Space from '../../components/legacy/Space'
+import Space from '../../components/legacy/LegacySpace'
 import Spinner from '../../components/Spinner'
 import {
   State,
@@ -19,7 +19,10 @@ import { IReactSimpleOnboarding } from '../../types/IReactSimpleOnboarding'
 // Bug where the default export function is not being used properly in some build tooling
 import { FlatfileClient } from '@flatfile/api'
 const api = new FlatfileClient()
-
+/**
+ * @deprecated - use FlatfileProvider and Space components instead
+ * This hook is used to initialize a space and return the Space component
+ */
 export const usePortal = (
   props: IReactSimpleOnboarding
 ): JSX.Element | null => {

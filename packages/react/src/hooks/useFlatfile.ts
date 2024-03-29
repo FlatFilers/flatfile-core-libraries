@@ -51,7 +51,7 @@ export const useFlatfile = () => {
         apiUrl,
       })
 
-      if (!!reUsedSpace.accessToken) {
+      if (reUsedSpace.accessToken) {
         ;(window as any).CROSSENV_FLATFILE_API_KEY = reUsedSpace.accessToken
         setAccessToken(reUsedSpace.accessToken)
       }

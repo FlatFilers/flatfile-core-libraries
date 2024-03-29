@@ -3,6 +3,12 @@ import React, { useCallback, useContext } from 'react'
 import type { Flatfile } from '@flatfile/api'
 import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
 
+/**
+ * @name Space
+ * @description Flatfile Embedded SpaceWrapper component 
+ * @param props
+ */
+
 export const Space = (props: {
   config: Flatfile.SpaceConfig & { id?: string }
   children?: React.ReactNode
@@ -18,21 +24,3 @@ export const Space = (props: {
 
   return <>{children}</>
 }
-
-// Example Usage:
-// const App = () => {
-//   useListener((client) => {
-//     client.on('**', (event) => {
-//       console.log('App useListener Event => ', event.topic)
-//     })
-//   }, [])
-//   return <Workbook workbook={workbook} />
-// }
-
-// const Main = () => {
-//   return (
-//     <FlatfileProvider publishableKey={PUBLISHABLE_KEY}>
-//       <App />
-//     </FlatfileProvider>
-//   )
-// }

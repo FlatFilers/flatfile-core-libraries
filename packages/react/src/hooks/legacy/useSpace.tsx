@@ -1,12 +1,16 @@
 import React, { JSX, useEffect, useState } from 'react'
 import DefaultError from '../../components/Error'
-import Space from '../../components/legacy/Space'
+import Space from '../../components/legacy/LegacySpace'
 import Spinner from '../../components/Spinner'
 import { State } from '@flatfile/embedded-utils'
 import { initializeSpace } from '../../utils/initializeSpace'
 import { getSpace } from '../../utils/getSpace'
 import { IReactSpaceProps } from '../../types'
 
+/**
+ * @deprecated - use FlatfileProvider and Space components instead
+ * This hook is used to initialize a space and return the Space component
+ */
 export const useSpace = (props: IReactSpaceProps): JSX.Element | null => {
   const {
     error: ErrorElement,

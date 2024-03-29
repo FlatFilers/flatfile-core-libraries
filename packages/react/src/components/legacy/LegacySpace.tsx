@@ -9,12 +9,13 @@ import { getContainerStyles, getIframeStyles } from '../embeddedStyles'
 import '../style.scss'
 
 /**
- * @name Space
+ * @deprecated - use FlatfileProvider and Space components instead. Previously known as Space. 
+ * @name LegacySpace
  * @description Flatfile Embedded Space component
  * @param props
  */
 
-const Space = ({
+const LegacySpace = ({
   spaceId,
   spaceUrl,
   accessToken,
@@ -163,4 +164,4 @@ export const SpaceContents = (
   )
 }
 
-export default Space
+export default LegacySpace
