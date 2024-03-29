@@ -23,7 +23,6 @@ export const Sheet = (
   const { addSheet } = useContext(FlatfileContext)
 
   const callback = useCallback(() => {
-    console.log('Sheet useEffect', { slug: config.slug })
     addSheet(config)
   }, [config, addSheet])
 
