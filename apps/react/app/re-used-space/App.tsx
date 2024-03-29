@@ -78,7 +78,7 @@ const App = () => {
     }
   })
 
-  const SPACE_ID = process.env.NEXT_PUBLIC_SPACE_ID
+  const SPACE_ID = process.env.NEXT_PUBLIC_FLATFILE_SPACE_ID
   if (!SPACE_ID) return <>No SPACE_ID Available</>
 
   return (
