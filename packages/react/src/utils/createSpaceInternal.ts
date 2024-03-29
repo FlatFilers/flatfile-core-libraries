@@ -44,7 +44,6 @@ export const createSpaceInternal = async ({
       },
       body: JSON.stringify(spaceRequestBody),
     })
-    console.log('createSpaceInternal response', response)
     const result = await response.json()
     return result
   } catch (e) {
