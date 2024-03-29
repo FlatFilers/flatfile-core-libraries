@@ -3,6 +3,7 @@ import { render, waitFor } from '@testing-library/react'
 import { FlatfileProvider } from '../FlatfileProvider'
 import FlatfileContext from '../FlatfileContext'
 import fetchMock from 'jest-fetch-mock'
+
 fetchMock.enableMocks()
 console.error = jest.fn()
 
@@ -11,12 +12,11 @@ jest.mock('../../utils/getSpace')
 jest.mock('@flatfile/listener')
 
 const TestingComponent = (props: { ReUsingSpace?: boolean }) => {
-  const { publishableKey, space } = useContext(FlatfileContext)
+  const context = useContext(FlatfileContext)
+  const { publishableKey, accessToken, createSpace } = context
 
   if (props.ReUsingSpace) {
-    return (
-      <>{space && 'id' in space && <p data-testid="spaceId">{space.id}</p>}</>
-    )
+    return <>{accessToken && <p data-testid="spaceId">{accessToken}</p>}</>
   } else {
     return (
       <>
@@ -46,7 +46,7 @@ describe('FlatfileProvider', () => {
     }))
 
     const { getByTestId } = render(
-      <FlatfileProvider publishableKey="test-key" environmentId="test-env">
+      <FlatfileProvider publishableKey="test-key" config={{ preload: false }}>
         <TestingComponent />
       </FlatfileProvider>
     )
@@ -68,13 +68,16 @@ describe('FlatfileProvider', () => {
     }))
 
     const { getByTestId } = render(
-      <FlatfileProvider space={mockSpace} environmentId="test-env">
+      <FlatfileProvider
+        accessToken={'existing-access-token'}
+        config={{ preload: false }}
+      >
         <TestingComponent ReUsingSpace />
       </FlatfileProvider>
     )
 
     await waitFor(() => {
-      expect(getByTestId('spaceId').innerHTML).toBe('existing-space-id')
+      expect(getByTestId('spaceId').innerHTML).toBe('existing-access-token')
     })
   })
 })

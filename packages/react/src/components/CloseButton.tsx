@@ -1,13 +1,9 @@
 import React from 'react'
 
-export const CloseButton = ({
-  onClick,
-}: {
-  onClick: (value: React.SetStateAction<boolean>) => void
-}) => {
+export const CloseButton = ({ handler }: { handler: React.MouseEventHandler<HTMLButtonElement> }) => {
   return (
     <button
-      onClick={() => onClick}
+      onClick={handler}
       data-testid="flatfile-close-button"
       type="button"
       className="flatfile-close-button"

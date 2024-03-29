@@ -1,7 +1,7 @@
-import { Workbook } from '@flatfile/api/api'
+import { Flatfile } from '@flatfile/api'
 import { Space } from '@flatfile/api/api/resources/spaces/types'
 
-export const mockWorkbook: Workbook = {
+export const mockWorkbook: Flatfile.Workbook = {
   id: 'wb-id',
   environmentId: 'your-environment-id',
   sheets: [],
@@ -12,6 +12,15 @@ export const mockWorkbook: Workbook = {
   updatedAt: new Date('01/01/2001'),
 }
 
+export const mockSheetConfig: Flatfile.SheetConfig = { 
+  name: 'Sheet Name',
+  slug: 'sheet-slug',
+  fields: [
+    { key: 'field-1', label: 'Field 1', type: 'string' },
+    { key: 'field-2', label: 'Field 2', type: 'string' },
+  ]
+}
+
 export const mockDocument = {
   id: 'doc-id',
   title: 'Example-title',
@@ -20,7 +29,7 @@ export const mockDocument = {
   updatedAt: new Date('01/01/2001'),
 }
 
-export const mockSpace: Space = {
+export const mockSpace: Flatfile.Space = {
   name: 'Test Space',
   guestAuthentication: ['shared_link', 'magic_link'],
   id: 'space-id',
@@ -31,3 +40,4 @@ export const mockSpace: Space = {
   isCollaborative: true,
   guestLink: 'fake-url',
 }
+

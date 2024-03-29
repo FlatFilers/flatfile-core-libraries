@@ -9,8 +9,9 @@ import {
   useListener,
   usePlugin,
   useEvent,
-  SimplifiedWorkbook,
   Workbook,
+  Space,
+  Document,
 } from '@flatfile/react'
 import React, { useEffect, useState } from 'react'
 import { listener as importedListener, plainListener } from './listener'
@@ -19,6 +20,7 @@ import { recordHook } from '@flatfile/plugin-record-hook'
 import api from '@flatfile/api'
 
 const PUBLISHABLE_KEY = 'pk_123456'
+const ACCESS_TOKEN = 'ey.123445'
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const FFApp = () => {
@@ -26,49 +28,41 @@ const FFApp = () => {
 
   const [label, setLabel] = useState('Rock')
 
-  // useEffect(() => {
-  //   console.log('FFApp useEffect', { flatfileConfiguration })
-  //   setFlatfileConfiguration({...flatfileConfiguration, sidebarConfig: {
-  //     showSidebar: true
-  //   }})
-  // }, [flatfileConfiguration])
-
   useListener((listener) => {
     // currentListener
     listener.on('**', (event) => {
       console.log('FFApp useListener Event => ', event.topic)
       // Handle the workbook:deleted event
     })
-    // importedListener
   }, [])
 
   // Both of these work:
   // FlatfileListener.create((client) => {
-  useListener(importedListener, [])
+  // useListener(importedListener, [])
 
   // (listener: FlatfileListener) => {
-  useListener(plainListener, [])
+  // useListener(plainListener, [])
 
-  useListener((client) => {
-    client.use(
-      recordHook('contacts', (record) => {
-        const firstName = record.get('firstName')
-        console.log({ firstName })
-        // Gettign the real types here would be nice but seems tricky
-        record.set('email', 'Rock')
-        return record
-      })
-    )
-  }, [])
+  // useListener((client) => {
+  //   client.use(
+  //     recordHook('contacts', (record) => {
+  //       const firstName = record.get('firstName')
+  //       console.log({ firstName })
+  //       // Gettign the real types here would be nice but seems tricky
+  //       record.set('email', 'Rock')
+  //       return record
+  //     })
+  //   )
+  // }, [])
 
-  usePlugin(
-    recordHook('contacts', (record, event) => {
-      console.log('recordHook', { event })
-      record.set('lastName', label)
-      return record
-    }),
-    [label]
-  )
+  // usePlugin(
+  //   recordHook('contacts', (record, event) => {
+  //     console.log('recordHook', { event })
+  //     record.set('lastName', label)
+  //     return record
+  //   }),
+  //   [label]
+  // )
 
   useEvent('workbook:created', (event) => {
     console.log('workbook:created', { event })
@@ -125,25 +119,83 @@ const FFApp = () => {
         >
           {open ? 'CLOSE' : 'OPEN'} PORTAL
         </button>
-        <button onClick={() => listenerConfig('blue')}>blue listener</button>
-        <button onClick={() => listenerConfig('green')}>green listener</button>
+        {/* <button onClick={() => listenerConfig('blue')}>blue listener</button>
+        <button onClick={() => listenerConfig('green')}>green listener</button> */}
       </div>
-
-      {/* <Sheet config={sheet} /> */}
-
-      <SimplifiedWorkbook
-        sheets={[sheet]}
-        onRecordHook={(record, event) => {
-          console.log('onRecordHook', { record, event })
-          record.set('email', 'alex@nasa.com')
+      {/* <Sheet
+        config={sheet}
+        onRecordHook={(record) => {
+          record.set('email', 'TEST SHEET RECORD')
           return record
         }}
-        onSubmit={({ data, sheet, job, event }) => {
-          console.log('onSubmit', { data, sheet, job, event })
+        onSubmit={(sheet) => {
+          console.log('onSubmit', { sheet })
         }}
       />
+      <Sheet
+        config={workbook.sheets![1]}
+        onRecordHook={(record) => {
+          record.set('email', 'TEST SHEET RECORD')
+          return record
+        }}
+        onSubmit={(sheet) => {
+          console.log('onSubmit', { sheet })
+        }}
+      />
+      
+      {/* <Sheet config={workbook.sheets![1]} />
+      </Workbook> */}
+      {/* <Space
+        config={{
+          namespace: 'alex-2',
+          metadata: {
+            sidebarConfig: {
+              showSidebar: true,
+            },
+          },
+          name: 'Test Space',
+        }}
+      > */}
+      {/* Creating a Space, Document, Workbook and Sheet */}
+      <Document config={document} />
+      <Space
+        config={{
+          metadata: {
+            sidebarConfig: {
+              showSidebar: true,
+            },
+          },
+        }}
+      >
+        <Workbook
+          config={workbook}
+          onSubmit={(sheet) => {
+            console.log('onSubmit', { sheet })
+          }}
+        >
+          <Sheet
+            config={sheet}
+            onRecordHook={(record) => {
+              record.set('email', 'TEST SHEET RECORD')
+              return record
+            }}
+          />
+          <Sheet config={{ ...sheet, name: 'Contacts 2', slug: 'contacts2' }} />
+        </Workbook>
+      </Space>
 
-      {/* <Workbook workbook={workbook}/> */}
+      {/* Re-using a Space */}
+      {/* 
+      <Space
+        config={{
+          id: 'us_sp_GfO7IfNM',
+          metadata: {
+            sidebarConfig: {
+              showSidebar: true,
+            },
+          },
+        }}
+      /> */}
     </div>
   )
 }
@@ -151,17 +203,28 @@ const FFApp = () => {
 const App = () => {
   return (
     <FlatfileProvider
-      // publishableKey={PUBLISHABLE_KEY}
-      space={{
-        id: 'us_sp_123456',
-        accessToken: 'ey123456.ey123456',
-        metadata: {
-          sidebarConfig: {
-            showSidebar: true,
+      // Just `key` and accept PURCHASED_KEY, ACCESS_TOKEN, SECRET_KEY (but not securely)?
+      publishableKey={PUBLISHABLE_KEY}
+      // accessToken={ACCESS_TOKEN}
+      // space={
+      //   {
+      //     // id: 'us_sp_123456',
+      //     // accessToken: 'ey123456.ey123456',
+      //   }
+      // }
+      config={{
+        mountElement: 'alex-rock',
+        exitText: 'Alex',
+        exitTitle: 'Alex',
+        exitPrimaryButtonText: 'Alex',
+        exitSecondaryButtonText: 'Alex',
+        displayAsModal: true,
+        closeSpace: {
+          operation: 'closeSpace',
+          onClose: () => {
+            console.log('onClose')
           },
         },
-        namespace: 'test',
-        name: 'Test Space',
       }}
     >
       <FFApp />

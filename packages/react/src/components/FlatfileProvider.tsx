@@ -1,49 +1,113 @@
-import React, { ReactNode, useEffect, useState } from 'react'
-
+import React, { useEffect, useState } from 'react'
 import FlatfileContext from './FlatfileContext'
 import FlatfileListener, { Browser } from '@flatfile/listener'
 import { Flatfile } from '@flatfile/api'
-
-export type Exclusive<T, U> =
-  | (T & Partial<Record<Exclude<keyof U, keyof T>, never>>)
-  | (U & Partial<Record<Exclude<keyof T, keyof U>, never>>)
-
-interface BaseSpace {
-  children: ReactNode
-  environmentId?: string
-  apiUrl?: string
-  options?: object
-}
-
-interface CreateSpaceWithPublishableKey extends BaseSpace {
-  publishableKey: string
-  space?: Partial<Flatfile.SpaceConfig>
-}
-
-interface ReusedSpace extends BaseSpace {
-  space: Partial<Flatfile.SpaceConfig> & { id: string; accessToken: string }
-}
-
-// Use the Exclusive type for your props
-type ExclusiveFlatfileProviderProps = Exclusive<
-  CreateSpaceWithPublishableKey,
-  ReusedSpace
->
+import { EmbeddedIFrameWrapper } from './EmbeddedIFrameWrapper'
+import { ExclusiveFlatfileProviderProps } from '../types'
 
 export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   children,
   publishableKey,
+  accessToken,
   environmentId,
-  space,
   apiUrl = 'https://platform.flatfile.com/api',
-  options = {},
+  config,
 }) => {
-  const [accessToken, setAccessToken] = useState<string | undefined>(undefined)
+  const [internalAccessToken, setAccessToken] = useState<string | undefined>(
+    accessToken
+  )
   const [listener, setListener] = useState(new FlatfileListener())
   const [open, setOpen] = useState<boolean>(false)
   const [sessionSpace, setSessionSpace] = useState<any>(null)
-  const [flatfileConfiguration, setFlatfileConfiguration] =
-    useState<any>(options)
+
+  const [createSpace, setCreateSpace] = useState<{
+    document: any
+    workbook: any
+    space: any
+  }>({
+    document: undefined,
+    workbook: {
+      name: 'Embedded Workbook',
+      sheets: [],
+    },
+    space: {
+      name: 'Embedded Space',
+      labels: ['embedded'],
+      namespace: 'portal',
+      metadata: {
+        sidebarConfig: { showSidebar: false },
+      },
+    },
+  })
+
+  const addSheet = (newSheet: Flatfile.SheetConfig) => {
+    setCreateSpace((prevSpace) => {
+      // Check if the sheet already exists
+      const sheetExists = prevSpace.workbook.sheets?.some(
+        (sheet: any) => sheet.slug === newSheet.slug
+      )
+      if (sheetExists) {
+        return prevSpace // Return the state unchanged if the sheet exists
+      }
+      // Add the new sheet if it doesn't exist
+      return {
+        ...prevSpace,
+        workbook: {
+          ...prevSpace.workbook,
+          sheets: [...prevSpace.workbook.sheets, newSheet],
+        },
+      }
+    })
+  }
+
+  const updateSheet = (
+    sheetSlug: string,
+    sheetUpdates: Partial<Flatfile.SheetConfig>
+  ) => {
+    setCreateSpace((prevSpace) => {
+      const updatedSheets = prevSpace.workbook.sheets?.map((sheet: any) => {
+        if (sheet.slug === sheetSlug) {
+          return { ...sheet, ...sheetUpdates }
+        }
+        return sheet
+      })
+
+      return {
+        ...prevSpace,
+        workbook: {
+          ...prevSpace.workbook,
+          sheets: updatedSheets,
+        },
+      }
+    })
+  }
+
+  const updateWorkbook = (workbookUpdates: Flatfile.CreateWorkbookConfig) => {
+    setCreateSpace((prevSpace) => ({
+      ...prevSpace,
+      workbook: {
+        ...prevSpace.workbook,
+        ...workbookUpdates,
+      },
+    }))
+  }
+
+  const updateDocument = (documentUpdates: Flatfile.DocumentConfig) => {
+    setCreateSpace((prevSpace) => ({
+      ...prevSpace,
+      document: {
+        ...prevSpace.document,
+        ...documentUpdates,
+      },
+    }))
+  }
+
+  const updateSpace = (spaceUpdates: Flatfile.SpaceConfig) => {
+    setCreateSpace((prevSpace) => ({
+      ...prevSpace,
+      space: { ...prevSpace.space, ...spaceUpdates },
+    }))
+  }
 
   const handlePostMessage = (message: {
     data: { flatfileEvent: Record<string, any> }
@@ -62,22 +126,22 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   }, [listener])
 
   useEffect(() => {
-    if (listener && accessToken) {
+    if (listener && internalAccessToken) {
       listener.mount(
         new Browser({
           apiUrl,
-          accessToken,
+          accessToken: internalAccessToken,
           fetchApi: fetch,
         })
       )
     }
-  }, [listener, accessToken, apiUrl])
+  }, [listener, internalAccessToken, apiUrl])
 
   return (
     <FlatfileContext.Provider
       value={{
         ...(publishableKey ? { publishableKey } : {}),
-        ...(space ? { space } : {}),
+        ...(internalAccessToken ? { accessToken: internalAccessToken } : {}),
         apiUrl,
         environmentId,
         open,
@@ -86,13 +150,22 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         setSessionSpace,
         setListener,
         listener,
-        accessToken,
         setAccessToken,
-        flatfileConfiguration,
-        setFlatfileConfiguration,
+        addSheet,
+        updateSheet,
+        updateWorkbook,
+        updateDocument,
+        createSpace,
+        setCreateSpace,
+        updateSpace,
       }}
     >
       {children}
+
+      <EmbeddedIFrameWrapper
+        handleCloseInstance={() => setOpen(false)}
+        {...config}
+      />
     </FlatfileContext.Provider>
   )
 }

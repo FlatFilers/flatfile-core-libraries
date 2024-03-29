@@ -2,14 +2,16 @@
  * @jest-environment jsdom
  */
 
-import { FlatfileClient } from '@flatfile/api'
 import '@testing-library/jest-dom'
+
+import { FlatfileClient } from '@flatfile/api'
 import { renderHook } from '@testing-library/react-hooks'
-import DefaultError from '../../components/Error'
-import Space from '../../components/legacy/Space'
-import { mockDocument, mockSpace, mockWorkbook } from '../../test/mocks'
 import { ISpace } from '@flatfile/embedded-utils'
-import useSpace from '../legacy/useSpace'
+import { waitFor } from '@testing-library/react'
+import DefaultError from '../../../components/Error'
+import { mockDocument, mockSpace, mockWorkbook } from '../../../test/mocks'
+import useSpace from '../useSpace'
+import Space from '../../../components/legacy/Space'
 
 console.error = jest.fn()
 
@@ -37,16 +39,16 @@ describe('useSpace', () => {
     jest
       .spyOn(FlatfileClient.prototype.spaces, 'create')
       .mockRejectedValue('There has been an error my friend')
-    const { result, waitForNextUpdate } = renderUseSpaceHookWithHookResult({
+    const { result } = renderUseSpaceHookWithHookResult({
       ...baseSpaceProps,
     } as ISpace)
 
-    await waitForNextUpdate()
+    await waitFor(() => {
+      const error =
+        result?.current?.type === DefaultError ? result?.current : undefined
 
-    const error =
-      result?.current?.type === DefaultError ? result?.current : undefined
-
-    expect(error).toBeDefined()
+      expect(error).toBeDefined()
+    })
   })
   it('renders the Space component when authenticated', async () => {
     jest.spyOn(FlatfileClient.prototype.spaces, 'create').mockResolvedValue({
@@ -61,15 +63,15 @@ describe('useSpace', () => {
       data: mockDocument,
     })
 
-    const { result, waitForNextUpdate } = renderUseSpaceHookWithHookResult({
+    const { result } = renderUseSpaceHookWithHookResult({
       ...baseSpaceProps,
     } as ISpace)
 
-    await waitForNextUpdate()
+    await waitFor(() => {
+      const spaceComponent =
+        result?.current?.type === Space ? result?.current : undefined
 
-    const spaceComponent =
-      result?.current?.type === Space ? result?.current : undefined
-
-    expect(spaceComponent).toBeDefined()
+      expect(spaceComponent).toBeDefined()
+    })
   })
 })
