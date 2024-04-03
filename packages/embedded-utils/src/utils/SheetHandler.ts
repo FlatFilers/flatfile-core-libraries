@@ -70,20 +70,7 @@ export class SheetHandler {
     }
   }
 
-  async stream(cb: (data: Flatfile.RecordsWithLinks) => void) {
-    return await processRecords(
-      this.sheetId,
-      async (records) => {
-        cb(records)
-      },
-      { pageSize: SheetHandler.defaultCount }
-    )
-  }
-
-  async inChunks(
-    cb: (data: Flatfile.RecordsWithLinks) => void,
-    options: InChunksOptions
-  ) {
+  private async processRecordsInternal(cb: (data: Flatfile.RecordsWithLinks) => void, options: InChunksOptions) {
     return await processRecords(
       this.sheetId,
       async (records) => {
@@ -91,5 +78,13 @@ export class SheetHandler {
       },
       { pageSize: options.chunkSize || SheetHandler.defaultCount }
     )
+  }
+
+  async stream(cb: (data: Flatfile.RecordsWithLinks) => void) {
+    return this.processRecordsInternal(cb, {});
+  }
+
+  async inChunks(cb: (data: Flatfile.RecordsWithLinks) => void, options: InChunksOptions) {
+    return this.processRecordsInternal(cb, options);
   }
 }
