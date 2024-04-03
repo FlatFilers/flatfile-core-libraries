@@ -301,7 +301,7 @@ const initNewSpace = async ({
       ...(languageOverride ? { languageOverride } : {}),
       metadata: {
         theme: themeConfig,
-        sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
+        sidebarConfig: sidebarConfig || { showSidebar: false },
         userInfo,
         ...(spaceBody?.metadata || {}),
         ...(metadata || {}),
