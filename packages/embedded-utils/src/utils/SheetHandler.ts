@@ -32,7 +32,7 @@ export class SheetHandler {
         records: records.data.records,
       }
     } catch (e) {
-      console.error('Failed to get all data:', e)
+      console.error(`Failed to get all data for sheet ID ${this.sheetId}:`, e)
     }
   }
 
@@ -49,7 +49,7 @@ export class SheetHandler {
         records: records.data.records,
       }
     } catch (e) {
-      console.error('Failed to get valid data:', e)
+      console.error(`Failed to get valid data for sheet ID ${this.sheetId}:`, e)
     }
   }
 
@@ -66,7 +66,7 @@ export class SheetHandler {
         records: records.data.records,
       }
     } catch (e) {
-      console.error('Failed to get error data:', e)
+      console.error(`Failed to get error data for sheet ID ${this.sheetId}:`, e)
     }
   }
 
