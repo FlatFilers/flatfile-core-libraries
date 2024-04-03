@@ -13,7 +13,7 @@ export class JobHandler {
     try {
       await this.api.jobs.ack(this.jobId)
     } catch (err) {
-      console.error('Failed to ack the job: ', err)
+      console.error(`Failed to acknowledge job with ID ${this.jobId}: `, err)
     }
   }
 
@@ -21,7 +21,7 @@ export class JobHandler {
     try {
       await this.api.jobs.cancel(this.jobId)
     } catch (err) {
-      console.error('Failed to cancel the job: ', err)
+      console.error(`Failed to cancel job with ID ${this.jobId}: `, err)
     }
   }
 
@@ -29,7 +29,7 @@ export class JobHandler {
     try {
       await this.api.jobs.complete(this.jobId)
     } catch (err) {
-      console.error('Failed to complete the job: ', err)
+      console.error(`Failed to complete job with ID ${this.jobId}: `, err)
     }
   }
 
@@ -37,7 +37,7 @@ export class JobHandler {
     try {
       await this.api.jobs.fail(this.jobId)
     } catch (err) {
-      console.error('Failed to fail the job: ', err)
+      console.error(`Failed to fail job with ID ${this.jobId}: `, err)
     }
   }
 
@@ -45,7 +45,7 @@ export class JobHandler {
     try {
       await this.api.jobs.get(this.jobId)
     } catch (err) {
-      console.error('Failed to get the job: ', err)
+      console.error(`Failed to get job with ID ${this.jobId}: `, err)
     }
   }
 }
