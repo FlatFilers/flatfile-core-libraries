@@ -1,5 +1,11 @@
 # embedded-utils
 
+## 1.1.13
+
+### Patch Changes
+
+- 8ef2d53: Fix to helper functions inside the SheetHandler and JobHandler
+
 ## 1.1.12
 
 ### Patch Changes
