@@ -1,5 +1,12 @@
 # @flatfile/react
 
+## 7.8.11
+
+### Patch Changes
+
+- Updated dependencies [8ef2d53]
+  - @flatfile/embedded-utils@1.1.13
+  
 ## 7.8.10
 
 ### Patch Changes
