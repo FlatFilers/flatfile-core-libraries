@@ -1,6 +1,6 @@
 {
   "name": "@flatfile/react",
-  "version": "7.8.11",
+  "version": "7.8.12",
   "description": "Flatfile React components",
   "type": "module",
   "browser": {
@@ -58,7 +58,7 @@
   "dependencies": {
     "@flatfile/api": "^1.6.7",
     "@flatfile/cross-env-config": "^0.0.5",
-    "@flatfile/embedded-utils": "^1.1.13",
+    "@flatfile/embedded-utils": "^1.1.14",
     "@flatfile/listener": "^1.0.1",
     "@flatfile/plugin-record-hook": "^1.4.1",
     "tinycolor2": "^1.6.0"
