@@ -21,9 +21,9 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   const [sessionSpace, setSessionSpace] = useState<any>(null)
 
   const [createSpace, setCreateSpace] = useState<{
-    document: any
-    workbook: any
-    space: any
+    document: Flatfile.DocumentConfig | undefined
+    workbook: Flatfile.CreateWorkbookConfig
+    space: Flatfile.SpaceConfig
   }>({
     document: undefined,
     workbook: {
@@ -54,7 +54,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         ...prevSpace,
         workbook: {
           ...prevSpace.workbook,
-          sheets: [...prevSpace.workbook.sheets, newSheet],
+          sheets: [...(prevSpace.workbook.sheets || []), newSheet],
         },
       }
     })

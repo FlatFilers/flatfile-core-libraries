@@ -3,7 +3,13 @@ import FlatfileContext from '../components/FlatfileContext'
 import { getSpace } from '../utils/getSpace'
 import { createSpaceInternal } from '../utils/createSpaceInternal'
 
-export const useFlatfile = () => {
+export const useFlatfile: () => {
+  openPortal: () => void
+  closePortal: () => void
+  open: boolean
+  setListener: (listener: any) => void
+  listener: any
+} = () => {
   const context = useContext(FlatfileContext)
 
   if (!context) {

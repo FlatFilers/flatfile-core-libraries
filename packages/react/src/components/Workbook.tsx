@@ -12,10 +12,10 @@ import {
   SheetHandler,
   SimpleOnboarding,
 } from '@flatfile/embedded-utils'
+import { workbookOnSubmitAction } from '../utils/constants'
 
 type onRecordHook<T> = (record: T, event?: FlatfileEvent) => FlatfileRecord
 
-// type onRecordHooks<T> = Array<onRecordHook<T>>
 type HookConfig<T> = [string, onRecordHook<T>] | [onRecordHook<T>]
 
 type onRecordHooks<T> = HookConfig<T>[]
@@ -40,27 +40,10 @@ export const Workbook = (
     if (onSubmit) {
       if (!config?.actions) {
         tmp = {
-          actions: [
-            {
-              operation: 'simpleSubmitAction',
-              mode: 'foreground',
-              label: 'Submit data',
-              description: 'Action for handling data inside of onSubmit',
-              primary: true,
-            },
-          ],
+          actions: [workbookOnSubmitAction],
         }
       } else {
-        config.actions = [
-          {
-            operation: 'simpleSubmitAction',
-            mode: 'foreground',
-            label: 'Submit data',
-            description: 'Action for handling data inside of onSubmit',
-            primary: true,
-          },
-          ...(config.actions ? config.actions : []),
-        ]
+        config.actions = [workbookOnSubmitAction, ...(config.actions || [])]
       }
     }
     updateWorkbook(tmp ?? config)
@@ -78,13 +61,12 @@ export const Workbook = (
               record: FlatfileRecord,
               event: FlatfileEvent | undefined
             ) => {
-              // @ts-ignore - something weird with the `data` prop and the types upstream in the packages being declared in different places, but overall this is fine
               return slug(record, event)
             }
           ),
           []
         )
-      } else if (typeof slug === 'string') {
+      } else if (typeof slug === 'string' && typeof hook === 'function') {
         usePlugin(
           recordHook(
             slug,
@@ -92,7 +74,6 @@ export const Workbook = (
               record: FlatfileRecord,
               event: FlatfileEvent | undefined
             ) => {
-              // @ts-ignore - something weird with the `data` prop and the types upstream in the packages being declared in different places, but overall this is fine
               return hook(record, event)
             }
           ),

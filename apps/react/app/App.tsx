@@ -9,11 +9,13 @@ import {
   Workbook,
   Space,
   Document,
+  Sheet,
 } from '@flatfile/react'
 import React, { useState } from 'react'
 import styles from './page.module.css'
 import { recordHook } from '@flatfile/plugin-record-hook'
 import api from '@flatfile/api'
+import { config } from '../../../packages/cli/src/config'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -116,7 +118,6 @@ const App = () => {
         <button onClick={() => listenerConfig('blue')}>blue listener</button>
         <button onClick={() => listenerConfig('green')}>green listener</button>
       </div>
-      <Document config={document} />
       <Space
         config={{
           metadata: {
@@ -126,6 +127,7 @@ const App = () => {
           },
         }}
       >
+        <Document config={document} />
         <Workbook
           config={workbook}
           onSubmit={(sheet) => {
@@ -141,6 +143,12 @@ const App = () => {
             ],
           ]}
         />
+        {/* <Sheet
+          config={workbook.sheets![0]}
+          onSubmit={(sheet) => {
+            console.log('onSubmit', { sheet })
+          }}
+        /> */}
       </Space>
     </div>
   )

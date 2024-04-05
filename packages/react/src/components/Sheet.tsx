@@ -12,6 +12,7 @@ import { FlatfileEvent } from '@flatfile/listener'
 import { recordHook, FlatfileRecord } from '@flatfile/plugin-record-hook'
 import { usePlugin, useEvent } from '../hooks'
 import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
+import { workbookOnSubmitAction } from '../utils/constants'
 
 export const Sheet = (
   props: { config: Flatfile.SheetConfig } & Pick<
@@ -20,11 +21,26 @@ export const Sheet = (
   >
 ) => {
   const { config, onRecordHook, onSubmit, ...sheetProps } = props
-  const { addSheet } = useContext(FlatfileContext)
+  const { addSheet, updateWorkbook, createSpace } = useContext(FlatfileContext)
 
   const callback = useCallback(() => {
+    let tmp
+    // Adds an onSubmit action to the workbook if an onSubmit function is provided
+    if (onSubmit) {
+      if (!createSpace?.workbook.actions) {
+        tmp = {
+          actions: [workbookOnSubmitAction],
+        }
+      } else {
+        createSpace.workbook.actions = [
+          workbookOnSubmitAction,
+          ...(config.actions || []),
+        ]
+      }
+    }
+    updateWorkbook(tmp ?? createSpace.workbook)
     addSheet(config)
-  }, [config, addSheet])
+  }, [config, addSheet, updateWorkbook])
 
   useDeepCompareEffect(callback, [config])
 
