@@ -1,5 +1,11 @@
 # embedded-utils
 
+## 1.1.14
+
+### Patch Changes
+
+- f89a6de: Update @flatfile/utils-common dependency
+
 ## 1.1.13
 
 ### Patch Changes

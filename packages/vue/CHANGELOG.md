@@ -1,5 +1,12 @@
 ## 1.0.5
 
+## 1.0.10
+
+### Patch Changes
+
+- Updated dependencies [f89a6de]
+  - @flatfile/embedded-utils@1.1.14
+
 ## 1.0.9
 
 ### Patch Changes
