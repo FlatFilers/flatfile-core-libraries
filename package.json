@@ -38,8 +38,6 @@
     "typescript": "^4.9.3"
   },
   "dependencies": {
-    "@flatfile/api": "^1.5.44",
-    "@flatfile/cross-env-config": "<1.0.0",
     "esbuild-loader": "^2.20.0",
     "rollup": "^2.79.1"
   },
