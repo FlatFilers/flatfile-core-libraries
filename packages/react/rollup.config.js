@@ -7,8 +7,8 @@ import peerDepsExternal from 'rollup-plugin-peer-deps-external'
 import postcss from 'rollup-plugin-postcss'
 import resolve from '@rollup/plugin-node-resolve'
 import terser from '@rollup/plugin-terser'
-import typescript from '@rollup/plugin-typescript'
 import url from '@rollup/plugin-url'
+import sucrase from '@rollup/plugin-sucrase'
 
 dotenv.config()
 
@@ -20,23 +20,26 @@ if (!PROD) {
 
 function commonPlugins(browser, umd = false) {
   return [
-    !umd
-      ? peerDepsExternal({
+    umd
+      ? undefined
+      : peerDepsExternal({
           includeDependencies: true,
-        })
-      : undefined,
+        }),
     json(),
     css(),
-    resolve({ browser, preferBuiltins: !browser }),
     commonjs({
-      requireReturnsDefault: 'preferred',
+      include: '**/node_modules/**',
+      requireReturnsDefault: 'auto',
       esmExternals: true,
     }),
-    typescript({
-      outDir: 'dist',
-      declaration: false,
-      declarationDir: './dist',
-      composite: false,
+    resolve({
+      browser,
+      preferBuiltins: !browser,
+    }),
+    sucrase({
+      jsxRuntime: 'automatic',
+      exclude: ['**/node_modules/**', '**/.*/', '**/*.spec.ts', '**/*.scss'],
+      transforms: ['typescript', 'jsx'],
     }),
     url({
       include: ['**/*.otf'],
@@ -49,11 +52,6 @@ function commonPlugins(browser, umd = false) {
 }
 
 const config = [
-  {
-    input: 'src/index.ts',
-    output: [{ file: 'dist/index.d.ts', format: 'es' }],
-    plugins: [css(), dts(), postcss()],
-  },
   // Non-browser build
   {
     input: 'src/index.ts',
@@ -72,6 +70,14 @@ const config = [
       },
     ],
     plugins: commonPlugins(false, false),
+    onwarn: function (warning, warn) {
+      // Skip certain warnings
+      if (warning.code === 'THIS_IS_UNDEFINED') {
+        return
+      }
+      // console.warn everything else
+      warn(warning)
+    },
   },
   // Browser build
   {
@@ -86,6 +92,14 @@ const config = [
       },
     ],
     plugins: commonPlugins(true, false),
+    onwarn: function (warning, warn) {
+      // Skip certain warnings
+      if (warning.code === 'THIS_IS_UNDEFINED') {
+        return
+      }
+      // console.warn everything else
+      warn(warning)
+    },
   },
   // UMD build
   {
@@ -99,6 +113,20 @@ const config = [
       strict: true,
     },
     plugins: commonPlugins(true, true),
+    onwarn: function (warning, warn) {
+      // Skip certain warnings
+      if (warning.code === 'THIS_IS_UNDEFINED') {
+        return
+      }
+      // console.warn everything else
+      warn(warning)
+    },
+  },
+  // Types
+  {
+    input: 'src/index.ts',
+    output: [{ file: 'dist/index.d.ts', format: 'es' }],
+    plugins: [css(), dts(), postcss()],
   },
 ]
 
