@@ -129,7 +129,6 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   // Mount the event listener to the FlatfileProvider
   useEffect(() => {
     if (listener && internalAccessToken) {
-      console.log('FlatfileProvider useEffect mount listener', { createSpace })
       listener.mount(
         new Browser({
           apiUrl,
