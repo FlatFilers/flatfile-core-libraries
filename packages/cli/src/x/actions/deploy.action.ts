@@ -109,7 +109,7 @@ export async function deployAction(
     token: string
   }>
 ): Promise<void> {
-  const outDir = path.join(process.cwd(), '.flatfile')
+  const outDir = path.posix.join(process.cwd(), '.flatfile')
   if (!fs.existsSync(outDir)) {
     fs.mkdirSync(outDir, { recursive: true })
   }
@@ -131,7 +131,7 @@ export async function deployAction(
   const slug = options?.slug || process.env.FLATFILE_AGENT_SLUG
 
   try {
-    const data = await readPackageJson(path.join(process.cwd(), 'package.json'))
+    const data = await readPackageJson(path.posix.join(process.cwd(), 'package.json'))
     if (
       !data.dependencies?.['@flatfile/listener'] &&
       !data.devDependencies?.['@flatfile/listener']
@@ -146,14 +146,14 @@ export async function deployAction(
 
   try {
     const data = fs.readFileSync(
-      path.join(__dirname, '..', 'templates', 'entry.js'),
+      path.posix.join(__dirname, '..', 'templates', 'entry.js'),
       'utf8'
     )
     const result = data.replace(
       /{ENTRY_PATH}/g,
-      path.join(
+      path.posix.join(
         path.relative(
-          path.dirname(path.join(outDir, '_entry.js')),
+          path.dirname(path.posix.join(outDir, '_entry.js')),
           path.dirname(file!)
         ),
         path.basename(file!)
@@ -161,7 +161,7 @@ export async function deployAction(
     )
 
     const entry = result.split(path.sep).join(path.posix.sep)
-    fs.writeFileSync(path.join(outDir, '_entry.js'), entry, 'utf8')
+    fs.writeFileSync(path.posix.join(outDir, '_entry.js'), entry, 'utf8')
     const buildingSpinner = ora({
       text: `Building deployable code package`,
     }).start()
@@ -199,7 +199,7 @@ export async function deployAction(
     }).start()
 
     try {
-      const { err, code } = await ncc(path.join(outDir, '_entry.js'), {
+      const { err, code } = await ncc(path.posix.join(outDir, '_entry.js'), {
         minify: liteMode,
         target: 'es2020',
         cache: false,

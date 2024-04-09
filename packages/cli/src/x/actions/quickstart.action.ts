@@ -209,7 +209,7 @@ export async function quickstartAction(
       text: `Create Agent`,
     }).start()
 
-    const buildFile = path.join(
+    const buildFile = path.posix.join(
       __dirname,
       '..',
       'src',
