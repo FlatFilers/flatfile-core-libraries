@@ -14,8 +14,6 @@ import {
 import React, { useState } from 'react'
 import styles from './page.module.css'
 import { recordHook } from '@flatfile/plugin-record-hook'
-import api from '@flatfile/api'
-import { config } from '../../../packages/cli/src/config'
 
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
@@ -24,13 +22,13 @@ const App = () => {
 
   const [label, setLabel] = useState('Rock')
 
-  useListener((listener) => {
-    // currentListener
-    listener.on('**', (event) => {
-      console.log('FFApp useListener Event => ', event.topic)
-      // Handle the workbook:deleted event
-    })
-  }, [])
+  // useListener((listener) => {
+  //   // currentListener
+  //   listener.on('**', (event) => {
+  //     console.log('FFApp useListener Event => ', event.topic)
+  //     // Handle the workbook:deleted event
+  //   })
+  // }, [])
 
   // Both of these also work:
   // FlatfileListener.create((client) => {
@@ -39,68 +37,68 @@ const App = () => {
   // (listener: FlatfileListener) => {
   // useListener(plainListener, [])
 
-  useListener((client) => {
-    client.use(
-      recordHook('contacts', (record) => {
-        const firstName = record.get('firstName')
-        console.log({ firstName })
-        // Gettign the real types here would be nice but seems tricky
-        record.set('email', 'Rock')
-        return record
-      })
-    )
-  }, [])
+  // useListener((client) => {
+  //   client.use(
+  //     recordHook('contacts', (record) => {
+  //       const firstName = record.get('firstName')
+  //       console.log({ firstName })
+  //       // Gettign the real types here would be nice but seems tricky
+  //       record.set('email', 'Rock')
+  //       return record
+  //     })
+  //   )
+  // }, [])
 
-  usePlugin(
-    recordHook('contacts', (record, event) => {
-      console.log('recordHook', { event })
-      record.set('lastName', label)
-      return record
-    }),
-    [label]
-  )
+  // usePlugin(
+  //   recordHook('contacts', (record, event) => {
+  //     console.log('recordHook', { event })
+  //     record.set('lastName', label)
+  //     return record
+  //   }),
+  //   [label]
+  // )
 
-  useEvent('workbook:created', (event) => {
-    console.log('workbook:created', { event })
-  })
+  // useEvent('workbook:created', (event) => {
+  //   console.log('workbook:created', { event })
+  // })
 
-  useEvent('*:created', (event) => {
-    console.log({ topic: event.topic })
-  })
+  // useEvent('**', (event) => {
+  //   console.log({ event })
+  // })
 
-  useEvent('job:ready', { job: 'sheet:submitActionFg' }, async (event) => {
-    const { jobId } = event.context
-    try {
-      await api.jobs.ack(jobId, {
-        info: 'Getting started.',
-        progress: 10,
-      })
+  // useEvent('job:ready', { job: 'sheet:submitActionFg' }, async (event) => {
+  //   const { jobId } = event.context
+  //   try {
+  //     await api.jobs.ack(jobId, {
+  //       info: 'Getting started.',
+  //       progress: 10,
+  //     })
 
-      // Make changes after cells in a Sheet have been updated
-      console.log('Make changes here when an action is clicked')
-      const records = await event.data
+  //     // Make changes after cells in a Sheet have been updated
+  //     console.log('Make changes here when an action is clicked')
+  //     const records = await event.data
 
-      console.log({ records })
+  //     console.log({ records })
 
-      await api.jobs.complete(jobId, {
-        outcome: {
-          message: 'This is now complete.',
-        },
-      })
+  //     await api.jobs.complete(jobId, {
+  //       outcome: {
+  //         message: 'This is now complete.',
+  //       },
+  //     })
 
-      // Probably a bad idea to close the portal here but just as an example
-      await sleep(3000)
-      closePortal()
-    } catch (error: any) {
-      console.error('Error:', error.stack)
+  //     // Probably a bad idea to close the portal here but just as an example
+  //     await sleep(3000)
+  //     closePortal()
+  //   } catch (error: any) {
+  //     console.error('Error:', error.stack)
 
-      await api.jobs.fail(jobId, {
-        outcome: {
-          message: 'This job encountered an error.',
-        },
-      })
-    }
-  })
+  //     await api.jobs.fail(jobId, {
+  //       outcome: {
+  //         message: 'This job encountered an error.',
+  //       },
+  //     })
+  //   }
+  // })
 
   const listenerConfig = (label: string) => {
     setLabel(label)
@@ -130,14 +128,21 @@ const App = () => {
         <Document config={document} />
         <Workbook
           config={workbook}
-          onSubmit={(sheet) => {
+          onSubmit={async (sheet) => {
             console.log('onSubmit', { sheet })
           }}
           onRecordHooks={[
             [
-              '**',
+              'contacts',
               (record) => {
-                record.set('email', 'TEST SHEET RECORD')
+                record.set('email', 'SHEET 1')
+                return record
+              },
+            ],
+            [
+              'contacts',
+              (record) => {
+                record.set('lastName', 'SHEET 3')
                 return record
               },
             ],

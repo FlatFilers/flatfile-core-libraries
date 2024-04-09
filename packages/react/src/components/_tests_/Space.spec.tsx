@@ -1,100 +1,58 @@
 import React from 'react'
+import { render } from '@testing-library/react'
 import { Space } from '../Space'
-import { FlatfileContext, FlatfileContextType } from '../FlatfileContext'
-import { SheetConfig } from '@flatfile/api/api'
-import FlatfileListener from '@flatfile/listener'
-import { Root, createRoot } from 'react-dom/client'
-import { act } from 'react-dom/test-utils'
+import FlatfileContext from '../FlatfileContext'
+import { useDeepCompareEffect } from '../../utils/useDeepCompareEffect'
+import { MockFlatfileProviderValue } from './FlatfileProvider.spec'
+jest.mock('../../utils/useDeepCompareEffect', () => ({
+  useDeepCompareEffect: jest.fn(),
+}))
 
-import '@testing-library/jest-dom'
-import { waitFor } from '@testing-library/react'
-
-const mockContextValue: FlatfileContextType = {
-  updateSpace: jest.fn(),
-  createSpace: jest.fn(),
-  apiUrl: 'https://example.com',
-  open: true,
-  setOpen: jest.fn(),
-  setSessionSpace: jest.fn(),
-  listener: new FlatfileListener(),
-  setListener: function (listener: FlatfileListener): void {
-    throw new Error('Function not implemented.')
-  },
-  setAccessToken: function (accessToken: string): void {
-    throw new Error('Function not implemented.')
-  },
-  addSheet: function (config: any): void {
-    throw new Error('Function not implemented.')
-  },
-  updateSheet: function (
-    sheetSlug: string,
-    sheetUpdates: Partial<SheetConfig>
-  ): void {
-    throw new Error('Function not implemented.')
-  },
-  updateWorkbook: function (config: any): void {
-    throw new Error('Function not implemented.')
-  },
-  updateDocument: function (config: any): void {
-    throw new Error('Function not implemented.')
-  },
-  setCreateSpace: function (config: any): void {
-    throw new Error('Function not implemented.')
-  },
+const MockSpaceConfig = {
+  name: 'Test Space',
 }
 
 describe('Space', () => {
-  let root: Root
-  let container: Element | DocumentFragment
+  const mockUpdateSpace = jest.fn()
 
   beforeEach(() => {
-    container = document.createElement('div')
-    document.body.appendChild(container)
-    root = createRoot(container)
+    jest.mocked(useDeepCompareEffect).mockImplementation((callback, deps) => {
+      React.useEffect(callback, deps)
+    })
+    jest.clearAllMocks()
   })
 
-  afterEach(() => {
-    document.body.removeChild(container)
+  it('calls updateSpace with config on initial render', () => {
+    render(
+      <FlatfileContext.Provider
+        value={{ ...MockFlatfileProviderValue, updateSpace: mockUpdateSpace }}
+      >
+        <Space config={MockSpaceConfig} />
+      </FlatfileContext.Provider>
+    )
+
+    expect(mockUpdateSpace).toHaveBeenCalledWith(MockSpaceConfig)
   })
 
-  it('renders children when provided', async () => {
-    const mockConfig = {
-      id: 'spaceId',
-      // Add other necessary properties to mockConfig
-    }
-    act(() => {
-      root.render(
-        <FlatfileContext.Provider value={mockContextValue}>
-          <Space config={mockConfig}>
-            <div id="child-element">Child Element</div>
-          </Space>
-        </FlatfileContext.Provider>
-      )
-    })
+  it('calls updateSpace with new config when config changes', () => {
+    const newConfig = { ...MockSpaceConfig, name: 'New Test Area' }
+    const { rerender } = render(
+      <FlatfileContext.Provider
+        value={{ ...MockFlatfileProviderValue, updateSpace: mockUpdateSpace }}
+      >
+        <Space config={MockSpaceConfig} />
+      </FlatfileContext.Provider>
+    )
 
-    await waitFor(() => {
-      const childElement = document.getElementById('child-element')
-      expect(childElement).toBeInTheDocument()
-    })
+    rerender(
+      <FlatfileContext.Provider
+        value={{ ...MockFlatfileProviderValue, updateSpace: mockUpdateSpace }}
+      >
+        <Space config={newConfig} />
+      </FlatfileContext.Provider>
+    )
+
+    expect(mockUpdateSpace).toHaveBeenCalledTimes(2)
+    expect(mockUpdateSpace).toHaveBeenCalledWith(newConfig)
   })
-
-  it('does not render children when not provided', async () => {
-    const mockConfig = {
-      id: 'spaceId',
-      // Add other necessary properties to mockConfig
-    }
-    act(() => {
-      root.render(
-        <FlatfileContext.Provider value={mockContextValue}>
-          <Space config={mockConfig} />
-        </FlatfileContext.Provider>
-      )
-    })
-    await waitFor(() => {
-      const childElement = document.getElementById('child-element')
-      expect(childElement).not.toBeInTheDocument()
-    })
-  })
-
-  // Add more test cases as needed
 })

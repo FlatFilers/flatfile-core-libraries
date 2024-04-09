@@ -7,7 +7,7 @@ import { authenticate } from '../../utils/authenticate'
 import { getSpace } from '../../utils/getSpace'
 import { initializeSpace } from '../../utils/initializeSpace'
 import ConfirmModal from '../ConfirmCloseModal'
-import DefaultError from '../Error'
+import DefaultError from './Error'
 import { getContainerStyles, getIframeStyles } from '../embeddedStyles'
 import '../style.scss'
 

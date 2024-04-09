@@ -4,7 +4,7 @@ import { authenticate } from './authenticate'
 import { getErrorMessage } from '@flatfile/embedded-utils'
 
 export const initializeSpace = async (
-  flatfileOptions: IReactSpaceProps & { sheets?: Flatfile.SheetConfig }
+  flatfileOptions: IReactSpaceProps
 ): Promise<Flatfile.SpaceResponse> => {
   let space
   const {
@@ -46,7 +46,7 @@ export const initializeSpace = async (
         ...(languageOverride ? { languageOverride } : {}),
         metadata: {
           theme: themeConfig,
-          sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
+          sidebarConfig: sidebarConfig || { showSidebar: false },
           userInfo,
           spaceInfo,
           ...(spaceBody?.metadata || {}),

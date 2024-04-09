@@ -50,7 +50,21 @@ export const FlatfileContext = createContext<FlatfileContextType>({
   updateSheet: () => {},
   updateWorkbook: () => {},
   updateDocument: () => {},
-  createSpace: undefined,
+  createSpace: {
+    document: undefined,
+    workbook: {
+      name: 'Embedded Workbook',
+      sheets: [],
+    },
+    space: {
+      name: 'Embedded Space',
+      labels: ['embedded'],
+      namespace: 'portal',
+      metadata: {
+        sidebarConfig: { showSidebar: false },
+      },
+    },
+  },
   setCreateSpace: () => {},
   updateSpace: () => {},
 })

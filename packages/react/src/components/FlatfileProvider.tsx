@@ -44,7 +44,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     setCreateSpace((prevSpace) => {
       // Check if the sheet already exists
       const sheetExists = prevSpace.workbook.sheets?.some(
-        (sheet: any) => sheet.slug === newSheet.slug
+        (sheet) => sheet.slug === newSheet.slug
       )
       if (sheetExists) {
         return prevSpace // Return the state unchanged if the sheet exists
@@ -118,6 +118,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     listener.dispatchEvent(flatfileEvent)
   }
 
+  // Listen to the postMessage event from the created iFrame
   useEffect(() => {
     window.addEventListener('message', handlePostMessage, false)
     return () => {
@@ -125,8 +126,10 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     }
   }, [listener])
 
+  // Mount the event listener to the FlatfileProvider
   useEffect(() => {
     if (listener && internalAccessToken) {
+      console.log('FlatfileProvider useEffect mount listener', { createSpace })
       listener.mount(
         new Browser({
           apiUrl,

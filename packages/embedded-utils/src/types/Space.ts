@@ -117,7 +117,7 @@ export interface SimpleOnboarding extends NewSpaceFromPublishableKey {
     sheet?: any
     job?: any
     event?: FlatfileEvent
-  }) => void
+  }) => Promise<void>
   onRecordHook?: (
     record: FlatfileRecord<TRecordDataWithLinks<TPrimitive>>,
     event?: FlatfileEvent

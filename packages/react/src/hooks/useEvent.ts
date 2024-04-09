@@ -1,6 +1,6 @@
 import { EventCallback, FlatfileEvent } from '@flatfile/listener'
-import { useFlatfile } from './useFlatfile'
-import { useEffect } from 'react'
+import { useContext, useEffect } from 'react'
+import { FlatfileContext } from '../components'
 
 // Overload definitions for better type checking
 function useEvent(
@@ -24,7 +24,7 @@ function useEvent(
     | any[] = [],
   dependencies: any[] = []
 ) {
-  const { listener } = useFlatfile()
+  const { listener } = useContext(FlatfileContext)
 
   let callback: (event: any) => void | Promise<void>
   let actualDependencies: any[] = dependencies

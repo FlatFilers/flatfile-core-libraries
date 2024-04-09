@@ -1,5 +1,5 @@
 import FlatfileContext from './FlatfileContext'
-import React, { useCallback, useContext } from 'react'
+import React, { useCallback, useContext, useEffect } from 'react'
 import { FlatfileClient, type Flatfile } from '@flatfile/api'
 import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
 import { TRecordDataWithLinks, TPrimitive } from '@flatfile/hooks'
@@ -14,75 +14,73 @@ import {
 } from '@flatfile/embedded-utils'
 import { workbookOnSubmitAction } from '../utils/constants'
 
-type onRecordHook<T> = (record: T, event?: FlatfileEvent) => FlatfileRecord
+export type onRecordHook<T> = (
+  record: T,
+  event?: FlatfileEvent
+) => FlatfileRecord
 
 type HookConfig<T> = [string, onRecordHook<T>] | [onRecordHook<T>]
 
-type onRecordHooks<T> = HookConfig<T>[]
+export type onRecordHooks<T> = HookConfig<T>[]
 
-export const Workbook = (
-  props: {
-    config?: Flatfile.CreateWorkbookConfig
-    children?: React.ReactNode
-  } & Pick<SimpleOnboarding, 'onSubmit' | 'submitSettings'> & {
-      onRecordHooks?: onRecordHooks<
-        FlatfileRecord<TRecordDataWithLinks<TPrimitive>>
-      >
-    }
-) => {
+type WorkbookProps = {
+  config?: Flatfile.CreateWorkbookConfig
+  onSubmit?: SimpleOnboarding['onSubmit']
+  submitSettings?: SimpleOnboarding['submitSettings']
+  onRecordHooks?: onRecordHooks<
+    FlatfileRecord<TRecordDataWithLinks<TPrimitive>>
+  >
+  children?: React.ReactNode
+}
+export const Workbook = (props: WorkbookProps) => {
   const { config, children, onRecordHooks, onSubmit } = props
   const { updateWorkbook, createSpace } = useContext(FlatfileContext)
-  const { sheets } = createSpace.workbook
   // Accept a workbook onSubmit function and add it to the workbook actions
 
   const callback = useCallback(() => {
-    let tmp
     if (onSubmit) {
-      if (!config?.actions) {
-        tmp = {
-          actions: [workbookOnSubmitAction],
-        }
-      } else {
-        config.actions = [workbookOnSubmitAction, ...(config.actions || [])]
+      // Update the config object directly in a functional way
+      const updatedConfig = {
+        ...config,
+        actions: [workbookOnSubmitAction, ...(config?.actions || [])],
       }
+      updateWorkbook(updatedConfig)
+    } else {
+      // Update with the original config if onSubmit is not provided
+      updateWorkbook(config)
     }
-    updateWorkbook(tmp ?? config)
-  }, [config, updateWorkbook])
+  }, [config, updateWorkbook, onSubmit])
 
   useDeepCompareEffect(callback, [config])
-
-  if (onRecordHooks) {
-    onRecordHooks.forEach(([slug, hook], index) => {
-      if (typeof slug === 'function') {
-        usePlugin(
-          recordHook(
-            sheets?.[index].slug || '**',
-            async (
-              record: FlatfileRecord,
-              event: FlatfileEvent | undefined
-            ) => {
-              return slug(record, event)
-            }
-          ),
-          []
-        )
-      } else if (typeof slug === 'string' && typeof hook === 'function') {
-        usePlugin(
-          recordHook(
-            slug,
-            async (
-              record: FlatfileRecord,
-              event: FlatfileEvent | undefined
-            ) => {
-              return hook(record, event)
-            }
-          ),
-          []
-        )
-      }
-    })
-  }
-
+  onRecordHooks?.map(([slug, hook], index) => {
+    if (typeof slug === 'function') {
+      console.log('slug is a function', {
+        index,
+        'slug[index]': createSpace.workbook.sheets?.[index]?.slug,
+      })
+      // console.dir(createSpace.workbook.sheets, { depth: null })
+      usePlugin(
+        recordHook(
+          createSpace.workbook.sheets?.[index]?.slug || '**',
+          async (record: FlatfileRecord, event: FlatfileEvent | undefined) => {
+            return slug(record, event)
+          }
+        ),
+        [createSpace.workbook.sheets, onRecordHooks]
+      )
+    } else if (typeof slug === 'string' && typeof hook === 'function') {
+      usePlugin(
+        recordHook(
+          slug,
+          async (record: FlatfileRecord, event: FlatfileEvent | undefined) => {
+            console.log('WORKBOOK recordHook', { record, event })
+            return hook(record, event)
+          }
+        ),
+        [createSpace.workbook.sheets, onRecordHooks]
+      )
+    }
+  })
   if (onSubmit) {
     const onSubmitSettings = {
       ...DefaultSubmitSettings,
@@ -90,7 +88,7 @@ export const Workbook = (
     }
     useEvent(
       'job:ready',
-      { job: 'workbook:simpleSubmitAction' },
+      { job: `workbook:${workbookOnSubmitAction.operation}` },
       async (event) => {
         const { jobId, spaceId, workbookId } = event.context
         const FlatfileAPI = new FlatfileClient()

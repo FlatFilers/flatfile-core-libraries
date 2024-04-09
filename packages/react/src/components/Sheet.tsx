@@ -14,62 +14,56 @@ import { usePlugin, useEvent } from '../hooks'
 import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
 import { workbookOnSubmitAction } from '../utils/constants'
 
-export const Sheet = (
-  props: { config: Flatfile.SheetConfig } & Pick<
-    SimpleOnboarding,
-    'onRecordHook' | 'onSubmit' | 'submitSettings'
-  >
-) => {
-  const { config, onRecordHook, onSubmit, ...sheetProps } = props
+type SheetProps = {
+  config: Flatfile.SheetConfig
+  onSubmit?: SimpleOnboarding['onSubmit']
+  submitSettings?: SimpleOnboarding['submitSettings']
+  onRecordHook?: SimpleOnboarding['onRecordHook']
+}
+
+export const Sheet = (props: SheetProps) => {
+  const { config, onRecordHook, onSubmit, submitSettings } = props
   const { addSheet, updateWorkbook, createSpace } = useContext(FlatfileContext)
 
   const callback = useCallback(() => {
-    let tmp
-    // Adds an onSubmit action to the workbook if an onSubmit function is provided
+    // Manage actions immutably
     if (onSubmit) {
-      if (!createSpace?.workbook.actions) {
-        tmp = {
-          actions: [workbookOnSubmitAction],
-        }
-      } else {
-        createSpace.workbook.actions = [
+      // Use a spread operator to safely append to actions without mutating original workbook
+      const updatedWorkbook = {
+        ...createSpace.workbook,
+        actions: [
           workbookOnSubmitAction,
-          ...(config.actions || []),
-        ]
+          ...(createSpace.workbook.actions || []),
+        ],
       }
+      updateWorkbook(updatedWorkbook)
     }
-    updateWorkbook(tmp ?? createSpace.workbook)
+
     addSheet(config)
-  }, [config, addSheet, updateWorkbook])
+  }, [config, createSpace, addSheet, updateWorkbook, onSubmit])
 
   useDeepCompareEffect(callback, [config])
 
   if (onRecordHook) {
-    if (!config) {
-      throw new Error(
-        'You must provide a sheet configuration to use the onRecordHook'
-      )
-    }
     usePlugin(
       recordHook(
         config.slug || '**',
         async (record: FlatfileRecord, event: FlatfileEvent | undefined) => {
-          // @ts-ignore - something weird with the `data` prop and the types upstream in the packages being declared in different places, but overall this is fine
           return onRecordHook(record, event)
         }
       ),
-      []
+      [createSpace]
     )
   }
 
   if (onSubmit) {
     const onSubmitSettings = {
       ...DefaultSubmitSettings,
-      ...props.submitSettings,
+      ...submitSettings,
     }
     useEvent(
       'job:ready',
-      { job: 'workbook:simpleSubmitAction' },
+      { job: `workbook:${workbookOnSubmitAction.operation}` },
       async (event) => {
         const { jobId, spaceId, workbookId } = event.context
         const FlatfileAPI = new FlatfileClient()
@@ -84,8 +78,14 @@ export const Sheet = (
             workbookId,
           })
 
-          // this assumes we are only allowing 1 sheet here (which we've talked about doing initially)
-          const sheet = new SheetHandler(workbookSheets[0].id)
+          const thisSheetId = workbookSheets.find((s) => s.slug === config.slug)
+
+          if (!thisSheetId) {
+            throw new Error(
+              `Failed to find sheet slug:${config.slug} in the workbook id: ${workbookId}`
+            )
+          }
+          const sheet = new SheetHandler(thisSheetId.id)
 
           if (onSubmit) {
             await onSubmit({ job, sheet, event })

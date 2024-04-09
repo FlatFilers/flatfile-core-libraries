@@ -1,5 +1,5 @@
 import React from 'react'
-import './style.scss'
+import '../style.scss'
 
 const DefaultError = ({ error }: { error: string | Error }) => {
   const errorMessage = typeof error === 'string' ? error : error.message

@@ -1,5 +1,5 @@
 import React, { JSX, useState } from 'react'
-import DefaultError from '../../components/Error'
+import DefaultError from '../../components/legacy/Error'
 import Space from '../../components/legacy/LegacySpace'
 import Spinner from '../../components/Spinner'
 import { State } from '@flatfile/embedded-utils'

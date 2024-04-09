@@ -1,5 +1,5 @@
 import React, { JSX, useEffect, useState } from 'react'
-import DefaultError from '../../components/Error'
+import DefaultError from '../../components/legacy/Error'
 import Space from '../../components/legacy/LegacySpace'
 import Spinner from '../../components/Spinner'
 import {

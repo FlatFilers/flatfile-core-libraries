@@ -129,7 +129,7 @@ export class EventHandler extends AuthenticatedClient {
     event: FlatfileEvent | Flatfile.Event | any
   ): Promise<void> {
     if (!event) return
-    const eventPayload = event.src ? event.src : event
+    const eventPayload = event.src || event
 
     event = new FlatfileEvent(eventPayload, this._accessToken, this._apiUrl)
 
