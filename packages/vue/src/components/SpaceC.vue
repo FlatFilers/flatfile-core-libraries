@@ -56,8 +56,7 @@
 </template>
 
 <script>
-import { ref, watch, onMounted, onUnmounted } from 'vue'
-import { Flatfile } from '@flatfile/api'
+import { ref, onMounted, onUnmounted } from 'vue'
 import ConfirmModal from './ConfirmCloseModal.vue'
 import authenticate from '../utils/authenticate'
 import { Browser, FlatfileEvent } from '@flatfile/listener'
