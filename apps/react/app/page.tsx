@@ -12,6 +12,7 @@ export default function Home() {
       publishableKey={PUBLISHABLE_KEY}
       config={{
         mountElement: 'example-mount-class',
+        preload: true
       }}
     >
       <App />
