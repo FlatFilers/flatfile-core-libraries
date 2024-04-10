@@ -2,7 +2,7 @@ import { Flatfile } from '@flatfile/api'
 
 export const workbookOnSubmitAction = (sheetSlug?: string): Flatfile.Action => {
   const operation = sheetSlug
-    ? 'sheetSubmitAction-' + sheetSlug
+    ? `sheetSubmitAction-${sheetSlug}`
     : 'workbookSubmitAction'
   return {
     operation,
