@@ -98,7 +98,7 @@ describe('Workbook', () => {
     const onSubmitMock = jest.fn()
     const updatedConfig = {
       ...mockConfig,
-      actions: [workbookOnSubmitAction],
+      actions: [workbookOnSubmitAction()],
     }
 
     render(

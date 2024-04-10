@@ -1,7 +1,10 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import { Sheet } from '../Sheet'
-import FlatfileContext, { FlatfileContextType } from '../FlatfileContext'
+import FlatfileContext, {
+  DEFAULT_CREATE_SPACE,
+  FlatfileContextType,
+} from '../FlatfileContext'
 import { useDeepCompareEffect } from '../../utils/useDeepCompareEffect'
 import { workbookOnSubmitAction } from '../../utils/constants'
 import FlatfileListener from '@flatfile/listener'
@@ -19,21 +22,7 @@ const MockFlatfileProviderValue: FlatfileContextType = {
   addSheet: jest.fn(),
   updateSheet: jest.fn(),
   updateWorkbook: jest.fn(),
-  createSpace: {
-    document: undefined,
-    workbook: {
-      name: 'Embedded Workbook',
-      sheets: [],
-    },
-    space: {
-      name: 'Embedded Space',
-      labels: ['embedded'],
-      namespace: 'portal',
-      metadata: {
-        sidebarConfig: { showSidebar: false },
-      },
-    },
-  },
+  createSpace: DEFAULT_CREATE_SPACE,
   setCreateSpace: jest.fn(),
   updateSpace: jest.fn(),
 }
@@ -89,7 +78,7 @@ describe('Sheet', () => {
     const onSubmitMock = jest.fn()
     const updatedConfig = {
       ...mockConfig,
-      actions: [workbookOnSubmitAction],
+      actions: [workbookOnSubmitAction(mockConfig.slug)],
     }
 
     render(
@@ -106,9 +95,7 @@ describe('Sheet', () => {
 
     expect(mockUpdateSheet).toHaveBeenCalledWith(mockConfig)
     expect(mockUpdateWorkbook).toHaveBeenCalledWith({
-      name: 'Embedded Workbook',
-      sheets: [],
-      actions: [workbookOnSubmitAction],
+      actions: [workbookOnSubmitAction(mockConfig.slug)],
     })
   })
   // More tests to check interaction during onSubmit and other complex logic
