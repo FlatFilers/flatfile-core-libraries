@@ -78,14 +78,14 @@ export const Sheet = (props: SheetProps) => {
             workbookId,
           })
 
-          const thisSheetId = workbookSheets.find((s) => s.slug === config.slug)
+          const thisSheet = workbookSheets.find((s) => s.slug === config.slug)
 
-          if (!thisSheetId) {
+          if (!thisSheet) {
             throw new Error(
               `Failed to find sheet slug:${config.slug} in the workbook id: ${workbookId}`
             )
           }
-          const sheet = new SheetHandler(thisSheetId.id)
+          const sheet = new SheetHandler(thisSheet.id)
 
           if (onSubmit) {
             await onSubmit({ job, sheet, event })
