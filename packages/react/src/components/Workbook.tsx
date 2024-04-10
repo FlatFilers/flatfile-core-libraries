@@ -32,6 +32,44 @@ type WorkbookProps = {
   >
   children?: React.ReactNode
 }
+
+/**
+ * `Workbook` component for integrating Flatfile's import functionality within a React application.
+ * This component allows for the configuration of a Flatfile workbook, submission settings, and record hooks.
+ *
+ * @component
+ * @example
+ * const config = {
+ *   name: 'Example Workbook',
+ *   sheets: []
+ * }
+ * const onSubmit = (data) => console.log(data)
+ * const submitSettings = {...}
+ * const onRecordHooks = [
+ *   ['slug', (record) => {
+ *      record.set('key', 'foo')
+ *      return record
+ *   }]
+ * ]
+ *
+ * <Workbook
+ *   config={config}
+ *   onSubmit={onSubmit}
+ *   submitSettings={submitSettings}
+ *   onRecordHooks={onRecordHooks}
+ * >
+ *   <Sheet config={sheetConfig} />
+ * </Workbook>
+ *
+ * @param {WorkbookProps} props - The properties passed to the Workbook component.
+ * @param {Flatfile.CreateWorkbookConfig} [props.config] - Configuration object for the Flatfile workbook.
+ * @param {Function} [props.onSubmit] - Callback function to be executed upon submission of the workbook.
+ * @param {Object} [props.submitSettings] - Settings object for workbook submission.
+ * @param {onRecordHooks<FlatfileRecord<TRecordDataWithLinks<TPrimitive>>>} [props.onRecordHooks] - Array of hooks to be executed on each record.
+ * @param {React.ReactNode} [props.children] - Child components to be rendered within the Workbook component.
+ * @returns {React.ReactElement} A React component that renders the Flatfile workbook.
+ */
+
 export const Workbook = (props: WorkbookProps) => {
   const { config, children, onRecordHooks, onSubmit } = props
   const { updateWorkbook, createSpace } = useContext(FlatfileContext)
@@ -50,6 +88,7 @@ export const Workbook = (props: WorkbookProps) => {
   }, [config, onSubmit])
 
   useDeepCompareEffect(callback, [config])
+
   onRecordHooks?.map(([slug, hook], index) => {
     if (typeof slug === 'function') {
       usePlugin(
@@ -74,6 +113,7 @@ export const Workbook = (props: WorkbookProps) => {
       )
     }
   })
+
   if (onSubmit) {
     const onSubmitSettings = {
       ...DefaultSubmitSettings,

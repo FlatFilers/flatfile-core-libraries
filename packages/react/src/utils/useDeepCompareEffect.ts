@@ -11,5 +11,5 @@ export function useDeepCompareEffect(callback: () => void, dependencies: any) {
 
     // Update the ref with current dependencies after running the callback
     currentDependenciesRef.current = dependencies
-  }, [callback, dependencies]) // You need to ensure callback and dependencies are stable or memoized
+  }, [callback, dependencies])
 }
