@@ -58,7 +58,6 @@ export const Workbook = (props: WorkbookProps) => {
         index,
         'slug[index]': createSpace.workbook.sheets?.[index]?.slug,
       })
-      // console.dir(createSpace.workbook.sheets, { depth: null })
       usePlugin(
         recordHook(
           createSpace.workbook.sheets?.[index]?.slug || '**',
