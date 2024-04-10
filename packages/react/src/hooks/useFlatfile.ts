@@ -68,7 +68,7 @@ export const useFlatfile: () => {
   }
 
   const openPortal = () => {
-    if (publishableKey) {
+    if (publishableKey && !accessToken) {
       handleCreateSpace()
     } else if (accessToken) {
       handleReUseSpace()
@@ -78,7 +78,7 @@ export const useFlatfile: () => {
 
   const closePortal = () => {
     setOpen(false)
-    // TODO: Do we want to do any cleanup / remove the iFrame from the DOM?
+    // TODO: Do we want to do any cleanup / remove the iFrame/listener from the DOM?
   }
 
   return {
