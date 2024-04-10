@@ -28,17 +28,13 @@ export const Sheet = (props: SheetProps) => {
   const callback = useCallback(() => {
     // Manage actions immutably
     if (onSubmit) {
-      // Use a spread operator to safely append to actions without mutating original workbook
-      const updatedWorkbook = {
-        ...createSpace.workbook,
+      updateWorkbook({
         actions: [
-          workbookOnSubmitAction,
+          workbookOnSubmitAction(config.slug),
           ...(createSpace.workbook.actions || []),
         ],
-      }
-      updateWorkbook(updatedWorkbook)
+      })
     }
-
     addSheet(config)
   }, [config, createSpace, addSheet, updateWorkbook, onSubmit])
 
@@ -52,7 +48,7 @@ export const Sheet = (props: SheetProps) => {
           return onRecordHook(record, event)
         }
       ),
-      [createSpace]
+      [config, onRecordHook]
     )
   }
 
@@ -63,7 +59,7 @@ export const Sheet = (props: SheetProps) => {
     }
     useEvent(
       'job:ready',
-      { job: `workbook:${workbookOnSubmitAction.operation}` },
+      { job: `workbook:${workbookOnSubmitAction(config.slug).operation}` },
       async (event) => {
         const { jobId, spaceId, workbookId } = event.context
         const FlatfileAPI = new FlatfileClient()

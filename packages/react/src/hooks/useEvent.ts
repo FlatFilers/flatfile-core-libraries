@@ -47,7 +47,6 @@ function useEvent(
       listener.on(eventType, callback)
     }
 
-    // Cleanup
     return () => {
       if (typeof filterOrCallback !== 'function') {
         listener.off(eventType, filterOrCallback, callback)

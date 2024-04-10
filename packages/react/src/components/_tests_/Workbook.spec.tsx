@@ -71,41 +71,6 @@ const mockConfig: Flatfile.CreateWorkbookConfig = {
   ],
 }
 
-// const APP = ({ useEventFunction }: { useEventFunction: any }) => {
-//   const context = useContext(FlatfileContext)
-//   useEffect(() => {
-//     context.setAccessToken('sk_123456')
-//   }, [])
-//   // useEffect(() => {
-//   //   console.log('APP useEffect')
-//   //   // console.dir({ context }, { depth: null })
-//   // }, [context])
-//   // useEvent('**', (event) => {
-//   //   console.log('APP useEvent', { event })
-//   //   useEventFunction(event)
-//   // })
-
-//   return (
-//     <Workbook
-//       config={mockConfig}
-//       onRecordHooks={[
-//         [
-//           'test-sheet',
-//           (record, event) => {
-//             console.log('APP onRecordHook!', { record, event })
-//             useEventFunction(event)
-//             record.set('email', 'TEST SHEET RECORD')
-//             return record
-//           },
-//         ],
-//       ]}
-//       onSubmit={async (sheet) => {
-//         console.log('onSubmit', { sheet })
-//       }}
-//     />
-//   )
-// }
-
 describe('Workbook', () => {
   beforeEach(() => {
     jest.mocked(useDeepCompareEffect).mockImplementation((callback, deps) => {
@@ -149,35 +114,4 @@ describe('Workbook', () => {
 
     expect(mockUpdateWorkbook).toHaveBeenCalledWith(updatedConfig)
   })
-
-  // it('registers plugins and handles events when onRecordHooks are provided', async () => {
-  //   const useEventMock = jest.fn()
-
-  //   render(
-  //     <FlatfileProvider publishableKey="pk_123456">
-  //       <APP useEventFunction={useEventMock} />
-  //     </FlatfileProvider>
-  //   )
-
-  //   window.postMessage(
-  //     {
-  //       flatfileEvent: {
-  //         topic: 'commit:created',
-  //         payload: { alex: 'rock', trackChanges: false },
-  //         context: {
-  //           commitId: 'us_vr_123456',
-  //           sheetSlug: 'test-sheet',
-  //         },
-  //       },
-  //     },
-  //     '*'
-  //   )
-
-  //   // await sleep(3000)
-  //   await waitFor(() => {
-  //     expect(useEventMock).toHaveBeenCalled()
-  //   })
-  // })
-
-  // More tests to check interaction during onSubmit and other complex logic
 })

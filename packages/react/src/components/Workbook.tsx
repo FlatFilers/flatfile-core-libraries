@@ -38,26 +38,20 @@ export const Workbook = (props: WorkbookProps) => {
   // Accept a workbook onSubmit function and add it to the workbook actions
 
   const callback = useCallback(() => {
-    if (onSubmit) {
-      // Update the config object directly in a functional way
-      const updatedConfig = {
-        ...config,
-        actions: [workbookOnSubmitAction, ...(config?.actions || [])],
-      }
-      updateWorkbook(updatedConfig)
-    } else {
-      // Update with the original config if onSubmit is not provided
-      updateWorkbook(config)
-    }
-  }, [config, updateWorkbook, onSubmit])
+    // adds workbook action if onSubmit is passed along
+    updateWorkbook(
+      onSubmit
+        ? {
+            ...config,
+            actions: [workbookOnSubmitAction(), ...(config?.actions || [])],
+          }
+        : config
+    )
+  }, [config, onSubmit])
 
   useDeepCompareEffect(callback, [config])
   onRecordHooks?.map(([slug, hook], index) => {
     if (typeof slug === 'function') {
-      console.log('slug is a function', {
-        index,
-        'slug[index]': createSpace.workbook.sheets?.[index]?.slug,
-      })
       usePlugin(
         recordHook(
           createSpace.workbook.sheets?.[index]?.slug || '**',
@@ -87,7 +81,7 @@ export const Workbook = (props: WorkbookProps) => {
     }
     useEvent(
       'job:ready',
-      { job: `workbook:${workbookOnSubmitAction.operation}` },
+      { job: `workbook:${workbookOnSubmitAction().operation}` },
       async (event) => {
         const { jobId, spaceId, workbookId } = event.context
         const FlatfileAPI = new FlatfileClient()
