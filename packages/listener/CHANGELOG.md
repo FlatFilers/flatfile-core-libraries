@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- d13ceb6: Refactor React to use a FlatfileContext and Components to configure the Space
+- d13ceb6: Adds helper functions needed in the Refactor React to use a FlatfileContext and Components to configure the Space
 
 ## 1.0.1
 
