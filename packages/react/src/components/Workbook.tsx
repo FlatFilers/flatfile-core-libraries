@@ -1,9 +1,9 @@
 import FlatfileContext from './FlatfileContext'
-import React, { useCallback, useContext, useEffect } from 'react'
+import React, { useCallback, useContext, useEffect, useRef } from 'react'
 import { FlatfileClient, type Flatfile } from '@flatfile/api'
 import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
 import { TRecordDataWithLinks, TPrimitive } from '@flatfile/hooks'
-import { FlatfileEvent } from '@flatfile/listener'
+import FlatfileListener, { FlatfileEvent } from '@flatfile/listener'
 import { FlatfileRecord, recordHook } from '@flatfile/plugin-record-hook'
 import { useEvent, usePlugin } from '../hooks'
 import {
@@ -23,15 +23,13 @@ type HookConfig<T> = [string, onRecordHook<T>] | [onRecordHook<T>]
 
 export type onRecordHooks<T> = HookConfig<T>[]
 
-type WorkbookProps = {
-  config?: Flatfile.CreateWorkbookConfig
-  onSubmit?: SimpleOnboarding['onSubmit']
-  submitSettings?: SimpleOnboarding['submitSettings']
-  onRecordHooks?: onRecordHooks<
-    FlatfileRecord<TRecordDataWithLinks<TPrimitive>>
-  >
-  children?: React.ReactNode
-}
+type WorkbookProps = Partial<{
+  config: Flatfile.CreateWorkbookConfig
+  onSubmit: SimpleOnboarding['onSubmit']
+  submitSettings: SimpleOnboarding['submitSettings']
+  onRecordHooks: onRecordHooks<FlatfileRecord<TRecordDataWithLinks<TPrimitive>>>
+  children: React.ReactNode
+}>
 
 /**
  * `Workbook` component for integrating Flatfile's import functionality within a React application.
@@ -89,30 +87,27 @@ export const Workbook = (props: WorkbookProps) => {
 
   useDeepCompareEffect(callback, [config])
 
-  onRecordHooks?.map(([slug, hook], index) => {
-    if (typeof slug === 'function') {
-      usePlugin(
-        recordHook(
-          createSpace.workbook.sheets?.[index]?.slug || '**',
-          async (record: FlatfileRecord, event: FlatfileEvent | undefined) => {
-            return slug(record, event)
-          }
-        ),
-        [createSpace.workbook.sheets, onRecordHooks]
-      )
-    } else if (typeof slug === 'string' && typeof hook === 'function') {
-      usePlugin(
-        recordHook(
-          slug,
-          async (record: FlatfileRecord, event: FlatfileEvent | undefined) => {
-            console.log('WORKBOOK recordHook', { record, event })
-            return hook(record, event)
-          }
-        ),
-        [createSpace.workbook.sheets, onRecordHooks]
-      )
-    }
-  })
+  usePlugin(
+    (client) => {
+      onRecordHooks?.map(([slug, hook], index) => {
+        const actualSlug =
+          typeof slug === 'function'
+            ? createSpace.workbook.sheets?.[index]?.slug || '**'
+            : slug
+        client.use(
+          recordHook(actualSlug, async (record, event) => {
+            if (typeof slug === 'function') {
+              return slug(record, event)
+            } else if (typeof hook === 'function') {
+              // Ensure hook is a function before invoking
+              return hook(record, event)
+            }
+          })
+        )
+      })
+    },
+    [config, createSpace.workbook.sheets, onRecordHooks]
+  )
 
   if (onSubmit) {
     const onSubmitSettings = {

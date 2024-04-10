@@ -98,24 +98,6 @@ const App = () => {
     }
   })
 
-  useEvent(
-    'document:created',
-    async ({ context: { spaceId, documentId } }) => {
-      const updatedSpace = await api.spaces.update(spaceId, {
-        metadata: {
-          sidebarConfig: {
-            showSidebar: true,
-            defaultPage: {
-              documentId,
-            },
-          },
-        },
-      })
-      console.log({ updatedSpace })
-    },
-    []
-  )
-
   return (
     <div className={styles.main}>
       <div className={styles.description}>
