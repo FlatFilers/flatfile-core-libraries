@@ -90,10 +90,16 @@ export const Workbook = (props: WorkbookProps) => {
   usePlugin(
     (client) => {
       onRecordHooks?.map(([slug, hook], index) => {
+        // If you have multiple sheets, and just pass 1 record hook to the onRecordHooks array and that record hook doesn't have a slug, then assume the record hook is for all sheets.
+        // Otherwise if multiple record hooks are passed along with out slugs, then assume they are in the same order as the sheets provided
         const actualSlug =
           typeof slug === 'function'
-            ? createSpace.workbook.sheets?.[index]?.slug || '**'
+            ? onRecordHooks?.length === 1 &&
+              createSpace.workbook.sheets?.length > 1
+              ? '**'
+              : createSpace.workbook.sheets?.[index]?.slug
             : slug
+
         client.use(
           recordHook(actualSlug, async (record, event) => {
             if (typeof slug === 'function') {
