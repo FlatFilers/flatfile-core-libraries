@@ -1,5 +1,13 @@
 ## 1.0.5
 
+## 1.0.11
+
+### Patch Changes
+
+- Updated dependencies [d13ceb6]
+  - @flatfile/embedded-utils@1.1.15
+  - @flatfile/listener@1.0.2
+
 ## 1.0.10
 
 ### Patch Changes

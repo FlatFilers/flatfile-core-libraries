@@ -1,5 +1,13 @@
 # embedded-utils
 
+## 1.1.15
+
+### Patch Changes
+
+- d13ceb6: Refactor React to use a FlatfileContext and Components to configure the Space
+- Updated dependencies [d13ceb6]
+  - @flatfile/listener@1.0.2
+
 ## 1.1.14
 
 ### Patch Changes

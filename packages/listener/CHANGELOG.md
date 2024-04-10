@@ -1,5 +1,11 @@
 # @flatfile/listener
 
+## 1.0.2
+
+### Patch Changes
+
+- d13ceb6: Refactor React to use a FlatfileContext and Components to configure the Space
+
 ## 1.0.1
 
 ### Patch Changes
