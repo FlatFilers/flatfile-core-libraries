@@ -57,7 +57,7 @@ export class SpaceFrame implements OnInit {
     const dispatchEvent = (event: any) => {
       if (!event) return
 
-      const eventPayload = event.src ? event.src : event
+      const eventPayload = event.src || event
       const eventInstance = new FlatfileEvent(eventPayload, accessToken, apiUrl)
 
       return listenerInstance?.dispatchEvent(eventInstance)

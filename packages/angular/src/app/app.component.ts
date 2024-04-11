@@ -24,8 +24,8 @@ export class AppComponent {
 
   spaceProps: ISpace = {
     name: 'Trste!',
-    environmentId: 'us_env_1234',
-    publishableKey: 'sk_1234',
+    environmentId: 'us_env_ZvaDGP3B',
+    publishableKey: 'pk_0d40167fccfc47e9a4ec0223e9787e63',
     workbook,
     listener,
     userInfo: {
