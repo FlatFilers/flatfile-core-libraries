@@ -37,6 +37,8 @@ export default function RootLayout({
         >
           <a style={menuLinkStyles} href="/">Create a New Space</a>
           <a style={menuLinkStyles} href="/re-used-space">Re-use a Space</a>
+          <a style={menuLinkStyles} href="/sheet">Sheet</a>
+          <a style={menuLinkStyles} href="/workbook">Workbook</a>
         </div>
         {children}
       </body>
