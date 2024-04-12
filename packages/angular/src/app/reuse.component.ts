@@ -1,6 +1,6 @@
-import { Component } from '@angular/core';
+import { Component } from '@angular/core'
 import { ISpace, SpaceService } from '@flatfile/angular'
-import { listener } from "./listener";
+import { listener } from './listener'
 
 @Component({
   selector: 'app-root',
@@ -8,13 +8,13 @@ import { listener } from "./listener";
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  showSpace: boolean = false;
+  showSpace: boolean = false
 
   constructor(private spaceService: SpaceService) {}
 
   toggleSpace() {
     this.spaceService.OpenEmbed()
-    this.showSpace = !this.showSpace;
+    this.showSpace = !this.showSpace
   }
 
   closeSpace() {
@@ -24,9 +24,8 @@ export class AppComponent {
   spaceProps: ISpace = {
     space: {
       id: 'us_sp_123',
-      accessToken: 'sk_1234'
+      accessToken: 'sk_1234',
     },
-    environmentId: 'us_env_1234',
     listener,
     closeSpace: {
       operation: 'submitActionFg',

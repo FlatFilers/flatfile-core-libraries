@@ -1,36 +1,40 @@
-import { Component, OnInit } from '@angular/core';
-import { sheet } from './sheet';
+import { Component, OnInit } from '@angular/core'
+import { sheet } from './sheet'
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss']
+  styleUrls: ['./app.component.scss'],
 })
 export class AppComponent implements OnInit {
-  showSpace: boolean = false;
-  data: any;
+  showSpace: boolean = false
+  data: any
 
   constructor() {}
 
-  ngOnInit() { }
+  ngOnInit() {}
 
-  title = 'angular';
-
+  title = 'angular'
 
   toggleSpace() {
-    this.showSpace = !this.showSpace;
+    this.showSpace = !this.showSpace
   }
 
   closeSpace() {
-    this.showSpace = false;
+    this.showSpace = false
   }
 
   spaceProps = {
     name: 'My space!',
-    environmentId: 'us_env_1234',
     publishableKey: 'sk_1234',
     sheet,
-    onSubmit: async ({ job, sheet, }: { job?: any, sheet?: any }): Promise<any> => {
+    onSubmit: async ({
+      job,
+      sheet,
+    }: {
+      job?: any
+      sheet?: any
+    }): Promise<any> => {
       const data = await sheet.allData()
       console.log('onSubmit', data)
     },
@@ -46,6 +50,6 @@ export class AppComponent implements OnInit {
     closeSpace: {
       operation: 'submitActionFg',
       onClose: this.closeSpace.bind(this),
-    }
+    },
   }
 }

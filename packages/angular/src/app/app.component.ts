@@ -1,7 +1,7 @@
-import { Component } from '@angular/core';
+import { Component } from '@angular/core'
 import { ISpace, SpaceService } from '@flatfile/angular'
-import { workbook } from "./workbook";
-import { listener } from "./listener";
+import { workbook } from './workbook'
+import { listener } from './listener'
 
 @Component({
   selector: 'app-root',
@@ -9,13 +9,13 @@ import { listener } from "./listener";
   styleUrls: ['./app.component.scss'],
 })
 export class AppComponent {
-  showSpace: boolean = false;
+  showSpace: boolean = false
 
   constructor(private spaceService: SpaceService) {}
 
   toggleSpace() {
     this.spaceService.OpenEmbed()
-    this.showSpace = !this.showSpace;
+    this.showSpace = !this.showSpace
   }
 
   closeSpace() {
@@ -24,7 +24,6 @@ export class AppComponent {
 
   spaceProps: ISpace = {
     name: 'Trste!',
-    environmentId: 'us_env_1234',
     publishableKey: 'sk_1234',
     workbook,
     listener,

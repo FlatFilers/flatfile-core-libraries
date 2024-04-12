@@ -56,7 +56,7 @@ const useInitializeSpace = (
 
       try {
         space = await limitedAccessApi.spaces.create({
-          environmentId,
+          ...(environmentId ? { environmentId } : {}),
           ...spaceRequestBody,
         })
       } catch (error) {
