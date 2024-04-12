@@ -1,34 +1,10 @@
 import { Flatfile } from '@flatfile/api'
+import { sheet } from './sheet'
 
-export const workbook: Pick<
-  Flatfile.CreateWorkbookConfig,
-  'name' | 'labels' | 'sheets' | 'actions'
-> = {
+export const workbook: Flatfile.CreateWorkbookConfig = {
   name: 'All Data',
   labels: ['pinned'],
-  sheets: [
-    {
-      name: 'Contacts',
-      slug: 'contacts',
-      fields: [
-        {
-          key: 'firstName',
-          type: 'string',
-          label: 'First Name',
-        },
-        {
-          key: 'lastName',
-          type: 'string',
-          label: 'Last Name',
-        },
-        {
-          key: 'email',
-          type: 'string',
-          label: 'Email',
-        },
-      ],
-    },
-  ],
+  sheets: [sheet],
   actions: [
     {
       operation: 'submitActionFg',

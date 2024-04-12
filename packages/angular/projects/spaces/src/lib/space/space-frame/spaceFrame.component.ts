@@ -1,19 +1,19 @@
-import { Component, Input, OnInit } from "@angular/core";
-import { ISpace, SimpleOnboarding } from "@flatfile/embedded-utils";
-import { Browser, FlatfileEvent } from '@flatfile/listener';
+import { Component, Input, OnInit } from '@angular/core'
+import { ISpace, SimpleOnboarding } from '@flatfile/embedded-utils'
+import { Browser, FlatfileEvent } from '@flatfile/listener'
 
-import addSpaceInfo from '../../../utils/addSpaceInfo';
-import authenticate from "../../../utils/authenticate";
-import createSimpleListener from "../../../utils/createSimpleListener";
-import { SpaceCloseModalPropsType } from "../space-close-modal/spaceCloseModal.component";
-import { getContainerStyles, getIframeStyles } from "./embeddedStyles";
+import addSpaceInfo from '../../../utils/addSpaceInfo'
+import authenticate from '../../../utils/authenticate'
+import createSimpleListener from '../../../utils/createSimpleListener'
+import { SpaceCloseModalPropsType } from '../space-close-modal/spaceCloseModal.component'
+import { getContainerStyles, getIframeStyles } from './embeddedStyles'
 
-export type SpaceFramePropsType = ISpace & { 
-  spaceId: string; 
-  spaceUrl: string; 
-  localAccessToken: string;
-  handleCloseInstance: () => void;
-  closeInstance: boolean;
+export type SpaceFramePropsType = ISpace & {
+  spaceId: string
+  spaceUrl: string
+  localAccessToken: string
+  handleCloseInstance: () => void
+  closeInstance: boolean
 }
 
 @Component({
@@ -28,21 +28,28 @@ export class SpaceFrame implements OnInit {
     {} as SpaceCloseModalPropsType
   iframeWrapperStyle = {}
   iframeStyle = {}
-  handlePostMessageInstance: ((event: MessageEvent<{ flatfileEvent: FlatfileEvent }>) => void) = () => {}
+  handlePostMessageInstance: (
+    event: MessageEvent<{ flatfileEvent: FlatfileEvent }>
+  ) => void = () => {}
 
-  @Input({required: true}) spaceFrameProps: SpaceFramePropsType  = {} as SpaceFramePropsType
-  @Input({required: true}) loading: boolean = false
+  @Input({ required: true }) spaceFrameProps: SpaceFramePropsType =
+    {} as SpaceFramePropsType
+  @Input({ required: true }) loading: boolean = false
 
   async created() {
-    const { listener, apiUrl, closeSpace, workbook } = this.spaceFrameProps;
+    const { listener, apiUrl, closeSpace, workbook } = this.spaceFrameProps
     const accessToken = this.spaceFrameProps.localAccessToken
 
     const simpleListenerSlug = workbook?.sheets?.[0].slug || 'slug'
-    const listenerInstance = listener || createSimpleListener({
-      onRecordHook: (this.spaceFrameProps as SimpleOnboarding).onRecordHook,
-      onSubmit: (this.spaceFrameProps as SimpleOnboarding).onSubmit,
-      slug: simpleListenerSlug,
-    })
+    const listenerInstance =
+      listener ||
+      createSimpleListener({
+        onRecordHook: (this.spaceFrameProps as SimpleOnboarding).onRecordHook,
+        onSubmit: (this.spaceFrameProps as SimpleOnboarding).onSubmit,
+        submitSettings: (this.spaceFrameProps as SimpleOnboarding)
+          .submitSettings,
+        slug: simpleListenerSlug,
+      })
 
     if (listenerInstance && typeof apiUrl === 'string') {
       listenerInstance.mount(
@@ -63,7 +70,9 @@ export class SpaceFrame implements OnInit {
       return listenerInstance?.dispatchEvent(eventInstance)
     }
 
-    const handlePostMessage = (event: MessageEvent<{ flatfileEvent:FlatfileEvent }>) => {
+    const handlePostMessage = (
+      event: MessageEvent<{ flatfileEvent: FlatfileEvent }>
+    ) => {
       const { flatfileEvent } = event.data
       if (!flatfileEvent) return
       if (
@@ -91,24 +100,27 @@ export class SpaceFrame implements OnInit {
       sidebarConfig,
       userInfo,
       spaceId,
-      apiUrl = "https://platform.flatfile.com/api"
-    } = this.spaceFrameProps;
-    
-    const accessToken = this.spaceFrameProps.localAccessToken;
-    
-    if(publishableKey) {
-      const fullAccessApi = authenticate(accessToken, apiUrl);
-      await addSpaceInfo({
-        publishableKey,
-        workbook, 
-        environmentId, 
-        document, 
-        themeConfig, 
-        sidebarConfig, 
-        userInfo
-      }, spaceId, fullAccessApi);
+      apiUrl = 'https://platform.flatfile.com/api',
+    } = this.spaceFrameProps
+
+    const accessToken = this.spaceFrameProps.localAccessToken
+
+    if (publishableKey) {
+      const fullAccessApi = authenticate(accessToken, apiUrl)
+      await addSpaceInfo(
+        {
+          publishableKey,
+          workbook,
+          environmentId,
+          document,
+          themeConfig,
+          sidebarConfig,
+          userInfo,
+        },
+        spaceId,
+        fullAccessApi
+      )
     }
-    
   }
 
   openCloseModalDialog() {

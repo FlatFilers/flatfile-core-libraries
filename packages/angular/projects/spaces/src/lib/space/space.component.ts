@@ -5,7 +5,7 @@ import useInitializeSpace from '../../utils/useInitializeSpace';
 import { SpaceFramePropsType } from './space-frame/spaceFrame.component';
 import { SpaceService } from './space.service';
 
-type ReusedOrObording = ReusedSpaceWithAccessToken | SimpleOnboarding
+type ReusedOrOnboarding = ReusedSpaceWithAccessToken | SimpleOnboarding
 
 @Component({
   selector: 'flatfile-space',
@@ -43,7 +43,7 @@ export class Space implements OnInit{
     this.closeInstance = true;
   }
 
-  initSpace = async (spaceProps: ReusedOrObording) => {
+  initSpace = async (spaceProps: ReusedOrOnboarding) => {
     this.closeInstance = false
     const { space, initializeSpace } = useInitializeSpace(spaceProps as SimpleOnboarding);
 
