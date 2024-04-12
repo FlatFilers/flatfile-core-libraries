@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- 52013cd: Adds functionality to infer which topics an agent should listen on
+- 52013cd: Adds functionality to infer which topics an agent should listen on.
 
 ## 3.6.2
 
