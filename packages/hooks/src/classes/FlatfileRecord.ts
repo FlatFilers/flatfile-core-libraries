@@ -1,3 +1,5 @@
+import { digSet } from './utils'
+
 export type TPrimitive = string | boolean | number | null
 
 export type TRecordDataWithLinks<
@@ -43,6 +45,7 @@ export interface IRawRecordWithInfo<
 > {
   row: IRawRecord
   info: IRecordInfo<M>[]
+  config?: Record<string, any>
 }
 
 export interface IPayload {
@@ -65,6 +68,7 @@ export class FlatfileRecord<
   private readonly mutated: M
   private readonly _rowId: number | string
   private _info: IRecordInfo<M>[] = []
+  private _config: Record<string, any> = {}
 
   constructor(raw: IRawRecord) {
     this.mutated = Object.assign({}, raw.rawData) as M
@@ -86,13 +90,43 @@ export class FlatfileRecord<
     return this.mutated
   }
 
-  private verifyField(field: string, data?: object): boolean {
-    if (!propExists(data || this.data, field)) {
-      // TODO: make sure user's aware of this message
-      console.error(`Record does not have field "${field}".`)
-      return false
+  /**
+   * Make the entire record or specific fields readonly by a user.
+   *
+   * @example ```js
+   * record.setReadOnly() // make entire record readonly
+   * ```
+   *
+   * @example ```js
+   * record.setReadOnly('firstname', 'lastname') // make two fields readonly
+   * ```
+   * @param fields
+   */
+  setReadOnly(...fields: string[]) {
+    if (!fields.length) {
+      this._config = digSet(this._config, true, 'readonly')
     }
-    return true
+    fields.forEach((field) => {
+      this._config = digSet(this._config, true, 'fields', field, 'readonly')
+    })
+  }
+
+  /**
+   * Return the current state of the record as simple key value pairs.
+   */
+  get obj(): Record<string, TPrimitive> {
+    return Object.fromEntries(
+      Object.entries(this.mutated).map(([key, value]) => [
+        key,
+        typeof value === 'object' && value && 'value' in value
+          ? value.value
+          : value,
+      ])
+    )
+  }
+
+  private verifyField(field: string, data?: object): boolean {
+    return propExists(data || this.data, field)
   }
 
   private isLinkedField(field: string) {
@@ -107,9 +141,12 @@ export class FlatfileRecord<
 
   public set(field: string, value: TPrimitive) {
     if (!this.verifyField(field)) {
+      console.error(`Record does not have field "${field}".`)
       return this
     }
+
     const isLinked = this.isLinkedField(field)
+
     // check if X Reference field otherwise just set value
     if (isLinked) {
       const fieldValue = this.mutated[field]
@@ -282,6 +319,7 @@ export class FlatfileRecord<
         rowId: this.rowId,
         metadata: this.metadata,
       },
+      config: this._config,
       info: this._info,
     }
   }
