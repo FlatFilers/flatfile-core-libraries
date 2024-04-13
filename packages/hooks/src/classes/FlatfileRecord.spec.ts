@@ -110,6 +110,24 @@ describe('FlatfileRecord', () => {
     expect(person._config.fields.age.readonly).toBe(true)
   })
 
+  it('sets readonly status on all fields', () => {
+    person.setReadOnly()
+    // @ts-ignore
+    expect(person._config.readonly).toBe(true)
+  })
+
+  it('sets writable status on a given field', () => {
+    person.setWritable('age')
+    // @ts-ignore
+    expect(person._config.fields.age.readonly).toBe(false)
+  })
+
+  it('sets writable status on all fields', () => {
+    person.setWritable()
+    // @ts-ignore
+    expect(person._config.readonly).toBe(false)
+  })
+
   it('gets the record as an object', () => {
     expect(person.obj).toEqual({ name: 'Jared', age: 12, favePet: null })
   })

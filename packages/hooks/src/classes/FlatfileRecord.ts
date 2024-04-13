@@ -68,7 +68,7 @@ export class FlatfileRecord<
   private readonly mutated: M
   private readonly _rowId: number | string
   private _info: IRecordInfo<M>[] = []
-  private _config: Record<string, any> = {}
+  public _config: Record<string, any> = {}
 
   constructor(raw: IRawRecord) {
     this.mutated = Object.assign({}, raw.rawData) as M
@@ -108,6 +108,27 @@ export class FlatfileRecord<
     }
     fields.forEach((field) => {
       this._config = digSet(this._config, true, 'fields', field, 'readonly')
+    })
+  }
+
+  /**
+   * Make the entire record or specific fields writable by a user.
+   *
+   * @example ```js
+   * record.setWritable() // make entire record writable
+   * ```
+   *
+   * @example ```js
+   * record.setWritable('firstname', 'lastname') // make two fields writable
+   * ```
+   * @param fields
+   */
+  setWritable(...fields: string[]) {
+    if (!fields.length) {
+      this._config = digSet(this._config, false, 'readonly')
+    }
+    fields.forEach((field) => {
+      this._config = digSet(this._config, false, 'fields', field, 'readonly')
     })
   }
 
