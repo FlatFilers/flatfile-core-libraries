@@ -1,5 +1,4 @@
 import { Flatfile } from '@flatfile/api'
-import { Client } from '@flatfile/listener'
 import { program } from 'commander'
 import chalk from 'chalk'
 import fs from 'fs'
@@ -92,10 +91,14 @@ function findActiveTopics(allTopics: ListenerTopics[], client: any, topicsWithLi
 async function getActiveTopics(file: string): Promise<Flatfile.EventTopic[]>{
   const allTopics = Object.values(Flatfile.events.EventTopic)
 
-  const mount = await import(file);
-  return Array.from(findActiveTopics(allTopics, Client.create(mount.default))) as Flatfile.EventTopic[];
+  let mount
+  try {
+    mount = await import(file)
+  } catch(e) {
+    return program.error(messages.error(e))
+  }
+  return Array.from(findActiveTopics(allTopics, mount.default)) as Flatfile.EventTopic[];
 }
-
 
 export async function deployAction(
   file?: string | null | undefined,
@@ -205,7 +208,9 @@ export async function deployAction(
         // debugLog: false
       })
 
-      const activeTopics: Flatfile.EventTopic[] = await getActiveTopics(file)
+      const deployFile = path.join(outDir, 'deploy.js')
+      fs.writeFileSync(deployFile, code, 'utf8')
+      const activeTopics: Flatfile.EventTopic[] = await getActiveTopics(deployFile)
 
       if (err) {
         return program.error(messages.error(err))
