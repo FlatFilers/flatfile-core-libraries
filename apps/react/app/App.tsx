@@ -11,13 +11,9 @@ import {
   Document,
   Sheet,
 } from '@flatfile/react'
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 import styles from './page.module.css'
 import { recordHook } from '@flatfile/plugin-record-hook'
-
-import api from '@flatfile/api'
-
-const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms))
 
 const App = () => {
   const { open, openPortal, closePortal } = useFlatfile()
@@ -26,9 +22,12 @@ const App = () => {
 
   useListener((listener) => {
     listener.on('**', (event) => {
-      console.log('FFApp useListener Event => ', event.topic)
+      console.log('FFApp useListener Event => ', {
+        topic: event.topic,
+        payload: event.payload,
+      })
     })
-  }, [])
+  })
 
   // Both of these also work:
   // FlatfileListener.create((client) => {
@@ -58,45 +57,19 @@ const App = () => {
     [label]
   )
 
-  useEvent('space:created', async ({ context: { spaceId } }) => {
-    console.log('workbook:created')
-    const { data: space } = await api.spaces.get(spaceId)
-    console.log({ space })
-  })
-
-  useEvent('job:ready', { job: 'sheet:submitActionFg' }, async (event) => {
-    const { jobId } = event.context
-    try {
-      await api.jobs.ack(jobId, {
-        info: 'Getting started.',
-        progress: 10,
-      })
-
-      // Make changes after cells in a Sheet have been updated
-      console.log('Make changes here when an action is clicked')
-      const records = await event.data
-
-      console.log({ records })
-
-      await api.jobs.complete(jobId, {
-        outcome: {
-          message: 'This is now complete.',
-        },
-      })
-
-      // Probably a bad idea to close the portal here but just as an example
-      await sleep(3000)
+  useEvent(
+    'job:outcome-acknowledged',
+    {
+      operation: 'workbookSubmitAction',
+      status: 'complete',
+    },
+    async (event) => {
+      // any logic related to the event needed for closing the event
+      console.log({ event })
+      // close the portal iFrame window
       closePortal()
-    } catch (error: any) {
-      console.error('Error:', error.stack)
-
-      await api.jobs.fail(jobId, {
-        outcome: {
-          message: 'This job encountered an error.',
-        },
-      })
     }
-  })
+  )
 
   return (
     <div className={styles.main}>
@@ -123,7 +96,10 @@ const App = () => {
       >
         <Document config={document} />
         <Workbook
-          config={{ ...workbook, name: "ALEX'S WORKBOOK" }}
+          config={{
+            ...workbook,
+            name: "ALEX'S WORKBOOK",
+          }}
           onSubmit={async (sheet) => {
             console.log('on Workbook Submit ', { sheet })
           }}

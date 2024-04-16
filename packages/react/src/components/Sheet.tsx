@@ -1,18 +1,16 @@
 import React, { useCallback } from 'react'
-import { Flatfile, FlatfileClient } from '@flatfile/api'
+import { Flatfile } from '@flatfile/api'
 import { useContext } from 'react'
 import FlatfileContext from './FlatfileContext'
 import {
   DefaultSubmitSettings,
-  JobHandler,
-  SheetHandler,
   SimpleOnboarding,
 } from '@flatfile/embedded-utils'
 import { FlatfileEvent } from '@flatfile/listener'
 import { recordHook, FlatfileRecord } from '@flatfile/plugin-record-hook'
 import { usePlugin, useEvent } from '../hooks'
 import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
-import { workbookOnSubmitAction } from '../utils/constants'
+import { OnSubmitAction, workbookOnSubmitAction } from '../utils/constants'
 
 type SheetProps = {
   config: Flatfile.SheetConfig
@@ -47,7 +45,7 @@ type SheetProps = {
  *     return {
  *       email: {
  *         value: record.email,
- *         info: 'Only @example.com emails are allowed',
+ *         info: `Only "@example.com" emails are allowed`,
  *         level: 'error'
  *       }
  *     }
@@ -102,48 +100,7 @@ export const Sheet = (props: SheetProps) => {
     useEvent(
       'job:ready',
       { job: `workbook:${workbookOnSubmitAction(config.slug).operation}` },
-      async (event) => {
-        const { jobId, spaceId, workbookId } = event.context
-        const FlatfileAPI = new FlatfileClient()
-        try {
-          await FlatfileAPI.jobs.ack(jobId, {
-            info: 'Starting job',
-            progress: 10,
-          })
-
-          const job = new JobHandler(jobId)
-          const { data: workbookSheets } = await FlatfileAPI.sheets.list({
-            workbookId,
-          })
-
-          const thisSheet = workbookSheets.find((s) => s.slug === config.slug)
-
-          if (!thisSheet) {
-            throw new Error(
-              `Failed to find sheet slug:${config.slug} in the workbook id: ${workbookId}`
-            )
-          }
-          const sheet = new SheetHandler(thisSheet.id)
-
-          if (onSubmit) {
-            await onSubmit({ job, sheet, event })
-          }
-
-          await FlatfileAPI.jobs.complete(jobId, {
-            outcome: {
-              message: 'complete',
-            },
-          })
-          if (onSubmitSettings.deleteSpaceAfterSubmit) {
-            await FlatfileAPI.spaces.archiveSpace(spaceId)
-          }
-        } catch (error: any) {
-          if (jobId) {
-            await FlatfileAPI.jobs.cancel(jobId)
-          }
-          console.log('Error:', error.stack)
-        }
-      }
+      OnSubmitAction(onSubmit, onSubmitSettings)
     )
   }
   return <></>
