@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.9.1
+
+### Patch Changes
+
+- da48813: Updates onSubmit action handlers to add acknowledge: true to the job
+
 ## 7.9.0
 
 ### Minor Changes

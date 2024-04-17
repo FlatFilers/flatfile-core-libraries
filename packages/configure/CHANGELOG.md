@@ -1,5 +1,11 @@
 # @flatfile/configure
 
+## 1.0.1
+
+### Patch Changes
+
+- 5aafdc4: Updated SheetJS dependency to resolve a security issue.
+
 ## 1.0.0
 
 ### Major Changes

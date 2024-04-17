@@ -1,5 +1,12 @@
 # flatfile
 
+## 3.6.4
+
+### Patch Changes
+
+- 15fb5a9: Deployment fix using bundle for topics analysis
+- 2f2710e: Normalize all paths by changing to path.posix
+
 ## 3.6.3
 
 ### Patch Changes
