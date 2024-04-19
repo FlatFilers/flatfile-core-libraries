@@ -21,7 +21,7 @@ export function getEntryFile(
   if (!file) {
     file = AUTODETECT_FILE_PATHS.find((f) => fs.existsSync(f))
   } else {
-    file = path.posix.join(process.cwd(), file)
+    file = path.join(process.cwd(), file)
   }
   if (!file) {
     console.error(
