@@ -14,6 +14,7 @@ import { apiKeyClient } from './auth.action'
 import { getAuth } from '../../shared/get-auth'
 import { getEntryFile } from '../../shared/get-entry-file'
 import { messages } from '../../shared/messages'
+import url from 'url'
 
 const readPackageJson = util.promisify(require('read-package-json'))
 
@@ -95,7 +96,7 @@ async function getActiveTopics(file: string): Promise<Flatfile.EventTopic[]>{
 
   let mount
   try {
-    mount = await import(file)
+    mount = await import(url.pathToFileURL(file).href)
   } catch(e) {
     return program.error(messages.error(e))
   }
