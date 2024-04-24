@@ -55,7 +55,12 @@ export async function developAction(
     // Check if any agents are listed for environment
     const apiClient = apiKeyClient({ apiUrl, apiKey: apiKey! })
 
-    if (!options?.skipDeployedCheck) {
+    const skipDeployedCheck =
+      options?.skipDeployedCheck ??
+      (process.env.FLATFILE_SKIP_DEPLOYED_CHECK ?? '').trim().toLowerCase() ===
+        'true'
+
+    if (!skipDeployedCheck) {
       const agents = await apiClient.agents.list({
         environmentId: environment.id,
       })
