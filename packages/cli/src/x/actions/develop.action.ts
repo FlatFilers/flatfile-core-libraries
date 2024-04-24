@@ -1,6 +1,6 @@
 import { Client } from '@flatfile/listener'
-import { program } from 'commander'
 import { PubSubDriver } from '@flatfile/listener-driver-pubsub'
+import { program } from 'commander'
 import fs from 'fs'
 // @ts-expect-error
 import ncc from '@vercel/ncc'
@@ -8,10 +8,10 @@ import ora from 'ora'
 import path from 'path'
 import prompts from 'prompts'
 
-import { apiKeyClient } from './auth.action'
 import { getAuth } from '../../shared/get-auth'
 import { getEntryFile } from '../../shared/get-entry-file'
 import { messages } from '../../shared/messages'
+import { apiKeyClient } from './auth.action'
 
 export async function developAction(
   file?: string | null | undefined,
@@ -19,6 +19,7 @@ export async function developAction(
     apiUrl: string
     token: string
     env: string
+    skipDeployedCheck: boolean
   }>
 ): Promise<void> {
   const outDir = path.join(process.cwd(), '.flatfile')
@@ -54,25 +55,26 @@ export async function developAction(
     // Check if any agents are listed for environment
     const apiClient = apiKeyClient({ apiUrl, apiKey: apiKey! })
 
-    const agents = await apiClient.agents.list({
-      environmentId: environment.id,
-    })
-    if (agents?.data && agents?.data?.length > 0) {
-      console.error(messages.warnDeployedAgents(agents.data))
-  
-      const { developLocally } = await prompts({
-        type: 'confirm',
-        name: 'developLocally',
-        message: 'Would you like to proceed listening locally? (y/n)',
+    if (!options?.skipDeployedCheck) {
+      const agents = await apiClient.agents.list({
+        environmentId: environment.id,
       })
+      if (agents?.data && agents?.data?.length > 0) {
+        console.error(messages.warnDeployedAgents(agents.data))
 
-      if (!developLocally) {
-        ora({
-          text: `Local development aborted`,
-        }).fail()
-        process.exit(1)
+        const { developLocally } = await prompts({
+          type: 'confirm',
+          name: 'developLocally',
+          message: 'Would you like to proceed listening locally? (y/n)',
+        })
+
+        if (!developLocally) {
+          ora({
+            text: `Local development aborted`,
+          }).fail()
+          process.exit(1)
+        }
       }
-
     }
 
     const driver = new PubSubDriver(environment.id)
