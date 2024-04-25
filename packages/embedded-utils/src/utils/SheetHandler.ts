@@ -21,14 +21,15 @@ export class SheetHandler {
     this.api = new FlatfileClient()
   }
 
-  async allData(
+  private async fetchData(
+    filterType: Flatfile.Filter = 'all',
     options: Omit<Flatfile.GetRecordsRequest, 'filter'> = {}
   ): Promise<DataWithMetadata | undefined> {
     try {
       const { data } = await this.api.sheets.get(this.sheetId)
       const records = await this.api.records.get(this.sheetId, {
         ...options,
-        filter: 'all',
+        filter: filterType,
       })
 
       return {
@@ -37,48 +38,29 @@ export class SheetHandler {
         records: records.data.records,
       }
     } catch (e) {
-      console.error(`Failed to get all data for sheet ID ${this.sheetId}:`, e)
+      console.error(
+        `Failed to get ${filterType} data for sheet ID ${this.sheetId}:`,
+        e
+      )
     }
+  }
+
+  async allData(
+    options: Omit<Flatfile.GetRecordsRequest, 'filter'> = {}
+  ): Promise<DataWithMetadata | undefined> {
+    return this.fetchData('all', options)
   }
 
   async validData(
     options: Omit<Flatfile.GetRecordsRequest, 'filter'> = {}
   ): Promise<DataWithMetadata | undefined> {
-    try {
-      const { data } = await this.api.sheets.get(this.sheetId)
-      const records = await this.api.records.get(this.sheetId, {
-        ...options,
-        filter: 'valid',
-      })
-
-      return {
-        sheetId: this.sheetId,
-        workbookId: data.workbookId,
-        records: records.data.records,
-      }
-    } catch (e) {
-      console.error(`Failed to get valid data for sheet ID ${this.sheetId}:`, e)
-    }
+    return this.fetchData('valid', options)
   }
 
   async errorData(
     options: Omit<Flatfile.GetRecordsRequest, 'filter'> = {}
   ): Promise<DataWithMetadata | undefined> {
-    try {
-      const { data } = await this.api.sheets.get(this.sheetId)
-      const records = await this.api.records.get(this.sheetId, {
-        ...options,
-        filter: 'error',
-      })
-
-      return {
-        sheetId: this.sheetId,
-        workbookId: data.workbookId,
-        records: records.data.records,
-      }
-    } catch (e) {
-      console.error(`Failed to get error data for sheet ID ${this.sheetId}:`, e)
-    }
+    return this.fetchData('error', options)
   }
 
   private async processRecordsInternal(
