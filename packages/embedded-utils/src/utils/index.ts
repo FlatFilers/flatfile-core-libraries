@@ -1,7 +1,5 @@
 export { createWorkbookFromSheet } from './createWorkbookFromSheet'
 export { createWorkbookFromSheets } from './createWorkbookFromSheets'
-export { fetchEventToken, EventSubscriber } from './EventSubscriber'
 export { getErrorMessage } from './getErrorMessage'
-export { initializePubnub } from './initializePubnub'
 export { JobHandler } from './JobHandler'
 export { SheetHandler } from './SheetHandler'

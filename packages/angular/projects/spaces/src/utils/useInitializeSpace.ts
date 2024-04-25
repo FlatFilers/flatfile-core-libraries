@@ -1,5 +1,4 @@
 import {
-  ISpace,
   getErrorMessage,
   SimpleOnboarding,
   createWorkbookFromSheet,
