@@ -1,4 +1,4 @@
-import { FlatfileClient, Flatfile } from '@flatfile/api'
+import { Flatfile, FlatfileClient } from '@flatfile/api'
 import { processRecords } from '@flatfile/util-common'
 
 type DataWithMetadata = {
@@ -21,10 +21,15 @@ export class SheetHandler {
     this.api = new FlatfileClient()
   }
 
-  async allData(): Promise<DataWithMetadata | undefined> {
+  async allData(
+    options: Omit<Flatfile.GetRecordsRequest, 'filter'> = {}
+  ): Promise<DataWithMetadata | undefined> {
     try {
       const { data } = await this.api.sheets.get(this.sheetId)
-      const records = await this.api.records.get(this.sheetId)
+      const records = await this.api.records.get(this.sheetId, {
+        ...options,
+        filter: 'all',
+      })
 
       return {
         sheetId: this.sheetId,
@@ -36,10 +41,13 @@ export class SheetHandler {
     }
   }
 
-  async validData(): Promise<DataWithMetadata | undefined> {
+  async validData(
+    options: Omit<Flatfile.GetRecordsRequest, 'filter'> = {}
+  ): Promise<DataWithMetadata | undefined> {
     try {
       const { data } = await this.api.sheets.get(this.sheetId)
       const records = await this.api.records.get(this.sheetId, {
+        ...options,
         filter: 'valid',
       })
 
@@ -53,10 +61,13 @@ export class SheetHandler {
     }
   }
 
-  async errorData(): Promise<DataWithMetadata | undefined> {
+  async errorData(
+    options: Omit<Flatfile.GetRecordsRequest, 'filter'> = {}
+  ): Promise<DataWithMetadata | undefined> {
     try {
       const { data } = await this.api.sheets.get(this.sheetId)
       const records = await this.api.records.get(this.sheetId, {
+        ...options,
         filter: 'error',
       })
 
@@ -70,7 +81,10 @@ export class SheetHandler {
     }
   }
 
-  private async processRecordsInternal(cb: (data: Flatfile.RecordsWithLinks) => void, options: InChunksOptions) {
+  private async processRecordsInternal(
+    cb: (data: Flatfile.RecordsWithLinks) => void,
+    options: InChunksOptions
+  ) {
     return await processRecords(
       this.sheetId,
       async (records) => {
@@ -81,10 +95,13 @@ export class SheetHandler {
   }
 
   async stream(cb: (data: Flatfile.RecordsWithLinks) => void) {
-    return this.processRecordsInternal(cb, {});
+    return this.processRecordsInternal(cb, {})
   }
 
-  async inChunks(cb: (data: Flatfile.RecordsWithLinks) => void, options: InChunksOptions) {
-    return this.processRecordsInternal(cb, options);
+  async inChunks(
+    cb: (data: Flatfile.RecordsWithLinks) => void,
+    options: InChunksOptions
+  ) {
+    return this.processRecordsInternal(cb, options)
   }
 }
