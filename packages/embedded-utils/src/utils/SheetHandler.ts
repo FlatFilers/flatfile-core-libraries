@@ -1,4 +1,6 @@
-import { Flatfile, FlatfileClient } from '@flatfile/api'
+import type { Flatfile } from '@flatfile/api'
+
+import { FlatfileClient } from '@flatfile/api'
 import { processRecords } from '@flatfile/util-common'
 
 type DataWithMetadata = {
