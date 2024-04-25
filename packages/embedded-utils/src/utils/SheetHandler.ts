@@ -21,15 +21,13 @@ export class SheetHandler {
     this.api = new FlatfileClient()
   }
 
-  private async fetchData(
-    filterType: Flatfile.Filter = 'all',
-    options: Omit<Flatfile.GetRecordsRequest, 'filter'> = {}
+  async data(
+    options: Flatfile.GetRecordsRequest = {}
   ): Promise<DataWithMetadata | undefined> {
     try {
       const { data } = await this.api.sheets.get(this.sheetId)
       const records = await this.api.records.get(this.sheetId, {
         ...options,
-        filter: filterType,
       })
 
       return {
@@ -39,7 +37,9 @@ export class SheetHandler {
       }
     } catch (e) {
       console.error(
-        `Failed to get ${filterType} data for sheet ID ${this.sheetId}:`,
+        `Failed to get ${options.filter ?? 'all'} data for sheet ID ${
+          this.sheetId
+        }:`,
         e
       )
     }
@@ -48,19 +48,19 @@ export class SheetHandler {
   async allData(
     options: Omit<Flatfile.GetRecordsRequest, 'filter'> = {}
   ): Promise<DataWithMetadata | undefined> {
-    return this.fetchData('all', options)
+    return this.data({ ...options, filter: 'all' })
   }
 
   async validData(
     options: Omit<Flatfile.GetRecordsRequest, 'filter'> = {}
   ): Promise<DataWithMetadata | undefined> {
-    return this.fetchData('valid', options)
+    return this.data({ ...options, filter: 'valid' })
   }
 
   async errorData(
     options: Omit<Flatfile.GetRecordsRequest, 'filter'> = {}
   ): Promise<DataWithMetadata | undefined> {
-    return this.fetchData('error', options)
+    return this.data({ ...options, filter: 'error' })
   }
 
   private async processRecordsInternal(
