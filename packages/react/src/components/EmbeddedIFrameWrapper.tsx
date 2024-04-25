@@ -71,7 +71,9 @@ export const EmbeddedIFrameWrapper = (
           onConfirm={() => {
             handleCloseInstance()
             setShowExitWarnModal(false)
-            closeSpace?.onClose({})
+            if (closeSpace && typeof closeSpace.onClose === 'function') {
+              closeSpace.onClose({})
+            }
           }}
           onCancel={() => setShowExitWarnModal(false)}
           exitText={exitText}

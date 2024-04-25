@@ -138,7 +138,9 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
       ) {
         setState({ ...initialState })
         setUnmountIFrame(true)
-        closeSpace?.onClose({})
+        if (closeSpace && typeof closeSpace.onClose === 'function') {
+          closeSpace.onClose({ event: flatfileEvent })
+        }
       }
       dispatchEvent(flatfileEvent)
     }
@@ -160,7 +162,9 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
     setState({ ...initialState })
     setUnmountIFrame(true)
     setShowExitWarnModal(false)
-    closeSpace?.onClose({})
+    if (closeSpace && typeof closeSpace.onClose === 'function') {
+      closeSpace.onClose({})
+    }
   }
 
   const errorElement = initError ? (

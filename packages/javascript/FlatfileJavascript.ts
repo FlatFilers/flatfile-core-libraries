@@ -7,6 +7,7 @@ import {
   SheetHandler,
   SimpleOnboarding,
   createWorkbookFromSheet,
+  handlePostMessage,
 } from '@flatfile/embedded-utils'
 import { FlatfileRecord } from '@flatfile/hooks'
 import { Browser, FlatfileEvent, FlatfileListener } from '@flatfile/listener'
@@ -48,32 +49,14 @@ async function createlistener(
       fetchApi: fetch,
     })
   )
-  const dispatchEvent = (event: any) => {
-    if (!event) return
 
-    const eventPayload = event.src ? event.src : event
-    const eventInstance = new FlatfileEvent(eventPayload, accessToken, apiUrl)
-
-    return listener?.dispatchEvent(eventInstance)
-  }
-
-  const handlePostMessage = (event: any) => {
-    const { flatfileEvent } = event.data
-    if (!flatfileEvent) return
-    if (
-      flatfileEvent.topic === 'job:outcome-acknowledged' &&
-      flatfileEvent.payload.status === 'complete' &&
-      flatfileEvent.payload.operation === closeSpace?.operation
-    ) {
-      closeSpace?.onClose && closeSpace?.onClose({})
-      removeEventListener('message', handlePostMessage)
-    }
-    dispatchEvent(flatfileEvent)
-  }
-
-  window.addEventListener('message', handlePostMessage, false)
-  const removeListener = () => removeEventListener('message', handlePostMessage)
-  return removeListener
+  window.addEventListener(
+    'message',
+    handlePostMessage(closeSpace, listener),
+    false
+  )
+  return () =>
+    removeEventListener('message', handlePostMessage(closeSpace, listener))
 }
 interface SimpleListenerType
   extends Pick<
@@ -156,10 +139,7 @@ function initializeIFrameConfirmationModal(
   exitText: string,
   exitPrimaryButtonText: string,
   exitSecondaryButtonText: string,
-  closeSpace?: {
-    operation: string
-    onClose: (data: any) => void
-  },
+  closeSpace?: ISpace['closeSpace'],
   removeMessageListener?: () => void,
   onCancel?: () => void
 ) {
@@ -185,7 +165,8 @@ function initializeIFrameConfirmationModal(
         onCancel()
       }
       if (removeMessageListener) removeMessageListener()
-      closeSpace?.onClose({})
+      if (closeSpace && typeof closeSpace.onClose === 'function')
+        closeSpace.onClose({})
     },
     () => {
       // If user chooses to stay, we simply hide the confirm modal
@@ -479,9 +460,7 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
       )
     } else {
       const targetOrigin = new URL(spacesUrl).origin
-      const initialResources = initialResourceResponse
-        ? initialResourceResponse
-        : null
+      const initialResources = initialResourceResponse || null
       mountIFrameElement.contentWindow?.postMessage(
         {
           flatfileEvent: {

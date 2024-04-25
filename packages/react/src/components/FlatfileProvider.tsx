@@ -4,6 +4,7 @@ import FlatfileListener, { Browser } from '@flatfile/listener'
 import { Flatfile } from '@flatfile/api'
 import { EmbeddedIFrameWrapper } from './EmbeddedIFrameWrapper'
 import { ExclusiveFlatfileProviderProps } from '../types'
+import { handlePostMessage } from '@flatfile/embedded-utils'
 
 export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   children,
@@ -104,20 +105,18 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     }))
   }
 
-  const handlePostMessage = (message: {
-    data: { flatfileEvent: Record<string, any> }
-  }) => {
-    const { flatfileEvent } = message.data
-    if (!flatfileEvent) return
-
-    listener.dispatchEvent(flatfileEvent)
-  }
-
   // Listen to the postMessage event from the created iFrame
   useEffect(() => {
-    window.addEventListener('message', handlePostMessage, false)
+    window.addEventListener(
+      'message',
+      handlePostMessage(config?.closeSpace, listener),
+      false
+    )
     return () => {
-      window.removeEventListener('message', handlePostMessage)
+      window.removeEventListener(
+        'message',
+        handlePostMessage(config?.closeSpace, listener)
+      )
     }
   }, [listener])
 

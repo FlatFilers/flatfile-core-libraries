@@ -154,8 +154,8 @@ interface BaseSpace {
    * Optional
    */
   closeSpace?: {
-    operation: string
-    onClose: (data: any) => void
+    operation?: string
+    onClose?: (data: any) => void
   }
   /**
    *
