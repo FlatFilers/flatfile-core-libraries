@@ -4,4 +4,4 @@
 '@flatfile/vue': patch
 ---
 
-Fix to allow clipboard read and write in embedded iFrame components
+Fix to allow clipboard read and write in embedded iframe components
