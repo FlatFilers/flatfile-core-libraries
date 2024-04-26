@@ -93,8 +93,8 @@ const App = () => {
         </button>
       </div>
       <Space
+        id={SPACE_ID}
         config={{
-          id: SPACE_ID,
           metadata: {
             sidebarConfig: {
               showSidebar: true,
