@@ -32,7 +32,7 @@ export function createIframe(
   const iframe = document.createElement('iframe')
   iframe.src = url
   iframe.id = 'flatfile_iframe'
-
+  iframe.allow = 'clipboard-read; clipboard-write'
   // Create the wrapper
   const wrapper = document.createElement('div')
   wrapper.classList.add('flatfile_iframe-wrapper')
