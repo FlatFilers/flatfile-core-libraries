@@ -2,4 +2,4 @@
 '@flatfile/react': patch
 ---
 
-Fixes bug with re-using spaces'
+Fixes bug with re-using spaces.
