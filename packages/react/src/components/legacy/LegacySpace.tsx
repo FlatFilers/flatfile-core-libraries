@@ -9,7 +9,7 @@ import { getContainerStyles, getIframeStyles } from '../embeddedStyles'
 import '../style.scss'
 
 /**
- * @deprecated - use FlatfileProvider and Space components instead. Previously known as Space. 
+ * @deprecated - use FlatfileProvider and Space components instead. Previously known as Space.
  * @name LegacySpace
  * @description Flatfile Embedded Space component
  * @param props
@@ -71,9 +71,11 @@ export const SpaceContents = (
     if (
       flatfileEvent.topic === 'job:outcome-acknowledged' &&
       flatfileEvent.payload.status === 'complete' &&
-      flatfileEvent.payload.operation === closeSpace?.operation
+      flatfileEvent.payload.operation === closeSpace?.operation &&
+      closeSpace &&
+      typeof closeSpace.onClose === 'function'
     ) {
-      closeSpace?.onClose({})
+      closeSpace.onClose({ event: flatfileEvent })
     }
     dispatchEvent(flatfileEvent)
   }
@@ -108,7 +110,9 @@ export const SpaceContents = (
         <ConfirmModal
           onConfirm={() => {
             handleCloseInstance()
-            closeSpace?.onClose({})
+            if (closeSpace && typeof closeSpace.onClose === 'function') {
+              closeSpace.onClose({})
+            }
           }}
           onCancel={() => setShowExitWarnModal(false)}
           exitText={exitText}
