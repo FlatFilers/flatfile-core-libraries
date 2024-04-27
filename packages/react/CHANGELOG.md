@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- 1473f79: Fixes bug with re-using spaces.
+- 1473f79: Fixes bug with re-using spaces
 - 86c7505: Fix to allow clipboard read and write in embedded iframe components
 - Updated dependencies [003014c]
   - @flatfile/embedded-utils@1.2.0
