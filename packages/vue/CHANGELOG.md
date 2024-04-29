@@ -1,5 +1,13 @@
 ## 1.0.5
 
+## 1.0.12
+
+### Patch Changes
+
+- 86c7505: Fix to allow clipboard read and write in embedded iframe components
+- Updated dependencies [003014c]
+  - @flatfile/embedded-utils@1.2.0
+
 ## 1.0.11
 
 ### Patch Changes

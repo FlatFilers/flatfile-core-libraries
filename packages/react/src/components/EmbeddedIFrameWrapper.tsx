@@ -82,16 +82,17 @@ export const EmbeddedIFrameWrapper = (
       )}
       {(open || preload) && (
         <iframe
-          data-testid={mountElement}
+          allow="clipboard-read; clipboard-write"
           className={mountElement}
+          data-testid={mountElement}
+          ref={iRef}
+          src={preload ? preloadUrl : spaceLink}
           style={{
             ...getIframeStyles(iframeStyles!),
             ...(preload
               ? { display: open ? 'block' : 'none' }
               : { display: 'block' }),
           }}
-          src={preload ? preloadUrl : spaceLink}
-          ref={iRef}
         />
       )}
       <CloseButton handler={() => setShowExitWarnModal(true)} />
