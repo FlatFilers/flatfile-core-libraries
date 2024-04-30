@@ -76,7 +76,9 @@ function findActiveTopics(allTopics: ListenerTopics[], client: any, topicsWithLi
   client.listeners?.forEach((listener: ListenerTopics[]) => {
     const listenerTopic = listener[0]
     if (listenerTopic === '**') {
-      allTopics.forEach(topic => topicsWithListeners.add(topic))
+      // Filter cron events out of '**' list - they must be added explicitly
+      const filteredTopics = allTopics.filter(event => !event.startsWith('cron:'))
+      filteredTopics.forEach(topic => topicsWithListeners.add(topic))
     } else if (listenerTopic.includes('**')) {
       const [prefix] = listenerTopic.split(':')
       allTopics.forEach(topic => { if (topic.split(':')[0] === prefix) topicsWithListeners.add(topic) })
