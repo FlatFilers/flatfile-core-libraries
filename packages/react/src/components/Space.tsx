@@ -5,7 +5,7 @@ import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
 
 type SpaceProps = {
   id?: string
-  config: Flatfile.SpaceConfig
+  config?: Flatfile.SpaceConfig
   children?: React.ReactNode
 }
 
@@ -33,11 +33,14 @@ type SpaceProps = {
  */
 
 export const Space = (props: SpaceProps) => {
-  const { config, children } = props
+  const { config, id, children } = props
   const { updateSpace } = useContext(FlatfileContext)
 
   const callback = useCallback(() => {
-    updateSpace(config)
+    updateSpace({
+      ...(config || {}),
+      id,
+    })
   }, [config, updateSpace])
 
   useDeepCompareEffect(callback, [config])

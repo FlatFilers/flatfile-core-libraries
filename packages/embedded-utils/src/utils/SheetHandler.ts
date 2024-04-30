@@ -1,4 +1,6 @@
-import { FlatfileClient, Flatfile } from '@flatfile/api'
+import type { Flatfile } from '@flatfile/api'
+
+import { FlatfileClient } from '@flatfile/api'
 import { processRecords } from '@flatfile/util-common'
 
 type DataWithMetadata = {
@@ -21,26 +23,13 @@ export class SheetHandler {
     this.api = new FlatfileClient()
   }
 
-  async allData(): Promise<DataWithMetadata | undefined> {
-    try {
-      const { data } = await this.api.sheets.get(this.sheetId)
-      const records = await this.api.records.get(this.sheetId)
-
-      return {
-        sheetId: this.sheetId,
-        workbookId: data.workbookId,
-        records: records.data.records,
-      }
-    } catch (e) {
-      console.error(`Failed to get all data for sheet ID ${this.sheetId}:`, e)
-    }
-  }
-
-  async validData(): Promise<DataWithMetadata | undefined> {
+  async data(
+    options: Flatfile.GetRecordsRequest = {}
+  ): Promise<DataWithMetadata | undefined> {
     try {
       const { data } = await this.api.sheets.get(this.sheetId)
       const records = await this.api.records.get(this.sheetId, {
-        filter: 'valid',
+        ...options,
       })
 
       return {
@@ -49,28 +38,37 @@ export class SheetHandler {
         records: records.data.records,
       }
     } catch (e) {
-      console.error(`Failed to get valid data for sheet ID ${this.sheetId}:`, e)
+      console.error(
+        `Failed to get ${options.filter ?? 'all'} data for sheet ID ${
+          this.sheetId
+        }:`,
+        e
+      )
     }
   }
 
-  async errorData(): Promise<DataWithMetadata | undefined> {
-    try {
-      const { data } = await this.api.sheets.get(this.sheetId)
-      const records = await this.api.records.get(this.sheetId, {
-        filter: 'error',
-      })
-
-      return {
-        sheetId: this.sheetId,
-        workbookId: data.workbookId,
-        records: records.data.records,
-      }
-    } catch (e) {
-      console.error(`Failed to get error data for sheet ID ${this.sheetId}:`, e)
-    }
+  async allData(
+    options: Omit<Flatfile.GetRecordsRequest, 'filter'> = {}
+  ): Promise<DataWithMetadata | undefined> {
+    return this.data({ ...options, filter: 'all' })
   }
 
-  private async processRecordsInternal(cb: (data: Flatfile.RecordsWithLinks) => void, options: InChunksOptions) {
+  async validData(
+    options: Omit<Flatfile.GetRecordsRequest, 'filter'> = {}
+  ): Promise<DataWithMetadata | undefined> {
+    return this.data({ ...options, filter: 'valid' })
+  }
+
+  async errorData(
+    options: Omit<Flatfile.GetRecordsRequest, 'filter'> = {}
+  ): Promise<DataWithMetadata | undefined> {
+    return this.data({ ...options, filter: 'error' })
+  }
+
+  private async processRecordsInternal(
+    cb: (data: Flatfile.RecordsWithLinks) => void,
+    options: InChunksOptions
+  ) {
     return await processRecords(
       this.sheetId,
       async (records) => {
@@ -81,10 +79,13 @@ export class SheetHandler {
   }
 
   async stream(cb: (data: Flatfile.RecordsWithLinks) => void) {
-    return this.processRecordsInternal(cb, {});
+    return this.processRecordsInternal(cb, {})
   }
 
-  async inChunks(cb: (data: Flatfile.RecordsWithLinks) => void, options: InChunksOptions) {
-    return this.processRecordsInternal(cb, options);
+  async inChunks(
+    cb: (data: Flatfile.RecordsWithLinks) => void,
+    options: InChunksOptions
+  ) {
+    return this.processRecordsInternal(cb, options)
   }
 }

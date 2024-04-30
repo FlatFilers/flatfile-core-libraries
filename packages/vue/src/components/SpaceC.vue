@@ -16,10 +16,11 @@
     />
 
     <iframe
-      :data-testid="mountElement"
       :class="mountElement"
+      :data-testid="mountElement"
       :src="spaceUrl"
       :style="getIframeStyles(iframeStyles)"
+      allow="clipboard-read; clipboard-write"
       id="flatfile_iframe"
     ></iframe>
     <div

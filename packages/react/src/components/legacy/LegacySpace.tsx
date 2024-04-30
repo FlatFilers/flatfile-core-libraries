@@ -122,10 +122,11 @@ export const SpaceContents = (
         />
       )}
       <iframe
-        data-testid={mountElement}
+        allow="clipboard-read; clipboard-write"
         className={mountElement}
-        style={getIframeStyles(iframeStyles!)}
+        data-testid={mountElement}
         src={spaceUrl}
+        style={getIframeStyles(iframeStyles!)}
       />
       <button
         onClick={() => setShowExitWarnModal(true)}

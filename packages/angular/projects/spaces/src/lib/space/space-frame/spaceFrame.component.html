@@ -1,28 +1,18 @@
-<div
-  class="flatfile_iframe-wrapper"
-  [ngClass]="{ 'flatfile_displayAsModal': this.spaceFrameProps.displayAsModal }"
-  data-testid="space-contents"
-  [ngStyle]="this.iframeWrapperStyle"
->
-  <space-close-modal *ngIf="this.showExitWarnModal" [spaceCloseModalProps]="this.spaceCloseModalProps"/>
+<div class="flatfile_iframe-wrapper" [ngClass]="{ 'flatfile_displayAsModal': this.spaceFrameProps.displayAsModal }"
+  data-testid="space-contents" [ngStyle]="this.iframeWrapperStyle">
+  <space-close-modal *ngIf="this.showExitWarnModal" [spaceCloseModalProps]="this.spaceCloseModalProps" />
   <iframe *ngIf="this.spaceFrameProps.spaceUrl"
     [ngClass]="{ 'flatfile_iFrameContainer': this.spaceFrameProps.mountElement }"
     [attr.data-testid]="this.spaceFrameProps.mountElement && 'flatfile_iFrameContainer'"
-    [src]="this.spaceFrameProps.spaceUrl | safe"
-    id="flatfile_iframe"
-    [ngStyle]="this.iframeStyle"
-  >
+    [src]="this.spaceFrameProps.spaceUrl | safe" id="flatfile_iframe" allow="clipboard-read; clipboard-write"
+    [ngStyle]="this.iframeStyle">
   </iframe>
 
-  <div
-      (click)="this.openCloseModalDialog()"
-      data-testid="flatfile-close-button"
-      class="flatfile-close-button"
-      style="position: absolute; margin: 30px;"
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 100 100">
-        <line x1="10" y1="10" x2="90" y2="90" stroke="white" :stroke-width="10" />
-        <line x1="10" y1="90" x2="90" y2="10" stroke="white" :stroke-width="10" />
-      </svg>
-    </div>
+  <div (click)="this.openCloseModalDialog()" data-testid="flatfile-close-button" class="flatfile-close-button"
+    style="position: absolute; margin: 30px;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 100 100">
+      <line x1="10" y1="10" x2="90" y2="90" stroke="white" :stroke-width="10" />
+      <line x1="10" y1="90" x2="90" y2="10" stroke="white" :stroke-width="10" />
+    </svg>
+  </div>
 </div>

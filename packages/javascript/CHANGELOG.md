@@ -1,5 +1,13 @@
 # @flatfile/javascript
 
+## 1.3.3
+
+### Patch Changes
+
+- 86c7505: Fix to allow clipboard read and write in embedded iframe components
+- Updated dependencies [003014c]
+  - @flatfile/embedded-utils@1.2.0
+
 ## 1.3.2
 
 ### Patch Changes
@@ -13,7 +21,7 @@
 
 - Updated dependencies [8ef2d53]
   - @flatfile/embedded-utils@1.1.13
-  
+
 ## 1.3.0
 
 ### Minor Changes

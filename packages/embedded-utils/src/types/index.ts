@@ -11,7 +11,6 @@ import { InitState, State } from './State'
 
 import { ISidebarConfig } from './ISidebarConfig'
 import { IThemeConfig } from './IThemeConfig'
-import { InitializePubnub } from './InitializePubnub'
 import { SpaceComponent } from './SpaceComponent'
 import { IThemeGenerator } from './ThemeGenerator'
 
@@ -23,7 +22,6 @@ export type {
   IThemeGenerator,
   IUserInfo,
   InitState,
-  InitializePubnub,
   NewSpaceFromPublishableKey,
   ReusedSpaceWithAccessToken,
   SimpleOnboarding,
