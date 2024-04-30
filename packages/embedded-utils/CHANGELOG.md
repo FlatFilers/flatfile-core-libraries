@@ -1,5 +1,11 @@
 # embedded-utils
 
+## 1.2.0
+
+### Minor Changes
+
+- 003014c: This release exposes records.get() options to the SheetHandler data() functions to make them more versatile.
+
 ## 1.1.15
 
 ### Patch Changes

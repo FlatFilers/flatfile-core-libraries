@@ -16,10 +16,11 @@
     />
 
     <iframe
-      :data-testid="mountElement"
       :class="mountElement"
+      :data-testid="mountElement"
       :src="spaceUrl"
       :style="getIframeStyles(iframeStyles)"
+      allow="clipboard-read; clipboard-write"
       id="flatfile_iframe"
     ></iframe>
     <div
@@ -168,7 +169,7 @@ export default {
       sidebarConfig,
       spaceInfo,
       userInfo,
-      handleCloseInstance
+      handleCloseInstance,
     } = props
 
     const handleConfirm = () => {
@@ -198,9 +199,9 @@ export default {
         fullAccessApi
       )
 
-     onUnmounted(() => {
-       window.removeEventListener('message', window.handlePostMessageInstance)
-     })
+      onUnmounted(() => {
+        window.removeEventListener('message', window.handlePostMessageInstance)
+      })
     })
 
     return {
@@ -210,7 +211,7 @@ export default {
       getIframeStyles,
       getContainerStyles,
     }
-  }
+  },
 }
 </script>
 
