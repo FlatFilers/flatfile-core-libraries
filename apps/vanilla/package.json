@@ -11,10 +11,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "@flatfile/api": "^1.6.3",
+    "@flatfile/api": "^1.8.5",
     "@flatfile/javascript": "*",
-    "@flatfile/listener": "^0.4.0",
-    "@flatfile/plugin-record-hook": "^1.4.1"
+    "@flatfile/listener": "^1.0.2",
+    "@flatfile/plugin-record-hook": "^1.5.2"
   },
   "devDependencies": {
     "dotenv": "^16.3.1",

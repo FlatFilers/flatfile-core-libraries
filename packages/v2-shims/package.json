@@ -52,10 +52,10 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@flatfile/api": "^1.5.27",
+    "@flatfile/api": "^1.8.5",
     "@flatfile/blueprint": "^0.0.9",
     "@flatfile/listener": "^1.0.1",
-    "@flatfile/plugin-record-hook": "^1.4.1",
+    "@flatfile/plugin-record-hook": "^1.5.2",
     "dotenv-expand": "^10.0.0",
     "dotenv-flow": "^4.0.0"
   }

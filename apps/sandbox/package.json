@@ -4,7 +4,7 @@
   "version": "1.0.6",
   "description": "",
   "devDependencies": {
-    "@flatfile/api": "^1.5.6",
+    "@flatfile/api": "^1.8.5",
     "@types/node": "^14.14.10",
     "@types/react": "^17.0.0",
     "@types/react-dom": "^17.0.0",
@@ -17,7 +17,7 @@
   "dependencies": {
     "@flatfile/configure": "*",
     "@flatfile/listener": "*",
-    "@flatfile/plugin-record-hook": "^1.4.1",
+    "@flatfile/plugin-record-hook": "^1.5.2",
     "@flatfile/plugin-xlsx-extractor": "^1.0.0",
     "color": "^4.2.3",
     "flatfile": "*",

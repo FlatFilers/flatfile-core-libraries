@@ -31,7 +31,7 @@
     "typescript": "^5.0.4"
   },
   "dependencies": {
-    "@flatfile/api": "^1.5.5",
+    "@flatfile/api": "^1.8.5",
     "@flatfile/listener": "1.0.2",
     "@flatfile/utils-debugger": "^0.0.5",
     "axios": "^1.6.0",
