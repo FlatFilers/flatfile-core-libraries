@@ -1,5 +1,14 @@
 ## 1.0.5
 
+## 1.0.14
+
+### Patch Changes
+
+- efcb757: Update Dependencies
+- Updated dependencies [efcb757]
+  - @flatfile/embedded-utils@1.2.2
+  - @flatfile/listener@1.0.3
+
 ## 1.0.13
 
 ### Patch Changes

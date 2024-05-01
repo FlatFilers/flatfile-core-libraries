@@ -1,5 +1,13 @@
 # @flatfile/v2-shims
 
+## 1.1.3
+
+### Patch Changes
+
+- efcb757: Update Dependencies
+- Updated dependencies [efcb757]
+  - @flatfile/listener@1.0.3
+
 ## 1.1.2
 
 ### Patch Changes

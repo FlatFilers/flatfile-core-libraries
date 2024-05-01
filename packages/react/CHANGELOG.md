@@ -1,5 +1,14 @@
 # @flatfile/react
 
+## 7.9.4
+
+### Patch Changes
+
+- efcb757: Update Dependencies
+- Updated dependencies [efcb757]
+  - @flatfile/embedded-utils@1.2.2
+  - @flatfile/listener@1.0.3
+
 ## 7.9.3
 
 ### Patch Changes
