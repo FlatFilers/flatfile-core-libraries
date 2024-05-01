@@ -1,4 +1,4 @@
-import api from '@flatfile/api'
+import { FlatfileClient } from '@flatfile/api'
 import {
   DefaultSubmitSettings,
   JobHandler,
@@ -8,7 +8,6 @@ import {
 import { FlatfileRecord } from '@flatfile/hooks'
 import { FlatfileEvent, FlatfileListener } from '@flatfile/listener'
 import { recordHook } from '@flatfile/plugin-record-hook'
-
 interface SimpleListenerType
   extends Pick<
     SimpleOnboarding,
@@ -24,6 +23,7 @@ export const createSimpleListener = ({
   submitSettings,
 }: SimpleListenerType) =>
   FlatfileListener.create((client) => {
+    const api = new FlatfileClient()
     if (onRecordHook) {
       client.use(
         recordHook(

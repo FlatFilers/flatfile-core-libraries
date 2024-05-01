@@ -68,12 +68,12 @@ export const deployTopics = [
 ] as Flatfile.EventTopic[]
 
 export const AUTODETECT_FILE_PATHS = [
-  path.posix.join(process.cwd(), 'index.js'),
-  path.posix.join(process.cwd(), 'index.ts'),
-  path.posix.join(process.cwd(), 'src', 'index.js'),
-  path.posix.join(process.cwd(), 'src', 'index.ts'),
-  path.posix.join(process.cwd(), '.build', 'index.js'),
-  path.posix.join(process.cwd(), 'dist', 'index.js'),
+  path.join(process.cwd(), 'index.js'),
+  path.join(process.cwd(), 'index.ts'),
+  path.join(process.cwd(), 'src', 'index.js'),
+  path.join(process.cwd(), 'src', 'index.ts'),
+  path.join(process.cwd(), '.build', 'index.js'),
+  path.join(process.cwd(), 'dist', 'index.js'),
 ]
 
 export const tableConfig = {

@@ -21,7 +21,7 @@ export async function developAction(
     env: string
   }>
 ): Promise<void> {
-  const outDir = path.posix.join(process.cwd(), '.flatfile')
+  const outDir = path.join(process.cwd(), '.flatfile')
   if (!fs.existsSync(outDir)) {
     fs.mkdirSync(outDir, { recursive: true })
   }
@@ -94,7 +94,7 @@ export async function developAction(
               delete require.cache[id]
             }
           })
-          const listenerPath = path.posix.join(outDir, 'develop.js')
+          const listenerPath = path.join(outDir, 'develop.js')
           await fs.promises.writeFile(listenerPath, code)
           const listener = require(listenerPath)
           const devClient = Client.create(listener.default)

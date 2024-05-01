@@ -23,7 +23,7 @@ export async function publishAction(
     endpoint: string
   }>
 ) {
-  const outDir = path.posix.join(process.cwd(), '.flatfile')
+  const outDir = path.join(process.cwd(), '.flatfile')
 
   const env = options.env || config().env
   if (!env) {
@@ -100,7 +100,7 @@ export async function publishAction(
     })
 
     await bundle.write({
-      file: path.posix.join(outDir, 'build.js'),
+      file: path.join(outDir, 'build.js'),
       format: 'cjs',
       exports: 'auto',
       plugins: [
@@ -140,7 +140,7 @@ export async function publishAction(
       process.exit(1)
     }
 
-    const buildFile = path.posix.join(outDir, 'build.js')
+    const buildFile = path.join(outDir, 'build.js')
     const buffer = fs.readFileSync(buildFile)
     const source = buffer.toString()
     const config = require(buildFile)
