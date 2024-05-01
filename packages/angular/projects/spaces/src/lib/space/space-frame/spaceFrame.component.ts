@@ -7,7 +7,6 @@ import authenticate from '../../../utils/authenticate'
 import createSimpleListener from '../../../utils/createSimpleListener'
 import { SpaceCloseModalPropsType } from '../space-close-modal/spaceCloseModal.component'
 import { getContainerStyles, getIframeStyles } from './embeddedStyles'
-import { handlePostMessage } from '@flatfile/embedded-utils'
 
 export type SpaceFramePropsType = ISpace & {
   spaceId: string
@@ -62,12 +61,32 @@ export class SpaceFrame implements OnInit {
       )
     }
 
-    window.addEventListener(
-      'message',
-      handlePostMessage(closeSpace, listener),
-      false
-    )
-    this.handlePostMessageInstance = handlePostMessage(closeSpace, listener)
+    const dispatchEvent = (event: any) => {
+      if (!event) return
+
+      const eventPayload = event.src || event
+      const eventInstance = new FlatfileEvent(eventPayload, accessToken, apiUrl)
+
+      return listenerInstance?.dispatchEvent(eventInstance)
+    }
+
+    const handlePostMessage = (
+      event: MessageEvent<{ flatfileEvent: FlatfileEvent }>
+    ) => {
+      const { flatfileEvent } = event.data
+      if (!flatfileEvent) return
+      if (
+        flatfileEvent.topic === 'job:outcome-acknowledged' &&
+        flatfileEvent.payload.status === 'complete' &&
+        flatfileEvent.payload.operation === closeSpace?.operation
+      ) {
+        closeSpace?.onClose({})
+      }
+      dispatchEvent(flatfileEvent)
+    }
+
+    window.addEventListener('message', handlePostMessage, false)
+    this.handlePostMessageInstance = handlePostMessage
   }
 
   async initializeSpace() {
