@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- efcb757: Update Dependencies
+- efcb757: Update Dependencies 
 - Updated dependencies [efcb757]
   - @flatfile/listener@1.0.3
 
