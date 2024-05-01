@@ -28,7 +28,6 @@
     "@rollup/plugin-node-resolve": "^15.2.3",
     "@rollup/plugin-sucrase": "^5.0.2",
     "@rollup/plugin-terser": "^0.4.4",
-    "@rollup/plugin-typescript": "^11.1.5",
     "@rollup/plugin-url": "^8.0.2",
     "@types/jest": "^28.1.4",
     "csstype": "^3.1.2",

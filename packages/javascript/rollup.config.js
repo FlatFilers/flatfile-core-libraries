@@ -1,13 +1,14 @@
 import { dts } from 'rollup-plugin-dts'
 import commonjs from '@rollup/plugin-commonjs'
 import css from 'rollup-plugin-import-css'
+import dotenv from 'dotenv'
 import json from '@rollup/plugin-json'
 import peerDepsExternal from 'rollup-plugin-peer-deps-external'
 import resolve from '@rollup/plugin-node-resolve'
+import sucrase from '@rollup/plugin-sucrase'
 import terser from '@rollup/plugin-terser'
 import url from '@rollup/plugin-url'
-import dotenv from 'dotenv'
-import sucrase from '@rollup/plugin-sucrase'
+
 dotenv.config()
 
 const PROD = process.env.NODE_ENV !== 'development'
