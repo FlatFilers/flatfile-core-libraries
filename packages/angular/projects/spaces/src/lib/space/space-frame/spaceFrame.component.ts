@@ -65,15 +65,12 @@ export class SpaceFrame implements OnInit {
       )
     }
 
-    window.addEventListener(
-      'message',
-      handlePostMessage(closeSpace, listenerInstance),
-      false
-    )
-    this.handlePostMessageInstance = handlePostMessage(
+    const configuredHandlePostMessage = handlePostMessage(
       closeSpace,
       listenerInstance
     )
+    window.addEventListener('message', configuredHandlePostMessage, false)
+    this.handlePostMessageInstance = configuredHandlePostMessage
   }
 
   async initializeSpace() {
