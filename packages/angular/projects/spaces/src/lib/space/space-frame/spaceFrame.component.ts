@@ -116,7 +116,7 @@ export class SpaceFrame implements OnInit {
 
   handleConfirm() {
     const { closeSpace, handleCloseInstance } = this.spaceFrameProps
-    if (closeSpace && typeof closeSpace.onClose === 'function') {
+    if (closeSpace?.onClose && typeof closeSpace.onClose === 'function') {
       closeSpace.onClose({})
     }
     handleCloseInstance && handleCloseInstance()
