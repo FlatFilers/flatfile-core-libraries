@@ -1,5 +1,15 @@
 ## 1.0.5
 
+## 1.0.13
+
+### Patch Changes
+
+- 9228a00: Makes closeSpace.operation and closeSpace.onClose optional
+- f0fd701: Fix bug with default api export
+- e998ce6: update space url
+- Updated dependencies [9228a00]
+  - @flatfile/embedded-utils@1.2.1
+
 ## 1.0.12
 
 ### Patch Changes

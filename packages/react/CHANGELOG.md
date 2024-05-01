@@ -1,5 +1,13 @@
 # @flatfile/react
 
+## 7.9.3
+
+### Patch Changes
+
+- 9228a00: Makes closeSpace.operation and closeSpace.onClose optional
+- Updated dependencies [9228a00]
+  - @flatfile/embedded-utils@1.2.1
+
 ## 7.9.2
 
 ### Patch Changes

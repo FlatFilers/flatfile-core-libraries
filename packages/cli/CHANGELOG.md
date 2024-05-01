@@ -1,5 +1,12 @@
 # flatfile
 
+## 3.6.5
+
+### Patch Changes
+
+- 1c03915: Filter cron events out of wildcard subscription
+- 01ea278: Revert posix update, utilize url for file to support windows
+
 ## 3.6.4
 
 ### Patch Changes

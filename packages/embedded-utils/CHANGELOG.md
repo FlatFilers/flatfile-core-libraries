@@ -1,5 +1,11 @@
 # embedded-utils
 
+## 1.2.1
+
+### Patch Changes
+
+- 9228a00: Makes closeSpace.operation and closeSpace.onClose optional
+
 ## 1.2.0
 
 ### Minor Changes

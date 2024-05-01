@@ -1,5 +1,13 @@
 # @flatfile/angular
 
+## 0.1.4
+
+### Patch Changes
+
+- e998ce6: update space url
+- Updated dependencies [9228a00]
+  - @flatfile/embedded-utils@1.2.1
+
 ## 0.1.3
 
 #### Jan 24, 2024
