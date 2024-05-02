@@ -1,5 +1,4 @@
 import type {
-  DefaultSubmitSettings,
   ISpace,
   ISpaceInfo,
   IUserInfo,
@@ -29,4 +28,4 @@ export type {
   State,
 }
 
-export { DefaultSubmitSettings }
+export { DefaultSubmitSettings } from './Space'
