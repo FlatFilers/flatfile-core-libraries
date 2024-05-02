@@ -1,5 +1,15 @@
 # flatfile
 
+## 3.6.7
+
+### Patch Changes
+
+- e8bc980: Speed up our build tooling!
+- Updated dependencies [e8bc980]
+  - @flatfile/listener-driver-pubsub@2.0.7
+  - @flatfile/cross-env-config@0.0.6
+  - @flatfile/listener@1.0.4
+
 ## 3.6.6
 
 ### Patch Changes

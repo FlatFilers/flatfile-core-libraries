@@ -1,5 +1,14 @@
 # @flatfile/javascript
 
+## 1.3.6
+
+### Patch Changes
+
+- e8bc980: Speed up our build tooling!
+- Updated dependencies [e8bc980]
+  - @flatfile/embedded-utils@1.2.3
+  - @flatfile/listener@1.0.4
+
 ## 1.3.5
 
 ### Patch Changes

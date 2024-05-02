@@ -1,5 +1,13 @@
 # @flatfile/v2-shims
 
+## 1.1.4
+
+### Patch Changes
+
+- e8bc980: Speed up our build tooling!
+- Updated dependencies [e8bc980]
+  - @flatfile/listener@1.0.4
+
 ## 1.1.3
 
 ### Patch Changes

@@ -1,5 +1,14 @@
 ## 1.0.5
 
+## 1.0.15
+
+### Patch Changes
+
+- e8bc980: Speed up our build tooling!
+- Updated dependencies [e8bc980]
+  - @flatfile/embedded-utils@1.2.3
+  - @flatfile/listener@1.0.4
+
 ## 1.0.14
 
 ### Patch Changes

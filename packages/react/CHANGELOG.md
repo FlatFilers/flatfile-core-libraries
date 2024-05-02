@@ -1,5 +1,15 @@
 # @flatfile/react
 
+## 7.9.5
+
+### Patch Changes
+
+- e8bc980: Speed up our build tooling!
+- Updated dependencies [e8bc980]
+  - @flatfile/cross-env-config@0.0.6
+  - @flatfile/embedded-utils@1.2.3
+  - @flatfile/listener@1.0.4
+
 ## 7.9.4
 
 ### Patch Changes

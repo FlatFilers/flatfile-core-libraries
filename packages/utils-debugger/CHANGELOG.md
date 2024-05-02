@@ -1,5 +1,11 @@
 # @flatfile/utils-debugger
 
+## 0.0.6
+
+### Patch Changes
+
+- e8bc980: Speed up our build tooling!
+
 ## 0.0.5
 
 ### Patch Changes

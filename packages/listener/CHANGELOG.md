@@ -1,5 +1,11 @@
 # @flatfile/listener
 
+## 1.0.4
+
+### Patch Changes
+
+- e8bc980: Speed up our build tooling!
+
 ## 1.0.3
 
 ### Patch Changes

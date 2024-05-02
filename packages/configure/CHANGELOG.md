@@ -1,5 +1,11 @@
 # @flatfile/configure
 
+## 1.0.2
+
+### Patch Changes
+
+- e8bc980: Speed up our build tooling!
+
 ## 1.0.1
 
 ### Patch Changes
