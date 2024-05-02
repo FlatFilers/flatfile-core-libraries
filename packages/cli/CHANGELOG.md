@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- e8bc980: Speed up our build tooling!
+- e8bc980: Speed up our build tooling!!
 - Updated dependencies [e8bc980]
   - @flatfile/listener-driver-pubsub@2.0.7
   - @flatfile/cross-env-config@0.0.6
