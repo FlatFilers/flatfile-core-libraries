@@ -40,6 +40,7 @@ export interface IRecordInfo<
   field: K
   message: string
   stage: TRecordStageLevel
+  path?: string
 }
 
 export interface IRawRecordWithInfo<
@@ -255,30 +256,31 @@ export class FlatfileRecord<
     return null
   }
 
-  public addInfo(fields: string | string[], message: string): this {
-    return this.pushInfoMessage(fields, message, 'info', 'other')
+  public addInfo(fields: string | string[], message: string, path?: string): this {
+    return this.pushInfoMessage(fields, message, 'info', 'other', path)
   }
 
   /**
    * @alias addInfo
    */
-  public addComment(fields: string | string[], message: string): this {
-    return this.addInfo(fields, message)
+  public addComment(fields: string | string[], message: string, path?: string): this {
+    return this.addInfo(fields, message, path)
   }
 
-  public addError(fields: string | string[], message: string): this {
-    return this.pushInfoMessage(fields, message, 'error', 'other')
+  public addError(fields: string | string[], message: string, path?: string) {
+    return this.pushInfoMessage(fields, message, 'error', 'other', path)
   }
 
-  public addWarning(fields: string | string[], message: string) {
-    return this.pushInfoMessage(fields, message, 'warn', 'other')
+  public addWarning(fields: string | string[], message: string, path?: string) {
+    return this.pushInfoMessage(fields, message, 'warn', 'other', path)
   }
 
   public pushInfoMessage(
     fields: string | string[],
     message: string,
     level: IRecordInfo['level'],
-    stage: TRecordStageLevel
+    stage: TRecordStageLevel,
+    path?: string
   ): this {
     fields = Array.isArray(fields) ? fields : [fields]
 
@@ -289,6 +291,7 @@ export class FlatfileRecord<
           message,
           level,
           stage,
+          path,
         })
       }
     })
