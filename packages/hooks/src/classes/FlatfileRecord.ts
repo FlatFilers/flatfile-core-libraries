@@ -1,4 +1,4 @@
-import { digSet } from './utils';
+import { digSet } from './utils'
 
 export type TPrimitive = string | boolean | number | null
 
