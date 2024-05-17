@@ -34,7 +34,7 @@ export const EmbeddedIFrameWrapper = (
   useEffect(() => {
     if (sessionSpace && iRef.current) {
       const targetOrigin = new URL(spacesUrl).origin
-
+      
       iRef.current.contentWindow?.postMessage(
         {
           flatfileEvent: {

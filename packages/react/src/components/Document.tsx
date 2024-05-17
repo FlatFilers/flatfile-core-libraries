@@ -6,11 +6,12 @@ import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
 
 type DocumentProps = {
   config: Flatfile.DocumentConfig
+  defaultPage?: boolean
 }
 /**
  * `Document` component responsible for updating the document configuration within the Flatfile context.
  * It utilizes the `useDeepCompareEffect` hook to deeply compare the `config` prop changes and update the document accordingly.
- * 
+ *
  * @component
  * @example
  * const documentConfig = {
@@ -18,17 +19,20 @@ type DocumentProps = {
  *   body: "Example Body",
  * }
  * return <Document config={documentConfig} />
- * 
+ *
  * @param {DocumentProps} props - The props for the Document component.
  * @param {Flatfile.DocumentConfig} props.config - The configuration object for the document.
  */
 
 export const Document = (props: DocumentProps) => {
-  const { config } = props
-  const { updateDocument } = useContext(FlatfileContext)
+  const { config, defaultPage } = props
+  const { updateDocument, setDefaultPage } = useContext(FlatfileContext)
 
   const callback = useCallback(() => {
     updateDocument(config)
+    if (defaultPage) {
+      setDefaultPage({ document: config.title })
+    }
   }, [config, updateDocument])
 
   useDeepCompareEffect(callback, [config])

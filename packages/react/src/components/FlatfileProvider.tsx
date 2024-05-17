@@ -27,6 +27,8 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     space: Flatfile.SpaceConfig
   }>(DEFAULT_CREATE_SPACE)
 
+  const [defaultPage, setDefaultPage] = useState<any>(null)
+
   const addSheet = (newSheet: Flatfile.SheetConfig) => {
     setCreateSpace((prevSpace) => {
       // Check if the sheet already exists
@@ -154,6 +156,8 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         createSpace,
         setCreateSpace,
         updateSpace,
+        defaultPage,
+        setDefaultPage,
       }}
     >
       {children}

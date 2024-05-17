@@ -48,6 +48,8 @@ export interface FlatfileContextType {
   createSpace: any
   setCreateSpace: (config: any) => void
   updateSpace: (config: any) => void
+  defaultPage: undefined
+  setDefaultPage: (object: any) => void
 }
 
 export const FlatfileContext = createContext<FlatfileContextType>({
@@ -70,6 +72,8 @@ export const FlatfileContext = createContext<FlatfileContextType>({
   createSpace: undefined,
   setCreateSpace: () => {},
   updateSpace: () => {},
+  defaultPage: undefined,
+  setDefaultPage: () => {}
 })
 export const useFlatfileInternal = () => useContext(FlatfileContext)
 export default FlatfileContext

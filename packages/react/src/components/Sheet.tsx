@@ -17,6 +17,7 @@ type SheetProps = {
   onSubmit?: SimpleOnboarding['onSubmit']
   submitSettings?: SimpleOnboarding['submitSettings']
   onRecordHook?: SimpleOnboarding['onRecordHook']
+  defaultPage?: boolean
 }
 /**
  * `Sheet` component for Flatfile integration.
@@ -62,8 +63,9 @@ type SheetProps = {
  */
 
 export const Sheet = (props: SheetProps) => {
-  const { config, onRecordHook, onSubmit, submitSettings } = props
-  const { addSheet, updateWorkbook, createSpace } = useContext(FlatfileContext)
+  const { config, onRecordHook, onSubmit, submitSettings, defaultPage } = props
+  const { addSheet, updateWorkbook, createSpace, setDefaultPage } =
+    useContext(FlatfileContext)
 
   const callback = useCallback(() => {
     // Manage actions immutably
@@ -76,6 +78,13 @@ export const Sheet = (props: SheetProps) => {
       })
     }
     addSheet(config)
+    if (defaultPage) {
+      setDefaultPage({
+        workbook: {
+          sheet: config.slug,
+        },
+      })
+    }
   }, [config, createSpace, addSheet, updateWorkbook, onSubmit])
 
   useDeepCompareEffect(callback, [config])
