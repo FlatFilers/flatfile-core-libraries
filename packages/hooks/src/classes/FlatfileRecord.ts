@@ -1,4 +1,4 @@
-import { digSet } from './utils';
+import { digSet } from './utils'
 
 export type TPrimitive = string | boolean | number | null
 
@@ -256,23 +256,39 @@ export class FlatfileRecord<
     return null
   }
 
-  public addInfo(fields: string | string[], message: string, path?: string): this {
-    return this.pushInfoMessage(fields, message, 'info', 'other', path)
+  public addInfo(
+    fields: string | string[],
+    message: string,
+    listItem?: string
+  ): this {
+    return this.pushInfoMessage(fields, message, 'info', 'other', listItem)
   }
 
   /**
    * @alias addInfo
    */
-  public addComment(fields: string | string[], message: string, path?: string): this {
-    return this.addInfo(fields, message, path)
+  public addComment(
+    fields: string | string[],
+    message: string,
+    listItem?: string
+  ): this {
+    return this.addInfo(fields, message, listItem)
   }
 
-  public addError(fields: string | string[], message: string, path?: string) {
-    return this.pushInfoMessage(fields, message, 'error', 'other', path)
+  public addError(
+    fields: string | string[],
+    message: string,
+    listItem?: string
+  ) {
+    return this.pushInfoMessage(fields, message, 'error', 'other', listItem)
   }
 
-  public addWarning(fields: string | string[], message: string, path?: string) {
-    return this.pushInfoMessage(fields, message, 'warn', 'other', path)
+  public addWarning(
+    fields: string | string[],
+    message: string,
+    listItem?: string
+  ) {
+    return this.pushInfoMessage(fields, message, 'warn', 'other', listItem)
   }
 
   public pushInfoMessage(
@@ -280,12 +296,20 @@ export class FlatfileRecord<
     message: string,
     level: IRecordInfo['level'],
     stage: TRecordStageLevel,
-    path?: string
+    listItem?: string
   ): this {
     fields = Array.isArray(fields) ? fields : [fields]
 
     fields.forEach((field) => {
       if (this.verifyField(field)) {
+        let path = undefined
+        if (listItem) {
+          const fieldValue = this.get(field)
+          if (fieldValue && typeof fieldValue === 'object') {
+            const index = fieldValue.findIndex((value) => value === listItem)
+            path = `$.value[${index}]`
+          }
+        }
         this._info.push({
           field,
           message,
