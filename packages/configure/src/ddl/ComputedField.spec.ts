@@ -1,5 +1,5 @@
 import { NumberField, TextField } from '@flatfile/configure'
-import { TPrimitive } from '@flatfile/hooks'
+import { TRecordValue } from '@flatfile/hooks'
 import { ComputedField } from './ComputedField'
 import { WorkbookTester } from './WorkbookTester'
 
