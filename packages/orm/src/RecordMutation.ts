@@ -3,10 +3,11 @@ import {
   FlatfileRecord,
   IRecordInfo,
   TPrimitive,
+  TRecordValue,
 } from './FlatfileRecord'
 
 export class RecordMutation {
-  private $edits: Record<string, TPrimitive> = {}
+  private $edits: Record<string, TRecordValue> = {}
   private $info: IRecordInfo[] = []
 
   /**
@@ -104,7 +105,7 @@ export class RecordMutation {
    */
   public toGraphQLEdits(): {
     _id: number
-    data: Record<string, TPrimitive>
+    data: Record<string, TRecordValue>
     messages: Record<string, string>[]
   } {
     return {

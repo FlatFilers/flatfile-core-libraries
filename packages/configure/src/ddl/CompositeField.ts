@@ -1,8 +1,8 @@
 import { TPrimitive } from '@flatfile/hooks'
-import { AnyField } from './Field'
-import { TextField, NumberField } from '../fields'
-import { ComputedField } from './ComputedField'
 import { toPairs } from 'remeda'
+import { NumberField, TextField } from '../fields'
+import { ComputedField } from './ComputedField'
+import { AnyField } from './Field'
 
 export class ComplexType {
   static fields: Record<string, AnyField> = {}
@@ -59,7 +59,7 @@ export function makeCompositeField(someClass: any): any {
       {
         dependsOn,
         possiblyDependsOn,
-        compute: (rec: Record<string, TPrimitive>) => {
+        compute: (rec: Record<string, TRecordValue>) => {
           const limitedObj: Record<string, any> = {}
           toPairs(unMapRecord).map(([fullKey, recordKey]) => {
             if (fullKey === null) {

@@ -1,14 +1,14 @@
 import { NumberField, TextField } from '@flatfile/configure'
+import { TPrimitive } from '@flatfile/hooks'
 import { ComputedField } from './ComputedField'
 import { WorkbookTester } from './WorkbookTester'
-import { TPrimitive } from '@flatfile/hooks'
 
 // First sets of Workbook Tests
 describe('computedFiled ->', () => {
   test('ComputedField can be instantiated ', async () => {
     ComputedField(NumberField({ required: false }), {
       dependsOn: ['a', 'b'],
-      compute: (rec: Record<string, TPrimitive>) => {
+      compute: (rec: Record<string, TRecordValue>) => {
         const a = rec['a'] as number
         const b = rec['b'] as number
         if (typeof a === 'number' && typeof b === 'number') {
@@ -27,7 +27,7 @@ describe('computedFiled ->', () => {
         b: NumberField({}),
         c: ComputedField(NumberField({ required: false }), {
           dependsOn: ['a', 'b'],
-          compute: (rec: Record<string, TPrimitive>) => {
+          compute: (rec: Record<string, TRecordValue>) => {
             const a = rec['a'] as number
             const b = rec['b'] as number
             if (typeof a === 'number' && typeof b === 'number') {
@@ -57,7 +57,7 @@ describe('computedFiled ->', () => {
         b: NumberField({}),
         c: ComputedField(NumberField({ required: false }), {
           dependsOn: ['a', 'b'],
-          compute: (rec: Record<string, TPrimitive>) => {
+          compute: (rec: Record<string, TRecordValue>) => {
             /*   The following line is the error, should we throw here on accessing rec['non-existent-field'] or at wrong types provided */
             const a = rec['non-existent-field'] as number
             const b = rec['b'] as number
@@ -92,7 +92,7 @@ describe('computedFiled ->', () => {
         b: NumberField({}),
         c: ComputedField(NumberField({ required: false }), {
           dependsOn: ['a', 'b'],
-          compute: (rec: Record<string, TPrimitive>) => {
+          compute: (rec: Record<string, TRecordValue>) => {
             // The following line is the error, should we throw here
             // on accessing rec['non-existent-field'] or at wrong
             // types provided
@@ -124,7 +124,7 @@ describe('computedFiled ->', () => {
         b: NumberField({}),
         c: ComputedField(NumberField({ required: false }), {
           dependsOn: ['a', 'b'],
-          compute: (rec: Record<string, TPrimitive>) => {
+          compute: (rec: Record<string, TRecordValue>) => {
             // note, this function would fill in c, but it shouldn't
             // be called becasue the `dependsOn` requirement wasn't
             // met
@@ -156,7 +156,7 @@ describe('computedFiled ->', () => {
           dependsOn: ['a'],
           possiblyDependsOn: ['b'],
 
-          compute: (rec: Record<string, TPrimitive>) => {
+          compute: (rec: Record<string, TRecordValue>) => {
             if (rec['b'] === null) {
               return "b wasn't there"
             } else {

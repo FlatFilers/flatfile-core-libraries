@@ -46,6 +46,8 @@ export class FlatfileRecord {
 
 export type TPrimitive = string | boolean | number | null
 
+export type TRecordValue = TPrimitive | Array<TPrimitive>
+
 export type TRecordData<T extends TPrimitive | undefined = TPrimitive> = {
   [key: string]: T
 }

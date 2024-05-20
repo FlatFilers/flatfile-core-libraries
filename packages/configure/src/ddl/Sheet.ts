@@ -100,12 +100,14 @@ https://www.postgresql.org/docs/current/ddl-constraints.html#DDL-CONSTRAINTS-UNI
         }
         const uniqueObj = uniques[uniqueFieldKey]
 
-        if (isFullyPresent(uniqueObj[value])) {
-          uniqueObj[value].push(index)
-        } else {
-          // only add to uniques array if value is not null || undefined
-          if (isFullyPresent(value)) {
-            uniqueObj[value] = [index]
+        if (!Array.isArray(value)) {
+          if (isFullyPresent(uniqueObj[value])) {
+            uniqueObj[value].push(index)
+          } else {
+            // only add to uniques array if value is not null || undefined
+            if (isFullyPresent(value)) {
+              uniqueObj[value] = [index]
+            }
           }
         }
       }

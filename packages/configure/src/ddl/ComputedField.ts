@@ -1,7 +1,7 @@
-import { FlatfileRecord, TPrimitive } from '@flatfile/hooks'
+import { FlatfileRecord, TRecordValue } from '@flatfile/hooks'
 import { isFullyPresent } from '../utils/isFullyPresent'
-import { Message, AnyField } from './Field'
-export type computeType = (limitedObj: Record<string, TPrimitive>) => unknown
+import { AnyField, Message } from './Field'
+export type computeType = (limitedObj: Record<string, TRecordValue>) => unknown
 
 interface ComputedFieldArgs {
   dependsOn: string[]
@@ -18,7 +18,7 @@ const recordComputeForComputedField = (
 ) => {
   const retFunc = (record: FlatfileRecord) => {
     const destinationKey = computeArgs.destination
-    const recordObj: Record<string, TPrimitive> = {}
+    const recordObj: Record<string, TRecordValue> = {}
     let anyMissing = false
     if (computeArgs.possiblyDependsOn === undefined) {
       computeArgs.possiblyDependsOn = []
