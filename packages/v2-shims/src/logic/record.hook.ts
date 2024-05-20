@@ -1,4 +1,4 @@
-import { FlatfileRecord } from '@flatfile/hooks'
+import { FlatfileRecord, TPrimitive } from '@flatfile/hooks'
 import { FlatfileEvent } from '@flatfile/listener'
 import { ScalarDictionary } from '../types'
 import { IDataHookResponse } from '../types/validation.response'
@@ -20,7 +20,10 @@ export function recordToDictionary(record: FlatfileRecord): ScalarDictionary {
   return Object.keys(obj).reduce((acc, k) => {
     const prop = obj[k]
     if (prop && typeof prop === 'object' && 'value' in prop) {
-      return { ...acc, [k]: prop.value }
+      return {
+        ...acc,
+        [k]: Array.isArray(prop.value) ? prop.value.join(', ') : prop.value,
+      }
     } else {
       return { ...acc, [k]: prop }
     }
