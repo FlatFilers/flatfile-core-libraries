@@ -3,9 +3,14 @@ import FlatfileContext, { DEFAULT_CREATE_SPACE } from './FlatfileContext'
 import FlatfileListener, { Browser } from '@flatfile/listener'
 import { Flatfile } from '@flatfile/api'
 import { EmbeddedIFrameWrapper } from './EmbeddedIFrameWrapper'
-import { ExclusiveFlatfileProviderProps } from '../types'
+import { ExclusiveFlatfileProviderProps, IFrameTypes } from '../types'
 import { handlePostMessage } from '@flatfile/embedded-utils'
 import { ClosePortalOptions } from '../types'
+
+const configDefaults: IFrameTypes = {
+  preload: true,
+  resetOnClose: true,
+}
 
 export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   children,
@@ -30,6 +35,8 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
 
   const [defaultPage, setDefaultPage] = useState<any>(null)
   const iframe = useRef<HTMLIFrameElement | null>(null)
+
+  const FLATFILE_PROVIDER_CONFIG = { ...config, ...configDefaults }
 
   const addSheet = (newSheet: Flatfile.SheetConfig) => {
     setCreateSpace((prevSpace) => {
@@ -111,11 +118,13 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
 
   const resetSpace = ({ reset }: ClosePortalOptions = {}) => {
     setOpen(false)
-    if (reset ?? config?.resetOnClose) {
+
+    if (reset ?? FLATFILE_PROVIDER_CONFIG.resetOnClose) {
       setAccessToken(null)
       setSessionSpace(null)
 
-      const spacesUrl = config?.spaceUrl || 'https://platform.flatfile.com/s'
+      const spacesUrl =
+        FLATFILE_PROVIDER_CONFIG.spaceUrl || 'https://platform.flatfile.com/s'
       const preloadUrl = `${spacesUrl}/space-init`
 
       const spaceLink = sessionSpace?.space?.guestLink || null
@@ -123,7 +132,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       // Works but only after the iframe is visible
       iframe?.current?.setAttribute(
         'src',
-        config?.preload ? preloadUrl : spaceLink
+        FLATFILE_PROVIDER_CONFIG.preload ? preloadUrl : spaceLink
       )
     }
   }
@@ -131,7 +140,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   // Listen to the postMessage event from the created iFrame
   useEffect(() => {
     const ff = (message: MessageEvent) =>
-      handlePostMessage(config?.closeSpace, listener)(message)
+      handlePostMessage(FLATFILE_PROVIDER_CONFIG?.closeSpace, listener)(message)
 
     window.addEventListener('message', ff, false)
     return () => {
@@ -179,7 +188,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         defaultPage,
         setDefaultPage,
         resetSpace,
-        config,
+        config: FLATFILE_PROVIDER_CONFIG,
       }}
     >
       {children}
@@ -187,7 +196,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       <EmbeddedIFrameWrapper
         handleCloseInstance={resetSpace}
         iRef={iframe}
-        {...config}
+        {...FLATFILE_PROVIDER_CONFIG}
       />
     </FlatfileContext.Provider>
   )

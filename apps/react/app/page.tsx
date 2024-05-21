@@ -11,8 +11,7 @@ export default function Home() {
     <FlatfileProvider
       publishableKey={PUBLISHABLE_KEY}
       config={{
-        preload: true,
-        resetOnClose: true
+        preload: true
       }}
     >
       <App />
