@@ -2,4 +2,4 @@
 '@flatfile/listener': patch
 ---
 
-Adds unmount() to @flatfile/listener
+Adds `listener.unmount()` to @flatfile/listener
