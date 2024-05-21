@@ -6,6 +6,7 @@ import { FlatfileClient } from '@flatfile/api'
 import { ClosePortalOptions } from '../types'
 
 const findDefaultPage = (createdSpace: any, defaultPage: any) => {
+  if (!defaultPage) return
   if (defaultPage.document) {
     const document = createdSpace.documents.find(
       (d: any) => d.title === defaultPage.document
@@ -62,7 +63,6 @@ export const useFlatfile: () => {
     defaultPage,
     resetSpace,
   } = context
-  ;(window as any).CROSSENV_FLATFILE_API_URL = apiUrl
 
   const handleCreateSpace = async () => {
     if (!publishableKey) {
@@ -121,6 +121,7 @@ export const useFlatfile: () => {
   }
 
   const openPortal = () => {
+    ;(window as any).CROSSENV_FLATFILE_API_URL = apiUrl
     if (publishableKey && !accessToken) {
       handleCreateSpace()
     } else if (accessToken && !publishableKey) {
@@ -132,6 +133,7 @@ export const useFlatfile: () => {
   const closePortal = (options?: ClosePortalOptions) => {
     resetSpace(options)
   }
+
 
   return {
     openPortal,

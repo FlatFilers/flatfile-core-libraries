@@ -28,14 +28,12 @@ export const Document = (props: DocumentProps) => {
   const { config, defaultPage } = props
   const { updateDocument, setDefaultPage } = useContext(FlatfileContext)
 
-  const callback = useCallback(() => {
+  useDeepCompareEffect(() => {
     updateDocument(config)
     if (defaultPage) {
       setDefaultPage({ document: config.title })
     }
-  }, [config, updateDocument])
-
-  useDeepCompareEffect(callback, [config])
+  }, [config, defaultPage])
 
   return <></>
 }

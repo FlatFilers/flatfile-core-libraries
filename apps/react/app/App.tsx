@@ -129,7 +129,7 @@ const App = () => {
             }}
           />
           <Sheet
-            // defaultPage={true}
+            defaultPage={true}
             config={{
               ...workbook.sheets![0],
               slug: 'contacts4',

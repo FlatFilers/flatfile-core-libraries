@@ -25,6 +25,7 @@ const App = () => {
       </div>
 
       <Sheet
+        defaultPage={true}
         config={sheet}
         onRecordHook={(record) => {
           const email = record.get('email')

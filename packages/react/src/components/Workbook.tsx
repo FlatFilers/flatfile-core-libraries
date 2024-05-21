@@ -1,5 +1,5 @@
 import FlatfileContext from './FlatfileContext'
-import React, { useCallback, useContext } from 'react'
+import React, { useContext } from 'react'
 import { type Flatfile } from '@flatfile/api'
 import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
 import { TRecordDataWithLinks, TPrimitive } from '@flatfile/hooks'
@@ -73,7 +73,7 @@ export const Workbook = (props: WorkbookProps) => {
   const { updateWorkbook, createSpace } = useContext(FlatfileContext)
   // Accept a workbook onSubmit function and add it to the workbook actions
 
-  const callback = useCallback(() => {
+  useDeepCompareEffect(() => {
     // adds workbook action if onSubmit is passed along
     updateWorkbook(
       onSubmit
@@ -83,9 +83,7 @@ export const Workbook = (props: WorkbookProps) => {
           }
         : config
     )
-  }, [config, onSubmit])
-
-  useDeepCompareEffect(callback, [config])
+  }, [config])
 
   usePlugin(
     (client) => {

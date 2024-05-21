@@ -1,4 +1,4 @@
-import React, { useCallback, useContext } from 'react'
+import React, { useContext } from 'react'
 import type { Flatfile } from '@flatfile/api'
 import FlatfileContext from './FlatfileContext'
 import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
@@ -36,14 +36,12 @@ export const Space = (props: SpaceProps) => {
   const { config, id, children } = props
   const { updateSpace } = useContext(FlatfileContext)
 
-  const callback = useCallback(() => {
+  useDeepCompareEffect(() => {
     updateSpace({
       ...(config || {}),
       id,
     })
-  }, [config, updateSpace])
-
-  useDeepCompareEffect(callback, [config])
+  }, [config])
 
   return <>{children}</>
 }

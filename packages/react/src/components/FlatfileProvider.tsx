@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
 import FlatfileContext, { DEFAULT_CREATE_SPACE } from './FlatfileContext'
 import FlatfileListener, { Browser } from '@flatfile/listener'
 import { Flatfile } from '@flatfile/api'
@@ -33,7 +33,25 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     space: Flatfile.SpaceConfig
   }>(DEFAULT_CREATE_SPACE)
 
-  const [defaultPage, setDefaultPage] = useState<any>(null)
+  const [defaultPage, setDefaultPageRaw] = useState<any>(undefined)
+
+  const setDefaultPage = useCallback(
+    (incomingDefaultPage: any) => {
+      if (defaultPage === undefined) {
+        setDefaultPageRaw(incomingDefaultPage)
+      } else {
+        console.warn(
+          `Attempt to set multiple default pages detected. Only one default page can be set per space. Current default page: ${JSON.stringify(
+            defaultPage
+          )}, Attempted new default page: ${JSON.stringify(
+            incomingDefaultPage
+          )}`
+        )
+      }
+    },
+    [defaultPage]
+  )
+
   const iframe = useRef<HTMLIFrameElement | null>(null)
 
   const FLATFILE_PROVIDER_CONFIG = { ...config, ...configDefaults }

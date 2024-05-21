@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react'
+import React from 'react'
 import { Flatfile } from '@flatfile/api'
 import { useContext } from 'react'
 import FlatfileContext from './FlatfileContext'
@@ -67,7 +67,7 @@ export const Sheet = (props: SheetProps) => {
   const { addSheet, updateWorkbook, createSpace, setDefaultPage } =
     useContext(FlatfileContext)
 
-  const callback = useCallback(() => {
+  useDeepCompareEffect(() => {
     // Manage actions immutably
     if (onSubmit) {
       updateWorkbook({
@@ -85,9 +85,7 @@ export const Sheet = (props: SheetProps) => {
         },
       })
     }
-  }, [config, createSpace, addSheet, updateWorkbook, onSubmit])
-
-  useDeepCompareEffect(callback, [config])
+  }, [config, defaultPage])
 
   if (onRecordHook) {
     usePlugin(
