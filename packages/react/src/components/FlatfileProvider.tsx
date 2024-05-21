@@ -12,6 +12,13 @@ const configDefaults: IFrameTypes = {
   resetOnClose: true,
 }
 
+interface SESSION_SPACE
+  extends Omit<Flatfile.Space, 'createdAt' | 'updatedAt' | 'upgradedAt'> {
+  createdAt: string
+  updatedAt: string
+  upgradedAt: string
+}
+
 export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   children,
   publishableKey,
@@ -25,7 +32,9 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   >(accessToken)
   const [listener, setListener] = useState(new FlatfileListener())
   const [open, setOpen] = useState<boolean>(false)
-  const [sessionSpace, setSessionSpace] = useState<any>(null)
+  const [sessionSpace, setSessionSpace] = useState<
+    { space: SESSION_SPACE } | undefined
+  >(undefined)
 
   const [createSpace, setCreateSpace] = useState<{
     document: Flatfile.DocumentConfig | undefined
@@ -139,19 +148,20 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
 
     if (reset ?? FLATFILE_PROVIDER_CONFIG.resetOnClose) {
       setAccessToken(null)
-      setSessionSpace(null)
+      setSessionSpace(undefined)
 
       const spacesUrl =
         FLATFILE_PROVIDER_CONFIG.spaceUrl || 'https://platform.flatfile.com/s'
       const preloadUrl = `${spacesUrl}/space-init`
 
       const spaceLink = sessionSpace?.space?.guestLink || null
-
+      const iFrameSrc = FLATFILE_PROVIDER_CONFIG.preload
+        ? preloadUrl
+        : spaceLink
+      if (iFrameSrc) {
+        iframe?.current?.setAttribute('src', iFrameSrc)
+      }
       // Works but only after the iframe is visible
-      iframe?.current?.setAttribute(
-        'src',
-        FLATFILE_PROVIDER_CONFIG.preload ? preloadUrl : spaceLink
-      )
     }
   }
 

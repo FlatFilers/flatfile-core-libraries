@@ -4,6 +4,7 @@ import { getSpace } from '../utils/getSpace'
 import { createSpaceInternal } from '../utils/createSpaceInternal'
 import { FlatfileClient } from '@flatfile/api'
 import { ClosePortalOptions } from '../types'
+import { convertDatesToISO } from '../utils/convertDatesToISO'
 
 const findDefaultPage = (createdSpace: any, defaultPage: any) => {
   if (!defaultPage) return
@@ -116,7 +117,7 @@ export const useFlatfile: () => {
         setAccessToken(reUsedSpace.accessToken)
       }
 
-      setSessionSpace({ space: reUsedSpace })
+      setSessionSpace({ space: convertDatesToISO(reUsedSpace) })
     }
   }
 
