@@ -1,11 +1,14 @@
 import React, { useContext } from 'react'
 import { render, waitFor } from '@testing-library/react'
 import { FlatfileProvider } from '../FlatfileProvider'
-import FlatfileContext, { FlatfileContextType } from '../FlatfileContext'
+import FlatfileContext, {
+  DEFAULT_CREATE_SPACE,
+  FlatfileContextType,
+} from '../FlatfileContext'
 import fetchMock from 'jest-fetch-mock'
 import FlatfileListener from '@flatfile/listener'
 
-export const MockFlatfileProviderValue: FlatfileContextType = {
+export const FlatfileProviderValue: FlatfileContextType = {
   updateDocument: jest.fn(),
   apiUrl: '',
   open: false,
@@ -17,9 +20,12 @@ export const MockFlatfileProviderValue: FlatfileContextType = {
   addSheet: jest.fn(),
   updateSheet: jest.fn(),
   updateWorkbook: jest.fn(),
-  createSpace: undefined,
+  createSpace: DEFAULT_CREATE_SPACE,
   setCreateSpace: jest.fn(),
   updateSpace: jest.fn(),
+  defaultPage: undefined,
+  setDefaultPage: jest.fn(),
+  resetSpace: jest.fn(),
 }
 
 fetchMock.enableMocks()

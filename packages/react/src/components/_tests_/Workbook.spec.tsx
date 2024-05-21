@@ -4,21 +4,11 @@ import { Workbook } from '../Workbook'
 import FlatfileContext, { FlatfileContextType } from '../FlatfileContext'
 import { useDeepCompareEffect } from '../../utils/useDeepCompareEffect'
 import { workbookOnSubmitAction } from '../../utils/constants'
-import FlatfileListener from '@flatfile/listener'
 import { Flatfile } from '@flatfile/api'
+import { FlatfileProviderValue } from './FlatfileProvider.spec'
 
 const MockFlatfileProviderValue: FlatfileContextType = {
-  updateDocument: jest.fn(),
-  apiUrl: '',
-  open: false,
-  setOpen: jest.fn(),
-  setSessionSpace: jest.fn(),
-  listener: new FlatfileListener(),
-  setListener: jest.fn(),
-  setAccessToken: jest.fn(),
-  addSheet: jest.fn(),
-  updateSheet: jest.fn(),
-  updateWorkbook: jest.fn(),
+  ...FlatfileProviderValue,
   createSpace: {
     document: undefined,
     workbook: {
@@ -34,8 +24,6 @@ const MockFlatfileProviderValue: FlatfileContextType = {
       },
     },
   },
-  setCreateSpace: jest.fn(),
-  updateSpace: jest.fn(),
 }
 
 jest.mock('../../utils/useDeepCompareEffect', () => ({

@@ -3,7 +3,7 @@ import { render } from '@testing-library/react'
 import { Document } from '../Document'
 import FlatfileContext from '../FlatfileContext'
 import { useDeepCompareEffect } from '../../utils/useDeepCompareEffect'
-import { MockFlatfileProviderValue } from './FlatfileProvider.spec'
+import { FlatfileProviderValue } from './FlatfileProvider.spec'
 
 jest.mock('../../utils/useDeepCompareEffect', () => ({
   useDeepCompareEffect: jest.fn(),
@@ -27,7 +27,7 @@ describe('Document', () => {
     render(
       <FlatfileContext.Provider
         value={{
-          ...MockFlatfileProviderValue,
+          ...FlatfileProviderValue,
           updateDocument: mockUpdateDocument,
         }}
       >
@@ -44,7 +44,7 @@ describe('Document', () => {
     const { rerender } = render(
       <FlatfileContext.Provider
         value={{
-          ...MockFlatfileProviderValue,
+          ...FlatfileProviderValue,
           updateDocument: mockUpdateDocument,
         }}
       >
@@ -56,7 +56,7 @@ describe('Document', () => {
     rerender(
       <FlatfileContext.Provider
         value={{
-          ...MockFlatfileProviderValue,
+          ...FlatfileProviderValue,
           updateDocument: mockUpdateDocument,
         }}
       >

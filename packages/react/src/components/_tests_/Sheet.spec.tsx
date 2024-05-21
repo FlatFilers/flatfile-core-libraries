@@ -1,31 +1,11 @@
 import React from 'react'
 import { render } from '@testing-library/react'
 import { Sheet } from '../Sheet'
-import FlatfileContext, {
-  DEFAULT_CREATE_SPACE,
-  FlatfileContextType,
-} from '../FlatfileContext'
+import FlatfileContext from '../FlatfileContext'
 import { useDeepCompareEffect } from '../../utils/useDeepCompareEffect'
 import { workbookOnSubmitAction } from '../../utils/constants'
-import FlatfileListener from '@flatfile/listener'
 import { Flatfile } from '@flatfile/api'
-
-const MockFlatfileProviderValue: FlatfileContextType = {
-  updateDocument: jest.fn(),
-  apiUrl: '',
-  open: false,
-  setOpen: jest.fn(),
-  setSessionSpace: jest.fn(),
-  listener: new FlatfileListener(),
-  setListener: jest.fn(),
-  setAccessToken: jest.fn(),
-  addSheet: jest.fn(),
-  updateSheet: jest.fn(),
-  updateWorkbook: jest.fn(),
-  createSpace: DEFAULT_CREATE_SPACE,
-  setCreateSpace: jest.fn(),
-  updateSpace: jest.fn(),
-}
+import { FlatfileProviderValue } from './FlatfileProvider.spec'
 
 jest.mock('../../utils/useDeepCompareEffect', () => ({
   useDeepCompareEffect: jest.fn(),
@@ -63,7 +43,7 @@ describe('Sheet', () => {
     render(
       <FlatfileContext.Provider
         value={{
-          ...MockFlatfileProviderValue,
+          ...FlatfileProviderValue,
           addSheet: mockUpdateSheet,
         }}
       >
@@ -84,7 +64,7 @@ describe('Sheet', () => {
     render(
       <FlatfileContext.Provider
         value={{
-          ...MockFlatfileProviderValue,
+          ...FlatfileProviderValue,
           updateWorkbook: mockUpdateWorkbook,
           addSheet: mockUpdateSheet,
         }}

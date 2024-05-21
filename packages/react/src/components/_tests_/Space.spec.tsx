@@ -3,7 +3,7 @@ import { render } from '@testing-library/react'
 import { Space } from '../Space'
 import FlatfileContext from '../FlatfileContext'
 import { useDeepCompareEffect } from '../../utils/useDeepCompareEffect'
-import { MockFlatfileProviderValue } from './FlatfileProvider.spec'
+import { FlatfileProviderValue } from './FlatfileProvider.spec'
 jest.mock('../../utils/useDeepCompareEffect', () => ({
   useDeepCompareEffect: jest.fn(),
 }))
@@ -25,7 +25,7 @@ describe('Space', () => {
   it('calls updateSpace with config on initial render', () => {
     render(
       <FlatfileContext.Provider
-        value={{ ...MockFlatfileProviderValue, updateSpace: mockUpdateSpace }}
+        value={{ ...FlatfileProviderValue, updateSpace: mockUpdateSpace }}
       >
         <Space config={MockSpaceConfig} />
       </FlatfileContext.Provider>
@@ -38,7 +38,7 @@ describe('Space', () => {
     const newConfig = { ...MockSpaceConfig, name: 'New Test Area' }
     const { rerender } = render(
       <FlatfileContext.Provider
-        value={{ ...MockFlatfileProviderValue, updateSpace: mockUpdateSpace }}
+        value={{ ...FlatfileProviderValue, updateSpace: mockUpdateSpace }}
       >
         <Space config={MockSpaceConfig} />
       </FlatfileContext.Provider>
@@ -46,7 +46,7 @@ describe('Space', () => {
 
     rerender(
       <FlatfileContext.Provider
-        value={{ ...MockFlatfileProviderValue, updateSpace: mockUpdateSpace }}
+        value={{ ...FlatfileProviderValue, updateSpace: mockUpdateSpace }}
       >
         <Space config={newConfig} />
       </FlatfileContext.Provider>
