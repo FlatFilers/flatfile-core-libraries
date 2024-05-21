@@ -1,5 +1,14 @@
 # @flatfile/react
 
+## 7.9.6
+
+### Patch Changes
+
+- bac639c: Fixes bug where ISO dates were automatically converted to JS Dates
+- Updated dependencies [bac639c]
+- Updated dependencies [bac639c]
+  - @flatfile/listener@1.0.5
+
 ## 7.9.5
 
 ### Patch Changes
