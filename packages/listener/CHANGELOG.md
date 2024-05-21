@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- bac639c: Adds `listener.unmount()` to @flatfile/listener
+- bac639c: Adds `listener.unmount()` to `@flatfile/listener`
 - bac639c: Adds resetting Space on Close to @flatfile/react, adds DefaultPage to @flatfile/react
 
 ## 1.0.4
