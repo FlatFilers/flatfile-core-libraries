@@ -1,16 +1,15 @@
-import React from 'react'
 import { Flatfile } from '@flatfile/api'
-import { useContext } from 'react'
-import FlatfileContext from './FlatfileContext'
 import {
   DefaultSubmitSettings,
   SimpleOnboarding,
 } from '@flatfile/embedded-utils'
 import { FlatfileEvent } from '@flatfile/listener'
-import { recordHook, FlatfileRecord } from '@flatfile/plugin-record-hook'
-import { usePlugin, useEvent } from '../hooks'
-import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
+import { FlatfileRecord, recordHook } from '@flatfile/plugin-record-hook'
+import React, { useContext } from 'react'
+import { useEvent, usePlugin } from '../hooks'
 import { OnSubmitAction, workbookOnSubmitAction } from '../utils/constants'
+import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
+import FlatfileContext from './FlatfileContext'
 
 type SheetProps = {
   config: Flatfile.SheetConfig
@@ -19,6 +18,7 @@ type SheetProps = {
   onRecordHook?: SimpleOnboarding['onRecordHook']
   defaultPage?: boolean
 }
+
 /**
  * `Sheet` component for Flatfile integration.
  *
@@ -60,6 +60,7 @@ type SheetProps = {
  * @param {Function} [props.onSubmit] - Callback function to handle data submission
  * @param {Object} [props.submitSettings] - Settings for data submission
  * @param {Function} [props.onRecordHook] - Callback function to handle record manipulation
+ * @param {Boolean} [props.defaultPage] - Sets this as the default Page that the Space opens up to
  */
 
 export const Sheet = (props: SheetProps) => {
@@ -79,36 +80,43 @@ export const Sheet = (props: SheetProps) => {
     }
     addSheet(config)
     if (defaultPage) {
-      setDefaultPage({
+      type DefaultPageConfig = {
+        workbook: {
+          sheet?: string
+        }
+      }
+
+      const defaultPageConfig: DefaultPageConfig = {
         workbook: {
           sheet: config.slug,
         },
-      })
+      }
+
+      setDefaultPage(defaultPageConfig)
     }
   }, [config, defaultPage])
 
-  if (onRecordHook) {
-    usePlugin(
-      recordHook(
-        config.slug || '**',
-        async (record: FlatfileRecord, event: FlatfileEvent | undefined) => {
-          return onRecordHook(record, event)
-        }
-      ),
-      [config, onRecordHook]
-    )
-  }
+  usePlugin(
+    onRecordHook
+      ? recordHook(
+          config.slug ?? '**',
+          async (record: FlatfileRecord, event: FlatfileEvent | undefined) => {
+            return onRecordHook(record, event)
+          }
+        )
+      : undefined,
+    [config, onRecordHook]
+  )
 
-  if (onSubmit) {
-    const onSubmitSettings = {
-      ...DefaultSubmitSettings,
-      ...submitSettings,
-    }
-    useEvent(
-      'job:ready',
-      { job: `workbook:${workbookOnSubmitAction(config.slug).operation}` },
-      OnSubmitAction(onSubmit, onSubmitSettings)
-    )
-  }
+  useEvent(
+    'job:ready',
+    { job: `workbook:${workbookOnSubmitAction(config.slug).operation}` },
+    onSubmit
+      ? OnSubmitAction(onSubmit, {
+          ...DefaultSubmitSettings,
+          ...submitSettings,
+        })
+      : () => {}
+  )
   return <></>
 }

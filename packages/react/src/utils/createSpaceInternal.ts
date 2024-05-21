@@ -1,12 +1,4 @@
-import { Flatfile } from '@flatfile/api'
-
-type CreateSpaceinternal = {
-  apiUrl: string
-  publishableKey: string
-  space: Flatfile.SpaceConfig
-  workbook?: Flatfile.CreateWorkbookConfig
-  document?: Flatfile.DocumentConfig
-}
+import { CREATE_SPACE_INTERNAL } from '../types/ICreateSpaceInternal'
 
 export const createSpaceInternal = async ({
   apiUrl,
@@ -14,7 +6,7 @@ export const createSpaceInternal = async ({
   space,
   workbook,
   document,
-}: CreateSpaceinternal) => {
+}: CREATE_SPACE_INTERNAL) => {
   const createSpaceEndpoint = `${apiUrl}/v1/internal/spaces/init?publishableKey=${publishableKey}`
 
   let spaceRequestBody: any = {

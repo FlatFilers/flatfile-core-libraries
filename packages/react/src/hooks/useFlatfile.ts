@@ -41,7 +41,7 @@ export const useFlatfile: () => {
       return
     }
     // autoConfigure if no workbook or workbook.sheets are provided as they should be handled in the listener space:configure event
-    const autoConfigure = !(createSpace.workbook && createSpace.workbook.sheets)
+    const autoConfigure = !createSpace.workbook?.sheets
     const { data: createdSpace } = await createSpaceInternal({
       apiUrl,
       publishableKey,

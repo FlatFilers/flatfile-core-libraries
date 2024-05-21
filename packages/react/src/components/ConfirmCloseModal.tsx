@@ -1,7 +1,8 @@
 import React from 'react'
+// TODO: make this style import configurable
 import './style.scss'
 
-const ConfirmModal = ({
+export default ({
   onConfirm,
   onCancel,
   exitText,
@@ -15,38 +16,27 @@ const ConfirmModal = ({
   exitTitle: string
   exitPrimaryButtonText: string
   exitSecondaryButtonText: string
-}) => {
-  return (
-    <>
-      <div
-        data-testid="close-confirm-modal"
-        className="flatfile_outer-shell"
-      >
-        <div className="flatfile_close-confirm-modal-inner">
-          <div className="flatfile_inner-shell">
-            <div className="flatfile_modal-heading">
-              {exitTitle}
-            </div>
-            <div className="flatfile_modal-text">{exitText}</div>
-            <div className="flatfile_button-group">
-              <div
-                onClick={onCancel}
-                className="flatfile_button flatfile_secondary"
-              >
-                <div>{exitSecondaryButtonText}</div>
-              </div>
-              <div
-                onClick={onConfirm}
-                className="flatfile_button flatfile_primary"
-              >
-                <div>{exitPrimaryButtonText}</div>
-              </div>
-            </div>
-          </div>
+}) => (
+  <div data-testid="close-confirm-modal" className="flatfile_outer-shell">
+    <div className="flatfile_close-confirm-modal-inner">
+      <div className="flatfile_inner-shell">
+        <div className="flatfile_modal-heading">{exitTitle}</div>
+        <div className="flatfile_modal-text">{exitText}</div>
+        <div className="flatfile_button-group">
+          <button
+            onClick={onCancel}
+            className="flatfile_button flatfile_secondary"
+          >
+            <div>{exitSecondaryButtonText}</div>
+          </button>
+          <button
+            onClick={onConfirm}
+            className="flatfile_button flatfile_primary"
+          >
+            <div>{exitPrimaryButtonText}</div>
+          </button>
         </div>
       </div>
-    </>
-  )
-}
-
-export default ConfirmModal
+    </div>
+  </div>
+)

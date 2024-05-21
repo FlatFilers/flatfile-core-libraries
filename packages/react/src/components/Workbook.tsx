@@ -1,18 +1,16 @@
-import FlatfileContext from './FlatfileContext'
-import React, { useContext } from 'react'
 import { type Flatfile } from '@flatfile/api'
-import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
-import { TRecordDataWithLinks, TPrimitive } from '@flatfile/hooks'
-import { FlatfileEvent } from '@flatfile/listener'
-import { FlatfileRecord, recordHook } from '@flatfile/plugin-record-hook'
-import { useEvent, usePlugin } from '../hooks'
 import {
   DefaultSubmitSettings,
-  JobHandler,
-  SheetHandler,
   SimpleOnboarding,
 } from '@flatfile/embedded-utils'
+import { TPrimitive, TRecordDataWithLinks } from '@flatfile/hooks'
+import { FlatfileEvent } from '@flatfile/listener'
+import { FlatfileRecord, recordHook } from '@flatfile/plugin-record-hook'
+import React, { useContext } from 'react'
+import { useEvent, usePlugin } from '../hooks'
 import { OnSubmitAction, workbookOnSubmitAction } from '../utils/constants'
+import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
+import FlatfileContext from './FlatfileContext'
 
 export type onRecordHook<T> = (
   record: T,
@@ -69,7 +67,7 @@ type WorkbookProps = Partial<{
  */
 
 export const Workbook = (props: WorkbookProps) => {
-  const { config, children, onRecordHooks, onSubmit } = props
+  const { config, children, onRecordHooks, onSubmit, submitSettings } = props
   const { updateWorkbook, createSpace } = useContext(FlatfileContext)
   // Accept a workbook onSubmit function and add it to the workbook actions
 
@@ -88,15 +86,19 @@ export const Workbook = (props: WorkbookProps) => {
   usePlugin(
     (client) => {
       onRecordHooks?.map(([slug, hook], index) => {
-        // If you have multiple sheets, and just pass 1 record hook to the onRecordHooks array and that record hook doesn't have a slug, then assume the record hook is for all sheets.
-        // Otherwise if multiple record hooks are passed along with out slugs, then assume they are in the same order as the sheets provided
-        const actualSlug =
-          typeof slug === 'function'
-            ? onRecordHooks?.length === 1 &&
-              createSpace.workbook.sheets?.length > 1
-              ? '**'
-              : createSpace.workbook.sheets?.[index]?.slug
-            : slug
+        let actualSlug
+        if (typeof slug === 'function') {
+          if (
+            onRecordHooks?.length === 1 &&
+            createSpace.workbook.sheets?.length > 1
+          ) {
+            actualSlug = '**'
+          } else {
+            actualSlug = createSpace.workbook.sheets?.[index]?.slug
+          }
+        } else {
+          actualSlug = slug
+        }
 
         client.use(
           recordHook(actualSlug, async (record, event) => {
@@ -113,17 +115,15 @@ export const Workbook = (props: WorkbookProps) => {
     [config, createSpace.workbook.sheets, onRecordHooks]
   )
 
-  if (onSubmit) {
-    const onSubmitSettings = {
-      ...DefaultSubmitSettings,
-      ...props.submitSettings,
-    }
-    useEvent(
-      'job:ready',
-      { job: `workbook:${workbookOnSubmitAction().operation}` },
-      OnSubmitAction(onSubmit, onSubmitSettings)
-    )
-  }
-
+  useEvent(
+    'job:ready',
+    { job: `workbook:${workbookOnSubmitAction().operation}` },
+    onSubmit
+      ? OnSubmitAction(onSubmit, {
+          ...DefaultSubmitSettings,
+          ...submitSettings,
+        })
+      : () => {}
+  )
   return <>{children}</>
 }

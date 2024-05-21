@@ -1,7 +1,6 @@
-import React from 'react'
-import FlatfileContext from './FlatfileContext'
-import { useCallback, useContext } from 'react'
+import React, { useContext } from 'react'
 import type { Flatfile } from '@flatfile/api'
+import FlatfileContext from './FlatfileContext'
 import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
 
 type DocumentProps = {

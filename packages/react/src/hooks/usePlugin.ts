@@ -3,14 +3,16 @@ import FlatfileListener from '@flatfile/listener'
 import { FlatfileContext } from '../components'
 
 export function usePlugin(
-  plugin: (cb: FlatfileListener) => void,
+  plugin?: (cb: FlatfileListener) => void,
   dependencies: any[] = []
 ) {
   const { listener } = useContext(FlatfileContext)
   useEffect(() => {
     if (!listener) return
-
-    listener.use(plugin)
+    
+    if (plugin) {
+      listener.use(plugin)
+    }
     return () => {
       listener.detach()
     }

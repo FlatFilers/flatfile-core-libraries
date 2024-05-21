@@ -33,7 +33,7 @@ export interface FlatfileContextType {
   setOpen: (open: boolean) => void
   space?: CreateNewSpace | ReUseSpace
   sessionSpace?: any
-  setSessionSpace: (space: any | null) => void
+  setSessionSpace: (space: any) => void
   listener: FlatfileListener
   setListener: (listener: FlatfileListener) => void
   accessToken?: string

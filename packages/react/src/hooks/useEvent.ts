@@ -38,8 +38,7 @@ function useEvent(
   }
 
   useEffect(() => {
-    if (!listener) return
-
+    if (!listener || !callback) return
     // Conditionally apply the filter
     if (typeof filterOrCallback !== 'function') {
       listener.on(eventType, filterOrCallback, callback)

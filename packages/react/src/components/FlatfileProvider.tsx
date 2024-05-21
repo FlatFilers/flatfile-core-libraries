@@ -1,8 +1,14 @@
 import { Flatfile } from '@flatfile/api'
+
 import { DefaultPageType, handlePostMessage } from '@flatfile/embedded-utils'
 import FlatfileListener, { Browser } from '@flatfile/listener'
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import { ClosePortalOptions, ExclusiveFlatfileProviderProps, IFrameTypes } from '../types'
+import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react'
+import {
+  ClosePortalOptions,
+  ExclusiveFlatfileProviderProps,
+  IFrameTypes,
+} from '../types'
+
 import { EmbeddedIFrameWrapper } from './EmbeddedIFrameWrapper'
 import FlatfileContext, { DEFAULT_CREATE_SPACE } from './FlatfileContext'
 
@@ -11,7 +17,7 @@ const configDefaults: IFrameTypes = {
   resetOnClose: true,
 }
 
-interface SESSION_SPACE
+interface ISessionSpace
   extends Omit<Flatfile.Space, 'createdAt' | 'updatedAt' | 'upgradedAt'> {
   createdAt: string
   updatedAt: string
@@ -26,13 +32,13 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   apiUrl = 'https://platform.flatfile.com/api',
   config,
 }) => {
-  const [internalAccessToken, setAccessToken] = useState<
+  const [internalAccessToken, setInternalAccessToken] = useState<
     string | undefined | null
   >(accessToken)
   const [listener, setListener] = useState(new FlatfileListener())
   const [open, setOpen] = useState<boolean>(false)
   const [sessionSpace, setSessionSpace] = useState<
-    { space: SESSION_SPACE } | undefined
+    { space: ISessionSpace } | undefined
   >(undefined)
 
   const [createSpace, setCreateSpace] = useState<{
@@ -146,17 +152,18 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     setOpen(false)
 
     if (reset ?? FLATFILE_PROVIDER_CONFIG.resetOnClose) {
-      setAccessToken(null)
+      setInternalAccessToken(null)
       setSessionSpace(undefined)
 
       const spacesUrl =
-        FLATFILE_PROVIDER_CONFIG.spaceUrl || 'https://platform.flatfile.com/s'
+        FLATFILE_PROVIDER_CONFIG.spaceUrl ?? 'https://platform.flatfile.com/s'
       const preloadUrl = `${spacesUrl}/space-init`
 
-      const spaceLink = sessionSpace?.space?.guestLink || null
+      const spaceLink = sessionSpace?.space?.guestLink ?? null
       const iFrameSrc = FLATFILE_PROVIDER_CONFIG.preload
         ? preloadUrl
         : spaceLink
+
       if (iFrameSrc) {
         iframe?.current?.setAttribute('src', iFrameSrc)
       }
@@ -191,35 +198,48 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     }
   }, [internalAccessToken, apiUrl])
 
-  return (
-    <FlatfileContext.Provider
-      value={{
-        ...(publishableKey ? { publishableKey } : {}),
-        ...(internalAccessToken ? { accessToken: internalAccessToken } : {}),
-        apiUrl,
-        environmentId,
-        open,
-        setOpen,
-        sessionSpace,
-        setSessionSpace,
-        setListener,
-        listener,
-        setAccessToken,
-        addSheet,
-        updateSheet,
-        updateWorkbook,
-        updateDocument,
-        createSpace,
-        setCreateSpace,
-        updateSpace,
-        defaultPage,
-        setDefaultPage,
-        resetSpace,
-        config: FLATFILE_PROVIDER_CONFIG,
-      }}
-    >
-      {children}
+  const providerValue = useMemo(
+    () => ({
+      ...(publishableKey ? { publishableKey } : {}),
+      ...(internalAccessToken ? { accessToken: internalAccessToken } : {}),
+      apiUrl,
+      environmentId,
+      open,
+      setOpen,
+      sessionSpace,
+      setSessionSpace,
+      setListener,
+      listener,
+      setAccessToken: setInternalAccessToken,
+      addSheet,
+      updateSheet,
+      updateWorkbook,
+      updateDocument,
+      createSpace,
+      setCreateSpace,
+      updateSpace,
+      defaultPage,
+      setDefaultPage,
+      resetSpace,
+      config: FLATFILE_PROVIDER_CONFIG,
+    }),
+    [
+      publishableKey,
+      internalAccessToken,
+      apiUrl,
+      environmentId,
+      open,
+      sessionSpace,
+      listener,
+      createSpace,
+      defaultPage,
+      FLATFILE_PROVIDER_CONFIG,
+    ]
+  )
 
+  return (
+    <FlatfileContext.Provider value={providerValue}>
+      {children}
       <EmbeddedIFrameWrapper
         handleCloseInstance={resetSpace}
         iRef={iframe}

@@ -2,7 +2,5 @@ export * from './IReactInitSpaceProps'
 export * from './IReactSpaceProps'
 export * from './iFrameProps'
 export * from './IFlatfileProvider'
-
-export type ClosePortalOptions = {
-  reset?: boolean
-}
+export * from './ICreateSpaceInternal'
+export * from './IClosePortal'
