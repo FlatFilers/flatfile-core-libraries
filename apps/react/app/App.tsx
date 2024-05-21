@@ -16,10 +16,12 @@ import styles from './page.module.css'
 import { recordHook } from '@flatfile/plugin-record-hook'
 
 const App = () => {
-  const { open, openPortal, closePortal } = useFlatfile()
+  const { open, openPortal, closePortal, listener } = useFlatfile()
 
   const [label, setLabel] = useState('Rock')
-
+  const toggleOpen = () => {
+    open ? closePortal({ reset: false }) : openPortal()
+  }
   useListener((listener) => {
     listener.on('**', (event) => {
       console.log('FFApp useListener Event => ', {
@@ -42,7 +44,7 @@ const App = () => {
         const firstName = record.get('firstName')
         console.log({ firstName })
 
-        record.set('lastName', 'Rock')
+        record.set('lastName', 'Rocks')
         return record
       })
     )
@@ -74,13 +76,7 @@ const App = () => {
   return (
     <div className={styles.main}>
       <div className={styles.description}>
-        <button
-          onClick={() => {
-            open ? closePortal() : openPortal()
-          }}
-        >
-          {open ? 'CLOSE' : 'OPEN'} PORTAL
-        </button>
+        <button onClick={toggleOpen}>{open ? 'CLOSE' : 'OPEN'} PORTAL</button>
         <button onClick={() => setLabel('blue')}>blue listener</button>
         <button onClick={() => setLabel('green')}>green listener</button>
       </div>

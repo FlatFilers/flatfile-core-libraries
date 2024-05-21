@@ -45,6 +45,7 @@
   font-size: var(--size-base);
   line-height: 1.5;
   margin: 0;
+  transition: 0.25s ease-in-out;
 }
 
 .flatfile-close-button {
@@ -60,10 +61,9 @@
   border-radius: 100%;
   cursor: pointer;
   border: none;
-  background: red;
+  background: rgb(29, 31, 74);
   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
-  animation: glow 1.5s linear infinite alternate;
-  transition: box-shadow 0.3s ease;
+  transition: 0.25s ease-in-out;
 
   &:hover {
     box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.8);

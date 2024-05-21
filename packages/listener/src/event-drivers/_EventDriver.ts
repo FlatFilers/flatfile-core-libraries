@@ -21,6 +21,18 @@ export abstract class EventDriver {
   }
 
   /**
+   * Unmount an event handler
+   *
+   * @param handler
+   */
+  unmountEventHandler(handler: EventHandler): this {
+    if (this._handler === handler) {
+      this._handler = undefined
+    }
+    return this
+  }
+
+  /**
    * Dispatch an event
    *
    * @param e

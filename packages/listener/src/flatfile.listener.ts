@@ -77,6 +77,14 @@ export class FlatfileListener extends EventHandler {
     return this
   }
 
+  /**
+   * Unmount this client from the Event Driver
+   */
+  unmount(driver: EventDriver) {
+    driver.unmountEventHandler(this)
+    return this
+  }
+
   fork() {
     return new FlatfileListener()
   }

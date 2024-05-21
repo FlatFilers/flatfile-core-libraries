@@ -12,6 +12,7 @@ export default function Home() {
       publishableKey={PUBLISHABLE_KEY}
       config={{
         preload: true,
+        resetOnClose: true
       }}
     >
       <App />

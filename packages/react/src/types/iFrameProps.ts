@@ -12,5 +12,5 @@ export type IFrameTypes = Partial<
     | 'displayAsModal'
     | 'closeSpace'
     | 'spaceUrl'
-  > & { preload?: boolean }
+  > & { preload?: boolean; resetOnClose?: boolean }
 >

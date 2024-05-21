@@ -1,4 +1,11 @@
-import React, { useState, useContext, useRef, useEffect, JSX } from 'react'
+import React, {
+  useState,
+  useContext,
+  useRef,
+  useEffect,
+  JSX,
+  MutableRefObject,
+} from 'react'
 import { IFrameTypes } from '../types'
 import ConfirmModal from './ConfirmCloseModal'
 import FlatfileContext from './FlatfileContext'
@@ -8,10 +15,10 @@ import { CloseButton } from './CloseButton'
 export const EmbeddedIFrameWrapper = (
   props: Partial<IFrameTypes> & {
     handleCloseInstance: () => void
+    iRef: MutableRefObject<HTMLIFrameElement | null>
   }
 ): JSX.Element => {
   const { open, sessionSpace } = useContext(FlatfileContext)
-  const iRef = useRef<HTMLIFrameElement | null>(null)
 
   const [showExitWarnModal, setShowExitWarnModal] = useState(false)
 
@@ -25,6 +32,7 @@ export const EmbeddedIFrameWrapper = (
     exitSecondaryButtonText = 'No, stay',
     displayAsModal = true,
     handleCloseInstance,
+    iRef,
     preload = true,
     spaceUrl,
   } = props
@@ -34,27 +42,31 @@ export const EmbeddedIFrameWrapper = (
   useEffect(() => {
     if (sessionSpace && iRef.current) {
       const targetOrigin = new URL(spacesUrl).origin
-      
-      iRef.current.contentWindow?.postMessage(
-        {
-          flatfileEvent: {
-            topic: 'portal:initialize',
-            payload: {
-              status: 'complete',
-              spaceUrl: `${targetOrigin}/space/${
-                sessionSpace.space.id
-              }?token=${encodeURIComponent(sessionSpace.space.accessToken)}`,
-              initialResources: sessionSpace,
+      if (sessionSpace.space?.id && sessionSpace.space?.accessToken) {
+        iRef.current.contentWindow?.postMessage(
+          {
+            flatfileEvent: {
+              topic: 'portal:initialize',
+              payload: {
+                status: 'complete',
+                spaceUrl: `${targetOrigin}/space/${
+                  sessionSpace.space.id
+                }?token=${encodeURIComponent(sessionSpace.space.accessToken)}`,
+                initialResources: sessionSpace,
+              },
             },
           },
-        },
-        targetOrigin
-      )
+          targetOrigin
+        )
+      }
     }
   }, [sessionSpace])
 
   const spaceLink = sessionSpace?.space?.guestLink || null
-
+  const openVisible = (open: boolean): React.CSSProperties => ({
+    opacity: open ? 1 : 0,
+    pointerEvents: open ? 'all' : 'none',
+  })
   return (
     <div
       className={`flatfile_iframe-wrapper ${
@@ -62,7 +74,7 @@ export const EmbeddedIFrameWrapper = (
       }`}
       style={{
         ...getContainerStyles(displayAsModal),
-        display: open ? 'flex' : 'none',
+        ...openVisible(open),
       }}
       data-testid="space-contents"
     >
@@ -91,9 +103,7 @@ export const EmbeddedIFrameWrapper = (
           src={preload ? preloadUrl : spaceLink}
           style={{
             ...getIframeStyles(iframeStyles!),
-            ...(preload
-              ? { display: open ? 'block' : 'none' }
-              : { display: 'block' }),
+            ...(preload ? openVisible(open) : { opacity: 1 }),
           }}
         />
       )}

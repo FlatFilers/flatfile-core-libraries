@@ -1,7 +1,7 @@
 import { Flatfile } from '@flatfile/api'
-import { ISpace } from '@flatfile/embedded-utils'
 import FlatfileListener from '@flatfile/listener'
 import { createContext, useContext } from 'react'
+import { IFrameTypes, ClosePortalOptions } from '../types'
 
 type CreateNewSpace = Partial<Flatfile.SpaceConfig>
 type ReUseSpace = Partial<Flatfile.SpaceConfig> & {
@@ -33,11 +33,11 @@ export interface FlatfileContextType {
   setOpen: (open: boolean) => void
   space?: CreateNewSpace | ReUseSpace
   sessionSpace?: any
-  setSessionSpace: (space: any) => void
+  setSessionSpace: (space: any | null) => void
   listener: FlatfileListener
   setListener: (listener: FlatfileListener) => void
   accessToken?: string
-  setAccessToken: (accessToken: string) => void
+  setAccessToken: (accessToken?: string | null) => void
   addSheet: (config: any) => void
   updateSheet: (
     sheetSlug: string,
@@ -50,6 +50,8 @@ export interface FlatfileContextType {
   updateSpace: (config: any) => void
   defaultPage: undefined
   setDefaultPage: (object: any) => void
+  resetSpace: (options?: ClosePortalOptions) => void
+  config?: IFrameTypes
 }
 
 export const FlatfileContext = createContext<FlatfileContextType>({
@@ -73,7 +75,9 @@ export const FlatfileContext = createContext<FlatfileContextType>({
   setCreateSpace: () => {},
   updateSpace: () => {},
   defaultPage: undefined,
-  setDefaultPage: () => {}
+  setDefaultPage: () => {},
+  resetSpace: () => {},
+  config: undefined,
 })
 export const useFlatfileInternal = () => useContext(FlatfileContext)
 export default FlatfileContext

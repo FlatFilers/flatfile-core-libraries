@@ -6,9 +6,9 @@ export const getIframeStyles = (styles: React.CSSProperties) => {
       width: '100%',
       height: '750px',
       borderWidth: 0,
-      borderRadius: '20px',
       background: '#fff',
-      padding: '16px',
+      boxShadow:
+        '0px 4px 6px rgba(154, 160, 185, 0.05), 0px 1px 3px rgba(166, 173, 201, 0.3)',
     }
   )
 }
@@ -22,7 +22,7 @@ export const getContainerStyles = (isModal: boolean): React.CSSProperties => {
       top: 0,
       left: 0,
       zIndex: 1000,
-      backgroundColor: 'rgba(0,0,0,0.2)',
+      backgroundColor: 'rgba(0, 0, 0, 0.1)',
       display: 'flex',
       padding: '50px',
     }
