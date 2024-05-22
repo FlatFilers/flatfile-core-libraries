@@ -29,3 +29,4 @@ export type {
 }
 
 export { DefaultSubmitSettings } from './Space'
+export * from './IDefaultPageType'

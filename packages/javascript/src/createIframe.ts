@@ -6,7 +6,7 @@ export function createIframe(
   spacesUrl?: string,
   isReusingSpace?: boolean
 ): HTMLElement | null {
-  const spacesURL = spacesUrl || 'https://platform.flatfile.com/s'
+  const spacesURL = spacesUrl ?? 'https://platform.flatfile.com/s'
   let url: string
   let iFrameContainer = document.getElementById(mountElement)
 

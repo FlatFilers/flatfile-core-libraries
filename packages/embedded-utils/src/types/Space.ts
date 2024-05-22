@@ -31,7 +31,7 @@ export interface NewSpaceFromPublishableKey extends BaseSpace {
    * Document to pass to space
    * Optional
    */
-  document?: Flatfile.DocumentConfig
+  document?: Flatfile.DocumentConfig & { defaultPage?: boolean }
   /**
    * @deprecated use params up one level instead
    *
@@ -61,7 +61,10 @@ export interface NewSpaceFromPublishableKey extends BaseSpace {
    * Shape of data you will be receiving:
    * Required
    */
-  workbook?: Flatfile.CreateWorkbookConfig
+  workbook?: Omit<Flatfile.CreateWorkbookConfig, 'sheets'> & {
+    sheets?: (Flatfile.SheetConfig & { defaultPage?: boolean })[]
+    defaultPage?: boolean
+  }
   /**
    * Publishable key accessed via auth/api-keys or Flatfile dashboard > Developer
    * Required

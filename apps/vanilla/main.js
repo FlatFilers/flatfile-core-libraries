@@ -34,7 +34,6 @@ getSpace()
 
 const BASE_OPTIONS = {
   spaceBody: { name: 'Hello' },
-  environmentId: 'us_env_VoiCveIM',
   // listener,
   // Additional parameters...
   workbook: config,
@@ -43,6 +42,7 @@ const BASE_OPTIONS = {
   document: {
     title: 'my title',
     body: 'my body',
+    defaultPage: true
   },
   themeConfig: {
     root: {
@@ -83,6 +83,7 @@ window.initializeFlatfile = async (publishableKey) => {
   }
 
   const space = await initializeFlatfile(flatfileOptions)
+  console.log({ space })
 }
 
 // ---Pre-load iFrame by specific mountID for faster initial load-time

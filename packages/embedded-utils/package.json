@@ -18,7 +18,7 @@
     "test": "jest --runInBand --forceExit --passWithNoTests"
   },
   "dependencies": {
-    "@flatfile/api": "^1.8.5",
+    "@flatfile/api": "^1.8.9",
     "@flatfile/listener": "^1.0.4",
     "@flatfile/util-common": "^1.1.0"
   },

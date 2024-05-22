@@ -1,5 +1,6 @@
-import api, { Flatfile } from '@flatfile/api'
+import { Flatfile, FlatfileClient } from '@flatfile/api'
 import {
+  DefaultPageType,
   DefaultSubmitSettings,
   ISpace,
   JobHandler,
@@ -7,7 +8,9 @@ import {
   SheetHandler,
   SimpleOnboarding,
   createWorkbookFromSheet,
+  findDefaultPage,
   handlePostMessage,
+  updateDefaultPageInSpace,
 } from '@flatfile/embedded-utils'
 import { FlatfileRecord } from '@flatfile/hooks'
 import { Browser, FlatfileEvent, FlatfileListener } from '@flatfile/listener'
@@ -38,25 +41,20 @@ async function createlistener(
   listener: FlatfileListener,
   closeSpace: NewSpaceFromPublishableKey['closeSpace']
 ): Promise<() => void> {
-  // todo: should we use CrossEnvConfig here?
-  // CrossEnvConfig.set('FLATFILE_API_KEY', accessToken)
-  ;(window as any).CROSSENV_FLATFILE_API_KEY = accessToken
+  const browser_instance = new Browser({
+    apiUrl,
+    accessToken,
+    fetchApi: fetch,
+  })
+  const ff_message_handler = handlePostMessage(closeSpace, listener)
 
-  listener.mount(
-    new Browser({
-      apiUrl,
-      accessToken,
-      fetchApi: fetch,
-    })
-  )
+  listener.mount(browser_instance)
+  window.addEventListener('message', ff_message_handler, false)
 
-  window.addEventListener(
-    'message',
-    handlePostMessage(closeSpace, listener),
-    false
-  )
-  return () =>
-    removeEventListener('message', handlePostMessage(closeSpace, listener))
+  return () => {
+    removeEventListener('message', ff_message_handler)
+    listener.unmount(browser_instance)
+  }
 }
 interface SimpleListenerType
   extends Pick<
@@ -73,6 +71,7 @@ const createSimpleListener = ({
   submitSettings,
 }: SimpleListenerType) =>
   FlatfileListener.create((client: FlatfileListener) => {
+    const api = new FlatfileClient()
     if (onRecordHook) {
       client.use(
         recordHook(
@@ -256,7 +255,7 @@ const initNewSpace = async ({
   name,
   environmentId,
   spaceBody,
-  namespace,
+  namespace = 'portal',
   translationsPath,
   languageOverride,
   themeConfig,
@@ -269,6 +268,9 @@ const initNewSpace = async ({
   isAutoConfig,
 }: InitSpaceType): Promise<InitialResourceData> => {
   const createSpaceEndpoint = `${apiUrl}/v1/internal/spaces/init?publishableKey=${publishableKey}`
+
+  let defaultPage
+  let defaultPageSet = false
 
   let spaceRequestBody: any = {
     space: {
@@ -290,17 +292,41 @@ const initNewSpace = async ({
     },
   }
 
-  if (workbook) {
+  const addResourceToRequestBody = (resource: any, resourceName: string) => {
     spaceRequestBody = {
       ...spaceRequestBody,
-      workbook,
+      [resourceName]: resource,
+    }
+  }
+  const setDefaultPage = (incomingDefaultPage: DefaultPageType) => {
+    if (defaultPageSet === true) {
+      console.warn(
+        'Default page is already set. Multiple default pages are not allowed.'
+      )
+    } else {
+      defaultPage = incomingDefaultPage
+      defaultPageSet = true
+    }
+  }
+
+  if (workbook) {
+    addResourceToRequestBody(workbook, 'workbook')
+
+    if (workbook.defaultPage) {
+      setDefaultPage({ workbook: workbook.name })
+    } else if (workbook.sheets) {
+      const defaultSheet = workbook.sheets.find((sheet) => sheet.defaultPage)
+      if (defaultSheet && defaultSheet.slug) {
+        setDefaultPage({ workbook: { sheet: defaultSheet.slug } })
+      }
     }
   }
 
   if (document) {
-    spaceRequestBody = {
-      ...spaceRequestBody,
-      document,
+    addResourceToRequestBody(document, 'document')
+
+    if (document.defaultPage) {
+      setDefaultPage({ document: document.title })
     }
   }
 
@@ -319,7 +345,13 @@ const initNewSpace = async ({
     throw new Error(errorMessage)
   }
 
-  return result.data
+  const createdSpace = result.data
+
+  ;(window as any).CROSSENV_FLATFILE_API_KEY = createdSpace.space.accessToken
+
+  if (defaultPage) await updateDefaultPageInSpace(createdSpace, defaultPage)
+
+  return createdSpace
 }
 
 export async function startFlatfile(options: SimpleOnboarding | ISpace) {
@@ -345,7 +377,6 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
     document: documentConfig,
     sidebarConfig,
     userInfo,
-    spaceInfo,
     listener,
     namespace,
     metadata,
@@ -360,7 +391,7 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
   const mountIFrameElement = mountIFrameWrapper
     ? mountIFrameWrapper.getElementsByTagName('iframe')[0]
     : null
-
+  ;(window as any).CROSSENV_FLATFILE_API_URL = apiUrl
   /**
    * Customers can proactively preload the iFrame into the DOM - If we detect that an iFrame already exists
    * for the provided mountElementId - we can assume it has been preloaded, and simply make it visible
@@ -388,6 +419,7 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
 
     if (isReusingSpace) {
       spaceResult = space
+      ;(window as any).CROSSENV_FLATFILE_API_KEY = spaceResult?.accessToken
     }
     // Initialize new space / workbook / document and obtain response used to "initial resources" to hydrate embedded UI
     else if (publishableKey) {
@@ -416,6 +448,7 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
     if (!spaceResult?.id || !spaceResult?.accessToken) {
       throw new Error('Unable to create space, please try again.')
     }
+    // Set these for handy use in the listeners for authenticating the @flatfile/api client
 
     let removeMessageListener: () => void | undefined
 
@@ -461,6 +494,7 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
     } else {
       const targetOrigin = new URL(spacesUrl).origin
       const initialResources = initialResourceResponse || null
+      console.log({ initialResources })
       mountIFrameElement.contentWindow?.postMessage(
         {
           flatfileEvent: {
