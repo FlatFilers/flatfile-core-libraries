@@ -1,11 +1,10 @@
-import React, { useCallback, useEffect, useRef, useState } from 'react'
-import FlatfileContext, { DEFAULT_CREATE_SPACE } from './FlatfileContext'
-import FlatfileListener, { Browser } from '@flatfile/listener'
 import { Flatfile } from '@flatfile/api'
+import { DefaultPageType, handlePostMessage } from '@flatfile/embedded-utils'
+import FlatfileListener, { Browser } from '@flatfile/listener'
+import React, { useCallback, useEffect, useRef, useState } from 'react'
+import { ClosePortalOptions, ExclusiveFlatfileProviderProps, IFrameTypes } from '../types'
 import { EmbeddedIFrameWrapper } from './EmbeddedIFrameWrapper'
-import { ExclusiveFlatfileProviderProps, IFrameTypes } from '../types'
-import { handlePostMessage } from '@flatfile/embedded-utils'
-import { ClosePortalOptions } from '../types'
+import FlatfileContext, { DEFAULT_CREATE_SPACE } from './FlatfileContext'
 
 const configDefaults: IFrameTypes = {
   preload: true,
@@ -45,7 +44,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   const [defaultPage, setDefaultPageRaw] = useState<any>(undefined)
 
   const setDefaultPage = useCallback(
-    (incomingDefaultPage: any) => {
+    (incomingDefaultPage: DefaultPageType) => {
       if (defaultPage === undefined) {
         setDefaultPageRaw(incomingDefaultPage)
       } else {
