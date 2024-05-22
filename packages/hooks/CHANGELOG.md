@@ -1,5 +1,11 @@
 # @flatfile/hooks
 
+## 1.5.0
+
+### Minor Changes
+
+- 9240b38: This release adds support for two new field types, string-list & enum-list.
+
 ## 1.4.0
 
 ### Minor Changes

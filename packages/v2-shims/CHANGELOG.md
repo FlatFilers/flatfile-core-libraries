@@ -1,5 +1,11 @@
 # @flatfile/v2-shims
 
+## 1.2.0
+
+### Minor Changes
+
+- 9240b38: This release adds support for two new field types, string-list & enum-list.
+
 ## 1.1.4
 
 ### Patch Changes

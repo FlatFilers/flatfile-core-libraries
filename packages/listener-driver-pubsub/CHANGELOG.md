@@ -1,5 +1,11 @@
 # @flatfile/listener-driver-pubsub
 
+## 2.1.0
+
+### Minor Changes
+
+- 9240b38: This release adds support for two new field types, string-list & enum-list.
+
 ## 2.0.8
 
 ### Patch Changes

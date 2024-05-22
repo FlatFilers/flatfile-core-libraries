@@ -1,6 +1,6 @@
 {
   "name": "@flatfile/v2-shims",
-  "version": "1.1.4",
+  "version": "1.2.0",
   "description": "A collection of helpers for migrating from v2 to platform",
   "type": "module",
   "browser": {

@@ -1,5 +1,16 @@
 # @flatfile/configure
 
+## 1.1.0
+
+### Minor Changes
+
+- 9240b38: This release adds support for two new field types, string-list & enum-list.
+
+### Patch Changes
+
+- Updated dependencies [9240b38]
+  - @flatfile/hooks@1.5.0
+
 ## 1.0.2
 
 ### Patch Changes
