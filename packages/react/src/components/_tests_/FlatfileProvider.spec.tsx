@@ -26,6 +26,7 @@ export const FlatfileProviderValue: FlatfileContextType = {
   defaultPage: undefined,
   setDefaultPage: jest.fn(),
   resetSpace: jest.fn(),
+  ready: false
 }
 
 fetchMock.enableMocks()
