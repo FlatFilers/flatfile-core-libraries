@@ -21,10 +21,7 @@ const App = () => {
   const toggleOpen = () => {
     open ? closePortal({ reset: false }) : openPortal()
   }
-  // useEffect(() => {
-  //   if (!open) setTimeout(openPortal, 1000)
-  // }, [open])
-  
+
   useEffect(() => {
     openPortal()
   }, [])
