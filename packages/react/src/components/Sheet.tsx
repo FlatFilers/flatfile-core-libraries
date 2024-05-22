@@ -1,7 +1,7 @@
 import { Flatfile } from '@flatfile/api'
 import {
   DefaultSubmitSettings,
-  SimpleOnboarding,
+  SimpleOnboarding
 } from '@flatfile/embedded-utils'
 import { FlatfileEvent } from '@flatfile/listener'
 import { FlatfileRecord, recordHook } from '@flatfile/plugin-record-hook'
@@ -80,14 +80,11 @@ export const Sheet = (props: SheetProps) => {
     }
     addSheet(config)
     if (defaultPage) {
-      // TODO: Add types here from PR#117 
-      const defaultPageConfig = {
+      setDefaultPage({
         workbook: {
           sheet: config.slug,
         },
-      }
-
-      setDefaultPage(defaultPageConfig)
+      })
     }
   }, [config, defaultPage])
 
