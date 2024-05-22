@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- ad7695f: Updates Pubnub to improve security
+- ad7695f: Updates Pubnub dependency to improve security
 
 ## 3.6.7
 
