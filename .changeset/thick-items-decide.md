@@ -3,3 +3,4 @@
 ---
 
 Update the @flatfile/listener dependency
+Update the pubnub dependency
