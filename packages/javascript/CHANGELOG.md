@@ -1,5 +1,13 @@
 # @flatfile/javascript
 
+## 1.3.7
+
+### Patch Changes
+
+- 7e0d063: Adds a way to set the defaultPage when preloading the Portal embed
+- Updated dependencies [7e0d063]
+  - @flatfile/embedded-utils@1.2.4
+
 ## 1.3.6
 
 ### Patch Changes

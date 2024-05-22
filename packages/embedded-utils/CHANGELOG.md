@@ -1,5 +1,11 @@
 # embedded-utils
 
+## 1.2.4
+
+### Patch Changes
+
+- 7e0d063: Adds a way to set the defaultPage when preloading the Portal embed
+
 ## 1.2.3
 
 ### Patch Changes

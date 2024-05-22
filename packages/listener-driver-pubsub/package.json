@@ -1,6 +1,6 @@
 {
   "name": "@flatfile/listener-driver-pubsub",
-  "version": "2.0.7",
+  "version": "2.0.8",
   "description": "A driver for streaming events from Flatfile via a pubsub pattern",
   "main": "dist/index.js",
   "module": "dist/index.mjs",

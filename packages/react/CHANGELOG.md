@@ -1,5 +1,13 @@
 # @flatfile/react
 
+## 7.9.7
+
+### Patch Changes
+
+- 521b423: Better typing and organization
+- Updated dependencies [7e0d063]
+  - @flatfile/embedded-utils@1.2.4
+
 ## 7.9.6
 
 ### Patch Changes
