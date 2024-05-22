@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.9.8
+
+### Patch Changes
+
+- ad7695f: Adds more control over Opening Portal
+
 ## 7.9.7
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # flatfile
 
+## 3.6.8
+
+### Patch Changes
+
+- ad7695f: Updates Pubnub to improve security
+
 ## 3.6.7
 
 ### Patch Changes
