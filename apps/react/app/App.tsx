@@ -11,17 +11,24 @@ import {
   Document,
   Sheet,
 } from '@flatfile/react'
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import styles from './page.module.css'
 import { recordHook } from '@flatfile/plugin-record-hook'
 
 const App = () => {
-  const { open, openPortal, closePortal, listener } = useFlatfile()
-
+  const { open, openPortal, closePortal } = useFlatfile()
   const [label, setLabel] = useState('Rock')
   const toggleOpen = () => {
     open ? closePortal({ reset: false }) : openPortal()
   }
+  // useEffect(() => {
+  //   if (!open) setTimeout(openPortal, 1000)
+  // }, [open])
+  
+  useEffect(() => {
+    openPortal()
+  }, [])
+
   useListener((listener) => {
     listener.on('**', (event) => {
       console.log('FFApp useListener Event => ', {

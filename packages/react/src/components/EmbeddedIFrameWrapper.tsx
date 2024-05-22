@@ -18,7 +18,7 @@ export const EmbeddedIFrameWrapper = (
     iRef: MutableRefObject<HTMLIFrameElement | null>
   }
 ): JSX.Element => {
-  const { open, sessionSpace } = useContext(FlatfileContext)
+  const { open, sessionSpace, ready } = useContext(FlatfileContext)
 
   const [showExitWarnModal, setShowExitWarnModal] = useState(false)
 
@@ -64,9 +64,10 @@ export const EmbeddedIFrameWrapper = (
 
   const spaceLink = sessionSpace?.space?.guestLink || null
   const openVisible = (open: boolean): React.CSSProperties => ({
-    opacity: open ? 1 : 0,
-    pointerEvents: open ? 'all' : 'none',
+    opacity: ready && open ? 1 : 0,
+    pointerEvents: ready && open ? 'all' : 'none',
   })
+  
   return (
     <div
       className={`flatfile_iframe-wrapper ${
@@ -94,7 +95,7 @@ export const EmbeddedIFrameWrapper = (
           exitSecondaryButtonText={exitSecondaryButtonText}
         />
       )}
-      {(open || preload) && (
+      {((ready && open) || preload) && (
         <iframe
           allow="clipboard-read; clipboard-write"
           className={mountElement}

@@ -65,6 +65,14 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     },
     [defaultPage]
   )
+  const [ready, setReady] = useState<boolean>(false);
+
+  useEffect(() => {
+    const isDefaultCreateSpace = JSON.stringify(createSpace) === JSON.stringify(DEFAULT_CREATE_SPACE);
+    if (!isDefaultCreateSpace) {
+      setReady(true);
+    }
+  }, [createSpace]);
 
   const iframe = useRef<HTMLIFrameElement | null>(null)
 
@@ -222,6 +230,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       setDefaultPage,
       resetSpace,
       config: FLATFILE_PROVIDER_CONFIG,
+      ready
     }),
     [
       publishableKey,
@@ -233,6 +242,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       listener,
       createSpace,
       defaultPage,
+      ready,
       FLATFILE_PROVIDER_CONFIG,
     ]
   )

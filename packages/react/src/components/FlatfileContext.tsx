@@ -52,6 +52,7 @@ export interface FlatfileContextType {
   setDefaultPage: (object: any) => void
   resetSpace: (options?: ClosePortalOptions) => void
   config?: IFrameTypes
+  ready: boolean
 }
 
 export const FlatfileContext = createContext<FlatfileContextType>({
@@ -78,6 +79,7 @@ export const FlatfileContext = createContext<FlatfileContextType>({
   setDefaultPage: () => {},
   resetSpace: () => {},
   config: undefined,
+  ready: false
 })
 export const useFlatfileInternal = () => useContext(FlatfileContext)
 export default FlatfileContext

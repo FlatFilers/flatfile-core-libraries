@@ -1,7 +1,5 @@
-import {
-  updateDefaultPageInSpace
-} from '@flatfile/embedded-utils'
-import { useContext } from 'react'
+import { updateDefaultPageInSpace } from '@flatfile/embedded-utils'
+import { useContext, useEffect } from 'react'
 import FlatfileContext from '../components/FlatfileContext'
 import { ClosePortalOptions } from '../types'
 import { convertDatesToISO } from '../utils/convertDatesToISO'
@@ -34,6 +32,7 @@ export const useFlatfile: () => {
     createSpace,
     defaultPage,
     resetSpace,
+    ready,
   } = context
 
   const handleCreateSpace = async () => {
@@ -75,13 +74,22 @@ export const useFlatfile: () => {
     }
   }
 
+  useEffect(() => {
+    const createOrUpdateSpace = async () => {
+      if (publishableKey && !accessToken) {
+        await handleCreateSpace()
+      } else if (accessToken && !publishableKey) {
+        await handleReUseSpace()
+      }
+    }
+
+    if (ready && open) {
+      createOrUpdateSpace()
+    }
+  }, [ready, open])
+
   const openPortal = () => {
     ;(window as any).CROSSENV_FLATFILE_API_URL = apiUrl
-    if (publishableKey && !accessToken) {
-      handleCreateSpace()
-    } else if (accessToken && !publishableKey) {
-      handleReUseSpace()
-    }
     setOpen(true)
   }
 
@@ -95,5 +103,6 @@ export const useFlatfile: () => {
     open,
     setListener,
     listener,
+    ready,
   }
 }
