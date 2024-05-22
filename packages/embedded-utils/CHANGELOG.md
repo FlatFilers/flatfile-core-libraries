@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- 7e0d063: Adds a way to set the defaultPage when preloading the Portal embed
+- 7e0d063: Adds a way to set the `defaultPage` when preloading the Portal embed
 
 ## 1.2.3
 
