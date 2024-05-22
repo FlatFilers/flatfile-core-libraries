@@ -80,13 +80,8 @@ export const Sheet = (props: SheetProps) => {
     }
     addSheet(config)
     if (defaultPage) {
-      type DefaultPageConfig = {
-        workbook: {
-          sheet?: string
-        }
-      }
-
-      const defaultPageConfig: DefaultPageConfig = {
+      // TODO: Add types here from PR#117 
+      const defaultPageConfig = {
         workbook: {
           sheet: config.slug,
         },
