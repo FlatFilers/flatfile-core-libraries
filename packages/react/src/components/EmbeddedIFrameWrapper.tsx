@@ -7,7 +7,7 @@ import React, {
   MutableRefObject,
 } from 'react'
 import { IFrameTypes } from '../types'
-import ConfirmModal from './ConfirmCloseModal'
+import { ConfirmCloseModal } from './ConfirmCloseModal'
 import FlatfileContext from './FlatfileContext'
 import { getContainerStyles, getIframeStyles } from './embeddedStyles'
 import { CloseButton } from './CloseButton'
@@ -79,7 +79,7 @@ export const EmbeddedIFrameWrapper = (
       data-testid="space-contents"
     >
       {showExitWarnModal && (
-        <ConfirmModal
+        <ConfirmCloseModal
           onConfirm={() => {
             handleCloseInstance()
             setShowExitWarnModal(false)
@@ -101,6 +101,7 @@ export const EmbeddedIFrameWrapper = (
           data-testid={mountElement}
           ref={iRef}
           src={preload ? preloadUrl : spaceLink}
+          title="Embedded Portal Content"
           style={{
             ...getIframeStyles(iframeStyles!),
             ...(preload ? openVisible(open) : { opacity: 1 }),

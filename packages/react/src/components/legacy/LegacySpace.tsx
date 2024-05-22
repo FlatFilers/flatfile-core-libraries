@@ -4,7 +4,7 @@ import React, { JSX, useEffect, useState } from 'react'
 import { useCreateListener } from '../../hooks/legacy/useCreateListener'
 import { addSpaceInfo } from '../../utils/addSpaceInfo'
 import { authenticate } from '../../utils/authenticate'
-import ConfirmModal from '../ConfirmCloseModal'
+import { ConfirmCloseModal } from '../ConfirmCloseModal'
 import { getContainerStyles, getIframeStyles } from '../embeddedStyles'
 import '../style.scss'
 
@@ -107,7 +107,7 @@ export const SpaceContents = (
       data-testid="space-contents"
     >
       {showExitWarnModal && (
-        <ConfirmModal
+        <ConfirmCloseModal
           onConfirm={() => {
             handleCloseInstance()
             if (closeSpace && typeof closeSpace.onClose === 'function') {
@@ -127,6 +127,7 @@ export const SpaceContents = (
         data-testid={mountElement}
         src={spaceUrl}
         style={getIframeStyles(iframeStyles!)}
+        title="Embedded Portal Content"
       />
       <button
         onClick={() => setShowExitWarnModal(true)}

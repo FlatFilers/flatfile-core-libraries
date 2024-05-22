@@ -2,7 +2,7 @@ import React from 'react'
 // TODO: make this style import configurable
 import './style.scss'
 
-export default ({
+export const ConfirmCloseModal = ({
   onConfirm,
   onCancel,
   exitText,

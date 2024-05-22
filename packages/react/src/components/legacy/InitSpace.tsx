@@ -6,7 +6,7 @@ import { addSpaceInfo } from '../../utils/addSpaceInfo'
 import { authenticate } from '../../utils/authenticate'
 import { getSpace } from '../../utils/getSpace'
 import { initializeSpace } from '../../utils/initializeSpace'
-import ConfirmModal from '../ConfirmCloseModal'
+import { ConfirmCloseModal } from '../ConfirmCloseModal'
 import DefaultError from './Error'
 import { getContainerStyles, getIframeStyles } from '../embeddedStyles'
 import '../style.scss'
@@ -66,7 +66,7 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
         return
       }
 
-      const isReusingSpace = props.space && props.space.id
+      const isReusingSpace = props.space?.id
 
       const { data } = isReusingSpace
         ? await getSpace(props)
@@ -184,7 +184,7 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
       data-testid="space-contents"
     >
       {showExitWarnModal && (
-        <ConfirmModal
+        <ConfirmCloseModal
           onConfirm={handleCloseModal}
           onCancel={() => setShowExitWarnModal(false)}
           exitText={exitText}
@@ -201,6 +201,7 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
             data-testid={mountElement}
             src={spaceUrl}
             style={getIframeStyles(iframeStyles!)}
+            title="Embedded Portal Content"
           />
           <button
             onClick={() => setShowExitWarnModal(true)}
