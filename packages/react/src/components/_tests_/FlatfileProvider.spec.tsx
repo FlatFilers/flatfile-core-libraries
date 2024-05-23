@@ -1,4 +1,4 @@
-import React, { useContext } from 'react'
+import React, { createRef, useContext } from 'react'
 import { render, waitFor } from '@testing-library/react'
 import { FlatfileProvider } from '../FlatfileProvider'
 import FlatfileContext, {
@@ -26,7 +26,8 @@ export const FlatfileProviderValue: FlatfileContextType = {
   defaultPage: undefined,
   setDefaultPage: jest.fn(),
   resetSpace: jest.fn(),
-  ready: false
+  ready: false,
+  iframe: createRef<HTMLIFrameElement>(),
 }
 
 fetchMock.enableMocks()
