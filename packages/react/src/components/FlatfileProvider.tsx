@@ -1,14 +1,21 @@
 import { Flatfile } from '@flatfile/api'
 
-import { DefaultPageType, handlePostMessage } from '@flatfile/embedded-utils'
+import {
+  DefaultPageType,
+  handlePostMessage,
+  updateDefaultPageInSpace,
+} from '@flatfile/embedded-utils'
 import FlatfileListener, { Browser } from '@flatfile/listener'
-import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react'
+import React, { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import {
   ClosePortalOptions,
   ExclusiveFlatfileProviderProps,
   IFrameTypes,
 } from '../types'
 
+import { convertDatesToISO } from '../utils/convertDatesToISO'
+import { createSpaceInternal } from '../utils/createSpaceInternal'
+import { getSpace } from '../utils/getSpace'
 import { EmbeddedIFrameWrapper } from './EmbeddedIFrameWrapper'
 import FlatfileContext, { DEFAULT_CREATE_SPACE } from './FlatfileContext'
 
@@ -44,39 +51,68 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   const [createSpace, setCreateSpace] = useState<{
     document: Flatfile.DocumentConfig | undefined
     workbook: Flatfile.CreateWorkbookConfig
-    space: Flatfile.SpaceConfig
+    space: Flatfile.SpaceConfig & { id?: string }
   }>(DEFAULT_CREATE_SPACE)
 
-  const [defaultPage, setDefaultPageRaw] = useState<any>(undefined)
-
-  const setDefaultPage = useCallback(
-    (incomingDefaultPage: DefaultPageType) => {
-      if (defaultPage === undefined) {
-        setDefaultPageRaw(incomingDefaultPage)
-      } else {
-        console.warn(
-          `Attempt to set multiple default pages detected. Only one default page can be set per space. Current default page: ${JSON.stringify(
-            defaultPage
-          )}, Attempted new default page: ${JSON.stringify(
-            incomingDefaultPage
-          )}`
-        )
-      }
-    },
-    [defaultPage]
-  )
-  const [ready, setReady] = useState<boolean>(false);
-
-  useEffect(() => {
-    const isDefaultCreateSpace = JSON.stringify(createSpace) === JSON.stringify(DEFAULT_CREATE_SPACE);
-    if (!isDefaultCreateSpace) {
-      setReady(true);
-    }
-  }, [createSpace]);
-
-  const iframe = useRef<HTMLIFrameElement | null>(null)
+  const iframe = useRef<HTMLIFrameElement>(null)
 
   const FLATFILE_PROVIDER_CONFIG = { ...config, ...configDefaults }
+
+  const defaultPage = useRef<DefaultPageType | undefined>(undefined)
+
+  const setDefaultPage = useCallback((incomingDefaultPage: DefaultPageType) => {
+    if (!defaultPage.current) {
+      defaultPage.current = incomingDefaultPage
+    } else {
+      console.warn(
+        `Attempt to set multiple default pages detected. Only one default page can be set per space. Current default page: ${JSON.stringify(
+          defaultPage.current
+        )}, Attempted new default page: ${JSON.stringify(incomingDefaultPage)}`
+      )
+    }
+  }, [])
+  const [ready, setReady] = useState<boolean>(false)
+
+  const handleCreateSpace = async () => {
+    if (!publishableKey) {
+      return
+    }
+    // autoConfigure if no workbook or workbook.sheets are provided as they should be handled in the listener space:configure event
+    const autoConfigure = !createSpace.workbook?.sheets
+    const { data: createdSpace } = await createSpaceInternal({
+      apiUrl,
+      publishableKey,
+      space: { ...createSpace.space, autoConfigure },
+      workbook: createSpace.workbook,
+      document: createSpace.document,
+    })
+
+    // A bit of a hack to wire up the Flatfile API key to the window object for internal client side @flatfile/api usage
+    ;(window as any).CROSSENV_FLATFILE_API_KEY = createdSpace.space.accessToken
+
+    if (defaultPage.current) {
+      await updateDefaultPageInSpace(createdSpace, defaultPage.current)
+    }
+
+    setInternalAccessToken(createdSpace.space.accessToken)
+    setSessionSpace(createdSpace)
+  }
+
+  const handleReUseSpace = async () => {
+    if (internalAccessToken && createSpace.space.id) {
+      const { data: reUsedSpace } = await getSpace({
+        space: { id: createSpace.space.id, accessToken: internalAccessToken },
+        apiUrl,
+      })
+
+      if (reUsedSpace.accessToken) {
+        ;(window as any).CROSSENV_FLATFILE_API_KEY = reUsedSpace.accessToken
+        setInternalAccessToken(reUsedSpace.accessToken)
+      }
+
+      setSessionSpace({ space: convertDatesToISO(reUsedSpace) })
+    }
+  }
 
   const addSheet = (newSheet: Flatfile.SheetConfig) => {
     setCreateSpace((prevSpace) => {
@@ -173,7 +209,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         : spaceLink
 
       if (iFrameSrc) {
-        iframe?.current?.setAttribute('src', iFrameSrc)
+        iframe.current?.setAttribute('src', iFrameSrc)
       }
       // Works but only after the iframe is visible
     }
@@ -206,6 +242,31 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     }
   }, [internalAccessToken, apiUrl])
 
+  // Sets a ready variable if the createSpace context has been updated.
+  useEffect(() => {
+    if (!ready) {
+      const isDefaultCreateSpace =
+        JSON.stringify(createSpace) === JSON.stringify(DEFAULT_CREATE_SPACE)
+      if (!isDefaultCreateSpace) {
+        setReady(true)
+      }
+    }
+  }, [createSpace])
+
+  // Triggers handleCreateSpace or handleReUseSpace when the openPortal() is clicked and ready is true
+  useEffect(() => {
+    if (ready && open) {
+      const createOrUpdateSpace = async () => {
+        if (publishableKey && !internalAccessToken) {
+          await handleCreateSpace()
+        } else if (internalAccessToken && !publishableKey) {
+          await handleReUseSpace()
+        }
+      }
+      createOrUpdateSpace()
+    }
+  }, [ready, open])
+
   const providerValue = useMemo(
     () => ({
       ...(publishableKey ? { publishableKey } : {}),
@@ -226,11 +287,12 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       createSpace,
       setCreateSpace,
       updateSpace,
-      defaultPage,
+      defaultPage: defaultPage.current,
       setDefaultPage,
       resetSpace,
       config: FLATFILE_PROVIDER_CONFIG,
-      ready
+      ready,
+      iframe,
     }),
     [
       publishableKey,
@@ -243,6 +305,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       createSpace,
       defaultPage,
       ready,
+      iframe,
       FLATFILE_PROVIDER_CONFIG,
     ]
   )
@@ -252,7 +315,6 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       {children}
       <EmbeddedIFrameWrapper
         handleCloseInstance={resetSpace}
-        iRef={iframe}
         {...FLATFILE_PROVIDER_CONFIG}
       />
     </FlatfileContext.Provider>

@@ -30,6 +30,27 @@ export const config: Pick<
           type: 'string',
           label: 'full name',
         },
+        {
+          key: 'status',
+          type: 'enum',
+          label: 'Status',
+          config: {
+            options: [
+              {
+                value: 'blocked',
+                label: 'Blocked',
+              },
+              {
+                value: 'in-progress',
+                label: 'In Progress',
+              },
+              {
+                value: 'completed',
+                label: 'Completed',
+              },
+            ],
+          },
+        },
       ],
       actions: [
         {

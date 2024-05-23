@@ -22,7 +22,30 @@ export const sheet: Flatfile.SheetConfig = {
       label: 'Email',
       config: undefined,
     } as Flatfile.Property.String,
+    {
+      key: 'status',
+      type: 'enum',
+      label: 'Status',
+      config: {
+        allowCustom: true,
+        options: [
+          {
+            value: 'blocked',
+            label: 'Blocked',
+          },
+          {
+            value: 'in-progress',
+            label: 'In Progress',
+          },
+          {
+            value: 'completed',
+            label: 'Completed',
+          },
+        ],
+      },
+    },
   ],
+  allowAdditionalFields: true,
   actions: [
     {
       operation: 'submitActionFg',

@@ -1,7 +1,8 @@
 import { Flatfile } from '@flatfile/api'
 import FlatfileListener from '@flatfile/listener'
-import { createContext, useContext } from 'react'
+import { RefObject, createContext, createRef, useContext } from 'react'
 import { IFrameTypes, ClosePortalOptions } from '../types'
+import { DefaultPageType } from '@flatfile/embedded-utils'
 
 type CreateNewSpace = Partial<Flatfile.SpaceConfig>
 type ReUseSpace = Partial<Flatfile.SpaceConfig> & {
@@ -48,10 +49,11 @@ export interface FlatfileContextType {
   createSpace: any
   setCreateSpace: (config: any) => void
   updateSpace: (config: any) => void
-  defaultPage: undefined
+  defaultPage: DefaultPageType | undefined
   setDefaultPage: (object: any) => void
   resetSpace: (options?: ClosePortalOptions) => void
   config?: IFrameTypes
+  iframe: RefObject<HTMLIFrameElement>
   ready: boolean
 }
 
@@ -79,7 +81,8 @@ export const FlatfileContext = createContext<FlatfileContextType>({
   setDefaultPage: () => {},
   resetSpace: () => {},
   config: undefined,
-  ready: false
+  ready: false,
+  iframe: createRef<HTMLIFrameElement>()
 })
 export const useFlatfileInternal = () => useContext(FlatfileContext)
 export default FlatfileContext

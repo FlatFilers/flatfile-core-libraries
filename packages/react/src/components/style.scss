@@ -73,7 +73,8 @@
   display: flex;
   justify-content: flex-end;
 
-  > div {
+  > div,
+  > button {
     align-items: center;
     appearance: button;
     border-radius: 2px;
@@ -90,11 +91,9 @@
     row-gap: 8px;
     tab-size: 4;
     text-align: center;
-    transition-delay: 0s;
-    transition-duration: 0.2s;
-    transition-property: background-color;
-    transition-timing-function: ease;
+    transition: background-color 0.2s ease 0s;
     word-spacing: 0px;
+    border: none;
     -webkit-box-align: center;
     -webkit-box-pack: center;
   }

@@ -1,27 +1,19 @@
-import React, {
-  useState,
-  useContext,
-  useRef,
-  useEffect,
-  JSX,
-  MutableRefObject,
-} from 'react'
+import React, { JSX, useContext, useEffect, useState } from 'react'
 import { IFrameTypes } from '../types'
+import { useIsIFrameLoaded } from '../utils/useIsIFrameLoaded'
+import { CloseButton } from './CloseButton'
 import { ConfirmCloseModal } from './ConfirmCloseModal'
 import FlatfileContext from './FlatfileContext'
 import { getContainerStyles, getIframeStyles } from './embeddedStyles'
-import { CloseButton } from './CloseButton'
 
 export const EmbeddedIFrameWrapper = (
   props: Partial<IFrameTypes> & {
     handleCloseInstance: () => void
-    iRef: MutableRefObject<HTMLIFrameElement | null>
   }
 ): JSX.Element => {
-  const { open, sessionSpace, ready } = useContext(FlatfileContext)
+  const { open, sessionSpace, ready, iframe } = useContext(FlatfileContext)
 
   const [showExitWarnModal, setShowExitWarnModal] = useState(false)
-
   const {
     closeSpace,
     iframeStyles,
@@ -32,18 +24,18 @@ export const EmbeddedIFrameWrapper = (
     exitSecondaryButtonText = 'No, stay',
     displayAsModal = true,
     handleCloseInstance,
-    iRef,
     preload = true,
     spaceUrl,
   } = props
-  const spacesUrl = spaceUrl || 'https://platform.flatfile.com/s'
+  const spacesUrl = spaceUrl ?? 'https://platform.flatfile.com/s'
   const preloadUrl = `${spacesUrl}/space-init`
+  const isIFrameLoaded = useIsIFrameLoaded(iframe)
 
   useEffect(() => {
-    if (sessionSpace && iRef.current) {
+    if (sessionSpace && iframe.current) {
       const targetOrigin = new URL(spacesUrl).origin
       if (sessionSpace.space?.id && sessionSpace.space?.accessToken) {
-        iRef.current.contentWindow?.postMessage(
+        iframe.current.contentWindow?.postMessage(
           {
             flatfileEvent: {
               topic: 'portal:initialize',
@@ -60,14 +52,16 @@ export const EmbeddedIFrameWrapper = (
         )
       }
     }
-  }, [sessionSpace])
+  }, [sessionSpace, iframe.current, isIFrameLoaded])
 
   const spaceLink = sessionSpace?.space?.guestLink || null
   const openVisible = (open: boolean): React.CSSProperties => ({
     opacity: ready && open ? 1 : 0,
     pointerEvents: ready && open ? 'all' : 'none',
   })
-  
+
+  const iframeSrc = preload ? preloadUrl : spaceLink
+
   return (
     <div
       className={`flatfile_iframe-wrapper ${
@@ -95,20 +89,18 @@ export const EmbeddedIFrameWrapper = (
           exitSecondaryButtonText={exitSecondaryButtonText}
         />
       )}
-      {((ready && open) || preload) && (
-        <iframe
-          allow="clipboard-read; clipboard-write"
-          className={mountElement}
-          data-testid={mountElement}
-          ref={iRef}
-          src={preload ? preloadUrl : spaceLink}
-          title="Embedded Portal Content"
-          style={{
-            ...getIframeStyles(iframeStyles!),
-            ...(preload ? openVisible(open) : { opacity: 1 }),
-          }}
-        />
-      )}
+      <iframe
+        allow="clipboard-read; clipboard-write"
+        className={mountElement}
+        data-testid={mountElement}
+        ref={iframe}
+        src={iframeSrc}
+        title="Embedded Portal Content"
+        style={{
+          ...getIframeStyles(iframeStyles!),
+          ...(preload ? openVisible(open) : { opacity: 1 }),
+        }}
+      />
       <CloseButton handler={() => setShowExitWarnModal(true)} />
     </div>
   )
