@@ -1,0 +1,752 @@
+diff --git a/packages/react/CHANGELOG.md b/packages/react/CHANGELOG.md
+index e69a225..391620e 100644
+--- a/packages/react/CHANGELOG.md
++++ b/packages/react/CHANGELOG.md
+@@ -2,2 +2,11 @@
+ 
++## 7.9.6
++
++### Patch Changes
++
++- bac639c: Fixes bug where ISO dates were automatically converted to JS Dates
++- Updated dependencies [bac639c]
++- Updated dependencies [bac639c]
++  - @flatfile/listener@1.0.5
++
+ ## 7.9.5
+diff --git a/packages/react/package.json b/packages/react/package.json
+index 7910cd4..4f0264e 100644
+--- a/packages/react/package.json
++++ b/packages/react/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/react",
+-  "version": "7.9.5",
++  "version": "7.9.6",
+   "description": "Flatfile React components",
+@@ -65,3 +65,3 @@
+     "@flatfile/embedded-utils": "^1.2.3",
+-    "@flatfile/listener": "^1.0.4",
++    "@flatfile/listener": "^1.0.5",
+     "@flatfile/plugin-record-hook": "^1.5.2",
+diff --git a/packages/react/src/components/Document.tsx b/packages/react/src/components/Document.tsx
+index 96fb617..71f4e37 100644
+--- a/packages/react/src/components/Document.tsx
++++ b/packages/react/src/components/Document.tsx
+@@ -8,2 +8,3 @@ type DocumentProps = {
+   config: Flatfile.DocumentConfig
++  defaultPage?: boolean
+ }
+@@ -12,3 +13,3 @@ type DocumentProps = {
+  * It utilizes the `useDeepCompareEffect` hook to deeply compare the `config` prop changes and update the document accordingly.
+- * 
++ *
+  * @component
+@@ -20,3 +21,3 @@ type DocumentProps = {
+  * return <Document config={documentConfig} />
+- * 
++ *
+  * @param {DocumentProps} props - The props for the Document component.
+@@ -26,10 +27,11 @@ type DocumentProps = {
+ export const Document = (props: DocumentProps) => {
+-  const { config } = props
+-  const { updateDocument } = useContext(FlatfileContext)
++  const { config, defaultPage } = props
++  const { updateDocument, setDefaultPage } = useContext(FlatfileContext)
+ 
+-  const callback = useCallback(() => {
++  useDeepCompareEffect(() => {
+     updateDocument(config)
+-  }, [config, updateDocument])
+-
+-  useDeepCompareEffect(callback, [config])
++    if (defaultPage) {
++      setDefaultPage({ document: config.title })
++    }
++  }, [config, defaultPage])
+ 
+diff --git a/packages/react/src/components/EmbeddedIFrameWrapper.tsx b/packages/react/src/components/EmbeddedIFrameWrapper.tsx
+index 863eaf6..cc0d59d 100644
+--- a/packages/react/src/components/EmbeddedIFrameWrapper.tsx
++++ b/packages/react/src/components/EmbeddedIFrameWrapper.tsx
+@@ -1,2 +1,9 @@
+-import React, { useState, useContext, useRef, useEffect, JSX } from 'react'
++import React, {
++  useState,
++  useContext,
++  useRef,
++  useEffect,
++  JSX,
++  MutableRefObject,
++} from 'react'
+ import { IFrameTypes } from '../types'
+@@ -10,2 +17,3 @@ export const EmbeddedIFrameWrapper = (
+     handleCloseInstance: () => void
++    iRef: MutableRefObject<HTMLIFrameElement | null>
+   }
+@@ -13,3 +21,2 @@ export const EmbeddedIFrameWrapper = (
+   const { open, sessionSpace } = useContext(FlatfileContext)
+-  const iRef = useRef<HTMLIFrameElement | null>(null)
+ 
+@@ -27,2 +34,3 @@ export const EmbeddedIFrameWrapper = (
+     handleCloseInstance,
++    iRef,
+     preload = true,
+@@ -36,18 +44,19 @@ export const EmbeddedIFrameWrapper = (
+       const targetOrigin = new URL(spacesUrl).origin
+-
+-      iRef.current.contentWindow?.postMessage(
+-        {
+-          flatfileEvent: {
+-            topic: 'portal:initialize',
+-            payload: {
+-              status: 'complete',
+-              spaceUrl: `${targetOrigin}/space/${
+-                sessionSpace.space.id
+-              }?token=${encodeURIComponent(sessionSpace.space.accessToken)}`,
+-              initialResources: sessionSpace,
++      if (sessionSpace.space?.id && sessionSpace.space?.accessToken) {
++        iRef.current.contentWindow?.postMessage(
++          {
++            flatfileEvent: {
++              topic: 'portal:initialize',
++              payload: {
++                status: 'complete',
++                spaceUrl: `${targetOrigin}/space/${
++                  sessionSpace.space.id
++                }?token=${encodeURIComponent(sessionSpace.space.accessToken)}`,
++                initialResources: sessionSpace,
++              },
+             },
+           },
+-        },
+-        targetOrigin
+-      )
++          targetOrigin
++        )
++      }
+     }
+@@ -56,3 +65,6 @@ export const EmbeddedIFrameWrapper = (
+   const spaceLink = sessionSpace?.space?.guestLink || null
+-
++  const openVisible = (open: boolean): React.CSSProperties => ({
++    opacity: open ? 1 : 0,
++    pointerEvents: open ? 'all' : 'none',
++  })
+   return (
+@@ -64,3 +76,3 @@ export const EmbeddedIFrameWrapper = (
+         ...getContainerStyles(displayAsModal),
+-        display: open ? 'flex' : 'none',
++        ...openVisible(open),
+       }}
+@@ -93,5 +105,3 @@ export const EmbeddedIFrameWrapper = (
+             ...getIframeStyles(iframeStyles!),
+-            ...(preload
+-              ? { display: open ? 'block' : 'none' }
+-              : { display: 'block' }),
++            ...(preload ? openVisible(open) : { opacity: 1 }),
+           }}
+diff --git a/packages/react/src/components/FlatfileContext.tsx b/packages/react/src/components/FlatfileContext.tsx
+index 457116f..a8e8654 100644
+--- a/packages/react/src/components/FlatfileContext.tsx
++++ b/packages/react/src/components/FlatfileContext.tsx
+@@ -1,5 +1,5 @@
+ import { Flatfile } from '@flatfile/api'
+-import { ISpace } from '@flatfile/embedded-utils'
+ import FlatfileListener from '@flatfile/listener'
+ import { createContext, useContext } from 'react'
++import { IFrameTypes, ClosePortalOptions } from '../types'
+ 
+@@ -35,3 +35,3 @@ export interface FlatfileContextType {
+   sessionSpace?: any
+-  setSessionSpace: (space: any) => void
++  setSessionSpace: (space: any | null) => void
+   listener: FlatfileListener
+@@ -39,3 +39,3 @@ export interface FlatfileContextType {
+   accessToken?: string
+-  setAccessToken: (accessToken: string) => void
++  setAccessToken: (accessToken?: string | null) => void
+   addSheet: (config: any) => void
+@@ -50,2 +50,6 @@ export interface FlatfileContextType {
+   updateSpace: (config: any) => void
++  defaultPage: undefined
++  setDefaultPage: (object: any) => void
++  resetSpace: (options?: ClosePortalOptions) => void
++  config?: IFrameTypes
+ }
+@@ -72,2 +76,6 @@ export const FlatfileContext = createContext<FlatfileContextType>({
+   updateSpace: () => {},
++  defaultPage: undefined,
++  setDefaultPage: () => {},
++  resetSpace: () => {},
++  config: undefined,
+ })
+diff --git a/packages/react/src/components/FlatfileProvider.tsx b/packages/react/src/components/FlatfileProvider.tsx
+index 6380e92..2bb0a2e 100644
+--- a/packages/react/src/components/FlatfileProvider.tsx
++++ b/packages/react/src/components/FlatfileProvider.tsx
+@@ -1,2 +1,2 @@
+-import React, { useEffect, useState } from 'react'
++import React, { useCallback, useEffect, useRef, useState } from 'react'
+ import FlatfileContext, { DEFAULT_CREATE_SPACE } from './FlatfileContext'
+@@ -5,4 +5,17 @@ import { Flatfile } from '@flatfile/api'
+ import { EmbeddedIFrameWrapper } from './EmbeddedIFrameWrapper'
+-import { ExclusiveFlatfileProviderProps } from '../types'
++import { ExclusiveFlatfileProviderProps, IFrameTypes } from '../types'
+ import { handlePostMessage } from '@flatfile/embedded-utils'
++import { ClosePortalOptions } from '../types'
++
++const configDefaults: IFrameTypes = {
++  preload: true,
++  resetOnClose: true,
++}
++
++interface SESSION_SPACE
++  extends Omit<Flatfile.Space, 'createdAt' | 'updatedAt' | 'upgradedAt'> {
++  createdAt: string
++  updatedAt: string
++  upgradedAt: string
++}
+ 
+@@ -16,8 +29,10 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
+ }) => {
+-  const [internalAccessToken, setAccessToken] = useState<string | undefined>(
+-    accessToken
+-  )
++  const [internalAccessToken, setAccessToken] = useState<
++    string | undefined | null
++  >(accessToken)
+   const [listener, setListener] = useState(new FlatfileListener())
+   const [open, setOpen] = useState<boolean>(false)
+-  const [sessionSpace, setSessionSpace] = useState<any>(null)
++  const [sessionSpace, setSessionSpace] = useState<
++    { space: SESSION_SPACE } | undefined
++  >(undefined)
+ 
+@@ -29,2 +44,25 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
+ 
++  const [defaultPage, setDefaultPageRaw] = useState<any>(undefined)
++
++  const setDefaultPage = useCallback(
++    (incomingDefaultPage: any) => {
++      if (defaultPage === undefined) {
++        setDefaultPageRaw(incomingDefaultPage)
++      } else {
++        console.warn(
++          `Attempt to set multiple default pages detected. Only one default page can be set per space. Current default page: ${JSON.stringify(
++            defaultPage
++          )}, Attempted new default page: ${JSON.stringify(
++            incomingDefaultPage
++          )}`
++        )
++      }
++    },
++    [defaultPage]
++  )
++
++  const iframe = useRef<HTMLIFrameElement | null>(null)
++
++  const FLATFILE_PROVIDER_CONFIG = { ...config, ...configDefaults }
++
+   const addSheet = (newSheet: Flatfile.SheetConfig) => {
+@@ -107,14 +145,32 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
+ 
++  const resetSpace = ({ reset }: ClosePortalOptions = {}) => {
++    setOpen(false)
++
++    if (reset ?? FLATFILE_PROVIDER_CONFIG.resetOnClose) {
++      setAccessToken(null)
++      setSessionSpace(undefined)
++
++      const spacesUrl =
++        FLATFILE_PROVIDER_CONFIG.spaceUrl || 'https://platform.flatfile.com/s'
++      const preloadUrl = `${spacesUrl}/space-init`
++
++      const spaceLink = sessionSpace?.space?.guestLink || null
++      const iFrameSrc = FLATFILE_PROVIDER_CONFIG.preload
++        ? preloadUrl
++        : spaceLink
++      if (iFrameSrc) {
++        iframe?.current?.setAttribute('src', iFrameSrc)
++      }
++      // Works but only after the iframe is visible
++    }
++  }
++
+   // Listen to the postMessage event from the created iFrame
+   useEffect(() => {
+-    window.addEventListener(
+-      'message',
+-      handlePostMessage(config?.closeSpace, listener),
+-      false
+-    )
++    const ff = (message: MessageEvent) =>
++      handlePostMessage(FLATFILE_PROVIDER_CONFIG?.closeSpace, listener)(message)
++
++    window.addEventListener('message', ff, false)
+     return () => {
+-      window.removeEventListener(
+-        'message',
+-        handlePostMessage(config?.closeSpace, listener)
+-      )
++      window.removeEventListener('message', ff)
+     }
+@@ -122,14 +178,17 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
+ 
+-  // Mount the event listener to the FlatfileProvider
+   useEffect(() => {
+     if (listener && internalAccessToken) {
+-      listener.mount(
+-        new Browser({
+-          apiUrl,
+-          accessToken: internalAccessToken,
+-          fetchApi: fetch,
+-        })
+-      )
++      const browserInstance = new Browser({
++        apiUrl,
++        accessToken: internalAccessToken,
++        fetchApi: fetch,
++      })
++      listener.mount(browserInstance)
++
++      // Cleanup function to unmount the listener
++      return () => {
++        listener.unmount(browserInstance)
++      }
+     }
+-  }, [listener, internalAccessToken, apiUrl])
++  }, [internalAccessToken, apiUrl])
+ 
+@@ -156,2 +215,6 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
+         updateSpace,
++        defaultPage,
++        setDefaultPage,
++        resetSpace,
++        config: FLATFILE_PROVIDER_CONFIG,
+       }}
+@@ -161,4 +224,5 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
+       <EmbeddedIFrameWrapper
+-        handleCloseInstance={() => setOpen(false)}
+-        {...config}
++        handleCloseInstance={resetSpace}
++        iRef={iframe}
++        {...FLATFILE_PROVIDER_CONFIG}
+       />
+diff --git a/packages/react/src/components/Sheet.tsx b/packages/react/src/components/Sheet.tsx
+index 42bfc73..7d50e14 100644
+--- a/packages/react/src/components/Sheet.tsx
++++ b/packages/react/src/components/Sheet.tsx
+@@ -1,2 +1,2 @@
+-import React, { useCallback } from 'react'
++import React from 'react'
+ import { Flatfile } from '@flatfile/api'
+@@ -19,2 +19,3 @@ type SheetProps = {
+   onRecordHook?: SimpleOnboarding['onRecordHook']
++  defaultPage?: boolean
+ }
+@@ -64,6 +65,7 @@ type SheetProps = {
+ export const Sheet = (props: SheetProps) => {
+-  const { config, onRecordHook, onSubmit, submitSettings } = props
+-  const { addSheet, updateWorkbook, createSpace } = useContext(FlatfileContext)
++  const { config, onRecordHook, onSubmit, submitSettings, defaultPage } = props
++  const { addSheet, updateWorkbook, createSpace, setDefaultPage } =
++    useContext(FlatfileContext)
+ 
+-  const callback = useCallback(() => {
++  useDeepCompareEffect(() => {
+     // Manage actions immutably
+@@ -78,5 +80,10 @@ export const Sheet = (props: SheetProps) => {
+     addSheet(config)
+-  }, [config, createSpace, addSheet, updateWorkbook, onSubmit])
+-
+-  useDeepCompareEffect(callback, [config])
++    if (defaultPage) {
++      setDefaultPage({
++        workbook: {
++          sheet: config.slug,
++        },
++      })
++    }
++  }, [config, defaultPage])
+ 
+diff --git a/packages/react/src/components/Space.tsx b/packages/react/src/components/Space.tsx
+index 3a6a322..bb5ca24 100644
+--- a/packages/react/src/components/Space.tsx
++++ b/packages/react/src/components/Space.tsx
+@@ -1,2 +1,2 @@
+-import React, { useCallback, useContext } from 'react'
++import React, { useContext } from 'react'
+ import type { Flatfile } from '@flatfile/api'
+@@ -38,3 +38,3 @@ export const Space = (props: SpaceProps) => {
+ 
+-  const callback = useCallback(() => {
++  useDeepCompareEffect(() => {
+     updateSpace({
+@@ -43,5 +43,3 @@ export const Space = (props: SpaceProps) => {
+     })
+-  }, [config, updateSpace])
+-
+-  useDeepCompareEffect(callback, [config])
++  }, [config])
+ 
+diff --git a/packages/react/src/components/Workbook.tsx b/packages/react/src/components/Workbook.tsx
+index 8d075f9..2d6f60f 100644
+--- a/packages/react/src/components/Workbook.tsx
++++ b/packages/react/src/components/Workbook.tsx
+@@ -1,3 +1,3 @@
+ import FlatfileContext from './FlatfileContext'
+-import React, { useCallback, useContext } from 'react'
++import React, { useContext } from 'react'
+ import { type Flatfile } from '@flatfile/api'
+@@ -75,3 +75,3 @@ export const Workbook = (props: WorkbookProps) => {
+ 
+-  const callback = useCallback(() => {
++  useDeepCompareEffect(() => {
+     // adds workbook action if onSubmit is passed along
+@@ -85,5 +85,3 @@ export const Workbook = (props: WorkbookProps) => {
+     )
+-  }, [config, onSubmit])
+-
+-  useDeepCompareEffect(callback, [config])
++  }, [config])
+ 
+diff --git a/packages/react/src/components/_tests_/Document.spec.tsx b/packages/react/src/components/_tests_/Document.spec.tsx
+index 8e25961..00fc7f8 100644
+--- a/packages/react/src/components/_tests_/Document.spec.tsx
++++ b/packages/react/src/components/_tests_/Document.spec.tsx
+@@ -5,3 +5,3 @@ import FlatfileContext from '../FlatfileContext'
+ import { useDeepCompareEffect } from '../../utils/useDeepCompareEffect'
+-import { MockFlatfileProviderValue } from './FlatfileProvider.spec'
++import { FlatfileProviderValue } from './FlatfileProvider.spec'
+ 
+@@ -29,3 +29,3 @@ describe('Document', () => {
+         value={{
+-          ...MockFlatfileProviderValue,
++          ...FlatfileProviderValue,
+           updateDocument: mockUpdateDocument,
+@@ -46,3 +46,3 @@ describe('Document', () => {
+         value={{
+-          ...MockFlatfileProviderValue,
++          ...FlatfileProviderValue,
+           updateDocument: mockUpdateDocument,
+@@ -58,3 +58,3 @@ describe('Document', () => {
+         value={{
+-          ...MockFlatfileProviderValue,
++          ...FlatfileProviderValue,
+           updateDocument: mockUpdateDocument,
+diff --git a/packages/react/src/components/_tests_/FlatfileProvider.spec.tsx b/packages/react/src/components/_tests_/FlatfileProvider.spec.tsx
+index cfc9be4..9d0791d 100644
+--- a/packages/react/src/components/_tests_/FlatfileProvider.spec.tsx
++++ b/packages/react/src/components/_tests_/FlatfileProvider.spec.tsx
+@@ -3,3 +3,6 @@ import { render, waitFor } from '@testing-library/react'
+ import { FlatfileProvider } from '../FlatfileProvider'
+-import FlatfileContext, { FlatfileContextType } from '../FlatfileContext'
++import FlatfileContext, {
++  DEFAULT_CREATE_SPACE,
++  FlatfileContextType,
++} from '../FlatfileContext'
+ import fetchMock from 'jest-fetch-mock'
+@@ -7,3 +10,3 @@ import FlatfileListener from '@flatfile/listener'
+ 
+-export const MockFlatfileProviderValue: FlatfileContextType = {
++export const FlatfileProviderValue: FlatfileContextType = {
+   updateDocument: jest.fn(),
+@@ -19,5 +22,8 @@ export const MockFlatfileProviderValue: FlatfileContextType = {
+   updateWorkbook: jest.fn(),
+-  createSpace: undefined,
++  createSpace: DEFAULT_CREATE_SPACE,
+   setCreateSpace: jest.fn(),
+   updateSpace: jest.fn(),
++  defaultPage: undefined,
++  setDefaultPage: jest.fn(),
++  resetSpace: jest.fn(),
+ }
+diff --git a/packages/react/src/components/_tests_/Sheet.spec.tsx b/packages/react/src/components/_tests_/Sheet.spec.tsx
+index a86a695..72fbd99 100644
+--- a/packages/react/src/components/_tests_/Sheet.spec.tsx
++++ b/packages/react/src/components/_tests_/Sheet.spec.tsx
+@@ -3,27 +3,7 @@ import { render } from '@testing-library/react'
+ import { Sheet } from '../Sheet'
+-import FlatfileContext, {
+-  DEFAULT_CREATE_SPACE,
+-  FlatfileContextType,
+-} from '../FlatfileContext'
++import FlatfileContext from '../FlatfileContext'
+ import { useDeepCompareEffect } from '../../utils/useDeepCompareEffect'
+ import { workbookOnSubmitAction } from '../../utils/constants'
+-import FlatfileListener from '@flatfile/listener'
+ import { Flatfile } from '@flatfile/api'
+-
+-const MockFlatfileProviderValue: FlatfileContextType = {
+-  updateDocument: jest.fn(),
+-  apiUrl: '',
+-  open: false,
+-  setOpen: jest.fn(),
+-  setSessionSpace: jest.fn(),
+-  listener: new FlatfileListener(),
+-  setListener: jest.fn(),
+-  setAccessToken: jest.fn(),
+-  addSheet: jest.fn(),
+-  updateSheet: jest.fn(),
+-  updateWorkbook: jest.fn(),
+-  createSpace: DEFAULT_CREATE_SPACE,
+-  setCreateSpace: jest.fn(),
+-  updateSpace: jest.fn(),
+-}
++import { FlatfileProviderValue } from './FlatfileProvider.spec'
+ 
+@@ -65,3 +45,3 @@ describe('Sheet', () => {
+         value={{
+-          ...MockFlatfileProviderValue,
++          ...FlatfileProviderValue,
+           addSheet: mockUpdateSheet,
+@@ -86,3 +66,3 @@ describe('Sheet', () => {
+         value={{
+-          ...MockFlatfileProviderValue,
++          ...FlatfileProviderValue,
+           updateWorkbook: mockUpdateWorkbook,
+diff --git a/packages/react/src/components/_tests_/Space.spec.tsx b/packages/react/src/components/_tests_/Space.spec.tsx
+index d83f874..8c5a203 100644
+--- a/packages/react/src/components/_tests_/Space.spec.tsx
++++ b/packages/react/src/components/_tests_/Space.spec.tsx
+@@ -5,3 +5,3 @@ import FlatfileContext from '../FlatfileContext'
+ import { useDeepCompareEffect } from '../../utils/useDeepCompareEffect'
+-import { MockFlatfileProviderValue } from './FlatfileProvider.spec'
++import { FlatfileProviderValue } from './FlatfileProvider.spec'
+ jest.mock('../../utils/useDeepCompareEffect', () => ({
+@@ -27,3 +27,3 @@ describe('Space', () => {
+       <FlatfileContext.Provider
+-        value={{ ...MockFlatfileProviderValue, updateSpace: mockUpdateSpace }}
++        value={{ ...FlatfileProviderValue, updateSpace: mockUpdateSpace }}
+       >
+@@ -40,3 +40,3 @@ describe('Space', () => {
+       <FlatfileContext.Provider
+-        value={{ ...MockFlatfileProviderValue, updateSpace: mockUpdateSpace }}
++        value={{ ...FlatfileProviderValue, updateSpace: mockUpdateSpace }}
+       >
+@@ -48,3 +48,3 @@ describe('Space', () => {
+       <FlatfileContext.Provider
+-        value={{ ...MockFlatfileProviderValue, updateSpace: mockUpdateSpace }}
++        value={{ ...FlatfileProviderValue, updateSpace: mockUpdateSpace }}
+       >
+diff --git a/packages/react/src/components/_tests_/Workbook.spec.tsx b/packages/react/src/components/_tests_/Workbook.spec.tsx
+index 5142499..80cbdb0 100644
+--- a/packages/react/src/components/_tests_/Workbook.spec.tsx
++++ b/packages/react/src/components/_tests_/Workbook.spec.tsx
+@@ -6,17 +6,7 @@ import { useDeepCompareEffect } from '../../utils/useDeepCompareEffect'
+ import { workbookOnSubmitAction } from '../../utils/constants'
+-import FlatfileListener from '@flatfile/listener'
+ import { Flatfile } from '@flatfile/api'
++import { FlatfileProviderValue } from './FlatfileProvider.spec'
+ 
+ const MockFlatfileProviderValue: FlatfileContextType = {
+-  updateDocument: jest.fn(),
+-  apiUrl: '',
+-  open: false,
+-  setOpen: jest.fn(),
+-  setSessionSpace: jest.fn(),
+-  listener: new FlatfileListener(),
+-  setListener: jest.fn(),
+-  setAccessToken: jest.fn(),
+-  addSheet: jest.fn(),
+-  updateSheet: jest.fn(),
+-  updateWorkbook: jest.fn(),
++  ...FlatfileProviderValue,
+   createSpace: {
+@@ -36,4 +26,2 @@ const MockFlatfileProviderValue: FlatfileContextType = {
+   },
+-  setCreateSpace: jest.fn(),
+-  updateSpace: jest.fn(),
+ }
+diff --git a/packages/react/src/components/embeddedStyles.tsx b/packages/react/src/components/embeddedStyles.tsx
+index f204aeb..ac4ffff 100644
+--- a/packages/react/src/components/embeddedStyles.tsx
++++ b/packages/react/src/components/embeddedStyles.tsx
+@@ -8,5 +8,5 @@ export const getIframeStyles = (styles: React.CSSProperties) => {
+       borderWidth: 0,
+-      borderRadius: '20px',
+       background: '#fff',
+-      padding: '16px',
++      boxShadow:
++        '0px 4px 6px rgba(154, 160, 185, 0.05), 0px 1px 3px rgba(166, 173, 201, 0.3)',
+     }
+@@ -24,3 +24,3 @@ export const getContainerStyles = (isModal: boolean): React.CSSProperties => {
+       zIndex: 1000,
+-      backgroundColor: 'rgba(0,0,0,0.2)',
++      backgroundColor: 'rgba(0, 0, 0, 0.1)',
+       display: 'flex',
+diff --git a/packages/react/src/components/style.scss b/packages/react/src/components/style.scss
+index aa8adc2..22e0a66 100644
+--- a/packages/react/src/components/style.scss
++++ b/packages/react/src/components/style.scss
+@@ -47,2 +47,3 @@
+   margin: 0;
++  transition: 0.25s ease-in-out;
+ }
+@@ -62,6 +63,5 @@
+   border: none;
+-  background: red;
++  background: rgb(29, 31, 74);
+   box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+-  animation: glow 1.5s linear infinite alternate;
+-  transition: box-shadow 0.3s ease;
++  transition: 0.25s ease-in-out;
+ 
+@@ -210,2 +210,2 @@
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/packages/react/src/hooks/useFlatfile.ts b/packages/react/src/hooks/useFlatfile.ts
+index da85406..ab72c56 100644
+--- a/packages/react/src/hooks/useFlatfile.ts
++++ b/packages/react/src/hooks/useFlatfile.ts
+@@ -4,2 +4,36 @@ import { getSpace } from '../utils/getSpace'
+ import { createSpaceInternal } from '../utils/createSpaceInternal'
++import { FlatfileClient } from '@flatfile/api'
++import { ClosePortalOptions } from '../types'
++import { convertDatesToISO } from '../utils/convertDatesToISO'
++
++const findDefaultPage = (createdSpace: any, defaultPage: any) => {
++  if (!defaultPage) return
++  if (defaultPage.document) {
++    const document = createdSpace.documents.find(
++      (d: any) => d.title === defaultPage.document
++    )
++    return {
++      documentId: document.id,
++    }
++  }
++  if (defaultPage.workbook) {
++    if (defaultPage.workbook.sheet) {
++      const sheet = createdSpace.workbooks[0].sheets.find(
++        (s: any) => s.slug === defaultPage.workbook.sheet
++      )
++      return {
++        workbook: {
++          workbookId: createdSpace.workbooks[0].id,
++          sheetId: sheet.id,
++        },
++      }
++    }
++    return {
++      workbook: {
++        workbookId: createdSpace.workbooks[0].id,
++      },
++    }
++  }
++  return undefined
++}
+ 
+@@ -7,3 +41,3 @@ export const useFlatfile: () => {
+   openPortal: () => void
+-  closePortal: () => void
++  closePortal: (options?: ClosePortalOptions) => void
+   open: boolean
+@@ -29,2 +63,4 @@ export const useFlatfile: () => {
+     createSpace,
++    defaultPage,
++    resetSpace,
+   } = context
+@@ -35,3 +71,2 @@ export const useFlatfile: () => {
+     }
+-
+     // autoConfigure if no workbook or workbook.sheets are provided as they should be handled in the listener space:configure event
+@@ -45,6 +80,26 @@ export const useFlatfile: () => {
+     })
+-    setAccessToken(createdSpace.space.accessToken)
+-    setSessionSpace(createdSpace)
+     // A bit of a hack to wire up the Flatfile API key to the window object for internal client side @flatfile/api usage
+     ;(window as any).CROSSENV_FLATFILE_API_KEY = createdSpace.space.accessToken
++
++    const defaultPageDetails = findDefaultPage(createdSpace, defaultPage)
++    if (defaultPageDetails) {
++      const api = new FlatfileClient()
++      const updatedSpace = await api.spaces.update(createdSpace.space.id, {
++        metadata: {
++          ...createdSpace.space.metadata,
++          sidebarConfig: {
++            ...createdSpace.space.metadata.sidebarConfig,
++            defaultPage: defaultPageDetails,
++          },
++        },
++      })
++
++      createdSpace.space.metadata.sidebarConfig = {
++        ...createdSpace.space.metadata.sidebarConfig,
++        defaultPage: updatedSpace.data.metadata.sidebarConfig.defaultPage,
++      }
++    }
++
++    setAccessToken(createdSpace.space.accessToken)
++    setSessionSpace(createdSpace)
+   }
+@@ -54,3 +109,2 @@ export const useFlatfile: () => {
+       createSpace.space.accessToken = accessToken
+-      // TODO: Do we want to update the Space metadata / documents here if they pass that information? Feels like a no.
+       const { data: reUsedSpace } = await getSpace({
+@@ -65,3 +119,3 @@ export const useFlatfile: () => {
+ 
+-      setSessionSpace({ space: reUsedSpace })
++      setSessionSpace({ space: convertDatesToISO(reUsedSpace) })
+     }
+@@ -70,5 +124,6 @@ export const useFlatfile: () => {
+   const openPortal = () => {
++    ;(window as any).CROSSENV_FLATFILE_API_URL = apiUrl
+     if (publishableKey && !accessToken) {
+       handleCreateSpace()
+-    } else if (accessToken) {
++    } else if (accessToken && !publishableKey) {
+       handleReUseSpace()
+@@ -78,7 +133,7 @@ export const useFlatfile: () => {
+ 
+-  const closePortal = () => {
+-    setOpen(false)
+-    // TODO: Do we want to do any cleanup / remove the iFrame/listener from the DOM?
++  const closePortal = (options?: ClosePortalOptions) => {
++    resetSpace(options)
+   }
+ 
++
+   return {
+diff --git a/packages/react/src/types/iFrameProps.ts b/packages/react/src/types/iFrameProps.ts
+index eeeee24..0902e8c 100644
+--- a/packages/react/src/types/iFrameProps.ts
++++ b/packages/react/src/types/iFrameProps.ts
+@@ -14,3 +14,3 @@ export type IFrameTypes = Partial<
+     | 'spaceUrl'
+-  > & { preload?: boolean }
++  > & { preload?: boolean; resetOnClose?: boolean }
+ >
+diff --git a/packages/react/src/types/index.ts b/packages/react/src/types/index.ts
+index e20a969..e47770b 100644
+--- a/packages/react/src/types/index.ts
++++ b/packages/react/src/types/index.ts
+@@ -4 +4,5 @@ export * from './iFrameProps'
+ export * from './IFlatfileProvider'
++
++export type ClosePortalOptions = {
++  reset?: boolean
++}
+diff --git a/packages/react/src/utils/convertDatesToISO.ts b/packages/react/src/utils/convertDatesToISO.ts
+new file mode 100644
+index 0000000..f1a4c26
+--- /dev/null
++++ b/packages/react/src/utils/convertDatesToISO.ts
+@@ -0,0 +1,16 @@
++export function convertDatesToISO(obj: any): any {
++  if (obj instanceof Date) {
++    return obj.toISOString();
++  }
++  if (Array.isArray(obj)) {
++    return obj.map(convertDatesToISO);
++  }
++  if (typeof obj === 'object' && obj !== null) {
++    const newObj: { [key: string]: any } = {};
++    for (const key of Object.keys(obj)) {
++      newObj[key] = convertDatesToISO(obj[key]);
++    }
++    return newObj;
++  }
++  return obj;
++}

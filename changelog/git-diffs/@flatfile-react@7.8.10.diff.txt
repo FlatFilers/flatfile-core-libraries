@@ -1,0 +1,34 @@
+diff --git a/packages/react/CHANGELOG.md b/packages/react/CHANGELOG.md
+index 9953288..461eb63 100644
+--- a/packages/react/CHANGELOG.md
++++ b/packages/react/CHANGELOG.md
+@@ -2,2 +2,8 @@
+ 
++## 7.8.10
++
++### Patch Changes
++
++- 16c42ce: Fix bug with onSubmit() in the usePortal hook
++
+ ## 7.8.9
+diff --git a/packages/react/package.json b/packages/react/package.json
+index 70a54be..609d157 100644
+--- a/packages/react/package.json
++++ b/packages/react/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/react",
+-  "version": "7.8.9",
++  "version": "7.8.10",
+   "description": "Flatfile React components",
+diff --git a/packages/react/src/hooks/usePortal.tsx b/packages/react/src/hooks/usePortal.tsx
+index 9950234..e94619c 100644
+--- a/packages/react/src/hooks/usePortal.tsx
++++ b/packages/react/src/hooks/usePortal.tsx
+@@ -17,3 +17,6 @@ import { recordHook } from '@flatfile/plugin-record-hook'
+ import { IReactSimpleOnboarding } from '../types/IReactSimpleOnboarding'
+-import api from '@flatfile/api'
++
++// Bug where the default export function is not being used properly in some build tooling
++import { FlatfileClient } from '@flatfile/api'
++const api = new FlatfileClient()
+ 

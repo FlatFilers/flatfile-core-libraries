@@ -1,0 +1,132 @@
+diff --git a/packages/react/CHANGELOG.md b/packages/react/CHANGELOG.md
+index a6628d0..4792846 100644
+--- a/packages/react/CHANGELOG.md
++++ b/packages/react/CHANGELOG.md
+@@ -2,2 +2,8 @@
+ 
++## 7.9.8
++
++### Patch Changes
++
++- ad7695f: Adds more control over Opening Portal
++
+ ## 7.9.7
+diff --git a/packages/react/package.json b/packages/react/package.json
+index 8ee1f78..83c520b 100644
+--- a/packages/react/package.json
++++ b/packages/react/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/react",
+-  "version": "7.9.7",
++  "version": "7.9.8",
+   "description": "Flatfile React components",
+diff --git a/packages/react/src/components/EmbeddedIFrameWrapper.tsx b/packages/react/src/components/EmbeddedIFrameWrapper.tsx
+index 9b63652..9ba063b 100644
+--- a/packages/react/src/components/EmbeddedIFrameWrapper.tsx
++++ b/packages/react/src/components/EmbeddedIFrameWrapper.tsx
+@@ -20,3 +20,3 @@ export const EmbeddedIFrameWrapper = (
+ ): JSX.Element => {
+-  const { open, sessionSpace } = useContext(FlatfileContext)
++  const { open, sessionSpace, ready } = useContext(FlatfileContext)
+ 
+@@ -66,5 +66,6 @@ export const EmbeddedIFrameWrapper = (
+   const openVisible = (open: boolean): React.CSSProperties => ({
+-    opacity: open ? 1 : 0,
+-    pointerEvents: open ? 'all' : 'none',
++    opacity: ready && open ? 1 : 0,
++    pointerEvents: ready && open ? 'all' : 'none',
+   })
++  
+   return (
+@@ -96,3 +97,3 @@ export const EmbeddedIFrameWrapper = (
+       )}
+-      {(open || preload) && (
++      {((ready && open) || preload) && (
+         <iframe
+diff --git a/packages/react/src/components/FlatfileContext.tsx b/packages/react/src/components/FlatfileContext.tsx
+index 984a872..10601f0 100644
+--- a/packages/react/src/components/FlatfileContext.tsx
++++ b/packages/react/src/components/FlatfileContext.tsx
+@@ -54,2 +54,3 @@ export interface FlatfileContextType {
+   config?: IFrameTypes
++  ready: boolean
+ }
+@@ -80,2 +81,3 @@ export const FlatfileContext = createContext<FlatfileContextType>({
+   config: undefined,
++  ready: false
+ })
+diff --git a/packages/react/src/components/FlatfileProvider.tsx b/packages/react/src/components/FlatfileProvider.tsx
+index 9224c1f..e94a7a7 100644
+--- a/packages/react/src/components/FlatfileProvider.tsx
++++ b/packages/react/src/components/FlatfileProvider.tsx
+@@ -67,2 +67,10 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
+   )
++  const [ready, setReady] = useState<boolean>(false);
++
++  useEffect(() => {
++    const isDefaultCreateSpace = JSON.stringify(createSpace) === JSON.stringify(DEFAULT_CREATE_SPACE);
++    if (!isDefaultCreateSpace) {
++      setReady(true);
++    }
++  }, [createSpace]);
+ 
+@@ -224,2 +232,3 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
+       config: FLATFILE_PROVIDER_CONFIG,
++      ready
+     }),
+@@ -235,2 +244,3 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
+       defaultPage,
++      ready,
+       FLATFILE_PROVIDER_CONFIG,
+diff --git a/packages/react/src/components/_tests_/FlatfileProvider.spec.tsx b/packages/react/src/components/_tests_/FlatfileProvider.spec.tsx
+index 9d0791d..349e16b 100644
+--- a/packages/react/src/components/_tests_/FlatfileProvider.spec.tsx
++++ b/packages/react/src/components/_tests_/FlatfileProvider.spec.tsx
+@@ -28,2 +28,3 @@ export const FlatfileProviderValue: FlatfileContextType = {
+   resetSpace: jest.fn(),
++  ready: false
+ }
+diff --git a/packages/react/src/hooks/useFlatfile.ts b/packages/react/src/hooks/useFlatfile.ts
+index 0f66608..59996c5 100644
+--- a/packages/react/src/hooks/useFlatfile.ts
++++ b/packages/react/src/hooks/useFlatfile.ts
+@@ -1,5 +1,3 @@
+-import {
+-  updateDefaultPageInSpace
+-} from '@flatfile/embedded-utils'
+-import { useContext } from 'react'
++import { updateDefaultPageInSpace } from '@flatfile/embedded-utils'
++import { useContext, useEffect } from 'react'
+ import FlatfileContext from '../components/FlatfileContext'
+@@ -36,2 +34,3 @@ export const useFlatfile: () => {
+     resetSpace,
++    ready,
+   } = context
+@@ -77,9 +76,18 @@ export const useFlatfile: () => {
+ 
++  useEffect(() => {
++    const createOrUpdateSpace = async () => {
++      if (publishableKey && !accessToken) {
++        await handleCreateSpace()
++      } else if (accessToken && !publishableKey) {
++        await handleReUseSpace()
++      }
++    }
++
++    if (ready && open) {
++      createOrUpdateSpace()
++    }
++  }, [ready, open])
++
+   const openPortal = () => {
+     ;(window as any).CROSSENV_FLATFILE_API_URL = apiUrl
+-    if (publishableKey && !accessToken) {
+-      handleCreateSpace()
+-    } else if (accessToken && !publishableKey) {
+-      handleReUseSpace()
+-    }
+     setOpen(true)
+@@ -97,2 +105,3 @@ export const useFlatfile: () => {
+     listener,
++    ready,
+   }

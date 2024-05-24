@@ -1,0 +1,706 @@
+diff --git a/packages/react/CHANGELOG.md b/packages/react/CHANGELOG.md
+index 391620e..a6628d0 100644
+--- a/packages/react/CHANGELOG.md
++++ b/packages/react/CHANGELOG.md
+@@ -2,2 +2,10 @@
+ 
++## 7.9.7
++
++### Patch Changes
++
++- 521b423: Better typing and organization
++- Updated dependencies [7e0d063]
++  - @flatfile/embedded-utils@1.2.4
++
+ ## 7.9.6
+diff --git a/packages/react/package.json b/packages/react/package.json
+index 4f0264e..8ee1f78 100644
+--- a/packages/react/package.json
++++ b/packages/react/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/react",
+-  "version": "7.9.6",
++  "version": "7.9.7",
+   "description": "Flatfile React components",
+@@ -64,3 +64,3 @@
+     "@flatfile/cross-env-config": "^0.0.6",
+-    "@flatfile/embedded-utils": "^1.2.3",
++    "@flatfile/embedded-utils": "^1.2.4",
+     "@flatfile/listener": "^1.0.5",
+diff --git a/packages/react/src/components/CloseButton.tsx b/packages/react/src/components/CloseButton.tsx
+index 53d6364..6adb679 100644
+--- a/packages/react/src/components/CloseButton.tsx
++++ b/packages/react/src/components/CloseButton.tsx
+@@ -2,29 +2,31 @@ import React from 'react'
+ 
+-export const CloseButton = ({ handler }: { handler: React.MouseEventHandler<HTMLButtonElement> }) => {
+-  return (
+-    <button
+-      onClick={handler}
+-      data-testid="flatfile-close-button"
+-      type="button"
+-      className="flatfile-close-button"
+-      aria-label="Close"
+-      style={{
+-        position: 'absolute',
+-        margin: '30px',
+-        top: '30px',
+-        right: '30px',
+-      }}
++export const CloseButton = ({
++  handler,
++}: {
++  handler: React.MouseEventHandler<HTMLButtonElement>
++}) => (
++  <button
++    onClick={handler}
++    data-testid="flatfile-close-button"
++    type="button"
++    className="flatfile-close-button"
++    aria-label="Close"
++    style={{
++      position: 'absolute',
++      margin: '30px',
++      top: '30px',
++      right: '30px',
++    }}
++  >
++    <svg
++      xmlns="http://www.w3.org/2000/svg"
++      width="24"
++      height="24"
++      viewBox="0 0 100 100"
++      style={{ margin: 'auto' }}
+     >
+-      <svg
+-        xmlns="http://www.w3.org/2000/svg"
+-        width="24"
+-        height="24"
+-        viewBox="0 0 100 100"
+-        style={{ margin: 'auto' }}
+-      >
+-        <line x1="10" y1="10" x2="90" y2="90" stroke="white" strokeWidth="10" />
+-        <line x1="10" y1="90" x2="90" y2="10" stroke="white" strokeWidth="10" />
+-      </svg>
+-    </button>
+-  )
+-}
++      <line x1="10" y1="10" x2="90" y2="90" stroke="white" strokeWidth="10" />
++      <line x1="10" y1="90" x2="90" y2="10" stroke="white" strokeWidth="10" />
++    </svg>
++  </button>
++)
+diff --git a/packages/react/src/components/ConfirmCloseModal.tsx b/packages/react/src/components/ConfirmCloseModal.tsx
+index 53b8e39..50afad2 100644
+--- a/packages/react/src/components/ConfirmCloseModal.tsx
++++ b/packages/react/src/components/ConfirmCloseModal.tsx
+@@ -1,5 +1,6 @@
+ import React from 'react'
++// TODO: make this style import configurable
+ import './style.scss'
+ 
+-const ConfirmModal = ({
++export const ConfirmCloseModal = ({
+   onConfirm,
+@@ -17,36 +18,25 @@ const ConfirmModal = ({
+   exitSecondaryButtonText: string
+-}) => {
+-  return (
+-    <>
+-      <div
+-        data-testid="close-confirm-modal"
+-        className="flatfile_outer-shell"
+-      >
+-        <div className="flatfile_close-confirm-modal-inner">
+-          <div className="flatfile_inner-shell">
+-            <div className="flatfile_modal-heading">
+-              {exitTitle}
+-            </div>
+-            <div className="flatfile_modal-text">{exitText}</div>
+-            <div className="flatfile_button-group">
+-              <div
+-                onClick={onCancel}
+-                className="flatfile_button flatfile_secondary"
+-              >
+-                <div>{exitSecondaryButtonText}</div>
+-              </div>
+-              <div
+-                onClick={onConfirm}
+-                className="flatfile_button flatfile_primary"
+-              >
+-                <div>{exitPrimaryButtonText}</div>
+-              </div>
+-            </div>
+-          </div>
++}) => (
++  <div data-testid="close-confirm-modal" className="flatfile_outer-shell">
++    <div className="flatfile_close-confirm-modal-inner">
++      <div className="flatfile_inner-shell">
++        <div className="flatfile_modal-heading">{exitTitle}</div>
++        <div className="flatfile_modal-text">{exitText}</div>
++        <div className="flatfile_button-group">
++          <button
++            onClick={onCancel}
++            className="flatfile_button flatfile_secondary"
++          >
++            <div>{exitSecondaryButtonText}</div>
++          </button>
++          <button
++            onClick={onConfirm}
++            className="flatfile_button flatfile_primary"
++          >
++            <div>{exitPrimaryButtonText}</div>
++          </button>
+         </div>
+       </div>
+-    </>
+-  )
+-}
+-
+-export default ConfirmModal
++    </div>
++  </div>
++)
+diff --git a/packages/react/src/components/Document.tsx b/packages/react/src/components/Document.tsx
+index 71f4e37..19467cc 100644
+--- a/packages/react/src/components/Document.tsx
++++ b/packages/react/src/components/Document.tsx
+@@ -1,5 +1,4 @@
+-import React from 'react'
+-import FlatfileContext from './FlatfileContext'
+-import { useCallback, useContext } from 'react'
++import React, { useContext } from 'react'
+ import type { Flatfile } from '@flatfile/api'
++import FlatfileContext from './FlatfileContext'
+ import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
+diff --git a/packages/react/src/components/EmbeddedIFrameWrapper.tsx b/packages/react/src/components/EmbeddedIFrameWrapper.tsx
+index cc0d59d..9b63652 100644
+--- a/packages/react/src/components/EmbeddedIFrameWrapper.tsx
++++ b/packages/react/src/components/EmbeddedIFrameWrapper.tsx
+@@ -9,3 +9,3 @@ import React, {
+ import { IFrameTypes } from '../types'
+-import ConfirmModal from './ConfirmCloseModal'
++import { ConfirmCloseModal } from './ConfirmCloseModal'
+ import FlatfileContext from './FlatfileContext'
+@@ -81,3 +81,3 @@ export const EmbeddedIFrameWrapper = (
+       {showExitWarnModal && (
+-        <ConfirmModal
++        <ConfirmCloseModal
+           onConfirm={() => {
+@@ -103,2 +103,3 @@ export const EmbeddedIFrameWrapper = (
+           src={preload ? preloadUrl : spaceLink}
++          title="Embedded Portal Content"
+           style={{
+diff --git a/packages/react/src/components/FlatfileContext.tsx b/packages/react/src/components/FlatfileContext.tsx
+index a8e8654..984a872 100644
+--- a/packages/react/src/components/FlatfileContext.tsx
++++ b/packages/react/src/components/FlatfileContext.tsx
+@@ -35,3 +35,3 @@ export interface FlatfileContextType {
+   sessionSpace?: any
+-  setSessionSpace: (space: any | null) => void
++  setSessionSpace: (space: any) => void
+   listener: FlatfileListener
+diff --git a/packages/react/src/components/FlatfileProvider.tsx b/packages/react/src/components/FlatfileProvider.tsx
+index 2bb0a2e..9224c1f 100644
+--- a/packages/react/src/components/FlatfileProvider.tsx
++++ b/packages/react/src/components/FlatfileProvider.tsx
+@@ -1,9 +1,14 @@
+-import React, { useCallback, useEffect, useRef, useState } from 'react'
+-import FlatfileContext, { DEFAULT_CREATE_SPACE } from './FlatfileContext'
+-import FlatfileListener, { Browser } from '@flatfile/listener'
+ import { Flatfile } from '@flatfile/api'
++
++import { DefaultPageType, handlePostMessage } from '@flatfile/embedded-utils'
++import FlatfileListener, { Browser } from '@flatfile/listener'
++import React, { useCallback, useEffect, useRef, useState, useMemo } from 'react'
++import {
++  ClosePortalOptions,
++  ExclusiveFlatfileProviderProps,
++  IFrameTypes,
++} from '../types'
++
+ import { EmbeddedIFrameWrapper } from './EmbeddedIFrameWrapper'
+-import { ExclusiveFlatfileProviderProps, IFrameTypes } from '../types'
+-import { handlePostMessage } from '@flatfile/embedded-utils'
+-import { ClosePortalOptions } from '../types'
++import FlatfileContext, { DEFAULT_CREATE_SPACE } from './FlatfileContext'
+ 
+@@ -14,3 +19,3 @@ const configDefaults: IFrameTypes = {
+ 
+-interface SESSION_SPACE
++interface ISessionSpace
+   extends Omit<Flatfile.Space, 'createdAt' | 'updatedAt' | 'upgradedAt'> {
+@@ -29,3 +34,3 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
+ }) => {
+-  const [internalAccessToken, setAccessToken] = useState<
++  const [internalAccessToken, setInternalAccessToken] = useState<
+     string | undefined | null
+@@ -35,3 +40,3 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
+   const [sessionSpace, setSessionSpace] = useState<
+-    { space: SESSION_SPACE } | undefined
++    { space: ISessionSpace } | undefined
+   >(undefined)
+@@ -47,3 +52,3 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
+   const setDefaultPage = useCallback(
+-    (incomingDefaultPage: any) => {
++    (incomingDefaultPage: DefaultPageType) => {
+       if (defaultPage === undefined) {
+@@ -149,3 +154,3 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
+     if (reset ?? FLATFILE_PROVIDER_CONFIG.resetOnClose) {
+-      setAccessToken(null)
++      setInternalAccessToken(null)
+       setSessionSpace(undefined)
+@@ -153,6 +158,6 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
+       const spacesUrl =
+-        FLATFILE_PROVIDER_CONFIG.spaceUrl || 'https://platform.flatfile.com/s'
++        FLATFILE_PROVIDER_CONFIG.spaceUrl ?? 'https://platform.flatfile.com/s'
+       const preloadUrl = `${spacesUrl}/space-init`
+ 
+-      const spaceLink = sessionSpace?.space?.guestLink || null
++      const spaceLink = sessionSpace?.space?.guestLink ?? null
+       const iFrameSrc = FLATFILE_PROVIDER_CONFIG.preload
+@@ -160,2 +165,3 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
+         : spaceLink
++
+       if (iFrameSrc) {
+@@ -194,31 +200,44 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
+ 
++  const providerValue = useMemo(
++    () => ({
++      ...(publishableKey ? { publishableKey } : {}),
++      ...(internalAccessToken ? { accessToken: internalAccessToken } : {}),
++      apiUrl,
++      environmentId,
++      open,
++      setOpen,
++      sessionSpace,
++      setSessionSpace,
++      setListener,
++      listener,
++      setAccessToken: setInternalAccessToken,
++      addSheet,
++      updateSheet,
++      updateWorkbook,
++      updateDocument,
++      createSpace,
++      setCreateSpace,
++      updateSpace,
++      defaultPage,
++      setDefaultPage,
++      resetSpace,
++      config: FLATFILE_PROVIDER_CONFIG,
++    }),
++    [
++      publishableKey,
++      internalAccessToken,
++      apiUrl,
++      environmentId,
++      open,
++      sessionSpace,
++      listener,
++      createSpace,
++      defaultPage,
++      FLATFILE_PROVIDER_CONFIG,
++    ]
++  )
++
+   return (
+-    <FlatfileContext.Provider
+-      value={{
+-        ...(publishableKey ? { publishableKey } : {}),
+-        ...(internalAccessToken ? { accessToken: internalAccessToken } : {}),
+-        apiUrl,
+-        environmentId,
+-        open,
+-        setOpen,
+-        sessionSpace,
+-        setSessionSpace,
+-        setListener,
+-        listener,
+-        setAccessToken,
+-        addSheet,
+-        updateSheet,
+-        updateWorkbook,
+-        updateDocument,
+-        createSpace,
+-        setCreateSpace,
+-        updateSpace,
+-        defaultPage,
+-        setDefaultPage,
+-        resetSpace,
+-        config: FLATFILE_PROVIDER_CONFIG,
+-      }}
+-    >
++    <FlatfileContext.Provider value={providerValue}>
+       {children}
+-
+       <EmbeddedIFrameWrapper
+diff --git a/packages/react/src/components/Sheet.tsx b/packages/react/src/components/Sheet.tsx
+index 7d50e14..8e6b96d 100644
+--- a/packages/react/src/components/Sheet.tsx
++++ b/packages/react/src/components/Sheet.tsx
+@@ -1,14 +1,13 @@
+-import React from 'react'
+ import { Flatfile } from '@flatfile/api'
+-import { useContext } from 'react'
+-import FlatfileContext from './FlatfileContext'
+ import {
+   DefaultSubmitSettings,
+-  SimpleOnboarding,
++  SimpleOnboarding
+ } from '@flatfile/embedded-utils'
+ import { FlatfileEvent } from '@flatfile/listener'
+-import { recordHook, FlatfileRecord } from '@flatfile/plugin-record-hook'
+-import { usePlugin, useEvent } from '../hooks'
+-import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
++import { FlatfileRecord, recordHook } from '@flatfile/plugin-record-hook'
++import React, { useContext } from 'react'
++import { useEvent, usePlugin } from '../hooks'
+ import { OnSubmitAction, workbookOnSubmitAction } from '../utils/constants'
++import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
++import FlatfileContext from './FlatfileContext'
+ 
+@@ -21,2 +20,3 @@ type SheetProps = {
+ }
++
+ /**
+@@ -62,2 +62,3 @@ type SheetProps = {
+  * @param {Function} [props.onRecordHook] - Callback function to handle record manipulation
++ * @param {Boolean} [props.defaultPage] - Sets this as the default Page that the Space opens up to
+  */
+@@ -89,25 +90,24 @@ export const Sheet = (props: SheetProps) => {
+ 
+-  if (onRecordHook) {
+-    usePlugin(
+-      recordHook(
+-        config.slug || '**',
+-        async (record: FlatfileRecord, event: FlatfileEvent | undefined) => {
+-          return onRecordHook(record, event)
+-        }
+-      ),
+-      [config, onRecordHook]
+-    )
+-  }
++  usePlugin(
++    onRecordHook
++      ? recordHook(
++          config.slug ?? '**',
++          async (record: FlatfileRecord, event: FlatfileEvent | undefined) => {
++            return onRecordHook(record, event)
++          }
++        )
++      : undefined,
++    [config, onRecordHook]
++  )
+ 
+-  if (onSubmit) {
+-    const onSubmitSettings = {
+-      ...DefaultSubmitSettings,
+-      ...submitSettings,
+-    }
+-    useEvent(
+-      'job:ready',
+-      { job: `workbook:${workbookOnSubmitAction(config.slug).operation}` },
+-      OnSubmitAction(onSubmit, onSubmitSettings)
+-    )
+-  }
++  useEvent(
++    'job:ready',
++    { job: `workbook:${workbookOnSubmitAction(config.slug).operation}` },
++    onSubmit
++      ? OnSubmitAction(onSubmit, {
++          ...DefaultSubmitSettings,
++          ...submitSettings,
++        })
++      : () => {}
++  )
+   return <></>
+diff --git a/packages/react/src/components/Workbook.tsx b/packages/react/src/components/Workbook.tsx
+index 2d6f60f..44cc3a7 100644
+--- a/packages/react/src/components/Workbook.tsx
++++ b/packages/react/src/components/Workbook.tsx
+@@ -1,16 +1,14 @@
+-import FlatfileContext from './FlatfileContext'
+-import React, { useContext } from 'react'
+ import { type Flatfile } from '@flatfile/api'
+-import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
+-import { TRecordDataWithLinks, TPrimitive } from '@flatfile/hooks'
+-import { FlatfileEvent } from '@flatfile/listener'
+-import { FlatfileRecord, recordHook } from '@flatfile/plugin-record-hook'
+-import { useEvent, usePlugin } from '../hooks'
+ import {
+   DefaultSubmitSettings,
+-  JobHandler,
+-  SheetHandler,
+   SimpleOnboarding,
+ } from '@flatfile/embedded-utils'
++import { TPrimitive, TRecordDataWithLinks } from '@flatfile/hooks'
++import { FlatfileEvent } from '@flatfile/listener'
++import { FlatfileRecord, recordHook } from '@flatfile/plugin-record-hook'
++import React, { useContext } from 'react'
++import { useEvent, usePlugin } from '../hooks'
+ import { OnSubmitAction, workbookOnSubmitAction } from '../utils/constants'
++import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
++import FlatfileContext from './FlatfileContext'
+ 
+@@ -71,3 +69,3 @@ type WorkbookProps = Partial<{
+ export const Workbook = (props: WorkbookProps) => {
+-  const { config, children, onRecordHooks, onSubmit } = props
++  const { config, children, onRecordHooks, onSubmit, submitSettings } = props
+   const { updateWorkbook, createSpace } = useContext(FlatfileContext)
+@@ -90,11 +88,15 @@ export const Workbook = (props: WorkbookProps) => {
+       onRecordHooks?.map(([slug, hook], index) => {
+-        // If you have multiple sheets, and just pass 1 record hook to the onRecordHooks array and that record hook doesn't have a slug, then assume the record hook is for all sheets.
+-        // Otherwise if multiple record hooks are passed along with out slugs, then assume they are in the same order as the sheets provided
+-        const actualSlug =
+-          typeof slug === 'function'
+-            ? onRecordHooks?.length === 1 &&
+-              createSpace.workbook.sheets?.length > 1
+-              ? '**'
+-              : createSpace.workbook.sheets?.[index]?.slug
+-            : slug
++        let actualSlug
++        if (typeof slug === 'function') {
++          if (
++            onRecordHooks?.length === 1 &&
++            createSpace.workbook.sheets?.length > 1
++          ) {
++            actualSlug = '**'
++          } else {
++            actualSlug = createSpace.workbook.sheets?.[index]?.slug
++          }
++        } else {
++          actualSlug = slug
++        }
+ 
+@@ -115,14 +117,12 @@ export const Workbook = (props: WorkbookProps) => {
+ 
+-  if (onSubmit) {
+-    const onSubmitSettings = {
+-      ...DefaultSubmitSettings,
+-      ...props.submitSettings,
+-    }
+-    useEvent(
+-      'job:ready',
+-      { job: `workbook:${workbookOnSubmitAction().operation}` },
+-      OnSubmitAction(onSubmit, onSubmitSettings)
+-    )
+-  }
+-
++  useEvent(
++    'job:ready',
++    { job: `workbook:${workbookOnSubmitAction().operation}` },
++    onSubmit
++      ? OnSubmitAction(onSubmit, {
++          ...DefaultSubmitSettings,
++          ...submitSettings,
++        })
++      : () => {}
++  )
+   return <>{children}</>
+diff --git a/packages/react/src/components/legacy/InitSpace.tsx b/packages/react/src/components/legacy/InitSpace.tsx
+index 794767e..28505ca 100644
+--- a/packages/react/src/components/legacy/InitSpace.tsx
++++ b/packages/react/src/components/legacy/InitSpace.tsx
+@@ -8,3 +8,3 @@ import { getSpace } from '../../utils/getSpace'
+ import { initializeSpace } from '../../utils/initializeSpace'
+-import ConfirmModal from '../ConfirmCloseModal'
++import { ConfirmCloseModal } from '../ConfirmCloseModal'
+ import DefaultError from './Error'
+@@ -68,3 +68,3 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
+ 
+-      const isReusingSpace = props.space && props.space.id
++      const isReusingSpace = props.space?.id
+ 
+@@ -186,3 +186,3 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
+       {showExitWarnModal && (
+-        <ConfirmModal
++        <ConfirmCloseModal
+           onConfirm={handleCloseModal}
+@@ -203,2 +203,3 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
+             style={getIframeStyles(iframeStyles!)}
++            title="Embedded Portal Content"
+           />
+diff --git a/packages/react/src/components/legacy/LegacySpace.tsx b/packages/react/src/components/legacy/LegacySpace.tsx
+index 292e04e..3ac28e2 100644
+--- a/packages/react/src/components/legacy/LegacySpace.tsx
++++ b/packages/react/src/components/legacy/LegacySpace.tsx
+@@ -6,3 +6,3 @@ import { addSpaceInfo } from '../../utils/addSpaceInfo'
+ import { authenticate } from '../../utils/authenticate'
+-import ConfirmModal from '../ConfirmCloseModal'
++import { ConfirmCloseModal } from '../ConfirmCloseModal'
+ import { getContainerStyles, getIframeStyles } from '../embeddedStyles'
+@@ -109,3 +109,3 @@ export const SpaceContents = (
+       {showExitWarnModal && (
+-        <ConfirmModal
++        <ConfirmCloseModal
+           onConfirm={() => {
+@@ -129,2 +129,3 @@ export const SpaceContents = (
+         style={getIframeStyles(iframeStyles!)}
++        title="Embedded Portal Content"
+       />
+diff --git a/packages/react/src/hooks/useEvent.ts b/packages/react/src/hooks/useEvent.ts
+index a76a892..2284dbd 100644
+--- a/packages/react/src/hooks/useEvent.ts
++++ b/packages/react/src/hooks/useEvent.ts
+@@ -40,4 +40,3 @@ function useEvent(
+   useEffect(() => {
+-    if (!listener) return
+-
++    if (!listener || !callback) return
+     // Conditionally apply the filter
+diff --git a/packages/react/src/hooks/useFlatfile.ts b/packages/react/src/hooks/useFlatfile.ts
+index ab72c56..0f66608 100644
+--- a/packages/react/src/hooks/useFlatfile.ts
++++ b/packages/react/src/hooks/useFlatfile.ts
+@@ -1,39 +1,10 @@
++import {
++  updateDefaultPageInSpace
++} from '@flatfile/embedded-utils'
+ import { useContext } from 'react'
+ import FlatfileContext from '../components/FlatfileContext'
+-import { getSpace } from '../utils/getSpace'
+-import { createSpaceInternal } from '../utils/createSpaceInternal'
+-import { FlatfileClient } from '@flatfile/api'
+ import { ClosePortalOptions } from '../types'
+ import { convertDatesToISO } from '../utils/convertDatesToISO'
+-
+-const findDefaultPage = (createdSpace: any, defaultPage: any) => {
+-  if (!defaultPage) return
+-  if (defaultPage.document) {
+-    const document = createdSpace.documents.find(
+-      (d: any) => d.title === defaultPage.document
+-    )
+-    return {
+-      documentId: document.id,
+-    }
+-  }
+-  if (defaultPage.workbook) {
+-    if (defaultPage.workbook.sheet) {
+-      const sheet = createdSpace.workbooks[0].sheets.find(
+-        (s: any) => s.slug === defaultPage.workbook.sheet
+-      )
+-      return {
+-        workbook: {
+-          workbookId: createdSpace.workbooks[0].id,
+-          sheetId: sheet.id,
+-        },
+-      }
+-    }
+-    return {
+-      workbook: {
+-        workbookId: createdSpace.workbooks[0].id,
+-      },
+-    }
+-  }
+-  return undefined
+-}
++import { createSpaceInternal } from '../utils/createSpaceInternal'
++import { getSpace } from '../utils/getSpace'
+ 
+@@ -72,3 +43,3 @@ export const useFlatfile: () => {
+     // autoConfigure if no workbook or workbook.sheets are provided as they should be handled in the listener space:configure event
+-    const autoConfigure = !(createSpace.workbook && createSpace.workbook.sheets)
++    const autoConfigure = !createSpace.workbook?.sheets
+     const { data: createdSpace } = await createSpaceInternal({
+@@ -83,20 +54,3 @@ export const useFlatfile: () => {
+ 
+-    const defaultPageDetails = findDefaultPage(createdSpace, defaultPage)
+-    if (defaultPageDetails) {
+-      const api = new FlatfileClient()
+-      const updatedSpace = await api.spaces.update(createdSpace.space.id, {
+-        metadata: {
+-          ...createdSpace.space.metadata,
+-          sidebarConfig: {
+-            ...createdSpace.space.metadata.sidebarConfig,
+-            defaultPage: defaultPageDetails,
+-          },
+-        },
+-      })
+-
+-      createdSpace.space.metadata.sidebarConfig = {
+-        ...createdSpace.space.metadata.sidebarConfig,
+-        defaultPage: updatedSpace.data.metadata.sidebarConfig.defaultPage,
+-      }
+-    }
++    if (defaultPage) await updateDefaultPageInSpace(createdSpace, defaultPage)
+ 
+@@ -137,3 +91,2 @@ export const useFlatfile: () => {
+ 
+-
+   return {
+diff --git a/packages/react/src/hooks/usePlugin.ts b/packages/react/src/hooks/usePlugin.ts
+index 03f547d..4d20f7f 100644
+--- a/packages/react/src/hooks/usePlugin.ts
++++ b/packages/react/src/hooks/usePlugin.ts
+@@ -5,3 +5,3 @@ import { FlatfileContext } from '../components'
+ export function usePlugin(
+-  plugin: (cb: FlatfileListener) => void,
++  plugin?: (cb: FlatfileListener) => void,
+   dependencies: any[] = []
+@@ -11,4 +11,6 @@ export function usePlugin(
+     if (!listener) return
+-
+-    listener.use(plugin)
++    
++    if (plugin) {
++      listener.use(plugin)
++    }
+     return () => {
+diff --git a/packages/react/src/types/IClosePortal.ts b/packages/react/src/types/IClosePortal.ts
+new file mode 100644
+index 0000000..86445ca
+--- /dev/null
++++ b/packages/react/src/types/IClosePortal.ts
+@@ -0,0 +1,3 @@
++export type ClosePortalOptions = {
++  reset?: boolean
++}
+diff --git a/packages/react/src/types/ICreateSpaceInternal.ts b/packages/react/src/types/ICreateSpaceInternal.ts
+new file mode 100644
+index 0000000..fda919b
+--- /dev/null
++++ b/packages/react/src/types/ICreateSpaceInternal.ts
+@@ -0,0 +1,8 @@
++import { Flatfile } from '@flatfile/api'
++export type CREATE_SPACE_INTERNAL = {
++  apiUrl: string
++  publishableKey: string
++  space: Flatfile.SpaceConfig
++  workbook?: Flatfile.CreateWorkbookConfig
++  document?: Flatfile.DocumentConfig
++}
+diff --git a/packages/react/src/types/index.ts b/packages/react/src/types/index.ts
+index e47770b..305ca85 100644
+--- a/packages/react/src/types/index.ts
++++ b/packages/react/src/types/index.ts
+@@ -4,5 +4,3 @@ export * from './iFrameProps'
+ export * from './IFlatfileProvider'
+-
+-export type ClosePortalOptions = {
+-  reset?: boolean
+-}
++export * from './ICreateSpaceInternal'
++export * from './IClosePortal'
+\ No newline at end of file
+diff --git a/packages/react/src/utils/createSpaceInternal.ts b/packages/react/src/utils/createSpaceInternal.ts
+index 6d50726..d3017ee 100644
+--- a/packages/react/src/utils/createSpaceInternal.ts
++++ b/packages/react/src/utils/createSpaceInternal.ts
+@@ -1,10 +1,2 @@
+-import { Flatfile } from '@flatfile/api'
+-
+-type CreateSpaceinternal = {
+-  apiUrl: string
+-  publishableKey: string
+-  space: Flatfile.SpaceConfig
+-  workbook?: Flatfile.CreateWorkbookConfig
+-  document?: Flatfile.DocumentConfig
+-}
++import { CREATE_SPACE_INTERNAL } from '../types/ICreateSpaceInternal'
+ 
+@@ -16,3 +8,3 @@ export const createSpaceInternal = async ({
+   document,
+-}: CreateSpaceinternal) => {
++}: CREATE_SPACE_INTERNAL) => {
+   const createSpaceEndpoint = `${apiUrl}/v1/internal/spaces/init?publishableKey=${publishableKey}`

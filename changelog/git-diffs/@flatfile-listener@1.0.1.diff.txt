@@ -1,0 +1,273 @@
+diff --git a/packages/listener/CHANGELOG.md b/packages/listener/CHANGELOG.md
+index 419360d..510a4d1 100644
+--- a/packages/listener/CHANGELOG.md
++++ b/packages/listener/CHANGELOG.md
+@@ -2,4 +2,12 @@
+ 
++## 1.0.1
++
++### Patch Changes
++
++- 9b6c7b2: Update package.json to have exports and browser
++
+ ## 1.0.0
+ 
++#### 2024-02-07
++
+ ### Major Changes
+@@ -10,2 +18,4 @@
+ 
++#### 2024-01-31
++
+ ### Patch Changes
+@@ -16,2 +26,4 @@
+ 
++#### 2024-01-26
++
+ ### Patch Changes
+@@ -22,2 +34,4 @@
+ 
++#### 2024-01-09
++
+ ### Minor Changes
+@@ -28,2 +42,4 @@
+ 
++#### 2024-01-05
++
+ ### Patch Changes
+@@ -34,2 +50,4 @@
+ 
++#### 2024-01-03
++
+ ### Patch Changes
+@@ -40,2 +58,4 @@
+ 
++#### 2023-11-07
++
+ ### Patch Changes
+@@ -46,2 +66,4 @@
+ 
++#### 2023-11-06
++
+ ### Patch Changes
+@@ -52,2 +74,4 @@
+ 
++#### 2023-08-18
++
+ ### Patch Changes
+@@ -61,2 +85,4 @@
+ 
++#### 2023-08-11
++
+ ### Patch Changes
+@@ -67,2 +93,4 @@
+ 
++#### 2023-07-25
++
+ ### Patch Changes
+@@ -73,2 +101,4 @@
+ 
++#### 2023-07-25
++
+ ### Patch Changes
+@@ -79,2 +109,4 @@
+ 
++#### 2023-07-17
++
+ ### Patch Changes
+@@ -82,4 +114,3 @@
+ - cbacf2a: Update semver version > 7.5.2
+-
+-  resolves https://security.snyk.io/vuln/SNYK-JS-SEMVER-3247795
++  - resolves https://security.snyk.io/vuln/SNYK-JS-SEMVER-3247795
+ 
+@@ -87,2 +118,4 @@
+ 
++#### 2023-06-28
++
+ ### Patch Changes
+@@ -94,2 +127,4 @@
+ 
++#### 2023-06-16
++
+ ### Patch Changes
+@@ -100,2 +135,4 @@
+ 
++#### 2023-06-15
++
+ ### Patch Changes
+@@ -106,2 +143,4 @@
+ 
++#### 2023-06-13
++
+ ### Patch Changes
+@@ -112,2 +151,4 @@
+ 
++#### 2023-06-09
++
+ ### Patch Changes
+@@ -118,2 +159,4 @@
+ 
++#### 2023-06-09
++
+ ### Patch Changes
+@@ -124,2 +167,4 @@
+ 
++#### 2023-06-02
++
+ ### Patch Changes
+@@ -131,2 +176,4 @@
+ 
++#### 2023-05-31
++
+ ### Patch Changes
+@@ -137,2 +184,4 @@
+ 
++#### 2023-05-31
++
+ ### Patch Changes
+@@ -143,2 +192,4 @@
+ 
++#### 2023-05-25
++
+ ### Patch Changes
+@@ -149,2 +200,4 @@
+ 
++#### 2023-05-19
++
+ ### Minor Changes
+@@ -155,2 +208,4 @@
+ 
++#### 2023-05-19
++
+ ### Minor Changes
+@@ -161,2 +216,4 @@
+ 
++#### 2023-05-16
++
+ ### Patch Changes
+@@ -167,2 +224,4 @@
+ 
++#### 2023-05-15
++
+ ### Patch Changes
+@@ -173,2 +232,4 @@
+ 
++#### 2023-05-14
++
+ ### Minor Changes
+@@ -179,2 +240,4 @@
+ 
++#### 2023-05-14
++
+ ### Patch Changes
+@@ -186,2 +249,4 @@
+ 
++#### 2023-05-12
++
+ ### Patch Changes
+@@ -192,2 +257,4 @@
+ 
++#### 2023-05-05
++
+ ### Patch Changes
+@@ -199,2 +266,4 @@
+ 
++#### 2023-05-01
++
+ ### Patch Changes
+@@ -206,2 +275,4 @@
+ 
++#### 2023-04-25
++
+ ### Patch Changes
+@@ -212,2 +283,4 @@
+ 
++#### 2023-04-17
++
+ ### Patch Changes
+@@ -220,2 +293,4 @@
+ 
++#### 2023-04-04
++
+ ### Patch Changes
+@@ -229,2 +304,4 @@
+ 
++#### 2023-03-22
++
+ ### Patch Changes
+@@ -235,2 +312,4 @@
+ 
++#### 2023-03-14
++
+ ### Patch Changes
+@@ -243,2 +322,4 @@
+ 
++#### Date not provided
++
+ ### Patch Changes
+diff --git a/packages/listener/package.json b/packages/listener/package.json
+index 3c67fca..be5a0b3 100644
+--- a/packages/listener/package.json
++++ b/packages/listener/package.json
+@@ -2,21 +2,19 @@
+   "name": "@flatfile/listener",
+-  "version": "1.0.0",
++  "version": "1.0.1",
+   "description": "A PubSub Listener for configuring and using Flatfile",
+   "type": "module",
++  "browser": {
++    "./dist/index.cjs": "./dist/index.browser.cjs",
++    "./dist/index.mjs": "./dist/index.browser.mjs"
++  },
+   "exports": {
+     "types": "./dist/index.d.ts",
+-    "node": {
+-      "import": "./dist/index.mjs",
+-      "require": "./dist/index.cjs"
+-    },
+-    "browser": {
+-      "require": "./dist/index.browser.cjs",
+-      "import": "./dist/index.browser.mjs"
+-    },
++    "import": "./dist/index.mjs",
++    "require": "./dist/index.cjs",
+     "default": "./dist/index.mjs"
+   },
+-  "source": "src/index.ts",
+-  "main": "dist/index.cjs",
+-  "module": "dist/index.mjs",
+-  "types": "dist/index.d.ts",
++  "main": "./dist/index.cjs",
++  "module": "./dist/index.mjs",
++  "source": "./src/index.ts",
++  "types": "./dist/index.d.ts",
+   "scripts": {
+diff --git a/packages/listener/rollup.config.js b/packages/listener/rollup.config.js
+index 50121f5..d4a1f03 100644
+--- a/packages/listener/rollup.config.js
++++ b/packages/listener/rollup.config.js
+@@ -11,3 +11,3 @@ dotenv.config()
+ 
+-const PROD = process.env.NODE_ENV === 'production'
++const PROD = process.env.NODE_ENV !== 'development'
+ if (!PROD) {
+@@ -16,7 +16,9 @@ if (!PROD) {
+ 
+-function commonPlugins(browser) {
++function commonPlugins(browser, umd = false) {
+   return [
+-    peerDepsExternal({
+-      includeDependencies: true,
+-    }),
++    !umd
++      ? peerDepsExternal({
++          includeDependencies: true,
++        })
++      : null,
+     json(),
+@@ -87,3 +89,3 @@ export default [
+     ],
+-    plugins: commonPlugins(true),
++    plugins: commonPlugins(true, true),
+   },

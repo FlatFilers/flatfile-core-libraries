@@ -1,0 +1,52 @@
+diff --git a/packages/javascript/CHANGELOG.md b/packages/javascript/CHANGELOG.md
+index 717f94f..2944c7a 100644
+--- a/packages/javascript/CHANGELOG.md
++++ b/packages/javascript/CHANGELOG.md
+@@ -2,2 +2,10 @@
+ 
++## 1.2.4
++
++### Patch Changes
++
++- 399a9f4: Update Workbook types to include all params
++- Updated dependencies [399a9f4]
++  - @flatfile/embedded-utils@1.1.10
++
+ ## 1.2.3
+@@ -6,3 +14,3 @@
+ 
+-- c92bcdb: Updates default spaces url to https://platform.flatfile.com/s in order to avoid unnecessary preflight requests. 
++- c92bcdb: Updates default spaces url to https://platform.flatfile.com/s in order to avoid unnecessary preflight requests.
+ 
+diff --git a/packages/javascript/FlatfileJavascript.ts b/packages/javascript/FlatfileJavascript.ts
+index 02f34ab..b183a99 100644
+--- a/packages/javascript/FlatfileJavascript.ts
++++ b/packages/javascript/FlatfileJavascript.ts
+@@ -90,3 +90,3 @@ export interface UpdateSpaceInfo {
+   publishableKey?: string
+-  workbook?: Pick<Flatfile.CreateWorkbookConfig, 'name' | 'sheets' | 'actions'>
++  workbook?: Flatfile.CreateWorkbookConfig
+   spaceId: string
+diff --git a/packages/javascript/package.json b/packages/javascript/package.json
+index 32c3afe..f7c999b 100644
+--- a/packages/javascript/package.json
++++ b/packages/javascript/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/javascript",
+-  "version": "1.2.3",
++  "version": "1.2.4",
+   "description": "Flatfile embedded with vanilla javascript.",
+@@ -55,3 +55,3 @@
+   "dependencies": {
+-    "@flatfile/embedded-utils": "^1.1.9",
++    "@flatfile/embedded-utils": "^1.1.10",
+     "@flatfile/listener": "^1.0.1",
+diff --git a/packages/javascript/src/services/workbook.ts b/packages/javascript/src/services/workbook.ts
+index e3c3b09..857e91c 100644
+--- a/packages/javascript/src/services/workbook.ts
++++ b/packages/javascript/src/services/workbook.ts
+@@ -36,3 +36,3 @@ export const createWorkbookFromSheet = (
+   onSubmit?: boolean
+-): Pick<Flatfile.CreateWorkbookConfig, 'name' | 'sheets' | 'actions'> => {
++): Flatfile.CreateWorkbookConfig => {
+   const blueprint = {

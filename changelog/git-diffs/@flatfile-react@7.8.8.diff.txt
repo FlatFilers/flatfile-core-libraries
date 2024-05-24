@@ -1,0 +1,38 @@
+diff --git a/packages/react/CHANGELOG.md b/packages/react/CHANGELOG.md
+index 34e6b33..5dbc1df 100644
+--- a/packages/react/CHANGELOG.md
++++ b/packages/react/CHANGELOG.md
+@@ -2,2 +2,8 @@
+ 
++## 7.8.8
++
++### Patch Changes
++
++- 10b4d14: Fixes a bug where the embedded iframe would not be removed if there was an error.
++
+ ## 7.8.7
+diff --git a/packages/react/package.json b/packages/react/package.json
+index 957936f..58f1925 100644
+--- a/packages/react/package.json
++++ b/packages/react/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/react",
+-  "version": "7.8.7",
++  "version": "7.8.8",
+   "description": "Flatfile React components",
+diff --git a/packages/react/src/components/InitSpace.tsx b/packages/react/src/components/InitSpace.tsx
+index 52cb10a..701bf3b 100644
+--- a/packages/react/src/components/InitSpace.tsx
++++ b/packages/react/src/components/InitSpace.tsx
+@@ -157,8 +157,5 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
+   const handleCloseModal = () => {
+-    // If users closes and there is an error / reset the modal entirely - otherwise, keep iFrame navigated to created space
+-    if (initError) {
+-      setInitError(undefined)
+-      setState({ ...initialState })
+-      setUnmountIFrame(true)
+-    }
++    setInitError(undefined)
++    setState({ ...initialState })
++    setUnmountIFrame(true)
+     setShowExitWarnModal(false)

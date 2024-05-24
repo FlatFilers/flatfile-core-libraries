@@ -1,0 +1,211 @@
+diff --git a/packages/react/CHANGELOG.md b/packages/react/CHANGELOG.md
+index 8afb513..7866d52 100644
+--- a/packages/react/CHANGELOG.md
++++ b/packages/react/CHANGELOG.md
+@@ -2,2 +2,8 @@
+ 
++## 7.9.1
++
++### Patch Changes
++
++- da48813: Updates onSubmit action handlers to add acknowledge: true to the job
++
+ ## 7.9.0
+diff --git a/packages/react/package.json b/packages/react/package.json
+index 76866a6..c300a57 100644
+--- a/packages/react/package.json
++++ b/packages/react/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/react",
+-  "version": "7.9.0",
++  "version": "7.9.1",
+   "description": "Flatfile React components",
+diff --git a/packages/react/src/components/Sheet.tsx b/packages/react/src/components/Sheet.tsx
+index 0f12045..42bfc73 100644
+--- a/packages/react/src/components/Sheet.tsx
++++ b/packages/react/src/components/Sheet.tsx
+@@ -1,3 +1,3 @@
+ import React, { useCallback } from 'react'
+-import { Flatfile, FlatfileClient } from '@flatfile/api'
++import { Flatfile } from '@flatfile/api'
+ import { useContext } from 'react'
+@@ -6,4 +6,2 @@ import {
+   DefaultSubmitSettings,
+-  JobHandler,
+-  SheetHandler,
+   SimpleOnboarding,
+@@ -14,3 +12,3 @@ import { usePlugin, useEvent } from '../hooks'
+ import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
+-import { workbookOnSubmitAction } from '../utils/constants'
++import { OnSubmitAction, workbookOnSubmitAction } from '../utils/constants'
+ 
+@@ -49,3 +47,3 @@ type SheetProps = {
+  *         value: record.email,
+- *         info: 'Only @example.com emails are allowed',
++ *         info: `Only "@example.com" emails are allowed`,
+  *         level: 'error'
+@@ -104,44 +102,3 @@ export const Sheet = (props: SheetProps) => {
+       { job: `workbook:${workbookOnSubmitAction(config.slug).operation}` },
+-      async (event) => {
+-        const { jobId, spaceId, workbookId } = event.context
+-        const FlatfileAPI = new FlatfileClient()
+-        try {
+-          await FlatfileAPI.jobs.ack(jobId, {
+-            info: 'Starting job',
+-            progress: 10,
+-          })
+-
+-          const job = new JobHandler(jobId)
+-          const { data: workbookSheets } = await FlatfileAPI.sheets.list({
+-            workbookId,
+-          })
+-
+-          const thisSheet = workbookSheets.find((s) => s.slug === config.slug)
+-
+-          if (!thisSheet) {
+-            throw new Error(
+-              `Failed to find sheet slug:${config.slug} in the workbook id: ${workbookId}`
+-            )
+-          }
+-          const sheet = new SheetHandler(thisSheet.id)
+-
+-          if (onSubmit) {
+-            await onSubmit({ job, sheet, event })
+-          }
+-
+-          await FlatfileAPI.jobs.complete(jobId, {
+-            outcome: {
+-              message: 'complete',
+-            },
+-          })
+-          if (onSubmitSettings.deleteSpaceAfterSubmit) {
+-            await FlatfileAPI.spaces.archiveSpace(spaceId)
+-          }
+-        } catch (error: any) {
+-          if (jobId) {
+-            await FlatfileAPI.jobs.cancel(jobId)
+-          }
+-          console.log('Error:', error.stack)
+-        }
+-      }
++      OnSubmitAction(onSubmit, onSubmitSettings)
+     )
+diff --git a/packages/react/src/components/Workbook.tsx b/packages/react/src/components/Workbook.tsx
+index f268351..8d075f9 100644
+--- a/packages/react/src/components/Workbook.tsx
++++ b/packages/react/src/components/Workbook.tsx
+@@ -1,7 +1,7 @@
+ import FlatfileContext from './FlatfileContext'
+-import React, { useCallback, useContext, useEffect, useRef } from 'react'
+-import { FlatfileClient, type Flatfile } from '@flatfile/api'
++import React, { useCallback, useContext } from 'react'
++import { type Flatfile } from '@flatfile/api'
+ import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
+ import { TRecordDataWithLinks, TPrimitive } from '@flatfile/hooks'
+-import FlatfileListener, { FlatfileEvent } from '@flatfile/listener'
++import { FlatfileEvent } from '@flatfile/listener'
+ import { FlatfileRecord, recordHook } from '@flatfile/plugin-record-hook'
+@@ -14,3 +14,3 @@ import {
+ } from '@flatfile/embedded-utils'
+-import { workbookOnSubmitAction } from '../utils/constants'
++import { OnSubmitAction, workbookOnSubmitAction } from '../utils/constants'
+ 
+@@ -125,38 +125,3 @@ export const Workbook = (props: WorkbookProps) => {
+       { job: `workbook:${workbookOnSubmitAction().operation}` },
+-      async (event) => {
+-        const { jobId, spaceId, workbookId } = event.context
+-        const FlatfileAPI = new FlatfileClient()
+-        try {
+-          await FlatfileAPI.jobs.ack(jobId, {
+-            info: 'Starting job',
+-            progress: 10,
+-          })
+-
+-          const job = new JobHandler(jobId)
+-          const { data: workbookSheets } = await FlatfileAPI.sheets.list({
+-            workbookId,
+-          })
+-
+-          // this assumes we are only allowing 1 sheet here (which we've talked about doing initially)
+-          const sheet = new SheetHandler(workbookSheets[0].id)
+-
+-          if (onSubmit) {
+-            await onSubmit({ job, sheet, event })
+-          }
+-
+-          await FlatfileAPI.jobs.complete(jobId, {
+-            outcome: {
+-              message: 'complete',
+-            },
+-          })
+-          if (onSubmitSettings.deleteSpaceAfterSubmit) {
+-            await FlatfileAPI.spaces.archiveSpace(spaceId)
+-          }
+-        } catch (error: any) {
+-          if (jobId) {
+-            await FlatfileAPI.jobs.cancel(jobId)
+-          }
+-          console.log('Error:', error.stack)
+-        }
+-      }
++      OnSubmitAction(onSubmit, onSubmitSettings)
+     )
+diff --git a/packages/react/src/utils/constants.ts b/packages/react/src/utils/constants.ts
+index 8ea9d74..fce2b64 100644
+--- a/packages/react/src/utils/constants.ts
++++ b/packages/react/src/utils/constants.ts
+@@ -1,2 +1,8 @@
+-import { Flatfile } from '@flatfile/api'
++import { Flatfile, FlatfileClient } from '@flatfile/api'
++import {
++  JobHandler,
++  SheetHandler,
++  SimpleOnboarding,
++} from '@flatfile/embedded-utils'
++import { FlatfileEvent } from '@flatfile/listener'
+ 
+@@ -14 +20,44 @@ export const workbookOnSubmitAction = (sheetSlug?: string): Flatfile.Action => {
+ }
++
++export const OnSubmitAction = (
++  onSubmit: SimpleOnboarding['onSubmit'],
++  onSubmitSettings: SimpleOnboarding['submitSettings']
++) => {
++  return async (event: FlatfileEvent) => {
++    const { jobId, spaceId, workbookId } = event.context
++    const FlatfileAPI = new FlatfileClient()
++    try {
++      await FlatfileAPI.jobs.ack(jobId, {
++        info: 'Starting job',
++        progress: 10,
++      })
++
++      const job = new JobHandler(jobId)
++      const { data: workbookSheets } = await FlatfileAPI.sheets.list({
++        workbookId,
++      })
++
++      // this assumes we are only allowing 1 sheet here (which we've talked about doing initially)
++      const sheet = new SheetHandler(workbookSheets[0].id)
++
++      if (onSubmit) {
++        await onSubmit({ job, sheet, event })
++      }
++
++      await FlatfileAPI.jobs.complete(jobId, {
++        outcome: {
++          acknowledge: true,
++          message: 'Submitting data is now complete!',
++        },
++      })
++      if (onSubmitSettings?.deleteSpaceAfterSubmit) {
++        await FlatfileAPI.spaces.archiveSpace(spaceId)
++      }
++    } catch (error: any) {
++      if (jobId) {
++        await FlatfileAPI.jobs.cancel(jobId)
++      }
++      console.log('Error:', error.stack)
++    }
++  }
++}

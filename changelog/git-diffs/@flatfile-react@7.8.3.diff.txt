@@ -1,0 +1,889 @@
+diff --git a/packages/react/CHANGELOG.md b/packages/react/CHANGELOG.md
+index 8d95295..3f7806f 100644
+--- a/packages/react/CHANGELOG.md
++++ b/packages/react/CHANGELOG.md
+@@ -2,4 +2,12 @@
+ 
++## 7.8.3
++
++### Patch Changes
++
++- b3fa3ee: Fixes a bug with updating the `@flatfile/listener` authentication token
++
+ ## 7.8.2
+ 
++#### 2024-02-07
++
+ ### Patch Changes
+@@ -12,5 +20,7 @@
+ 
++#### 2024-02-07
++
+ ### Patch Changes
+ 
+-- d3e68f1: Update types for all packages that reference the record-hook plugin
++- d3e68f1: Update types for all packages that reference the record-hook plugin.
+ 
+@@ -18,8 +28,7 @@
+ 
+-### Minor Changes
+-
+-- 56388f0: Update package.json to use exports nested entrypoints
++#### 2024-02-07
+ 
+-### Patch Changes
++### Minor Changes
+ 
++- 56388f0: Update package.json to use exports nested entrypoints.
+ - Updated dependencies [56388f0]
+@@ -30,5 +39,7 @@
+ 
++#### 2024-02-06
++
+ ### Patch Changes
+ 
+-- 4528907: Remove global style overrides from sdks
++- 4528907: Remove global style overrides from sdks.
+ 
+@@ -36,5 +47,7 @@
+ 
++#### 2024-01-31
++
+ ### Patch Changes
+ 
+-- 2ed22cb: Fix to help separate types from conflicting peer dependencies
++- 2ed22cb: Fix to help separate types from conflicting peer dependencies.
+ - Updated dependencies [2ed22cb]
+@@ -45,5 +58,7 @@
+ 
++#### 2024-01-30
++
+ ### Patch Changes
+ 
+-- f07d0459: Update close action to be independent of user params
++- f07d0459: Update close action to be independent of user params.
+ 
+@@ -51,5 +66,7 @@
+ 
++#### 2024-01-19
++
+ ### Patch Changes
+ 
+-- 9225c80: Update deps
++- 9225c80: Update deps.
+ 
+@@ -57,8 +74,7 @@
+ 
+-### Minor Changes
+-
+-- ea7bd15: Add initSpace()
++#### 2024-01-19
+ 
+-### Patch Changes
++### Minor Changes
+ 
++- ea7bd15: Add initSpace().
+ - Updated dependencies [ea7bd15]
+@@ -68,6 +84,8 @@
+ 
++#### 2024-01-12
++
+ ### Patch Changes
+ 
+-- f6c0122: Fixing alignment of close buttons to not be half-in the modal
+-- 62f5ef3: add event to submit context
++- f6c0122: Fixing alignment of close buttons to not be half-in the modal.
++- 62f5ef3: Add event to submit context.
+ - Updated dependencies [62f5ef3]
+@@ -77,8 +95,7 @@
+ 
+-### Minor Changes
+-
+-- 8d6cf2f: Remove Pubnub from @flatfile/react
++#### 2024-01-10
+ 
+-### Patch Changes
++### Minor Changes
+ 
++- 8d6cf2f: Remove Pubnub from @flatfile/react.
+ - Updated dependencies [8d6cf2f]
+@@ -88,5 +105,7 @@
+ 
++#### 2024-01-10
++
+ ### Patch Changes
+ 
+-- f3a9f69: Bundle @flatfile/api for the react package
++- f3a9f69: Bundle @flatfile/api for the react package.
+ - Updated dependencies [f3a9f69]
+@@ -96,2 +115,4 @@
+ 
++#### 2024-01-09
++
+ ### Patch Changes
+@@ -104,5 +125,7 @@
+ 
++#### 2024-01-08
++
+ ### Patch Changes
+ 
+-- c91e356: Update to remove styled-components
++- c91e356: Update to remove styled-components.
+ 
+@@ -110,5 +133,7 @@
+ 
++#### 2023-12-21
++
+ ### Patch Changes
+ 
+-- 2429f55: Update UMD file name
++- 2429f55: Update UMD file name.
+ 
+@@ -116,10 +141,7 @@
+ 
+-### Minor Changes
++#### 2023-12-20
+ 
+-- dcfee6a: Optimize bundles
+-
+-### Patch Changes
++### Minor Changes
+ 
+-- 1507df1: Add option to keep space after submit
+-- dfd3b5b: Adds type=button to the close button
++- dcfee6a: Optimize bundles.
+ - Updated dependencies [dcfee6a]
+@@ -130,9 +152,7 @@
+ 
+-### Minor Changes
++#### 2023-12-13
+ 
+-- 546e5b2: Update dependencies and add the Simplified React Flow
+-
+-### Patch Changes
++### Minor Changes
+ 
+-- 546e5b2: Remove unneeded dependency
++- 546e5b2: Update dependencies and add the Simplified React Flow.
+ - Updated dependencies [546e5b2]
+@@ -143,5 +163,7 @@
+ 
++#### 2023-12-01
++
+ ### Patch Changes
+ 
+-- 15fe469: improve nomenclature
++- 15fe469: Improve nomenclature.
+ 
+@@ -149,5 +171,7 @@
+ 
++#### 2023-11-15
++
+ ### Minor Changes
+ 
+-- 6149ffa: create useSpaceTrigger to control when consume flatfile
++- 6149ffa: Create useSpaceTrigger to control when to consume Flatfile.
+ 
+@@ -155,5 +179,7 @@
+ 
++#### 2023-11-10
++
+ ### Patch Changes
+ 
+-- dea361d: Include all Workbook Params in Creation
++- dea361d: Include all Workbook Params in Creation.
+ 
+@@ -161,5 +187,7 @@
+ 
++#### 2023-11-09
++
+ ### Patch Changes
+ 
+-- e280f69: fix dependency issue
++- e280f69: Fix dependency issue.
+ 
+@@ -167,5 +195,7 @@
+ 
++#### 2023-11-09
++
+ ### Patch Changes
+ 
+-- 775c6d2: remove styled-components from peer deps
++- 775c6d2: Remove styled-components from peer deps.
+ 
+@@ -173,5 +203,7 @@
+ 
++#### 2023-11-01
++
+ ### Patch Changes
+ 
+-- ca7ad43: updating versions, and removing unused packages
++- ca7ad43: Updating versions, and removing unused packages.
+ - Updated dependencies [ca7ad43]
+@@ -181,5 +213,7 @@
+ 
++#### 2023-10-30
++
+ ### Patch Changes
+ 
+-- 7510f2e: Remove unneeded dependency
++- 7510f2e: Remove unneeded dependency.
+ 
+@@ -187,5 +221,7 @@
+ 
++#### 2023-10-26
++
+ ### Patch Changes
+ 
+-- 42f7ff9: Use rollup.js for bundling
++- 42f7ff9: Use rollup.js for bundling.
+ 
+@@ -193,5 +229,7 @@
+ 
++#### 2023-10-19
++
+ ### Patch Changes
+ 
+-- d1028fe: Updated deps
++- d1028fe: Updated deps.
+ 
+@@ -199,5 +237,7 @@
+ 
++#### 2023-10-16
++
+ ### Patch Changes
+ 
+-- eea092c: upgrade deps version
++- eea092c: Upgrade deps version.
+ 
+@@ -205,5 +245,7 @@
+ 
++#### 2023-10-15
++
+ ### Patch Changes
+ 
+-- 23fbbc0: add default colors on close modal
++- 23fbbc0: Add default colors on close modal.
+ 
+@@ -211,5 +253,7 @@
+ 
++#### 2023-10-10
++
+ ### Patch Changes
+ 
+-- 3f65a7f: fix to stroke-width
++- 3f65a7f: Fix to stroke-width.
+ 
+@@ -217,7 +261,9 @@
+ 
++#### 2023-09-29
++
+ ### Patch Changes
+ 
+-- 72d84bb: Add label for embeedded spaces
+-- 647bb69: Create listener before workbook creation
+-- 87ce5b1: updated api version
++- 72d84bb: Add label for embedded spaces.
++- 647bb69: Create listener before workbook creation.
++- 87ce5b1: Updated API version.
+ 
+@@ -225,5 +271,7 @@
+ 
++#### 2023-09-27
++
+ ### Patch Changes
+ 
+-- 087ac36: fix metadata not being set by spaceBody
++- 087ac36: Fix metadata not being set by spaceBody.
+ - Updated dependencies [087ac36]
+@@ -233,5 +281,7 @@
+ 
++#### 2023-09-21
++
+ ### Patch Changes
+ 
+-- ebd148e: Close button style improvements
++- ebd148e: Close button style improvements.
+ 
+@@ -239,6 +289,8 @@
+ 
++#### 2023-09-20
++
+ ### Patch Changes
+ 
+-- c772615: set sidebarConfig hiding sidebar by default
+-- 7a6a5ae: autoConfigure as true when no workbook set
++- c772615: Set sidebarConfig hiding sidebar by default.
++- 7a6a5ae: AutoConfigure as true when no workbook set.
+ 
+@@ -246,6 +298,8 @@
+ 
++#### 2023-09-12
++
+ ### Patch Changes
+ 
+-- 39af196: upgrade embedded-utils version
+-- 5b09d7b: adding class names to error container
++- 39af196: Upgrade embedded-utils version.
++- 5b09d7b: Adding class names to error container.
+ 
+@@ -253,6 +307,8 @@
+ 
++#### 2023-09-12
++
+ ### Patch Changes
+ 
+-- e6dcd63: Sync sdk with docs, add parameters for exit buttons text
+-- 148ed7a: workbook optional on interfaces
++- e6dcd63: Sync SDK with docs, add parameters for exit buttons text.
++- 148ed7a: Workbook optional on interfaces.
+ - Updated dependencies [e6dcd63]
+@@ -263,6 +319,8 @@
+ 
++#### 2023-08-30
++
+ ### Patch Changes
+ 
+-- 7c1c0df: add class names on the dialog
+-- b0a6b63: Move examples into apps/react and cleanup
++- 7c1c0df: Add class names on the dialog.
++- b0a6b63: Move examples into apps/react and cleanup.
+ - Updated dependencies [b0a6b63]
+@@ -272,5 +330,7 @@
+ 
++#### 2023-08-24
++
+ ### Patch Changes
+ 
+-- 7457f1e: Adding userInfo param on metadata
++- 7457f1e: Adding userInfo param on metadata.
+ 
+@@ -278,2 +338,4 @@
+ 
++#### 2023-08-18
++
+ ### Patch Changes
+@@ -287,5 +349,7 @@
+ 
++#### 2023-08-17
++
+ ### Patch Changes
+ 
+-- 7afbe80: allow spacebody
++- 7afbe80: Allow spaceBody.
+ 
+@@ -293,5 +357,7 @@
+ 
++#### 2023-08-11
++
+ ### Patch Changes
+ 
+-- 1102501: make close button and iframe have a proper class name for overrides
++- 1102501: Make close button and iframe have a proper class name for overrides.
+ - Updated dependencies [4af28f7]
+@@ -301,5 +367,7 @@
+ 
++#### 2023-08-03
++
+ ### Patch Changes
+ 
+-- c724639: Add fallback for guestlink
++- c724639: Add fallback for guestlink.
+ 
+@@ -307,5 +375,7 @@
+ 
++#### 2023-08-02
++
+ ### Patch Changes
+ 
+-- f78e6f4: Make environmentId required
++- f78e6f4: Make environmentId required.
+ 
+@@ -313,8 +383,9 @@
+ 
++#### 2023-08-01
++
+ ### Patch Changes
+ 
+-- 6f96176: Add configurable url to reusable spaces
+-- dc01f53: No environment required
+-- 8b2349a: Enable modal/inline functionality for react package
+-- Updated dependencies [c631598]
++- 6f96176: Add configurable url to reusable spaces.
++- dc01f53: No environment required.
++- 8b2349a: Enable modal/inline functionality for react package.
+ - Updated dependencies [c631598]
+@@ -324,7 +395,9 @@
+ 
++#### 2023-07-27
++
+ ### Patch Changes
+ 
+-- ecceaf2: Reusable Spaces for Embedded React
+-- 0cf8e20: check for success on outcome acknowledged event
+-- 1c9a37f: Enable apiUrl configuration
++- ecceaf2: Reusable Spaces for Embedded React.
++- 0cf8e20: Check for success on outcome acknowledged event.
++- 1c9a37f: Enable apiUrl configuration.
+ 
+@@ -332,2 +405,4 @@
+ 
++#### 2023-07-25
++
+ ### Patch Changes
+@@ -335,5 +410,4 @@
+ - Updated dependencies [1db5dc7]
+-- Updated dependencies [1db5dc7]
+-  - @flatfile/configure@0.5.37
+-  - @flatfile/listener@0.3.13
++  - @flatfile/configure@0.5.37.
++  - @flatfile/listener@0.3.13.
+ 
+@@ -341,2 +415,4 @@
+ 
++#### 2023-07-25
++
+ ### Patch Changes
+@@ -344,5 +420,4 @@
+ - Updated dependencies [5234a66]
+-- Updated dependencies [ac21304]
+-  - @flatfile/configure@0.5.36
+-  - @flatfile/listener@0.3.12
++  - @flatfile/configure@0.5.36.
++  - @flatfile/listener@0.3.12.
+ 
+@@ -350,6 +425,8 @@
+ 
++#### 2023-07-24
++
+ ### Patch Changes
+ 
+-- 027bac8: add custom mount element
+-- 7f70fc9: allow ability to configure exit text and title prompts
++- 027bac8: Add custom mount element.
++- 7f70fc9: Allow ability to configure exit text and title prompts.
+ 
+@@ -357,2 +434,4 @@
+ 
++#### 2023-07-21
++
+ ### Patch Changes
+@@ -360,3 +439,3 @@
+ - Updated dependencies [77b6c3a]
+-  - @flatfile/configure@0.5.35
++  - @flatfile/configure@0.5.35.
+ 
+@@ -364,5 +443,7 @@
+ 
++#### 2023-07-20
++
+ ### Patch Changes
+ 
+-- 4eb89b8: readme updates, improvements to the javascript package
++- 4eb89b8: Readme updates, improvements to the javascript package.
+ 
+@@ -370,5 +451,7 @@
+ 
++#### 2023-07-19
++
+ ### Patch Changes
+ 
+-- 713699b: Update dependency degenerator to remove vm2 for a security vulnerability
++- 713699b: Update dependency degenerator to remove vm2 for a security vulnerability.
+ 
+@@ -376,11 +459,10 @@
+ 
+-### Patch Changes
+-
+-- cbacf2a: Update semver version > 7.5.2
++#### 2023-07-17
+ 
+-  resolves https://security.snyk.io/vuln/SNYK-JS-SEMVER-3247795
++### Patch Changes
+ 
++- cbacf2a: Update semver version > 7.5.2 to resolve https://security.snyk.io/vuln/SNYK-JS-SEMVER-3247795.
+ - Updated dependencies [cbacf2a]
+-  - @flatfile/cross-env-config@0.0.5
+-  - @flatfile/listener@0.3.11
++  - @flatfile/cross-env-config@0.0.5.
++  - @flatfile/listener@0.3.11.
+ 
+@@ -388,2 +470,4 @@
+ 
++#### 2023-07-10
++
+ ### Patch Changes
+@@ -391,3 +475,3 @@
+ - Updated dependencies [1575f8c]
+-  - @flatfile/configure@0.5.34
++  - @flatfile/configure@0.5.34.
+ 
+@@ -395,8 +479,10 @@
+ 
++#### 2023-07-01
++
+ ### Patch Changes
+ 
+-- ce3386c: Fix bug with nested event.src
++- ce3386c: Fix bug with nested event.src.
+ - Updated dependencies [ad5cf83]
+ - Updated dependencies [ce3386c]
+-  - @flatfile/listener@0.3.10
++  - @flatfile/listener@0.3.10.
+ 
+@@ -404,5 +490,7 @@
+ 
++#### 2023-06-30
++
+ ### Minor Changes
+ 
+-- b4b2bc5: Adds support for up to React 18
++- b4b2bc5: Adds support for up to React 18.
+ 
+@@ -410,3 +498,3 @@
+ 
+-- b4b2bc5: fix to import index.css color variables
++- b4b2bc5: Fix to import index.css color variables.
+ 
+@@ -414,5 +502,7 @@
+ 
++#### 2023-06-27
++
+ ### Minor Changes
+ 
+-- d0d17ee: Adds support for up to React 18
++- d0d17ee: Adds support for up to React 18.
+ 
+@@ -420,5 +510,7 @@
+ 
++#### 2023-06-20
++
+ ### Major Changes
+ 
+-- 141e333: Add fallback for pubnub connection and refactor useSpace
++- 141e333: Add fallback for Pubnub connection and refactor useSpace.
+ 
+@@ -426,2 +518,4 @@
+ 
++#### 2023-06-16
++
+ ### Patch Changes
+@@ -429,3 +523,3 @@
+ - Updated dependencies [e8eff5c]
+-  - @flatfile/listener@0.3.9
++  - @flatfile/listener@0.3.9.
+ 
+@@ -433,8 +527,10 @@
+ 
++#### 2023-06-15
++
+ ### Patch Changes
+ 
+-- 6b64f31: adding readme files
++- 6b64f31: Adding readme files.
+ - Updated dependencies [6b64f31]
+-  - @flatfile/configure@0.5.33
+-  - @flatfile/listener@0.3.8
++  - @flatfile/configure@0.5.33.
++  - @flatfile/listener@0.3.8.
+ 
+@@ -442,5 +538,7 @@
+ 
++#### 2023-06-14
++
+ ### Patch Changes
+ 
+-- 268c8d9: Downgrade plugin-record-hook version
++- 268c8d9: Downgrade plugin-record-hook version.
+ 
+@@ -448,5 +546,7 @@
+ 
++#### 2023-06-14
++
+ ### Minor Changes
+ 
+-- b1637a1: Bump dependency versions to support using recordHooks
++- b1637a1: Bump dependency versions to support using recordHooks.
+ 
+@@ -454,5 +554,7 @@
+ 
++#### 2023-06-07
++
+ ### Patch Changes
+ 
+-- fa2c392: Removing flatfile design system from react package
++- fa2c392: Removing flatfile design system from react package.
+ 
+@@ -460,2 +562,4 @@
+ 
++#### 2023-06-06
++
+ ### Patch Changes
+@@ -463,3 +567,3 @@
+ - Updated dependencies [ce3ff5e]
+-  - @flatfile/cross-env-config@0.0.4
++  - @flatfile/cross-env-config@0.0.4.
+ 
+@@ -467,2 +571,4 @@
+ 
++#### 2023-05-31
++
+ ### Patch Changes
+@@ -470,4 +576,4 @@
+ - Updated dependencies [52fa034]
+-  - @flatfile/cross-env-config@0.0.3
+-  - @flatfile/listener@0.3.3
++  - @flatfile/cross-env-config@0.0.3.
++  - @flatfile/listener@0.3.3.
+ 
+@@ -475,5 +581,7 @@
+ 
++#### 2023-05-26
++
+ ### Patch Changes
+ 
+-- 06aa53d: Downgrade react version and update loader
++- 06aa53d: Downgrade react version and update loader.
+ 
+@@ -481,5 +589,7 @@
+ 
++#### 2023-05-19
++
+ ### Major Changes
+ 
+-- 2a30e13: Add listener to react package
++- 2a30e13: Add listener to react package.
+ 
+@@ -488,3 +598,3 @@
+ - Updated dependencies [2a30e13]
+-  - @flatfile/listener@0.3.0
++  - @flatfile/listener@0.3.0.
+ 
+@@ -492,2 +602,4 @@
+ 
++#### 2023-05-19
++
+ ### Patch Changes
+@@ -495,3 +607,3 @@
+ - Updated dependencies [e81e4d4]
+-  - @flatfile/configure@0.5.30
++  - @flatfile/configure@0.5.30.
+ 
+@@ -499,2 +611,4 @@
+ 
++#### 2023-05-14
++
+ ### Patch Changes
+@@ -502,3 +616,3 @@
+ - Updated dependencies [4807720]
+-  - @flatfile/configure@0.5.29
++  - @flatfile/configure@0.5.29.
+ 
+@@ -506,2 +620,4 @@
+ 
++#### 2023-05-12
++
+ ### Patch Changes
+@@ -509,3 +625,3 @@
+ - Updated dependencies [46357d9]
+-  - @flatfile/configure@0.5.28
++  - @flatfile/configure@0.5.28.
+ 
+@@ -513,2 +629,4 @@
+ 
++#### 2023-06-18
++
+ ### Patch Changes
+@@ -516,3 +634,3 @@
+ - Updated dependencies [720394d]
+-  - @flatfile/configure@0.5.27
++  - @flatfile/configure@0.5.27.
+ 
+@@ -520,2 +638,4 @@
+ 
++#### 2023-06-15
++
+ ### Patch Changes
+@@ -523,3 +643,3 @@
+ - Updated dependencies [74852f3]
+-  - @flatfile/configure@0.5.26
++  - @flatfile/configure@0.5.26.
+ 
+@@ -527,2 +647,4 @@
+ 
++#### 2023-06-13
++
+ ### Patch Changes
+@@ -530,3 +652,3 @@
+ - Updated dependencies [668bd41]
+-  - @flatfile/configure@0.5.25
++  - @flatfile/configure@0.5.25.
+ 
+@@ -534,2 +656,4 @@
+ 
++#### 2023-06-08
++
+ ### Patch Changes
+@@ -537,3 +661,3 @@
+ - Updated dependencies [4039970]
+-  - @flatfile/configure@0.5.24
++  - @flatfile/configure@0.5.24.
+ 
+@@ -541,2 +665,4 @@
+ 
++#### 2023-04-21
++
+ ### Patch Changes
+@@ -544,3 +670,3 @@
+ - Updated dependencies [d8470d8]
+-  - @flatfile/configure@0.5.23
++  - @flatfile/configure@0.5.23.
+ 
+@@ -548,2 +674,4 @@
+ 
++#### 2023-04-17
++
+ ### Patch Changes
+@@ -552,3 +680,3 @@
+ - Updated dependencies [55f9fff]
+-  - @flatfile/configure@0.5.22
++  - @flatfile/configure@0.5.22.
+ 
+@@ -556,2 +684,4 @@
+ 
++#### 2023-04-04
++
+ ### Patch Changes
+@@ -559,3 +689,3 @@
+ - Updated dependencies [d5a587e]
+-  - @flatfile/configure@0.5.21
++  - @flatfile/configure@0.5.21.
+ 
+@@ -563,2 +693,4 @@
+ 
++#### 2023-04-04
++
+ ### Patch Changes
+@@ -567,3 +699,3 @@
+ - Updated dependencies [8ed4e8c]
+-  - @flatfile/configure@0.5.20
++  - @flatfile/configure@0.5.20.
+ 
+@@ -571,5 +703,7 @@
+ 
++#### 2023-03-23
++
+ ### Patch Changes
+ 
+-- 1c2157f: Add support for naming a space and passing additional space info
++- 1c2157f: Add support for naming a space and passing additional space info.
+ 
+@@ -577,2 +711,4 @@
+ 
++#### 2023-03-22
++
+ ### Patch Changes
+@@ -580,3 +716,3 @@
+ - Updated dependencies [c946831]
+-  - @flatfile/configure@0.5.19
++  - @flatfile/configure@0.5.19.
+ 
+@@ -584,2 +720,4 @@
+ 
++#### 2023-03-21
++
+ ### Patch Changes
+@@ -587,3 +725,3 @@
+ - Updated dependencies [2a0b010]
+-  - @flatfile/configure@0.5.18
++  - @flatfile/configure@0.5.18.
+ 
+@@ -591,2 +729,4 @@
+ 
++#### 2023-03-17
++
+ ### Patch Changes
+@@ -594,3 +734,3 @@
+ - Updated dependencies [c3ecef6]
+-  - @flatfile/configure@0.5.17
++  - @flatfile/configure@0.5.17.
+ 
+@@ -598,7 +738,9 @@
+ 
++#### 2023-03-14
++
+ ### Patch Changes
+ 
+-- 2e25be3: Update packages with updated @flatfile/api
++- 2e25be3: Update packages with updated @flatfile/api.
+ - Updated dependencies [2e25be3]
+-  - @flatfile/configure@0.5.16
++  - @flatfile/configure@0.5.16.
+ 
+@@ -606,5 +748,7 @@
+ 
++#### 2023-03-02
++
+ ### Patch Changes
+ 
+-- 0b4c235: update makeTheme helper function, add support for documents and spaceConfigId
++- 0b4c235: Update makeTheme helper function, add support for documents and spaceConfigId.
+ 
+@@ -612,5 +756,7 @@
+ 
++#### 2023-02-28
++
+ ### Patch Changes
+ 
+-- a30b3e6: Export useThemeGenerator hook
++- a30b3e6: Export useThemeGenerator hook.
+ 
+@@ -618,2 +764,4 @@
+ 
++#### 2023-02-28
++
+ ### Patch Changes
+@@ -624,5 +772,7 @@
+ 
++#### 2023-02-28
++
+ ### Patch Changes
+ 
+-- a886180: Add readme
++- a886180: Add readme.
+ 
+@@ -630,5 +780,7 @@
+ 
++#### 2023-02-28
++
+ ### Patch Changes
+ 
+-- 87431f7: Make package public
++- 87431f7: Make package public.
+ 
+@@ -636,4 +788,6 @@
+ 
++#### 2023-02-28
++
+ ### Major Changes
+ 
+-- cf8f7de: Initial beta release for embed react
++- cf8f7de: Initial beta release for embed react.
+diff --git a/packages/react/package.json b/packages/react/package.json
+index e6ae9d8..a628af4 100644
+--- a/packages/react/package.json
++++ b/packages/react/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/react",
+-  "version": "7.8.2",
++  "version": "7.8.3",
+   "description": "Flatfile React components",
+diff --git a/packages/react/src/hooks/useCreateListener.ts b/packages/react/src/hooks/useCreateListener.ts
+index 4462fd5..0196cff 100644
+--- a/packages/react/src/hooks/useCreateListener.ts
++++ b/packages/react/src/hooks/useCreateListener.ts
+@@ -30,3 +30,3 @@ export const useCreateListener = ({
+       )
+-  }, [listener])
++  }, [listener, accessToken, apiUrl])
+ 

@@ -1,0 +1,37 @@
+diff --git a/packages/javascript/CHANGELOG.md b/packages/javascript/CHANGELOG.md
+index 116f420..a6371ab 100644
+--- a/packages/javascript/CHANGELOG.md
++++ b/packages/javascript/CHANGELOG.md
+@@ -2,2 +2,9 @@
+ 
++## 1.3.1
++
++### Patch Changes
++
++- Updated dependencies [8ef2d53]
++  - @flatfile/embedded-utils@1.1.13
++  
+ ## 1.3.0
+diff --git a/packages/javascript/FlatfileJavascript.ts b/packages/javascript/FlatfileJavascript.ts
+index 0380afa..e7d6ef3 100644
+--- a/packages/javascript/FlatfileJavascript.ts
++++ b/packages/javascript/FlatfileJavascript.ts
+@@ -303,3 +303,3 @@ const initNewSpace = async ({
+         theme: themeConfig,
+-        sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
++        sidebarConfig: sidebarConfig || { showSidebar: false },
+         userInfo,
+diff --git a/packages/javascript/package.json b/packages/javascript/package.json
+index 57cbb52..7e83457 100644
+--- a/packages/javascript/package.json
++++ b/packages/javascript/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/javascript",
+-  "version": "1.3.0",
++  "version": "1.3.1",
+   "description": "Flatfile embedded with vanilla javascript.",
+@@ -55,3 +55,3 @@
+   "dependencies": {
+-    "@flatfile/embedded-utils": "^1.1.12",
++    "@flatfile/embedded-utils": "^1.1.13",
+     "@flatfile/listener": "^1.0.1",

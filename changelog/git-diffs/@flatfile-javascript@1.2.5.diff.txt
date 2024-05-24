@@ -1,0 +1,122 @@
+diff --git a/packages/javascript/CHANGELOG.md b/packages/javascript/CHANGELOG.md
+index 2944c7a..018ba1c 100644
+--- a/packages/javascript/CHANGELOG.md
++++ b/packages/javascript/CHANGELOG.md
+@@ -2,2 +2,10 @@
+ 
++## 1.2.5
++
++### Patch Changes
++
++- ab0388b: Update params for the embedded wrapper initializers
++- Updated dependencies [ab0388b]
++  - @flatfile/embedded-utils@1.1.11
++
+ ## 1.2.4
+diff --git a/packages/javascript/FlatfileJavascript.ts b/packages/javascript/FlatfileJavascript.ts
+index b183a99..ad20423 100644
+--- a/packages/javascript/FlatfileJavascript.ts
++++ b/packages/javascript/FlatfileJavascript.ts
+@@ -17,3 +17,2 @@ import { createIframe } from './src/createIframe'
+ import { createDocument } from './src/services/document'
+-import { updateSpace } from './src/services/space'
+ import { createWorkbook } from './src/services/workbook'
+@@ -111,3 +110,2 @@ const updateSpaceInfo = async (data: UpdateSpaceInfo) => {
+     }
+-    await updateSpace(data)
+ 
+@@ -318,2 +316,7 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
+     listener,
++    namespace,
++    metadata,
++    labels,
++    translationsPath,
++    languageOverride,
+   } = options
+@@ -342,4 +345,7 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
+         autoConfigure: false,
+-        labels: ['embedded'],
+         ...spaceBody,
++        labels: ['embedded', ...(labels || [])],
++        namespace,
++        translationsPath,
++        languageOverride,
+         metadata: {
+@@ -349,2 +355,3 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
+           ...(spaceBody?.metadata || {}),
++          ...(metadata || {}),
+         },
+@@ -416,6 +423,3 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
+         publishableKey,
+-        workbook: createdWorkbook as Pick<
+-          CreateWorkbookConfig,
+-          'name' | 'sheets' | 'actions'
+-        >,
++        workbook: createdWorkbook as CreateWorkbookConfig,
+         spaceId: spaceData.id,
+diff --git a/packages/javascript/package.json b/packages/javascript/package.json
+index f7c999b..4d8c9bc 100644
+--- a/packages/javascript/package.json
++++ b/packages/javascript/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/javascript",
+-  "version": "1.2.4",
++  "version": "1.2.5",
+   "description": "Flatfile embedded with vanilla javascript.",
+@@ -55,3 +55,3 @@
+   "dependencies": {
+-    "@flatfile/embedded-utils": "^1.1.10",
++    "@flatfile/embedded-utils": "^1.1.11",
+     "@flatfile/listener": "^1.0.1",
+diff --git a/packages/javascript/src/services/space.ts b/packages/javascript/src/services/space.ts
+deleted file mode 100644
+index 76e2064..0000000
+--- a/packages/javascript/src/services/space.ts
++++ /dev/null
+@@ -1,46 +0,0 @@
+-import { UpdateSpaceInfo } from '../..'
+-
+-export const updateSpace = async (data: UpdateSpaceInfo) => {
+-  const {
+-    apiUrl,
+-    accessToken,
+-    themeConfig,
+-    sidebarConfig,
+-    userInfo,
+-    spaceInfo,
+-    spaceId,
+-    environmentId,
+-    spaceBody,
+-  } = data
+-  const updateSpaceEndpoint = `${apiUrl}/v1/spaces/${spaceId}`
+-  const response = await fetch(updateSpaceEndpoint, {
+-    method: 'PATCH',
+-    headers: {
+-      'Content-Type': 'application/json',
+-      Authorization: `Bearer ${accessToken}`,
+-    },
+-    body: JSON.stringify({
+-      environmentId,
+-      metadata: {
+-        theme: themeConfig,
+-        sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
+-        userInfo,
+-        spaceInfo,
+-        ...(spaceBody?.metadata || {}),
+-      },
+-    }),
+-  })
+-  const updatedSpace = await response.json()
+-
+-  if (!updatedSpace || !updatedSpace.data || !updatedSpace.data.id) {
+-    throw new Error('Failed to update space')
+-  }
+-
+-  if (!response.ok) {
+-    const errorMessage =
+-      updatedSpace?.errors[0]?.message || 'Failed to update space'
+-    throw new Error(errorMessage)
+-  }
+-
+-  return updatedSpace.data
+-}

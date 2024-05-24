@@ -1,0 +1,43 @@
+diff --git a/packages/javascript/CHANGELOG.md b/packages/javascript/CHANGELOG.md
+index d5cf285..56b2b41 100644
+--- a/packages/javascript/CHANGELOG.md
++++ b/packages/javascript/CHANGELOG.md
+@@ -2,2 +2,10 @@
+ 
++## 1.3.3
++
++### Patch Changes
++
++- 86c7505: Fix to allow clipboard read and write in embedded iframe components
++- Updated dependencies [003014c]
++  - @flatfile/embedded-utils@1.2.0
++
+ ## 1.3.2
+@@ -15,3 +23,3 @@
+   - @flatfile/embedded-utils@1.1.13
+-  
++
+ ## 1.3.0
+diff --git a/packages/javascript/package.json b/packages/javascript/package.json
+index d578a0b..e45177c 100644
+--- a/packages/javascript/package.json
++++ b/packages/javascript/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/javascript",
+-  "version": "1.3.2",
++  "version": "1.3.3",
+   "description": "Flatfile embedded with vanilla javascript.",
+@@ -55,3 +55,3 @@
+   "dependencies": {
+-    "@flatfile/embedded-utils": "^1.1.14",
++    "@flatfile/embedded-utils": "^1.2.0",
+     "@flatfile/listener": "^1.0.1",
+diff --git a/packages/javascript/src/createIframe.ts b/packages/javascript/src/createIframe.ts
+index 27aeefd..4d65fde 100644
+--- a/packages/javascript/src/createIframe.ts
++++ b/packages/javascript/src/createIframe.ts
+@@ -34,3 +34,3 @@ export function createIframe(
+   iframe.id = 'flatfile_iframe'
+-
++  iframe.allow = 'clipboard-read; clipboard-write'
+   // Create the wrapper

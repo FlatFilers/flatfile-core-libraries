@@ -1,0 +1,38 @@
+diff --git a/packages/react/CHANGELOG.md b/packages/react/CHANGELOG.md
+index b07394b..34e6b33 100644
+--- a/packages/react/CHANGELOG.md
++++ b/packages/react/CHANGELOG.md
+@@ -2,2 +2,8 @@
+ 
++## 7.8.7
++
++### Patch Changes
++
++- 5263f5b: Fix to only include defined params in the space creation request
++
+ ## 7.8.6
+diff --git a/packages/react/package.json b/packages/react/package.json
+index 34840d0..957936f 100644
+--- a/packages/react/package.json
++++ b/packages/react/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/react",
+-  "version": "7.8.6",
++  "version": "7.8.7",
+   "description": "Flatfile React components",
+diff --git a/packages/react/src/utils/initializeSpace.tsx b/packages/react/src/utils/initializeSpace.tsx
+index 70be026..3b57b75 100644
+--- a/packages/react/src/utils/initializeSpace.tsx
++++ b/packages/react/src/utils/initializeSpace.tsx
+@@ -40,3 +40,2 @@ export const initializeSpace = async (
+       name,
+-      namespace,
+       autoConfigure: false,
+@@ -45,4 +44,5 @@ export const initializeSpace = async (
+       labels: ['embedded', ...(labels || [])],
+-      translationsPath,
+-      languageOverride,
++      ...(namespace ? { namespace } : {}),
++      ...(translationsPath ? { translationsPath } : {}),
++      ...(languageOverride ? { languageOverride } : {}),
+       metadata: {

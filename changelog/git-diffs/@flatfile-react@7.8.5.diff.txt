@@ -1,0 +1,29 @@
+diff --git a/packages/react/CHANGELOG.md b/packages/react/CHANGELOG.md
+index db5e0f4..a023486 100644
+--- a/packages/react/CHANGELOG.md
++++ b/packages/react/CHANGELOG.md
+@@ -2,2 +2,10 @@
+ 
++## 7.8.5
++
++### Patch Changes
++
++- 399a9f4: Update Workbook types to include all params
++- Updated dependencies [399a9f4]
++  - @flatfile/embedded-utils@1.1.10
++
+ ## 7.8.4
+diff --git a/packages/react/package.json b/packages/react/package.json
+index 0adcd6d..6ddadd6 100644
+--- a/packages/react/package.json
++++ b/packages/react/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/react",
+-  "version": "7.8.4",
++  "version": "7.8.5",
+   "description": "Flatfile React components",
+@@ -60,3 +60,3 @@
+     "@flatfile/cross-env-config": "^0.0.5",
+-    "@flatfile/embedded-utils": "^1.1.9",
++    "@flatfile/embedded-utils": "^1.1.10",
+     "@flatfile/listener": "^1.0.1",

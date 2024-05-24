@@ -1,0 +1,2947 @@
+diff --git a/packages/react/CHANGELOG.md b/packages/react/CHANGELOG.md
+index 05bd596..8afb513 100644
+--- a/packages/react/CHANGELOG.md
++++ b/packages/react/CHANGELOG.md
+@@ -2,2 +2,14 @@
+ 
++## 7.9.0
++
++### Minor Changes
++
++- d13ceb6: Refactor React to use a FlatfileContext and Components to configure the Space
++
++### Patch Changes
++
++- Updated dependencies [d13ceb6]
++  - @flatfile/embedded-utils@1.1.15
++  - @flatfile/listener@1.0.2
++
+ ## 7.8.12
+@@ -8,3 +20,3 @@
+   - @flatfile/embedded-utils@1.1.14
+-  
++
+ ## 7.8.11
+@@ -15,3 +27,3 @@
+   - @flatfile/embedded-utils@1.1.13
+-  
++
+ ## 7.8.10
+diff --git a/packages/react/index.html b/packages/react/index.html
+deleted file mode 100644
+index fc82133..0000000
+--- a/packages/react/index.html
++++ /dev/null
+@@ -1,18 +0,0 @@
+-<!DOCTYPE html>
+-<html lang="en">
+-
+-  <head>
+-    <meta charset="UTF-8" />
+-    <link rel="preload" href="./src/baseline/fonts/proxima-nova/Proxima-Nova_Regular.otf" as="font" type="font/otf" crossorigin="anonymous">
+-    <link rel="preload" href="./src/baseline/fonts/proxima-nova/Proxima-Nova_Semibold.otf" as="font" type="font/otf" crossorigin="anonymous">
+-    <link rel="stylesheet" type="text/css" href="./src/index.css" />
+-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+-    <title>Flatfile X</title>
+-  </head>
+-
+-  <body>
+-    <div id="root"></div>
+-    <script type="module" src="/src/App.tsx"></script>
+-  </body>
+-
+-</html>
+\ No newline at end of file
+diff --git a/packages/react/package.json b/packages/react/package.json
+index 9e0da22..76866a6 100644
+--- a/packages/react/package.json
++++ b/packages/react/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/react",
+-  "version": "7.8.12",
++  "version": "7.9.0",
+   "description": "Flatfile React components",
+@@ -32,2 +32,4 @@
+   "devDependencies": {
++    "@babel/preset-env": "^7.24.3",
++    "@babel/preset-react": "^7.24.1",
+     "@flatfile/eslint-config-platform-sdk": "*",
+@@ -39,12 +41,14 @@
+     "@rollup/plugin-url": "^8.0.2",
+-    "@testing-library/jest-dom": "^5.16.5",
++    "@testing-library/jest-dom": "^5.17.0",
++    "@testing-library/react": "^14.2.2",
+     "@testing-library/react-hooks": "^8.0.1",
+-    "@testing-library/react": "^12.1.2",
++    "@testing-library/user-event": "^14.5.2",
+     "@types/jest": "^28.1.4",
+-    "@types/react-dom": ">=16.9.0 <19.0.0",
+     "@types/react": ">=16.9.0 <19.0.0",
++    "@types/react-dom": ">=16.9.0 <19.0.0",
+     "@types/tinycolor2": "^1.4.3",
+-    "dotenv": "^16.3.1",
+-    "jest-environment-jsdom": "^29.6.4",
+-    "jest": "^28.1.2",
++    "dotenv": "^16.3.2",
++    "jest": "^28.1.3",
++    "jest-environment-jsdom": "^29.7.0",
++    "jest-fetch-mock": "^3.0.3",
+     "jsdom": "^21.1.0",
+@@ -58,6 +62,6 @@
+   "dependencies": {
+-    "@flatfile/api": "^1.6.7",
++    "@flatfile/api": "^1.7.4",
+     "@flatfile/cross-env-config": "^0.0.5",
+-    "@flatfile/embedded-utils": "^1.1.14",
+-    "@flatfile/listener": "^1.0.1",
++    "@flatfile/embedded-utils": "^1.1.15",
++    "@flatfile/listener": "^1.0.2",
+     "@flatfile/plugin-record-hook": "^1.4.1",
+@@ -72,2 +76,2 @@
+   }
+-}
+\ No newline at end of file
++}
+diff --git a/packages/react/rollup.config.js b/packages/react/rollup.config.js
+index 051b7a6..97f506a 100644
+--- a/packages/react/rollup.config.js
++++ b/packages/react/rollup.config.js
+@@ -26,3 +26,3 @@ function commonPlugins(browser, umd = false) {
+         })
+-      : null,
++      : undefined,
+     json(),
+@@ -30,7 +30,10 @@ function commonPlugins(browser, umd = false) {
+     resolve({ browser, preferBuiltins: !browser }),
+-    commonjs({ requireReturnsDefault: 'auto' }),
++    commonjs({
++      requireReturnsDefault: 'preferred',
++      esmExternals: true,
++    }),
+     typescript({
+       outDir: 'dist',
+-      tsconfig: 'tsconfig.json',
+       declaration: false,
++      declarationDir: './dist',
+       composite: false,
+@@ -48,2 +51,7 @@ function commonPlugins(browser, umd = false) {
+ const config = [
++  {
++    input: 'src/index.ts',
++    output: [{ file: 'dist/index.d.ts', format: 'es' }],
++    plugins: [css(), dts(), postcss()],
++  },
+   // Non-browser build
+@@ -94,7 +102,2 @@ const config = [
+   },
+-  {
+-    input: 'src/index.ts',
+-    output: [{ file: 'dist/index.d.ts', format: 'es' }],
+-    plugins: [css(), dts(), postcss()],
+-  },
+ ]
+diff --git a/packages/react/src/components/CloseButton.tsx b/packages/react/src/components/CloseButton.tsx
+new file mode 100644
+index 0000000..53d6364
+--- /dev/null
++++ b/packages/react/src/components/CloseButton.tsx
+@@ -0,0 +1,30 @@
++import React from 'react'
++
++export const CloseButton = ({ handler }: { handler: React.MouseEventHandler<HTMLButtonElement> }) => {
++  return (
++    <button
++      onClick={handler}
++      data-testid="flatfile-close-button"
++      type="button"
++      className="flatfile-close-button"
++      aria-label="Close"
++      style={{
++        position: 'absolute',
++        margin: '30px',
++        top: '30px',
++        right: '30px',
++      }}
++    >
++      <svg
++        xmlns="http://www.w3.org/2000/svg"
++        width="24"
++        height="24"
++        viewBox="0 0 100 100"
++        style={{ margin: 'auto' }}
++      >
++        <line x1="10" y1="10" x2="90" y2="90" stroke="white" strokeWidth="10" />
++        <line x1="10" y1="90" x2="90" y2="10" stroke="white" strokeWidth="10" />
++      </svg>
++    </button>
++  )
++}
+diff --git a/packages/react/src/components/Document.tsx b/packages/react/src/components/Document.tsx
+new file mode 100644
+index 0000000..96fb617
+--- /dev/null
++++ b/packages/react/src/components/Document.tsx
+@@ -0,0 +1,37 @@
++import React from 'react'
++import FlatfileContext from './FlatfileContext'
++import { useCallback, useContext } from 'react'
++import type { Flatfile } from '@flatfile/api'
++import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
++
++type DocumentProps = {
++  config: Flatfile.DocumentConfig
++}
++/**
++ * `Document` component responsible for updating the document configuration within the Flatfile context.
++ * It utilizes the `useDeepCompareEffect` hook to deeply compare the `config` prop changes and update the document accordingly.
++ * 
++ * @component
++ * @example
++ * const documentConfig = {
++ *   title: "Document Title",
++ *   body: "Example Body",
++ * }
++ * return <Document config={documentConfig} />
++ * 
++ * @param {DocumentProps} props - The props for the Document component.
++ * @param {Flatfile.DocumentConfig} props.config - The configuration object for the document.
++ */
++
++export const Document = (props: DocumentProps) => {
++  const { config } = props
++  const { updateDocument } = useContext(FlatfileContext)
++
++  const callback = useCallback(() => {
++    updateDocument(config)
++  }, [config, updateDocument])
++
++  useDeepCompareEffect(callback, [config])
++
++  return <></>
++}
+diff --git a/packages/react/src/components/EmbeddedIFrameWrapper.tsx b/packages/react/src/components/EmbeddedIFrameWrapper.tsx
+new file mode 100644
+index 0000000..380945e
+--- /dev/null
++++ b/packages/react/src/components/EmbeddedIFrameWrapper.tsx
+@@ -0,0 +1,100 @@
++import React, { useState, useContext, useRef, useEffect, JSX } from 'react'
++import { IFrameTypes } from '../types'
++import ConfirmModal from './ConfirmCloseModal'
++import FlatfileContext from './FlatfileContext'
++import { getContainerStyles, getIframeStyles } from './embeddedStyles'
++import { CloseButton } from './CloseButton'
++
++export const EmbeddedIFrameWrapper = (
++  props: Partial<IFrameTypes> & {
++    handleCloseInstance: () => void
++  }
++): JSX.Element => {
++  const { open, sessionSpace } = useContext(FlatfileContext)
++  const iRef = useRef<HTMLIFrameElement | null>(null)
++
++  const [showExitWarnModal, setShowExitWarnModal] = useState(false)
++
++  const {
++    closeSpace,
++    iframeStyles,
++    mountElement = 'flatfile_iFrameContainer',
++    exitText = 'Are you sure you want to exit? Any unsaved changes will be lost.',
++    exitTitle = 'Close Window',
++    exitPrimaryButtonText = 'Yes, exit',
++    exitSecondaryButtonText = 'No, stay',
++    displayAsModal = true,
++    handleCloseInstance,
++    preload = true,
++    spaceUrl,
++  } = props
++  const spacesUrl = spaceUrl || 'https://platform.flatfile.com/s'
++  const preloadUrl = `${spacesUrl}/space-init`
++
++  useEffect(() => {
++    if (sessionSpace && iRef.current) {
++      const targetOrigin = new URL(spacesUrl).origin
++
++      iRef.current.contentWindow?.postMessage(
++        {
++          flatfileEvent: {
++            topic: 'portal:initialize',
++            payload: {
++              status: 'complete',
++              spaceUrl: `${targetOrigin}/space/${
++                sessionSpace.space.id
++              }?token=${encodeURIComponent(sessionSpace.space.accessToken)}`,
++              initialResources: sessionSpace,
++            },
++          },
++        },
++        targetOrigin
++      )
++    }
++  }, [sessionSpace])
++
++  const spaceLink = sessionSpace?.space?.guestLink || null
++
++  return (
++    <div
++      className={`flatfile_iframe-wrapper ${
++        displayAsModal ? 'flatfile_displayAsModal' : ''
++      }`}
++      style={{
++        ...getContainerStyles(displayAsModal),
++        display: open ? 'flex' : 'none',
++      }}
++      data-testid="space-contents"
++    >
++      {showExitWarnModal && (
++        <ConfirmModal
++          onConfirm={() => {
++            handleCloseInstance()
++            setShowExitWarnModal(false)
++            closeSpace?.onClose({})
++          }}
++          onCancel={() => setShowExitWarnModal(false)}
++          exitText={exitText}
++          exitTitle={exitTitle}
++          exitPrimaryButtonText={exitPrimaryButtonText}
++          exitSecondaryButtonText={exitSecondaryButtonText}
++        />
++      )}
++      {(open || preload) && (
++        <iframe
++          data-testid={mountElement}
++          className={mountElement}
++          style={{
++            ...getIframeStyles(iframeStyles!),
++            ...(preload
++              ? { display: open ? 'block' : 'none' }
++              : { display: 'block' }),
++          }}
++          src={preload ? preloadUrl : spaceLink}
++          ref={iRef}
++        />
++      )}
++      <CloseButton handler={() => setShowExitWarnModal(true)} />
++    </div>
++  )
++}
+diff --git a/packages/react/src/components/FlatfileContext.tsx b/packages/react/src/components/FlatfileContext.tsx
+new file mode 100644
+index 0000000..457116f
+--- /dev/null
++++ b/packages/react/src/components/FlatfileContext.tsx
+@@ -0,0 +1,75 @@
++import { Flatfile } from '@flatfile/api'
++import { ISpace } from '@flatfile/embedded-utils'
++import FlatfileListener from '@flatfile/listener'
++import { createContext, useContext } from 'react'
++
++type CreateNewSpace = Partial<Flatfile.SpaceConfig>
++type ReUseSpace = Partial<Flatfile.SpaceConfig> & {
++  id: string
++  accessToken: string
++}
++
++export const DEFAULT_CREATE_SPACE = {
++  document: undefined,
++  workbook: {
++    name: 'Embedded Workbook',
++    sheets: [],
++  },
++  space: {
++    name: 'Embedded Space',
++    labels: ['embedded'],
++    namespace: 'portal',
++    metadata: {
++      sidebarConfig: { showSidebar: false },
++    },
++  },
++}
++
++export interface FlatfileContextType {
++  publishableKey?: string
++  environmentId?: string
++  apiUrl: string
++  open: boolean
++  setOpen: (open: boolean) => void
++  space?: CreateNewSpace | ReUseSpace
++  sessionSpace?: any
++  setSessionSpace: (space: any) => void
++  listener: FlatfileListener
++  setListener: (listener: FlatfileListener) => void
++  accessToken?: string
++  setAccessToken: (accessToken: string) => void
++  addSheet: (config: any) => void
++  updateSheet: (
++    sheetSlug: string,
++    sheetUpdates: Partial<Flatfile.SheetConfig>
++  ) => void
++  updateWorkbook: (config: any) => void
++  updateDocument: (config: any) => void
++  createSpace: any
++  setCreateSpace: (config: any) => void
++  updateSpace: (config: any) => void
++}
++
++export const FlatfileContext = createContext<FlatfileContextType>({
++  publishableKey: undefined,
++  environmentId: undefined,
++  apiUrl: '',
++  open: true,
++  setOpen: () => {},
++  space: undefined,
++  sessionSpace: undefined,
++  setSessionSpace: () => {},
++  listener: new FlatfileListener(),
++  setListener: () => {},
++  accessToken: undefined,
++  setAccessToken: () => {},
++  addSheet: () => {},
++  updateSheet: () => {},
++  updateWorkbook: () => {},
++  updateDocument: () => {},
++  createSpace: undefined,
++  setCreateSpace: () => {},
++  updateSpace: () => {},
++})
++export const useFlatfileInternal = () => useContext(FlatfileContext)
++export default FlatfileContext
+diff --git a/packages/react/src/components/FlatfileProvider.tsx b/packages/react/src/components/FlatfileProvider.tsx
+new file mode 100644
+index 0000000..6198aec
+--- /dev/null
++++ b/packages/react/src/components/FlatfileProvider.tsx
+@@ -0,0 +1,168 @@
++import React, { useEffect, useState } from 'react'
++import FlatfileContext, { DEFAULT_CREATE_SPACE } from './FlatfileContext'
++import FlatfileListener, { Browser } from '@flatfile/listener'
++import { Flatfile } from '@flatfile/api'
++import { EmbeddedIFrameWrapper } from './EmbeddedIFrameWrapper'
++import { ExclusiveFlatfileProviderProps } from '../types'
++
++export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
++  children,
++  publishableKey,
++  accessToken,
++  environmentId,
++  apiUrl = 'https://platform.flatfile.com/api',
++  config,
++}) => {
++  const [internalAccessToken, setAccessToken] = useState<string | undefined>(
++    accessToken
++  )
++  const [listener, setListener] = useState(new FlatfileListener())
++  const [open, setOpen] = useState<boolean>(false)
++  const [sessionSpace, setSessionSpace] = useState<any>(null)
++
++  const [createSpace, setCreateSpace] = useState<{
++    document: Flatfile.DocumentConfig | undefined
++    workbook: Flatfile.CreateWorkbookConfig
++    space: Flatfile.SpaceConfig
++  }>(DEFAULT_CREATE_SPACE)
++
++  const addSheet = (newSheet: Flatfile.SheetConfig) => {
++    setCreateSpace((prevSpace) => {
++      // Check if the sheet already exists
++      const sheetExists = prevSpace.workbook.sheets?.some(
++        (sheet) => sheet.slug === newSheet.slug
++      )
++      if (sheetExists) {
++        return prevSpace
++      }
++
++      return {
++        ...prevSpace,
++        workbook: {
++          ...prevSpace.workbook,
++          sheets: [...(prevSpace.workbook.sheets || []), newSheet],
++        },
++      }
++    })
++  }
++
++  const updateSheet = (
++    sheetSlug: string,
++    sheetUpdates: Partial<Flatfile.SheetConfig>
++  ) => {
++    setCreateSpace((prevSpace) => {
++      const updatedSheets = prevSpace.workbook.sheets?.map((sheet: any) => {
++        if (sheet.slug === sheetSlug) {
++          return { ...sheet, ...sheetUpdates }
++        }
++        return sheet
++      })
++
++      return {
++        ...prevSpace,
++        workbook: {
++          ...prevSpace.workbook,
++          sheets: updatedSheets,
++        },
++      }
++    })
++  }
++
++  const updateWorkbook = (workbookUpdates: Flatfile.CreateWorkbookConfig) => {
++    setCreateSpace((prevSpace) => ({
++      ...prevSpace,
++      workbook: {
++        ...prevSpace.workbook,
++        ...workbookUpdates,
++        // Prioritize order of sheets passed along in the Workbook.config then subsequent <Sheet config /> components
++        actions: [
++          ...(workbookUpdates.actions || []),
++          ...(prevSpace.workbook.actions || []),
++        ],
++        sheets: [
++          ...(workbookUpdates.sheets || []),
++          ...(prevSpace.workbook.sheets || []),
++        ],
++      },
++    }))
++  }
++
++  const updateDocument = (documentUpdates: Flatfile.DocumentConfig) => {
++    setCreateSpace((prevSpace) => ({
++      ...prevSpace,
++      document: {
++        ...prevSpace.document,
++        ...documentUpdates,
++      },
++    }))
++  }
++
++  const updateSpace = (spaceUpdates: Flatfile.SpaceConfig) => {
++    setCreateSpace((prevSpace) => ({
++      ...prevSpace,
++      space: { ...prevSpace.space, ...spaceUpdates },
++    }))
++  }
++
++  const handlePostMessage = (message: {
++    data: { flatfileEvent: Record<string, any> }
++  }) => {
++    const { flatfileEvent } = message.data
++    if (!flatfileEvent) return
++
++    listener.dispatchEvent(flatfileEvent)
++  }
++
++  // Listen to the postMessage event from the created iFrame
++  useEffect(() => {
++    window.addEventListener('message', handlePostMessage, false)
++    return () => {
++      window.removeEventListener('message', handlePostMessage)
++    }
++  }, [listener])
++
++  // Mount the event listener to the FlatfileProvider
++  useEffect(() => {
++    if (listener && internalAccessToken) {
++      listener.mount(
++        new Browser({
++          apiUrl,
++          accessToken: internalAccessToken,
++          fetchApi: fetch,
++        })
++      )
++    }
++  }, [listener, internalAccessToken, apiUrl])
++
++  return (
++    <FlatfileContext.Provider
++      value={{
++        ...(publishableKey ? { publishableKey } : {}),
++        ...(internalAccessToken ? { accessToken: internalAccessToken } : {}),
++        apiUrl,
++        environmentId,
++        open,
++        setOpen,
++        sessionSpace,
++        setSessionSpace,
++        setListener,
++        listener,
++        setAccessToken,
++        addSheet,
++        updateSheet,
++        updateWorkbook,
++        updateDocument,
++        createSpace,
++        setCreateSpace,
++        updateSpace,
++      }}
++    >
++      {children}
++
++      <EmbeddedIFrameWrapper
++        handleCloseInstance={() => setOpen(false)}
++        {...config}
++      />
++    </FlatfileContext.Provider>
++  )
++}
+diff --git a/packages/react/src/components/Sheet.tsx b/packages/react/src/components/Sheet.tsx
+new file mode 100644
+index 0000000..0f12045
+--- /dev/null
++++ b/packages/react/src/components/Sheet.tsx
+@@ -0,0 +1,150 @@
++import React, { useCallback } from 'react'
++import { Flatfile, FlatfileClient } from '@flatfile/api'
++import { useContext } from 'react'
++import FlatfileContext from './FlatfileContext'
++import {
++  DefaultSubmitSettings,
++  JobHandler,
++  SheetHandler,
++  SimpleOnboarding,
++} from '@flatfile/embedded-utils'
++import { FlatfileEvent } from '@flatfile/listener'
++import { recordHook, FlatfileRecord } from '@flatfile/plugin-record-hook'
++import { usePlugin, useEvent } from '../hooks'
++import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
++import { workbookOnSubmitAction } from '../utils/constants'
++
++type SheetProps = {
++  config: Flatfile.SheetConfig
++  onSubmit?: SimpleOnboarding['onSubmit']
++  submitSettings?: SimpleOnboarding['submitSettings']
++  onRecordHook?: SimpleOnboarding['onRecordHook']
++}
++/**
++ * `Sheet` component for Flatfile integration.
++ *
++ * This component allows you to integrate Flatfile's data import capabilities into your React application.
++ * It provides a way to configure and handle the import process, including submitting data and handling records.
++ *
++ * @component
++ * @example
++ * const config = {
++ *   name: 'Contacts',
++ *   slug: 'contacts',
++ *   fields: [
++ *     { label: 'First Name', key: 'firstName', type: 'string', },
++ *     { label: 'Last Name', key: 'lastName', type: 'string', },
++ *     { label: 'Email', key: 'email', type: 'string', contraints: [{ type: 'unique' }] }
++ *   ]
++ * }
++ *
++ * const onSubmit = async (results) => {
++ *   console.log('Data submitted:', results.data)
++ * }
++ *
++ * const onRecordHook = async (record, event) => {
++ *   if (!record.email.includes('@example.com')) {
++ *     return {
++ *       email: {
++ *         value: record.email,
++ *         info: 'Only @example.com emails are allowed',
++ *         level: 'error'
++ *       }
++ *     }
++ *   }
++ * }
++ *
++ * <Sheet config={config} onSubmit={onSubmit} onRecordHook={onRecordHook} />
++ *
++ * @param {Object} props - Component props
++ * @param {Flatfile.SheetConfig} props.config - Configuration for the Flatfile import
++ * @param {Function} [props.onSubmit] - Callback function to handle data submission
++ * @param {Object} [props.submitSettings] - Settings for data submission
++ * @param {Function} [props.onRecordHook] - Callback function to handle record manipulation
++ */
++
++export const Sheet = (props: SheetProps) => {
++  const { config, onRecordHook, onSubmit, submitSettings } = props
++  const { addSheet, updateWorkbook, createSpace } = useContext(FlatfileContext)
++
++  const callback = useCallback(() => {
++    // Manage actions immutably
++    if (onSubmit) {
++      updateWorkbook({
++        actions: [
++          workbookOnSubmitAction(config.slug),
++          ...(createSpace.workbook.actions || []),
++        ],
++      })
++    }
++    addSheet(config)
++  }, [config, createSpace, addSheet, updateWorkbook, onSubmit])
++
++  useDeepCompareEffect(callback, [config])
++
++  if (onRecordHook) {
++    usePlugin(
++      recordHook(
++        config.slug || '**',
++        async (record: FlatfileRecord, event: FlatfileEvent | undefined) => {
++          return onRecordHook(record, event)
++        }
++      ),
++      [config, onRecordHook]
++    )
++  }
++
++  if (onSubmit) {
++    const onSubmitSettings = {
++      ...DefaultSubmitSettings,
++      ...submitSettings,
++    }
++    useEvent(
++      'job:ready',
++      { job: `workbook:${workbookOnSubmitAction(config.slug).operation}` },
++      async (event) => {
++        const { jobId, spaceId, workbookId } = event.context
++        const FlatfileAPI = new FlatfileClient()
++        try {
++          await FlatfileAPI.jobs.ack(jobId, {
++            info: 'Starting job',
++            progress: 10,
++          })
++
++          const job = new JobHandler(jobId)
++          const { data: workbookSheets } = await FlatfileAPI.sheets.list({
++            workbookId,
++          })
++
++          const thisSheet = workbookSheets.find((s) => s.slug === config.slug)
++
++          if (!thisSheet) {
++            throw new Error(
++              `Failed to find sheet slug:${config.slug} in the workbook id: ${workbookId}`
++            )
++          }
++          const sheet = new SheetHandler(thisSheet.id)
++
++          if (onSubmit) {
++            await onSubmit({ job, sheet, event })
++          }
++
++          await FlatfileAPI.jobs.complete(jobId, {
++            outcome: {
++              message: 'complete',
++            },
++          })
++          if (onSubmitSettings.deleteSpaceAfterSubmit) {
++            await FlatfileAPI.spaces.archiveSpace(spaceId)
++          }
++        } catch (error: any) {
++          if (jobId) {
++            await FlatfileAPI.jobs.cancel(jobId)
++          }
++          console.log('Error:', error.stack)
++        }
++      }
++    )
++  }
++  return <></>
++}
+diff --git a/packages/react/src/components/Space.tsx b/packages/react/src/components/Space.tsx
+index 24a80db..747cfee 100644
+--- a/packages/react/src/components/Space.tsx
++++ b/packages/react/src/components/Space.tsx
+@@ -1,160 +1,46 @@
+-import { Flatfile } from '@flatfile/api'
+-import { ISpace, SpaceComponent } from '@flatfile/embedded-utils'
+-import React, { JSX, useEffect, useState } from 'react'
+-import { useCreateListener } from '../hooks/useCreateListener'
+-import { addSpaceInfo } from '../utils/addSpaceInfo'
+-import { authenticate } from '../utils/authenticate'
+-import ConfirmModal from './ConfirmCloseModal'
+-import {
+-  getContainerStyles,
+-  getIframeStyles,
+-} from './embeddedStyles'
+-import './style.scss'
++import React, { useCallback, useContext } from 'react'
++import type { Flatfile } from '@flatfile/api'
++import FlatfileContext from './FlatfileContext'
++import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
++
++type SpaceProps = {
++  id?: string
++  config: Flatfile.SpaceConfig
++  children?: React.ReactNode
++}
+ 
+ /**
+- * @name Space
+- * @description Flatfile Embedded Space component
+- * @param props
++ * `Space` component for integrating Flatfile's space functionality within a React application.
++ * This component allows for the configuration of a Flatfile space and renders its children within the context of that space.
++ *
++ * @component
++ * @example
++ * const spaceConfig = {
++ *   name: 'Example Space',
++ *   metadata: {},
++ * }
++ *
++ * <Space config={spaceConfig}>
++ *   <Workbook config={workbookConfig}>
++ *   <Document config={documentConfig}>
++ * </Space>
++ *
++ * @param {SpaceProps} props - The properties passed to the Space component.
++ * @param {string} [props.id] - Optional ID for the space component.
++ * @param {Flatfile.SpaceConfig} props.config - Configuration object for the Flatfile space.
++ * @param {React.ReactNode} [props.children] - Child components to be rendered within the Space component.
++ * @returns {React.ReactElement} A React component that renders the Flatfile space.
+  */
+ 
+-const Space = ({
+-  spaceId,
+-  spaceUrl,
+-  accessToken,
+-  handleCloseInstance,
+-  ...props
+-}: SpaceComponent & ISpace & {handleCloseInstance: () => void}): JSX.Element | null => {
+-  if (spaceId && spaceUrl && accessToken) {
+-    return (
+-      <SpaceContents
+-        spaceId={spaceId}
+-        spaceUrl={spaceUrl}
+-        accessToken={accessToken}
+-        handleCloseInstance={handleCloseInstance}
+-        {...props}
+-      />
+-    )
+-  }
+-  return null
+-}
+-
+-export const SpaceContents = (
+-  props: ISpace & { spaceId: string; spaceUrl: string; accessToken: string; handleCloseInstance: () => void }
+-): JSX.Element => {
+-  const [showExitWarnModal, setShowExitWarnModal] = useState(false)
+-  const {
+-    spaceId,
+-    spaceUrl,
+-    listener,
+-    accessToken,
+-    closeSpace,
+-    iframeStyles,
+-    mountElement = 'flatfile_iFrameContainer',
+-    exitText = 'Are you sure you want to exit? Any unsaved changes will be lost.',
+-    exitTitle = 'Close Window',
+-    exitPrimaryButtonText = 'Yes, exit',
+-    exitSecondaryButtonText = 'No, stay',
+-    apiUrl = 'https://platform.flatfile.com/api',
+-    displayAsModal = true,
+-    handleCloseInstance
+-  } = props
+-
+-  const { dispatchEvent } = useCreateListener({ listener, accessToken, apiUrl })
++export const Space = (props: SpaceProps) => {
++  const { config, children } = props
++  const { updateSpace } = useContext(FlatfileContext)
+ 
+-  const handlePostMessage = (event: any) => {
+-    const { flatfileEvent } = event.data
+-    if (!flatfileEvent) return
+-    if (
+-      flatfileEvent.topic === 'job:outcome-acknowledged' &&
+-      flatfileEvent.payload.status === 'complete' &&
+-      flatfileEvent.payload.operation === closeSpace?.operation
+-    ) {
+-      closeSpace?.onClose({})
+-    }
+-    dispatchEvent(flatfileEvent)
+-  }
++  const callback = useCallback(() => {
++    updateSpace(config)
++  }, [config, updateSpace])
+ 
+-  useEffect(() => {
+-    window.addEventListener('message', handlePostMessage, false)
+-    return () => {
+-      window.removeEventListener('message', handlePostMessage)
+-    }
+-  }, [listener])
++  useDeepCompareEffect(callback, [config])
+ 
+-  const buildWorkbook = async () => {
+-    if (props.publishableKey) {
+-      const fullAccessApi = authenticate(accessToken, apiUrl)
+-      await addSpaceInfo(props, spaceId, fullAccessApi)
+-    }
+-  }
+-
+-  useEffect(() => {
+-    buildWorkbook()
+-  }, [])
+-
+-  return (
+-    <div
+-      className={`flatfile_iframe-wrapper ${
+-        displayAsModal ? 'flatfile_displayAsModal' : ''
+-      }`}
+-      style={getContainerStyles(displayAsModal)}
+-      data-testid="space-contents"
+-    >
+-      {showExitWarnModal && (
+-        <ConfirmModal
+-          onConfirm={() => { handleCloseInstance(); closeSpace?.onClose({})} }
+-          onCancel={() => setShowExitWarnModal(false)}
+-          exitText={exitText}
+-          exitTitle={exitTitle}
+-          exitPrimaryButtonText={exitPrimaryButtonText}
+-          exitSecondaryButtonText={exitSecondaryButtonText}
+-        />
+-      )}
+-      <iframe
+-        data-testid={mountElement}
+-        className={mountElement}
+-        style={getIframeStyles(iframeStyles!)}
+-        src={spaceUrl}
+-      />
+-      <button
+-        onClick={() => setShowExitWarnModal(true)}
+-        data-testid="flatfile-close-button"
+-        type="button"
+-        className="flatfile-close-button"
+-        style={{
+-          position: 'absolute',
+-          margin: '30px',
+-          top: '30px',
+-          right: '30px',
+-        }}
+-      >
+-        <svg
+-          xmlns="http://www.w3.org/2000/svg"
+-          width="24"
+-          height="24"
+-          viewBox="0 0 100 100"
+-          style={{ margin: 'auto' }}
+-        >
+-          <line
+-            x1="10"
+-            y1="10"
+-            x2="90"
+-            y2="90"
+-            stroke="white"
+-            strokeWidth="10"
+-          />
+-          <line
+-            x1="10"
+-            y1="90"
+-            x2="90"
+-            y2="10"
+-            stroke="white"
+-            strokeWidth="10"
+-          />
+-        </svg>
+-      </button>
+-    </div>
+-  )
++  return <>{children}</>
+ }
+-
+-export default Space
+diff --git a/packages/react/src/components/Workbook.tsx b/packages/react/src/components/Workbook.tsx
+new file mode 100644
+index 0000000..f268351
+--- /dev/null
++++ b/packages/react/src/components/Workbook.tsx
+@@ -0,0 +1,166 @@
++import FlatfileContext from './FlatfileContext'
++import React, { useCallback, useContext, useEffect, useRef } from 'react'
++import { FlatfileClient, type Flatfile } from '@flatfile/api'
++import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
++import { TRecordDataWithLinks, TPrimitive } from '@flatfile/hooks'
++import FlatfileListener, { FlatfileEvent } from '@flatfile/listener'
++import { FlatfileRecord, recordHook } from '@flatfile/plugin-record-hook'
++import { useEvent, usePlugin } from '../hooks'
++import {
++  DefaultSubmitSettings,
++  JobHandler,
++  SheetHandler,
++  SimpleOnboarding,
++} from '@flatfile/embedded-utils'
++import { workbookOnSubmitAction } from '../utils/constants'
++
++export type onRecordHook<T> = (
++  record: T,
++  event?: FlatfileEvent
++) => FlatfileRecord
++
++type HookConfig<T> = [string, onRecordHook<T>] | [onRecordHook<T>]
++
++export type onRecordHooks<T> = HookConfig<T>[]
++
++type WorkbookProps = Partial<{
++  config: Flatfile.CreateWorkbookConfig
++  onSubmit: SimpleOnboarding['onSubmit']
++  submitSettings: SimpleOnboarding['submitSettings']
++  onRecordHooks: onRecordHooks<FlatfileRecord<TRecordDataWithLinks<TPrimitive>>>
++  children: React.ReactNode
++}>
++
++/**
++ * `Workbook` component for integrating Flatfile's import functionality within a React application.
++ * This component allows for the configuration of a Flatfile workbook, submission settings, and record hooks.
++ *
++ * @component
++ * @example
++ * const config = {
++ *   name: 'Example Workbook',
++ *   sheets: []
++ * }
++ * const onSubmit = (data) => console.log(data)
++ * const submitSettings = {...}
++ * const onRecordHooks = [
++ *   ['slug', (record) => {
++ *      record.set('key', 'foo')
++ *      return record
++ *   }]
++ * ]
++ *
++ * <Workbook
++ *   config={config}
++ *   onSubmit={onSubmit}
++ *   submitSettings={submitSettings}
++ *   onRecordHooks={onRecordHooks}
++ * >
++ *   <Sheet config={sheetConfig} />
++ * </Workbook>
++ *
++ * @param {WorkbookProps} props - The properties passed to the Workbook component.
++ * @param {Flatfile.CreateWorkbookConfig} [props.config] - Configuration object for the Flatfile workbook.
++ * @param {Function} [props.onSubmit] - Callback function to be executed upon submission of the workbook.
++ * @param {Object} [props.submitSettings] - Settings object for workbook submission.
++ * @param {onRecordHooks<FlatfileRecord<TRecordDataWithLinks<TPrimitive>>>} [props.onRecordHooks] - Array of hooks to be executed on each record.
++ * @param {React.ReactNode} [props.children] - Child components to be rendered within the Workbook component.
++ * @returns {React.ReactElement} A React component that renders the Flatfile workbook.
++ */
++
++export const Workbook = (props: WorkbookProps) => {
++  const { config, children, onRecordHooks, onSubmit } = props
++  const { updateWorkbook, createSpace } = useContext(FlatfileContext)
++  // Accept a workbook onSubmit function and add it to the workbook actions
++
++  const callback = useCallback(() => {
++    // adds workbook action if onSubmit is passed along
++    updateWorkbook(
++      onSubmit
++        ? {
++            ...config,
++            actions: [workbookOnSubmitAction(), ...(config?.actions || [])],
++          }
++        : config
++    )
++  }, [config, onSubmit])
++
++  useDeepCompareEffect(callback, [config])
++
++  usePlugin(
++    (client) => {
++      onRecordHooks?.map(([slug, hook], index) => {
++        // If you have multiple sheets, and just pass 1 record hook to the onRecordHooks array and that record hook doesn't have a slug, then assume the record hook is for all sheets.
++        // Otherwise if multiple record hooks are passed along with out slugs, then assume they are in the same order as the sheets provided
++        const actualSlug =
++          typeof slug === 'function'
++            ? onRecordHooks?.length === 1 &&
++              createSpace.workbook.sheets?.length > 1
++              ? '**'
++              : createSpace.workbook.sheets?.[index]?.slug
++            : slug
++
++        client.use(
++          recordHook(actualSlug, async (record, event) => {
++            if (typeof slug === 'function') {
++              return slug(record, event)
++            } else if (typeof hook === 'function') {
++              // Ensure hook is a function before invoking
++              return hook(record, event)
++            }
++          })
++        )
++      })
++    },
++    [config, createSpace.workbook.sheets, onRecordHooks]
++  )
++
++  if (onSubmit) {
++    const onSubmitSettings = {
++      ...DefaultSubmitSettings,
++      ...props.submitSettings,
++    }
++    useEvent(
++      'job:ready',
++      { job: `workbook:${workbookOnSubmitAction().operation}` },
++      async (event) => {
++        const { jobId, spaceId, workbookId } = event.context
++        const FlatfileAPI = new FlatfileClient()
++        try {
++          await FlatfileAPI.jobs.ack(jobId, {
++            info: 'Starting job',
++            progress: 10,
++          })
++
++          const job = new JobHandler(jobId)
++          const { data: workbookSheets } = await FlatfileAPI.sheets.list({
++            workbookId,
++          })
++
++          // this assumes we are only allowing 1 sheet here (which we've talked about doing initially)
++          const sheet = new SheetHandler(workbookSheets[0].id)
++
++          if (onSubmit) {
++            await onSubmit({ job, sheet, event })
++          }
++
++          await FlatfileAPI.jobs.complete(jobId, {
++            outcome: {
++              message: 'complete',
++            },
++          })
++          if (onSubmitSettings.deleteSpaceAfterSubmit) {
++            await FlatfileAPI.spaces.archiveSpace(spaceId)
++          }
++        } catch (error: any) {
++          if (jobId) {
++            await FlatfileAPI.jobs.cancel(jobId)
++          }
++          console.log('Error:', error.stack)
++        }
++      }
++    )
++  }
++
++  return <>{children}</>
++}
+diff --git a/packages/react/src/components/_tests_/Document.spec.tsx b/packages/react/src/components/_tests_/Document.spec.tsx
+new file mode 100644
+index 0000000..8e25961
+--- /dev/null
++++ b/packages/react/src/components/_tests_/Document.spec.tsx
+@@ -0,0 +1,71 @@
++import React from 'react'
++import { render } from '@testing-library/react'
++import { Document } from '../Document'
++import FlatfileContext from '../FlatfileContext'
++import { useDeepCompareEffect } from '../../utils/useDeepCompareEffect'
++import { MockFlatfileProviderValue } from './FlatfileProvider.spec'
++
++jest.mock('../../utils/useDeepCompareEffect', () => ({
++  useDeepCompareEffect: jest.fn(),
++}))
++
++const MockDocumentConfig = { title: 'Test Document', body: 'Document Content ' }
++
++describe('Document', () => {
++  const mockUpdateDocument = jest.fn()
++
++  // This sets up the context value that will be used in all tests
++  beforeEach(() => {
++    jest.mocked(useDeepCompareEffect).mockImplementation((callback, deps) => {
++      React.useEffect(callback, deps)
++    })
++    jest.clearAllMocks()
++  })
++
++  it('calls updateDocument with config on initial render', () => {
++    // Provide the mock context to the component
++    render(
++      <FlatfileContext.Provider
++        value={{
++          ...MockFlatfileProviderValue,
++          updateDocument: mockUpdateDocument,
++        }}
++      >
++        <Document config={MockDocumentConfig} />
++      </FlatfileContext.Provider>
++    )
++
++    // Check if updateDocument was called with the correct config
++    expect(mockUpdateDocument).toHaveBeenCalledWith(MockDocumentConfig)
++  })
++
++  it('calls updateDocument with new config when config changes', () => {
++    const newConfig = { ...MockDocumentConfig, title: 'newConfig' }
++    const { rerender } = render(
++      <FlatfileContext.Provider
++        value={{
++          ...MockFlatfileProviderValue,
++          updateDocument: mockUpdateDocument,
++        }}
++      >
++        <Document config={MockDocumentConfig} />
++      </FlatfileContext.Provider>
++    )
++
++    // Rerender with new props
++    rerender(
++      <FlatfileContext.Provider
++        value={{
++          ...MockFlatfileProviderValue,
++          updateDocument: mockUpdateDocument,
++        }}
++      >
++        <Document config={newConfig} />
++      </FlatfileContext.Provider>
++    )
++
++    // The useEffect should run the callback again with the new config
++    expect(mockUpdateDocument).toHaveBeenCalledTimes(2)
++    expect(mockUpdateDocument).toHaveBeenCalledWith(newConfig)
++  })
++})
+diff --git a/packages/react/src/components/_tests_/FlatfileProvider.spec.tsx b/packages/react/src/components/_tests_/FlatfileProvider.spec.tsx
+new file mode 100644
+index 0000000..cfc9be4
+--- /dev/null
++++ b/packages/react/src/components/_tests_/FlatfileProvider.spec.tsx
+@@ -0,0 +1,101 @@
++import React, { useContext } from 'react'
++import { render, waitFor } from '@testing-library/react'
++import { FlatfileProvider } from '../FlatfileProvider'
++import FlatfileContext, { FlatfileContextType } from '../FlatfileContext'
++import fetchMock from 'jest-fetch-mock'
++import FlatfileListener from '@flatfile/listener'
++
++export const MockFlatfileProviderValue: FlatfileContextType = {
++  updateDocument: jest.fn(),
++  apiUrl: '',
++  open: false,
++  setOpen: jest.fn(),
++  setSessionSpace: jest.fn(),
++  listener: new FlatfileListener(),
++  setListener: jest.fn(),
++  setAccessToken: jest.fn(),
++  addSheet: jest.fn(),
++  updateSheet: jest.fn(),
++  updateWorkbook: jest.fn(),
++  createSpace: undefined,
++  setCreateSpace: jest.fn(),
++  updateSpace: jest.fn(),
++}
++
++fetchMock.enableMocks()
++console.error = jest.fn()
++
++jest.mock('../../utils/initializeSpace')
++jest.mock('../../utils/getSpace')
++jest.mock('@flatfile/listener')
++
++const TestingComponent = (props: { ReUsingSpace?: boolean }) => {
++  const context = useContext(FlatfileContext)
++  const { publishableKey, accessToken, createSpace } = context
++
++  if (props.ReUsingSpace) {
++    return <>{accessToken && <p data-testid="spaceId">{accessToken}</p>}</>
++  } else {
++    return (
++      <>
++        {publishableKey && <p data-testid="publishableKey">{publishableKey}</p>}
++      </>
++    )
++  }
++}
++
++describe('FlatfileProvider', () => {
++  jest.mock('@flatfile/listener', () => ({
++    default: jest.fn().mockImplementation(() => ({
++      mount: jest.fn(),
++      dispatchEvent: jest.fn(),
++    })),
++  }))
++
++  test('creates space with publishable key', async () => {
++    const mockSpace = {
++      data: {
++        accessToken: 'test-access-token',
++      },
++    }
++
++    jest.mock('../../utils/initializeSpace', () => ({
++      initializeSpace: jest.fn().mockResolvedValue(mockSpace),
++    }))
++
++    const { getByTestId } = render(
++      <FlatfileProvider publishableKey="test-key" config={{ preload: false }}>
++        <TestingComponent />
++      </FlatfileProvider>
++    )
++
++    await waitFor(() => {
++      expect(getByTestId('publishableKey').innerHTML).toBe('test-key')
++    })
++    // Additional tests can include checking if the context values are set correctly, etc.
++  })
++
++  test('reuses existing space object', async () => {
++    const mockSpace = {
++      id: 'existing-space-id',
++      accessToken: 'existing-access-token',
++    }
++
++    jest.mock('../../utils/getSpace', () => ({
++      getSpace: jest.fn().mockResolvedValue(mockSpace),
++    }))
++
++    const { getByTestId } = render(
++      <FlatfileProvider
++        accessToken={'existing-access-token'}
++        config={{ preload: false }}
++      >
++        <TestingComponent ReUsingSpace />
++      </FlatfileProvider>
++    )
++
++    await waitFor(() => {
++      expect(getByTestId('spaceId').innerHTML).toBe('existing-access-token')
++    })
++  })
++})
+diff --git a/packages/react/src/components/_tests_/Sheet.spec.tsx b/packages/react/src/components/_tests_/Sheet.spec.tsx
+new file mode 100644
+index 0000000..a86a695
+--- /dev/null
++++ b/packages/react/src/components/_tests_/Sheet.spec.tsx
+@@ -0,0 +1,102 @@
++import React from 'react'
++import { render } from '@testing-library/react'
++import { Sheet } from '../Sheet'
++import FlatfileContext, {
++  DEFAULT_CREATE_SPACE,
++  FlatfileContextType,
++} from '../FlatfileContext'
++import { useDeepCompareEffect } from '../../utils/useDeepCompareEffect'
++import { workbookOnSubmitAction } from '../../utils/constants'
++import FlatfileListener from '@flatfile/listener'
++import { Flatfile } from '@flatfile/api'
++
++const MockFlatfileProviderValue: FlatfileContextType = {
++  updateDocument: jest.fn(),
++  apiUrl: '',
++  open: false,
++  setOpen: jest.fn(),
++  setSessionSpace: jest.fn(),
++  listener: new FlatfileListener(),
++  setListener: jest.fn(),
++  setAccessToken: jest.fn(),
++  addSheet: jest.fn(),
++  updateSheet: jest.fn(),
++  updateWorkbook: jest.fn(),
++  createSpace: DEFAULT_CREATE_SPACE,
++  setCreateSpace: jest.fn(),
++  updateSpace: jest.fn(),
++}
++
++jest.mock('../../utils/useDeepCompareEffect', () => ({
++  useDeepCompareEffect: jest.fn(),
++}))
++
++const mockUpdateWorkbook = jest.fn()
++const mockUpdateSheet = jest.fn()
++
++const mockConfig: Flatfile.SheetConfig = {
++  name: 'Test Sheet',
++  slug: 'test-sheet',
++  fields: [
++    {
++      label: 'First Name',
++      key: 'firstName',
++      type: 'string',
++    },
++    {
++      label: 'Email',
++      key: 'email',
++      type: 'string',
++    },
++  ],
++}
++
++describe('Sheet', () => {
++  beforeEach(() => {
++    jest.mocked(useDeepCompareEffect).mockImplementation((callback, deps) => {
++      React.useEffect(callback, deps)
++    })
++    jest.clearAllMocks()
++  })
++
++  it('calls updateSheet with config on initial render', () => {
++    render(
++      <FlatfileContext.Provider
++        value={{
++          ...MockFlatfileProviderValue,
++          addSheet: mockUpdateSheet,
++        }}
++      >
++        <Sheet config={mockConfig} />
++      </FlatfileContext.Provider>
++    )
++
++    expect(mockUpdateSheet).toHaveBeenCalledWith(mockConfig)
++  })
++
++  it('calls updateSheet && updateWorkbook with updated config when onSubmit is provided', () => {
++    const onSubmitMock = jest.fn()
++    const updatedConfig = {
++      ...mockConfig,
++      actions: [workbookOnSubmitAction(mockConfig.slug)],
++    }
++
++    render(
++      <FlatfileContext.Provider
++        value={{
++          ...MockFlatfileProviderValue,
++          updateWorkbook: mockUpdateWorkbook,
++          addSheet: mockUpdateSheet,
++        }}
++      >
++        <Sheet config={mockConfig} onSubmit={onSubmitMock} />
++      </FlatfileContext.Provider>
++    )
++
++    expect(mockUpdateSheet).toHaveBeenCalledWith(mockConfig)
++    expect(mockUpdateWorkbook).toHaveBeenCalledWith({
++      actions: [workbookOnSubmitAction(mockConfig.slug)],
++    })
++  })
++  // More tests to check interaction during onSubmit and other complex logic
++})
+diff --git a/packages/react/src/components/_tests_/Space.spec.tsx b/packages/react/src/components/_tests_/Space.spec.tsx
+index 5d1bfb3..d83f874 100644
+--- a/packages/react/src/components/_tests_/Space.spec.tsx
++++ b/packages/react/src/components/_tests_/Space.spec.tsx
+@@ -1,23 +1,13 @@
+-/**
+- * @jest-environment jsdom
+- */
+-
+ import React from 'react'
+-import { render, screen } from '@testing-library/react'
+-import Space, { SpaceContents } from '../Space'
+-import { mockWorkbook } from '../../test/mocks'
+-import { CreateWorkbookConfig } from '@flatfile/api/api'
+-import '@testing-library/jest-dom'
+-import { FlatfileClient } from '@flatfile/api'
+-
+-console.error = jest.fn()
+-
+-const baseSpaceProps = {
+-  name: 'Embedded space',
+-  publishableKey: 'your-publishable-key',
+-  workbook: mockWorkbook as Pick<
+-    CreateWorkbookConfig,
+-    'name' | 'sheets' | 'actions'
+-  >,
+-  handleCloseInstance: () => {},
++import { render } from '@testing-library/react'
++import { Space } from '../Space'
++import FlatfileContext from '../FlatfileContext'
++import { useDeepCompareEffect } from '../../utils/useDeepCompareEffect'
++import { MockFlatfileProviderValue } from './FlatfileProvider.spec'
++jest.mock('../../utils/useDeepCompareEffect', () => ({
++  useDeepCompareEffect: jest.fn(),
++}))
++
++const MockSpaceConfig = {
++  name: 'Test Space',
+ }
+@@ -25,88 +15,43 @@ const baseSpaceProps = {
+ describe('Space', () => {
+-  it('renders SpaceContents when spaceId, spaceUrl, pubNub and accessToken are provided', () => {
+-    const spaceId = 'spaceId'
+-    const spaceUrl = 'spaceUrl'
+-    const accessToken = 'accessToken'
++  const mockUpdateSpace = jest.fn()
+ 
+-    jest.spyOn(FlatfileClient.prototype.workbooks, 'create').mockResolvedValue({
+-      data: mockWorkbook,
++  beforeEach(() => {
++    jest.mocked(useDeepCompareEffect).mockImplementation((callback, deps) => {
++      React.useEffect(callback, deps)
+     })
+-
+-    render(
+-      <Space
+-        spaceId={spaceId}
+-        environmentId="environmentId"
+-        spaceUrl={spaceUrl}
+-        accessToken={accessToken}
+-        {...baseSpaceProps}
+-      />
+-    )
+-
+-    const spaceContentsElement = screen.getByTestId('space-contents')
+-    expect(spaceContentsElement).toBeInTheDocument()
++    jest.clearAllMocks()
+   })
+ 
+-  it('does not render SpaceContents when spaceId, spaceUrl, or accessToken is missing', () => {
+-    const spaceId = 'spaceId'
+-    const spaceUrl = 'spaceUrl'
+-    const accessToken = ''
+-
++  it('calls updateSpace with config on initial render', () => {
+     render(
+-      <Space
+-        spaceId={spaceId}
+-        spaceUrl={spaceUrl}
+-        environmentId="environmentId"
+-        accessToken={accessToken}
+-        {...baseSpaceProps}
+-      />
++      <FlatfileContext.Provider
++        value={{ ...MockFlatfileProviderValue, updateSpace: mockUpdateSpace }}
++      >
++        <Space config={MockSpaceConfig} />
++      </FlatfileContext.Provider>
+     )
+ 
+-    const spaceContentsElement = screen.queryByTestId('space-contents')
+-    expect(spaceContentsElement).not.toBeInTheDocument()
++    expect(mockUpdateSpace).toHaveBeenCalledWith(MockSpaceConfig)
+   })
+-})
+ 
+-describe('SpaceContents', () => {
+-  it('renders the iframe and close button', () => {
+-    const spaceId = 'spaceId'
+-    const spaceUrl = 'spaceUrl'
+-    const accessToken = 'accessToken'
+-
+-    render(
+-      <SpaceContents
+-        spaceId={spaceId}
+-        spaceUrl={spaceUrl}
+-        environmentId="environmentId"
+-        accessToken={accessToken}
+-        {...baseSpaceProps}
+-      />
++  it('calls updateSpace with new config when config changes', () => {
++    const newConfig = { ...MockSpaceConfig, name: 'New Test Area' }
++    const { rerender } = render(
++      <FlatfileContext.Provider
++        value={{ ...MockFlatfileProviderValue, updateSpace: mockUpdateSpace }}
++      >
++        <Space config={MockSpaceConfig} />
++      </FlatfileContext.Provider>
+     )
+ 
+-    const iframeElement = screen.getByTestId('flatfile_iFrameContainer')
+-    const closeButtonElement = screen.getByTestId('flatfile-close-button')
+-
+-    expect(iframeElement).toBeInTheDocument()
+-    expect(closeButtonElement).toBeInTheDocument()
+-  })
+-
+-  it('opens the confirmation modal when the close button is clicked', () => {
+-    const spaceId = 'spaceId'
+-    const spaceUrl = 'spaceUrl'
+-    const accessToken = 'accessToken'
+-
+-    render(
+-      <SpaceContents
+-        spaceId={spaceId}
+-        spaceUrl={spaceUrl}
+-        environmentId="environmentId"
+-        accessToken={accessToken}
+-        {...baseSpaceProps}
+-      />
++    rerender(
++      <FlatfileContext.Provider
++        value={{ ...MockFlatfileProviderValue, updateSpace: mockUpdateSpace }}
++      >
++        <Space config={newConfig} />
++      </FlatfileContext.Provider>
+     )
+ 
+-    const closeButtonElement = screen.getByTestId('flatfile-close-button')
+-    closeButtonElement.click()
+-
+-    const confirmationModalElement = screen.getByTestId('close-confirm-modal')
+-    expect(confirmationModalElement).toBeInTheDocument()
++    expect(mockUpdateSpace).toHaveBeenCalledTimes(2)
++    expect(mockUpdateSpace).toHaveBeenCalledWith(newConfig)
+   })
+diff --git a/packages/react/src/components/_tests_/Workbook.spec.tsx b/packages/react/src/components/_tests_/Workbook.spec.tsx
+new file mode 100644
+index 0000000..5142499
+--- /dev/null
++++ b/packages/react/src/components/_tests_/Workbook.spec.tsx
+@@ -0,0 +1,117 @@
++import React from 'react'
++import { render } from '@testing-library/react'
++import { Workbook } from '../Workbook'
++import FlatfileContext, { FlatfileContextType } from '../FlatfileContext'
++import { useDeepCompareEffect } from '../../utils/useDeepCompareEffect'
++import { workbookOnSubmitAction } from '../../utils/constants'
++import FlatfileListener from '@flatfile/listener'
++import { Flatfile } from '@flatfile/api'
++
++const MockFlatfileProviderValue: FlatfileContextType = {
++  updateDocument: jest.fn(),
++  apiUrl: '',
++  open: false,
++  setOpen: jest.fn(),
++  setSessionSpace: jest.fn(),
++  listener: new FlatfileListener(),
++  setListener: jest.fn(),
++  setAccessToken: jest.fn(),
++  addSheet: jest.fn(),
++  updateSheet: jest.fn(),
++  updateWorkbook: jest.fn(),
++  createSpace: {
++    document: undefined,
++    workbook: {
++      name: 'Embedded Workbook',
++      sheets: [],
++    },
++    space: {
++      name: 'Embedded Space',
++      labels: ['embedded'],
++      namespace: 'portal',
++      metadata: {
++        sidebarConfig: { showSidebar: false },
++      },
++    },
++  },
++  setCreateSpace: jest.fn(),
++  updateSpace: jest.fn(),
++}
++
++jest.mock('../../utils/useDeepCompareEffect', () => ({
++  useDeepCompareEffect: jest.fn(),
++}))
++
++const mockUpdateWorkbook = jest.fn()
++const mockCreateSpace = {
++  workbook: {
++    sheets: [{ slug: 'test-sheet' }],
++  },
++}
++
++const mockConfig: Flatfile.CreateWorkbookConfig = {
++  name: 'Test Workbook',
++  sheets: [
++    {
++      name: 'Test Sheet',
++      slug: 'test-sheet',
++      fields: [
++        {
++          label: 'First Name',
++          key: 'firstName',
++          type: 'string',
++        },
++        {
++          label: 'Email',
++          key: 'email',
++          type: 'string',
++        },
++      ],
++    },
++  ],
++}
++
++describe('Workbook', () => {
++  beforeEach(() => {
++    jest.mocked(useDeepCompareEffect).mockImplementation((callback, deps) => {
++      React.useEffect(callback, deps)
++    })
++    jest.clearAllMocks()
++  })
++
++  it('calls updateWorkbook with config on initial render', () => {
++    render(
++      <FlatfileContext.Provider
++        value={{
++          ...MockFlatfileProviderValue,
++          updateWorkbook: mockUpdateWorkbook,
++        }}
++      >
++        <Workbook config={mockConfig} />
++      </FlatfileContext.Provider>
++    )
++
++    expect(mockUpdateWorkbook).toHaveBeenCalledWith(mockConfig)
++  })
++
++  it('calls updateWorkbook with updated config when onSubmit is provided', () => {
++    const onSubmitMock = jest.fn()
++    const updatedConfig = {
++      ...mockConfig,
++      actions: [workbookOnSubmitAction()],
++    }
++
++    render(
++      <FlatfileContext.Provider
++        value={{
++          ...MockFlatfileProviderValue,
++          updateWorkbook: mockUpdateWorkbook,
++        }}
++      >
++        <Workbook config={mockConfig} onSubmit={onSubmitMock} />
++      </FlatfileContext.Provider>
++    )
++
++    expect(mockUpdateWorkbook).toHaveBeenCalledWith(updatedConfig)
++  })
++})
+diff --git a/packages/react/src/components/embeddedStyles.tsx b/packages/react/src/components/embeddedStyles.tsx
+index 7fc8c51..f204aeb 100644
+--- a/packages/react/src/components/embeddedStyles.tsx
++++ b/packages/react/src/components/embeddedStyles.tsx
+@@ -38,2 +38 @@ export const getContainerStyles = (isModal: boolean): React.CSSProperties => {
+ }
+-
+diff --git a/packages/react/src/components/index.ts b/packages/react/src/components/index.ts
+new file mode 100644
+index 0000000..2cf3f64
+--- /dev/null
++++ b/packages/react/src/components/index.ts
+@@ -0,0 +1,9 @@
++export * from './EmbeddedIFrameWrapper'
++export * from './FlatfileContext'
++export * from './FlatfileProvider'
++export * from './legacy/InitSpace'
++export * from './legacy/LegacySpace'
++export * from './Sheet'
++export * from './Workbook'
++export * from './Space'
++export * from './Document'
+\ No newline at end of file
+diff --git a/packages/react/src/components/Error.tsx b/packages/react/src/components/legacy/Error.tsx
+similarity index 94%
+rename from packages/react/src/components/Error.tsx
+rename to packages/react/src/components/legacy/Error.tsx
+index d97278b..1dfc851 100644
+--- a/packages/react/src/components/Error.tsx
++++ b/packages/react/src/components/legacy/Error.tsx
+@@ -1,3 +1,3 @@
+ import React from 'react'
+-import './style.scss'
++import '../style.scss'
+ 
+diff --git a/packages/react/src/components/InitSpace.tsx b/packages/react/src/components/legacy/InitSpace.tsx
+similarity index 91%
+rename from packages/react/src/components/InitSpace.tsx
+rename to packages/react/src/components/legacy/InitSpace.tsx
+index 701bf3b..3df2108 100644
+--- a/packages/react/src/components/InitSpace.tsx
++++ b/packages/react/src/components/legacy/InitSpace.tsx
+@@ -2,14 +2,15 @@ import { InitState } from '@flatfile/embedded-utils'
+ import React, { JSX, useEffect, useState } from 'react'
+-import { useCreateListener } from '../hooks/useCreateListener'
+-import { IReactInitSpaceProps } from '../types'
+-import { addSpaceInfo } from '../utils/addSpaceInfo'
+-import { authenticate } from '../utils/authenticate'
+-import { getSpace } from '../utils/getSpace'
+-import { initializeSpace } from '../utils/initializeSpace'
+-import ConfirmModal from './ConfirmCloseModal'
++import { useCreateListener } from '../../hooks/legacy/useCreateListener'
++import { IReactInitSpaceProps } from '../../types'
++import { addSpaceInfo } from '../../utils/addSpaceInfo'
++import { authenticate } from '../../utils/authenticate'
++import { getSpace } from '../../utils/getSpace'
++import { initializeSpace } from '../../utils/initializeSpace'
++import ConfirmModal from '../ConfirmCloseModal'
+ import DefaultError from './Error'
+-import { getContainerStyles, getIframeStyles } from './embeddedStyles'
+-import './style.scss'
++import { getContainerStyles, getIframeStyles } from '../embeddedStyles'
++import '../style.scss'
+ 
+ /**
++ * @deprecated - use FlatfileProvider and Space components instead
+  * @name InitSpace
+diff --git a/packages/react/src/components/legacy/LegacySpace.tsx b/packages/react/src/components/legacy/LegacySpace.tsx
+new file mode 100644
+index 0000000..44d1cfe
+--- /dev/null
++++ b/packages/react/src/components/legacy/LegacySpace.tsx
+@@ -0,0 +1,167 @@
++import { Flatfile } from '@flatfile/api'
++import { ISpace, SpaceComponent } from '@flatfile/embedded-utils'
++import React, { JSX, useEffect, useState } from 'react'
++import { useCreateListener } from '../../hooks/legacy/useCreateListener'
++import { addSpaceInfo } from '../../utils/addSpaceInfo'
++import { authenticate } from '../../utils/authenticate'
++import ConfirmModal from '../ConfirmCloseModal'
++import { getContainerStyles, getIframeStyles } from '../embeddedStyles'
++import '../style.scss'
++
++/**
++ * @deprecated - use FlatfileProvider and Space components instead. Previously known as Space. 
++ * @name LegacySpace
++ * @description Flatfile Embedded Space component
++ * @param props
++ */
++
++const LegacySpace = ({
++  spaceId,
++  spaceUrl,
++  accessToken,
++  handleCloseInstance,
++  ...props
++}: SpaceComponent &
++  ISpace & { handleCloseInstance: () => void }): JSX.Element | null => {
++  if (spaceId && spaceUrl && accessToken) {
++    return (
++      <SpaceContents
++        spaceId={spaceId}
++        spaceUrl={spaceUrl}
++        accessToken={accessToken}
++        handleCloseInstance={handleCloseInstance}
++        {...props}
++      />
++    )
++  }
++  return null
++}
++
++export const SpaceContents = (
++  props: ISpace & {
++    spaceId: string
++    spaceUrl: string
++    accessToken: string
++    handleCloseInstance: () => void
++  }
++): JSX.Element => {
++  const [showExitWarnModal, setShowExitWarnModal] = useState(false)
++  const {
++    spaceId,
++    spaceUrl,
++    listener,
++    accessToken,
++    closeSpace,
++    iframeStyles,
++    mountElement = 'flatfile_iFrameContainer',
++    exitText = 'Are you sure you want to exit? Any unsaved changes will be lost.',
++    exitTitle = 'Close Window',
++    exitPrimaryButtonText = 'Yes, exit',
++    exitSecondaryButtonText = 'No, stay',
++    apiUrl = 'https://platform.flatfile.com/api',
++    displayAsModal = true,
++    handleCloseInstance,
++  } = props
++
++  const { dispatchEvent } = useCreateListener({ listener, accessToken, apiUrl })
++
++  const handlePostMessage = (event: any) => {
++    const { flatfileEvent } = event.data
++    if (!flatfileEvent) return
++    if (
++      flatfileEvent.topic === 'job:outcome-acknowledged' &&
++      flatfileEvent.payload.status === 'complete' &&
++      flatfileEvent.payload.operation === closeSpace?.operation
++    ) {
++      closeSpace?.onClose({})
++    }
++    dispatchEvent(flatfileEvent)
++  }
++
++  useEffect(() => {
++    window.addEventListener('message', handlePostMessage, false)
++    return () => {
++      window.removeEventListener('message', handlePostMessage)
++    }
++  }, [listener])
++
++  const buildWorkbook = async () => {
++    if (props.publishableKey) {
++      const fullAccessApi = authenticate(accessToken, apiUrl)
++      await addSpaceInfo(props, spaceId, fullAccessApi)
++    }
++  }
++
++  useEffect(() => {
++    buildWorkbook()
++  }, [])
++
++  return (
++    <div
++      className={`flatfile_iframe-wrapper ${
++        displayAsModal ? 'flatfile_displayAsModal' : ''
++      }`}
++      style={getContainerStyles(displayAsModal)}
++      data-testid="space-contents"
++    >
++      {showExitWarnModal && (
++        <ConfirmModal
++          onConfirm={() => {
++            handleCloseInstance()
++            closeSpace?.onClose({})
++          }}
++          onCancel={() => setShowExitWarnModal(false)}
++          exitText={exitText}
++          exitTitle={exitTitle}
++          exitPrimaryButtonText={exitPrimaryButtonText}
++          exitSecondaryButtonText={exitSecondaryButtonText}
++        />
++      )}
++      <iframe
++        data-testid={mountElement}
++        className={mountElement}
++        style={getIframeStyles(iframeStyles!)}
++        src={spaceUrl}
++      />
++      <button
++        onClick={() => setShowExitWarnModal(true)}
++        data-testid="flatfile-close-button"
++        type="button"
++        className="flatfile-close-button"
++        style={{
++          position: 'absolute',
++          margin: '30px',
++          top: '30px',
++          right: '30px',
++        }}
++      >
++        <svg
++          xmlns="http://www.w3.org/2000/svg"
++          width="24"
++          height="24"
++          viewBox="0 0 100 100"
++          style={{ margin: 'auto' }}
++        >
++          <line
++            x1="10"
++            y1="10"
++            x2="90"
++            y2="90"
++            stroke="white"
++            strokeWidth="10"
++          />
++          <line
++            x1="10"
++            y1="90"
++            x2="90"
++            y2="10"
++            stroke="white"
++            strokeWidth="10"
++          />
++        </svg>
++      </button>
++    </div>
++  )
++}
++
++export default LegacySpace
+diff --git a/packages/react/src/components/legacy/_tests_/Space.spec.tsx b/packages/react/src/components/legacy/_tests_/Space.spec.tsx
+new file mode 100644
+index 0000000..763cb95
+--- /dev/null
++++ b/packages/react/src/components/legacy/_tests_/Space.spec.tsx
+@@ -0,0 +1,115 @@
++/**
++ * @jest-environment jsdom
++ */
++
++import React from 'react'
++import { render, screen, waitFor } from '@testing-library/react'
++import Space, { SpaceContents } from '../LegacySpace'
++import { mockWorkbook } from '../../../test/mocks'
++import { CreateWorkbookConfig } from '@flatfile/api/api'
++import '@testing-library/jest-dom'
++import { FlatfileClient } from '@flatfile/api'
++
++console.error = jest.fn()
++
++const baseSpaceProps = {
++  name: 'Embedded space',
++  publishableKey: 'your-publishable-key',
++  workbook: mockWorkbook as Pick<
++    CreateWorkbookConfig,
++    'name' | 'sheets' | 'actions'
++  >,
++  handleCloseInstance: () => {},
++}
++
++describe('Space', () => {
++  it('renders SpaceContents when spaceId, spaceUrl, pubNub and accessToken are provided', () => {
++    const spaceId = 'spaceId'
++    const spaceUrl = 'spaceUrl'
++    const accessToken = 'accessToken'
++
++    jest.spyOn(FlatfileClient.prototype.workbooks, 'create').mockResolvedValue({
++      data: mockWorkbook,
++    })
++
++    render(
++      <Space
++        spaceId={spaceId}
++        environmentId="environmentId"
++        spaceUrl={spaceUrl}
++        accessToken={accessToken}
++        {...baseSpaceProps}
++      />
++    )
++
++    const spaceContentsElement = screen.getByTestId('space-contents')
++    expect(spaceContentsElement).toBeInTheDocument()
++  })
++
++  it('does not render SpaceContents when spaceId, spaceUrl, or accessToken is missing', () => {
++    const spaceId = 'spaceId'
++    const spaceUrl = 'spaceUrl'
++    const accessToken = ''
++
++    render(
++      <Space
++        spaceId={spaceId}
++        spaceUrl={spaceUrl}
++        environmentId="environmentId"
++        accessToken={accessToken}
++        {...baseSpaceProps}
++      />
++    )
++
++    const spaceContentsElement = screen.queryByTestId('space-contents')
++    expect(spaceContentsElement).not.toBeInTheDocument()
++  })
++})
++
++describe('SpaceContents', () => {
++  it('renders the iframe and close button', () => {
++    const spaceId = 'spaceId'
++    const spaceUrl = 'spaceUrl'
++    const accessToken = 'accessToken'
++
++    render(
++      <SpaceContents
++        spaceId={spaceId}
++        spaceUrl={spaceUrl}
++        environmentId="environmentId"
++        accessToken={accessToken}
++        {...baseSpaceProps}
++      />
++    )
++
++    const iframeElement = screen.getByTestId('flatfile_iFrameContainer')
++    const closeButtonElement = screen.getByTestId('flatfile-close-button')
++
++    expect(iframeElement).toBeInTheDocument()
++    expect(closeButtonElement).toBeInTheDocument()
++  })
++
++  it('opens the confirmation modal when the close button is clicked', () => {
++    const spaceId = 'spaceId'
++    const spaceUrl = 'spaceUrl'
++    const accessToken = 'accessToken'
++
++    render(
++      <SpaceContents
++        spaceId={spaceId}
++        spaceUrl={spaceUrl}
++        environmentId="environmentId"
++        accessToken={accessToken}
++        {...baseSpaceProps}
++      />
++    )
++
++    const closeButtonElement = screen.getByTestId('flatfile-close-button')
++    closeButtonElement.click()
++    
++    waitFor(() => {
++      const confirmationModalElement = screen.getByTestId('close-confirm-modal')
++      expect(confirmationModalElement).toBeInTheDocument()
++    })
++  })
++})
+diff --git a/packages/react/src/hooks/_tests_/useEvent.spec.tsx b/packages/react/src/hooks/_tests_/useEvent.spec.tsx
+new file mode 100644
+index 0000000..a7ee615
+--- /dev/null
++++ b/packages/react/src/hooks/_tests_/useEvent.spec.tsx
+@@ -0,0 +1,108 @@
++import React from 'react'
++import { render, waitFor } from '@testing-library/react'
++import { useDeepCompareEffect } from '../../utils/useDeepCompareEffect'
++import { useEvent } from '../../hooks'
++
++import { Flatfile } from '@flatfile/api'
++import { FlatfileProvider } from '../../components/FlatfileProvider'
++import { Workbook } from '../../components'
++
++jest.mock('../../utils/useDeepCompareEffect', () => ({
++  useDeepCompareEffect: jest.fn(),
++}))
++
++const mockConfig: Flatfile.CreateWorkbookConfig = {
++  name: 'Test Workbook',
++  sheets: [
++    {
++      name: 'Test Sheet',
++      slug: 'test-sheet',
++      fields: [
++        {
++          label: 'First Name',
++          key: 'firstName',
++          type: 'string',
++        },
++        {
++          label: 'Email',
++          key: 'email',
++          type: 'string',
++        },
++      ],
++    },
++  ],
++}
++
++const APP = ({
++  useEventFunction,
++}: {
++  useEventFunction: (event: {}) => void
++}) => {
++  useEvent('crazy:event', (event) => {
++    useEventFunction(event)
++  })
++
++  useEvent('*:event', (event) => {
++    useEventFunction(event)
++  })
++
++  useEvent('crazy:*', (event) => {
++    useEventFunction(event)
++  })
++  useEvent('not-crazy:event', (event) => {
++    useEventFunction(event)
++  })
++
++  return (
++    <Workbook
++      config={mockConfig}
++      onRecordHooks={[
++        [
++          '**',
++          (record) => {
++            record.set('email', 'TEST SHEET RECORD')
++            return record
++          },
++        ],
++      ]}
++      onSubmit={async (sheet) => {
++        console.log('onSubmit', { sheet })
++      }}
++    />
++  )
++}
++
++describe('useEvent', () => {
++  beforeEach(() => {
++    jest.mocked(useDeepCompareEffect).mockImplementation((callback, deps) => {
++      React.useEffect(callback, deps)
++    })
++    jest.clearAllMocks()
++  })
++
++  it('registers plugins and handles events when provided', async () => {
++    const useEventMock = jest.fn()
++
++    render(
++      <FlatfileProvider publishableKey="pk_123456">
++        <APP useEventFunction={useEventMock} />
++      </FlatfileProvider>
++    )
++
++    window.postMessage(
++      {
++        flatfileEvent: { topic: 'crazy:event', payload: { alex: 'rock' } },
++      },
++      '*'
++    )
++
++    await waitFor(() => {
++      expect(useEventMock).toHaveBeenCalledWith(
++        expect.objectContaining({ payload: { alex: 'rock' } })
++      )
++      expect(useEventMock).toHaveBeenCalledTimes(3)
++    })
++  })
++
++  // More tests to check interaction during onSubmit and other complex logic
++})
+diff --git a/packages/react/src/hooks/index.ts b/packages/react/src/hooks/index.ts
+new file mode 100644
+index 0000000..4ecd2b9
+--- /dev/null
++++ b/packages/react/src/hooks/index.ts
+@@ -0,0 +1,5 @@
++export * from './useFlatfile'
++export * from './useListener'
++export * from './usePlugin'
++export * from './useEvent'
++export * from './legacy'
+diff --git a/packages/react/src/hooks/_tests_/useSpace.spec.tsx b/packages/react/src/hooks/legacy/_tests_/useSpace.spec.tsx
+similarity index 66%
+rename from packages/react/src/hooks/_tests_/useSpace.spec.tsx
+rename to packages/react/src/hooks/legacy/_tests_/useSpace.spec.tsx
+index 6722f97..511ff5a 100644
+--- a/packages/react/src/hooks/_tests_/useSpace.spec.tsx
++++ b/packages/react/src/hooks/legacy/_tests_/useSpace.spec.tsx
+@@ -4,10 +4,12 @@
+ 
+-import { FlatfileClient } from '@flatfile/api'
+ import '@testing-library/jest-dom'
++
++import { FlatfileClient } from '@flatfile/api'
+ import { renderHook } from '@testing-library/react-hooks'
+-import DefaultError from '../../components/Error'
+-import Space from '../../components/Space'
+-import { mockDocument, mockSpace, mockWorkbook } from '../../test/mocks'
+ import { ISpace } from '@flatfile/embedded-utils'
++import { waitFor } from '@testing-library/react'
++import DefaultError from '../../../components/legacy/Error'
++import { mockDocument, mockSpace, mockWorkbook } from '../../../test/mocks'
+ import useSpace from '../useSpace'
++import Space from '../../../components/legacy/LegacySpace'
+ 
+@@ -39,3 +41,3 @@ describe('useSpace', () => {
+       .mockRejectedValue('There has been an error my friend')
+-    const { result, waitForNextUpdate } = renderUseSpaceHookWithHookResult({
++    const { result } = renderUseSpaceHookWithHookResult({
+       ...baseSpaceProps,
+@@ -43,8 +45,8 @@ describe('useSpace', () => {
+ 
+-    await waitForNextUpdate()
+-
+-    const error =
+-      result?.current?.type === DefaultError ? result?.current : undefined
++    await waitFor(() => {
++      const error =
++        result?.current?.type === DefaultError ? result?.current : undefined
+ 
+-    expect(error).toBeDefined()
++      expect(error).toBeDefined()
++    })
+   })
+@@ -63,3 +65,3 @@ describe('useSpace', () => {
+ 
+-    const { result, waitForNextUpdate } = renderUseSpaceHookWithHookResult({
++    const { result } = renderUseSpaceHookWithHookResult({
+       ...baseSpaceProps,
+@@ -67,8 +69,8 @@ describe('useSpace', () => {
+ 
+-    await waitForNextUpdate()
+-
+-    const spaceComponent =
+-      result?.current?.type === Space ? result?.current : undefined
++    await waitFor(() => {
++      const spaceComponent =
++        result?.current?.type === Space ? result?.current : undefined
+ 
+-    expect(spaceComponent).toBeDefined()
++      expect(spaceComponent).toBeDefined()
++    })
+   })
+diff --git a/packages/react/src/hooks/legacy/index.ts b/packages/react/src/hooks/legacy/index.ts
+new file mode 100644
+index 0000000..128b7e9
+--- /dev/null
++++ b/packages/react/src/hooks/legacy/index.ts
+@@ -0,0 +1,4 @@
++export * from './useCreateListener'
++export * from './usePortal'
++export * from './useSpaceTrigger'
++export * from './useSpace'
+\ No newline at end of file
+diff --git a/packages/react/src/hooks/useCreateListener.ts b/packages/react/src/hooks/legacy/useCreateListener.ts
+similarity index 77%
+rename from packages/react/src/hooks/useCreateListener.ts
+rename to packages/react/src/hooks/legacy/useCreateListener.ts
+index 0196cff..8235aea 100644
+--- a/packages/react/src/hooks/useCreateListener.ts
++++ b/packages/react/src/hooks/legacy/useCreateListener.ts
+@@ -2,3 +2,3 @@ import { Browser, FlatfileEvent } from '@flatfile/listener'
+ import { useEffect } from 'react'
+-import { IReactSpaceProps } from '../types'
++import { IReactSpaceProps } from '../../types'
+ /**
+@@ -9,2 +9,9 @@ import { IReactSpaceProps } from '../types'
+ 
++type FlatfileListenerInstance = {
++  dispatchEvent: (event: any) => void
++}
++/**
++ * @deprecated - use useListener, useEvent and usePlugin hooks instead
++ * This hook is used to create a listener instance
++ **/
+ export const useCreateListener = ({
+@@ -15,4 +22,4 @@ export const useCreateListener = ({
+   accessToken: string | null
+-  apiUrl: string
+-}) => {
++  apiUrl?: string
++}): FlatfileListenerInstance => {
+   // set the api key to fully authenticate into Flatfile api
+@@ -38,3 +45,2 @@ export const useCreateListener = ({
+       const eventInstance = new FlatfileEvent(eventPayload, accessToken, apiUrl)
+-
+       return listener?.dispatchEvent(eventInstance)
+diff --git a/packages/react/src/hooks/usePortal.tsx b/packages/react/src/hooks/legacy/usePortal.tsx
+similarity index 91%
+rename from packages/react/src/hooks/usePortal.tsx
+rename to packages/react/src/hooks/legacy/usePortal.tsx
+index e94619c..777628d 100644
+--- a/packages/react/src/hooks/usePortal.tsx
++++ b/packages/react/src/hooks/legacy/usePortal.tsx
+@@ -1,5 +1,5 @@
+ import React, { JSX, useEffect, useState } from 'react'
+-import DefaultError from '../components/Error'
+-import Space from '../components/Space'
+-import Spinner from '../components/Spinner'
++import DefaultError from '../../components/legacy/Error'
++import Space from '../../components/legacy/LegacySpace'
++import Spinner from '../../components/Spinner'
+ import {
+@@ -11,4 +11,4 @@ import {
+ } from '@flatfile/embedded-utils'
+-import { initializeSpace } from '../utils/initializeSpace'
+-import { getSpace } from '../utils/getSpace'
++import { initializeSpace } from '../../utils/initializeSpace'
++import { getSpace } from '../../utils/getSpace'
+ import { FlatfileRecord } from '@flatfile/hooks'
+@@ -16,3 +16,3 @@ import { FlatfileEvent, FlatfileListener } from '@flatfile/listener'
+ import { recordHook } from '@flatfile/plugin-record-hook'
+-import { IReactSimpleOnboarding } from '../types/IReactSimpleOnboarding'
++import { IReactSimpleOnboarding } from '../../types/IReactSimpleOnboarding'
+ 
+@@ -21,3 +21,6 @@ import { FlatfileClient } from '@flatfile/api'
+ const api = new FlatfileClient()
+-
++/**
++ * @deprecated - use FlatfileProvider and Space components instead
++ * This hook is used to initialize a space and return the Space component
++ */
+ export const usePortal = (
+diff --git a/packages/react/src/hooks/useSpace.tsx b/packages/react/src/hooks/legacy/useSpace.tsx
+similarity index 83%
+rename from packages/react/src/hooks/useSpace.tsx
+rename to packages/react/src/hooks/legacy/useSpace.tsx
+index 4610f85..3fa351c 100644
+--- a/packages/react/src/hooks/useSpace.tsx
++++ b/packages/react/src/hooks/legacy/useSpace.tsx
+@@ -1,10 +1,14 @@
+ import React, { JSX, useEffect, useState } from 'react'
+-import DefaultError from '../components/Error'
+-import Space from '../components/Space'
+-import Spinner from '../components/Spinner'
++import DefaultError from '../../components/legacy/Error'
++import Space from '../../components/legacy/LegacySpace'
++import Spinner from '../../components/Spinner'
+ import { State } from '@flatfile/embedded-utils'
+-import { initializeSpace } from '../utils/initializeSpace'
+-import { getSpace } from '../utils/getSpace'
+-import { IReactSpaceProps } from '../types'
+-
++import { initializeSpace } from '../../utils/initializeSpace'
++import { getSpace } from '../../utils/getSpace'
++import { IReactSpaceProps } from '../../types'
++
++/**
++ * @deprecated - use FlatfileProvider and Space components instead
++ * This hook is used to initialize a space and return the Space component
++ */
+ export const useSpace = (props: IReactSpaceProps): JSX.Element | null => {
+@@ -32,3 +36,2 @@ export const useSpace = (props: IReactSpaceProps): JSX.Element | null => {
+         : await getSpace(props)
+-
+       if (!data) {
+@@ -89,3 +92,3 @@ export const useSpace = (props: IReactSpaceProps): JSX.Element | null => {
+     return null
+-  } 
++  }
+ 
+diff --git a/packages/react/src/hooks/useSpaceTrigger.tsx b/packages/react/src/hooks/legacy/useSpaceTrigger.tsx
+similarity index 82%
+rename from packages/react/src/hooks/useSpaceTrigger.tsx
+rename to packages/react/src/hooks/legacy/useSpaceTrigger.tsx
+index 5fa8d2c..712f17c 100644
+--- a/packages/react/src/hooks/useSpaceTrigger.tsx
++++ b/packages/react/src/hooks/legacy/useSpaceTrigger.tsx
+@@ -1,9 +1,9 @@
+-import React, { JSX, useEffect, useState } from 'react'
+-import DefaultError from '../components/Error'
+-import Space from '../components/Space'
+-import Spinner from '../components/Spinner'
++import React, { JSX, useState } from 'react'
++import DefaultError from '../../components/legacy/Error'
++import Space from '../../components/legacy/LegacySpace'
++import Spinner from '../../components/Spinner'
+ import { State } from '@flatfile/embedded-utils'
+-import { initializeSpace } from '../utils/initializeSpace'
+-import { getSpace } from '../utils/getSpace'
+-import { IReactSpaceProps } from '../types'
++import { initializeSpace } from '../../utils/initializeSpace'
++import { getSpace } from '../../utils/getSpace'
++import { IReactSpaceProps } from '../../types'
+ 
+@@ -11,2 +11,7 @@ type IUseSpace = { OpenEmbed: () => Promise<void>; Space: () => JSX.Element }
+ 
++/**
++ * @deprecated - use FlatfileProvider and Space components instead
++ * This hook is used to initialize a space and return the Space component
++ */
++
+ export const initializeFlatfile = (props: IReactSpaceProps): IUseSpace => {
+diff --git a/packages/react/src/hooks/useEvent.ts b/packages/react/src/hooks/useEvent.ts
+new file mode 100644
+index 0000000..a76a892
+--- /dev/null
++++ b/packages/react/src/hooks/useEvent.ts
+@@ -0,0 +1,60 @@
++import { EventCallback, FlatfileEvent } from '@flatfile/listener'
++import { useContext, useEffect } from 'react'
++import { FlatfileContext } from '../components'
++
++// Overload definitions for better type checking
++function useEvent(
++  eventType: string,
++  callback: (event: FlatfileEvent) => void | Promise<void>,
++  dependencies?: any[]
++): void
++function useEvent(
++  eventType: string,
++  filter: Record<string, any>,
++  callback: (event: FlatfileEvent) => void | Promise<void>,
++  dependencies?: any[]
++): void
++function useEvent(
++  eventType: string,
++  filterOrCallback:
++    | Record<string, any>
++    | ((event: any) => void | Promise<void>),
++  callbackOrDependencies:
++    | ((event: FlatfileEvent) => void | Promise<void>)
++    | any[] = [],
++  dependencies: any[] = []
++) {
++  const { listener } = useContext(FlatfileContext)
++
++  let callback: (event: any) => void | Promise<void>
++  let actualDependencies: any[] = dependencies
++
++  // Determine if the second argument is a filter or a callback
++  if (typeof filterOrCallback === 'function') {
++    callback = filterOrCallback as EventCallback
++    actualDependencies = (callbackOrDependencies as any[]) || []
++  } else {
++    callback = callbackOrDependencies as (event: any) => void | Promise<void>
++  }
++
++  useEffect(() => {
++    if (!listener) return
++
++    // Conditionally apply the filter
++    if (typeof filterOrCallback !== 'function') {
++      listener.on(eventType, filterOrCallback, callback)
++    } else {
++      listener.on(eventType, callback)
++    }
++
++    return () => {
++      if (typeof filterOrCallback !== 'function') {
++        listener.off(eventType, filterOrCallback, callback)
++      } else {
++        listener.off(eventType, callback)
++      }
++    }
++  }, [listener, eventType, filterOrCallback, callback, ...actualDependencies])
++}
++
++export { useEvent }
+diff --git a/packages/react/src/hooks/useFlatfile.ts b/packages/react/src/hooks/useFlatfile.ts
+new file mode 100644
+index 0000000..da85406
+--- /dev/null
++++ b/packages/react/src/hooks/useFlatfile.ts
+@@ -0,0 +1,91 @@
++import { useContext } from 'react'
++import FlatfileContext from '../components/FlatfileContext'
++import { getSpace } from '../utils/getSpace'
++import { createSpaceInternal } from '../utils/createSpaceInternal'
++
++export const useFlatfile: () => {
++  openPortal: () => void
++  closePortal: () => void
++  open: boolean
++  setListener: (listener: any) => void
++  listener: any
++} = () => {
++  const context = useContext(FlatfileContext)
++
++  if (!context) {
++    throw new Error('useFlatfile must be used within a FlatfileProvider')
++  }
++
++  const {
++    open,
++    setOpen,
++    setListener,
++    listener,
++    publishableKey,
++    apiUrl,
++    setSessionSpace,
++    accessToken,
++    setAccessToken,
++    createSpace,
++  } = context
++
++  const handleCreateSpace = async () => {
++    if (!publishableKey) {
++      return
++    }
++
++    // autoConfigure if no workbook or workbook.sheets are provided as they should be handled in the listener space:configure event
++    const autoConfigure = !(createSpace.workbook && createSpace.workbook.sheets)
++    const { data: createdSpace } = await createSpaceInternal({
++      apiUrl,
++      publishableKey,
++      space: { ...createSpace.space, autoConfigure },
++      workbook: createSpace.workbook,
++      document: createSpace.document,
++    })
++    setAccessToken(createdSpace.space.accessToken)
++    setSessionSpace(createdSpace)
++    // A bit of a hack to wire up the Flatfile API key to the window object for internal client side @flatfile/api usage
++    ;(window as any).CROSSENV_FLATFILE_API_KEY = createdSpace.space.accessToken
++  }
++
++  const handleReUseSpace = async () => {
++    if (accessToken && 'id' in createSpace.space) {
++      createSpace.space.accessToken = accessToken
++      // TODO: Do we want to update the Space metadata / documents here if they pass that information? Feels like a no.
++      const { data: reUsedSpace } = await getSpace({
++        space: createSpace.space,
++        apiUrl,
++      })
++
++      if (reUsedSpace.accessToken) {
++        ;(window as any).CROSSENV_FLATFILE_API_KEY = reUsedSpace.accessToken
++        setAccessToken(reUsedSpace.accessToken)
++      }
++
++      setSessionSpace({ space: reUsedSpace })
++    }
++  }
++
++  const openPortal = () => {
++    if (publishableKey && !accessToken) {
++      handleCreateSpace()
++    } else if (accessToken) {
++      handleReUseSpace()
++    }
++    setOpen(true)
++  }
++
++  const closePortal = () => {
++    setOpen(false)
++    // TODO: Do we want to do any cleanup / remove the iFrame/listener from the DOM?
++  }
++
++  return {
++    openPortal,
++    closePortal,
++    open,
++    setListener,
++    listener,
++  }
++}
+diff --git a/packages/react/src/hooks/useListener.ts b/packages/react/src/hooks/useListener.ts
+new file mode 100644
+index 0000000..c0d1ff1
+--- /dev/null
++++ b/packages/react/src/hooks/useListener.ts
+@@ -0,0 +1,23 @@
++import { useContext, useEffect } from 'react'
++import FlatfileListener from '@flatfile/listener'
++import { FlatfileContext } from '../components'
++
++export function useListener(
++  cb: FlatfileListener | ((cb: FlatfileListener) => void),
++  dependencies: any[] = []
++) {
++  const { listener } = useContext(FlatfileContext)
++  useEffect(() => {
++    if (!listener) return
++
++    if (typeof cb === 'function') {
++      cb(listener)
++    } else {
++      listener.use(() => cb)
++    }
++
++    return () => {
++      listener.detach()
++    }
++  }, [listener, cb, ...dependencies])
++}
+diff --git a/packages/react/src/hooks/usePlugin.ts b/packages/react/src/hooks/usePlugin.ts
+new file mode 100644
+index 0000000..03f547d
+--- /dev/null
++++ b/packages/react/src/hooks/usePlugin.ts
+@@ -0,0 +1,18 @@
++import { useContext, useEffect } from 'react'
++import FlatfileListener from '@flatfile/listener'
++import { FlatfileContext } from '../components'
++
++export function usePlugin(
++  plugin: (cb: FlatfileListener) => void,
++  dependencies: any[] = []
++) {
++  const { listener } = useContext(FlatfileContext)
++  useEffect(() => {
++    if (!listener) return
++
++    listener.use(plugin)
++    return () => {
++      listener.detach()
++    }
++  }, [listener, plugin, ...dependencies])
++}
+diff --git a/packages/react/src/index.ts b/packages/react/src/index.ts
+index e34ad8c..f2a3aaf 100644
+--- a/packages/react/src/index.ts
++++ b/packages/react/src/index.ts
+@@ -1,4 +1 @@
+-import InitSpace from './components/InitSpace'
+-import Space from './components/Space'
+-
+ import type {
+@@ -10,9 +7,6 @@ import type {
+ } from '@flatfile/embedded-utils'
+-import { usePortal } from './hooks/usePortal'
+-import { useSpace } from './hooks/useSpace'
+-import { initializeFlatfile } from './hooks/useSpaceTrigger'
+-import { makeTheme } from './utils/makeTheme'
+-
+-export { InitSpace, Space, initializeFlatfile, makeTheme, usePortal, useSpace }
++export { makeTheme } from './utils/makeTheme'
+ 
++export * from './hooks'
++export * from './components'
+ export type { ISidebarConfig, ISpace, ISpaceInfo, IThemeConfig, IUserInfo }
+diff --git a/packages/react/src/test/mocks.ts b/packages/react/src/test/mocks.ts
+index 354121b..3397c67 100644
+--- a/packages/react/src/test/mocks.ts
++++ b/packages/react/src/test/mocks.ts
+@@ -1,5 +1,4 @@
+-import { Workbook } from '@flatfile/api/api'
+-import { Space } from '@flatfile/api/api/resources/spaces/types'
++import { Flatfile } from '@flatfile/api'
+ 
+-export const mockWorkbook: Workbook = {
++export const mockWorkbook: Flatfile.Workbook = {
+   id: 'wb-id',
+@@ -14,2 +13,11 @@ export const mockWorkbook: Workbook = {
+ 
++export const mockSheetConfig: Flatfile.SheetConfig = {
++  name: 'Sheet Name',
++  slug: 'sheet-slug',
++  fields: [
++    { key: 'field-1', label: 'Field 1', type: 'string' },
++    { key: 'field-2', label: 'Field 2', type: 'string' },
++  ],
++}
++
+ export const mockDocument = {
+@@ -22,3 +30,3 @@ export const mockDocument = {
+ 
+-export const mockSpace: Space = {
++export const mockSpace: Flatfile.Space = {
+   name: 'Test Space',
+diff --git a/packages/react/src/types/IFlatfileProvider.ts b/packages/react/src/types/IFlatfileProvider.ts
+new file mode 100644
+index 0000000..9fce183
+--- /dev/null
++++ b/packages/react/src/types/IFlatfileProvider.ts
+@@ -0,0 +1,27 @@
++import { ReactNode } from 'react'
++import { IFrameTypes } from './iFrameProps'
++
++export type Exclusive<T, U> =
++  | (T & Partial<Record<Exclude<keyof U, keyof T>, never>>)
++  | (U & Partial<Record<Exclude<keyof T, keyof U>, never>>)
++
++export interface BaseSpace {
++  children: ReactNode
++  environmentId?: string
++  apiUrl?: string
++  config?: IFrameTypes
++}
++
++export interface CreateSpaceWithPublishableKey extends BaseSpace {
++  publishableKey: string
++}
++
++export interface ReusedSpace extends BaseSpace {
++  accessToken: string
++}
++
++// Use the Exclusive type for your props
++export type ExclusiveFlatfileProviderProps = Exclusive<
++  CreateSpaceWithPublishableKey,
++  ReusedSpace
++>
+diff --git a/packages/react/src/types/IReactSpaceProps.ts b/packages/react/src/types/IReactSpaceProps.ts
+index 07d44cf..72516f1 100644
+--- a/packages/react/src/types/IReactSpaceProps.ts
++++ b/packages/react/src/types/IReactSpaceProps.ts
+@@ -2,2 +2,3 @@ import React from 'react'
+ import { ISpace } from '@flatfile/embedded-utils'
++import { Flatfile } from '@flatfile/api'
+ 
+@@ -6,2 +7,3 @@ export type IReactSpaceProps = ISpace & {
+   loading?: React.ReactElement
++  sheets?: Flatfile.SheetConfig
+ }
+diff --git a/packages/react/src/types/iFrameProps.ts b/packages/react/src/types/iFrameProps.ts
+new file mode 100644
+index 0000000..eeeee24
+--- /dev/null
++++ b/packages/react/src/types/iFrameProps.ts
+@@ -0,0 +1,16 @@
++import { ISpace } from '@flatfile/embedded-utils'
++
++export type IFrameTypes = Partial<
++  Pick<
++    ISpace,
++    | 'iframeStyles'
++    | 'mountElement'
++    | 'exitText'
++    | 'exitTitle'
++    | 'exitPrimaryButtonText'
++    | 'exitSecondaryButtonText'
++    | 'displayAsModal'
++    | 'closeSpace'
++    | 'spaceUrl'
++  > & { preload?: boolean }
++>
+diff --git a/packages/react/src/types/index.ts b/packages/react/src/types/index.ts
+index 27ae665..e20a969 100644
+--- a/packages/react/src/types/index.ts
++++ b/packages/react/src/types/index.ts
+@@ -2 +2,3 @@ export * from './IReactInitSpaceProps'
+ export * from './IReactSpaceProps'
++export * from './iFrameProps'
++export * from './IFlatfileProvider'
+diff --git a/packages/react/src/utils/_tests_/useDeepCompareEffect.spec.ts b/packages/react/src/utils/_tests_/useDeepCompareEffect.spec.ts
+new file mode 100644
+index 0000000..a45917e
+--- /dev/null
++++ b/packages/react/src/utils/_tests_/useDeepCompareEffect.spec.ts
+@@ -0,0 +1,47 @@
++import { renderHook } from '@testing-library/react'
++import { useDeepCompareEffect } from '../useDeepCompareEffect'
++
++describe('useDeepCompareEffect', () => {
++  it('should call callback on initial render', () => {
++    const callback = jest.fn()
++    renderHook(() => useDeepCompareEffect(callback, [1, 2, 3]))
++
++    expect(callback).toHaveBeenCalledTimes(1)
++  })
++
++  it('should not call callback if dependencies do not change', () => {
++    const callback = jest.fn()
++    const { rerender } = renderHook(
++      ({ deps }) => useDeepCompareEffect(callback, deps),
++      { initialProps: { deps: [1, 2, 3] } }
++    )
++
++    rerender({ deps: [1, 2, 3] })
++    expect(callback).toHaveBeenCalledTimes(1)
++  })
++
++  it('should call callback when dependencies change', () => {
++    const callback = jest.fn()
++    const { rerender } = renderHook(
++      ({ deps }) => useDeepCompareEffect(callback, deps),
++      { initialProps: { deps: [1, 2, 3] } }
++    )
++
++    rerender({ deps: [1, 2, 4] })
++    expect(callback).toHaveBeenCalledTimes(2)
++  })
++
++  it('should call callback when dependencies deeply change', () => {
++    const callback = jest.fn()
++    const { rerender } = renderHook(
++      ({ deps }) => useDeepCompareEffect(callback, deps),
++      { initialProps: { deps: [{ key: 'value' }] } }
++    )
++
++    rerender({ deps: [{ key: 'value' }] })
++    expect(callback).toHaveBeenCalledTimes(1)
++
++    rerender({ deps: [{ key: 'new value' }] })
++    expect(callback).toHaveBeenCalledTimes(2)
++  })
++})
+diff --git a/packages/react/src/utils/constants.ts b/packages/react/src/utils/constants.ts
+new file mode 100644
+index 0000000..8ea9d74
+--- /dev/null
++++ b/packages/react/src/utils/constants.ts
+@@ -0,0 +1,14 @@
++import { Flatfile } from '@flatfile/api'
++
++export const workbookOnSubmitAction = (sheetSlug?: string): Flatfile.Action => {
++  const operation = sheetSlug
++    ? `sheetSubmitAction-${sheetSlug}`
++    : 'workbookSubmitAction'
++  return {
++    operation,
++    mode: 'foreground',
++    label: 'Submit',
++    description: 'Action for handling data inside of onSubmit',
++    primary: true,
++  }
++}
+diff --git a/packages/react/src/utils/createSpaceInternal.ts b/packages/react/src/utils/createSpaceInternal.ts
+new file mode 100644
+index 0000000..6d50726
+--- /dev/null
++++ b/packages/react/src/utils/createSpaceInternal.ts
+@@ -0,0 +1,52 @@
++import { Flatfile } from '@flatfile/api'
++
++type CreateSpaceinternal = {
++  apiUrl: string
++  publishableKey: string
++  space: Flatfile.SpaceConfig
++  workbook?: Flatfile.CreateWorkbookConfig
++  document?: Flatfile.DocumentConfig
++}
++
++export const createSpaceInternal = async ({
++  apiUrl,
++  publishableKey,
++  space,
++  workbook,
++  document,
++}: CreateSpaceinternal) => {
++  const createSpaceEndpoint = `${apiUrl}/v1/internal/spaces/init?publishableKey=${publishableKey}`
++
++  let spaceRequestBody: any = {
++    space,
++  }
++
++  if (workbook) {
++    spaceRequestBody = {
++      ...spaceRequestBody,
++      workbook,
++    }
++  }
++
++  if (document) {
++    spaceRequestBody = {
++      ...spaceRequestBody,
++      document,
++    }
++  }
++
++  try {
++    const response = await fetch(createSpaceEndpoint, {
++      method: 'POST',
++      headers: {
++        Accept: 'text/plain',
++        'Content-Type': 'text/plain',
++      },
++      body: JSON.stringify(spaceRequestBody),
++    })
++    return await response.json()
++  } catch (e) {
++    console.error('Error creating space', e)
++    throw e
++  }
++}
+diff --git a/packages/react/src/utils/initializeSpace.tsx b/packages/react/src/utils/initializeSpace.tsx
+index 30ada92..a297541 100644
+--- a/packages/react/src/utils/initializeSpace.tsx
++++ b/packages/react/src/utils/initializeSpace.tsx
+@@ -26,2 +26,3 @@ export const initializeSpace = async (
+     languageOverride,
++    sheets,
+   } = flatfileOptions
+@@ -38,3 +39,3 @@ export const initializeSpace = async (
+         name,
+-        autoConfigure: !workbook,
++        autoConfigure: !workbook && !sheets,
+         ...spaceBody,
+@@ -47,3 +48,3 @@ export const initializeSpace = async (
+           theme: themeConfig,
+-          sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
++          sidebarConfig: sidebarConfig || { showSidebar: false },
+           userInfo,
+diff --git a/packages/react/src/utils/useDeepCompareEffect.ts b/packages/react/src/utils/useDeepCompareEffect.ts
+new file mode 100644
+index 0000000..16f2158
+--- /dev/null
++++ b/packages/react/src/utils/useDeepCompareEffect.ts
+@@ -0,0 +1,15 @@
++import { isEqual } from 'lodash'
++import { useRef, useEffect } from 'react'
++
++export function useDeepCompareEffect(callback: () => void, dependencies: any) {
++  const currentDependenciesRef = useRef()
++
++  useEffect(() => {
++    if (!isEqual(currentDependenciesRef.current, dependencies)) {
++      callback()
++    }
++
++    // Update the ref with current dependencies after running the callback
++    currentDependenciesRef.current = dependencies
++  }, [callback, dependencies])
++}
+diff --git a/packages/react/src/utils/useEffectDebugger.ts b/packages/react/src/utils/useEffectDebugger.ts
+new file mode 100644
+index 0000000..19933d0
+--- /dev/null
++++ b/packages/react/src/utils/useEffectDebugger.ts
+@@ -0,0 +1,40 @@
++import { useRef, useEffect, EffectCallback, DependencyList } from 'react'
++
++const usePrevious = (value: any, initialValue: never[]) => {
++  const ref = useRef(initialValue)
++  useEffect(() => {
++    ref.current = value
++  })
++  return ref.current
++}
++export const useEffectDebugger = (
++  effectHook: EffectCallback,
++  dependencies: any[] | DependencyList | undefined,
++  dependencyNames = []
++) => {
++  const previousDeps = usePrevious(dependencies, [])
++
++  const changedDeps = dependencies?.reduce(
++    (acc: any, dependency: any, index: number) => {
++      if (dependency !== previousDeps[index]) {
++        const keyName = dependencyNames[index] || index
++        return {
++          ...acc,
++          [keyName]: {
++            before: previousDeps[index],
++            after: dependency,
++          },
++        }
++      }
++
++      return acc
++    },
++    {}
++  )
++
++  if (Object.keys(changedDeps).length) {
++    console.log('[use-effect-debugger] ', changedDeps)
++  }
++
++  useEffect(effectHook, dependencies)
++}
+diff --git a/packages/react/src/vite-env.d.ts b/packages/react/src/vite-env.d.ts
+deleted file mode 100644
+index 11f02fe..0000000
+--- a/packages/react/src/vite-env.d.ts
++++ /dev/null
+@@ -1 +0,0 @@
+-/// <reference types="vite/client" />

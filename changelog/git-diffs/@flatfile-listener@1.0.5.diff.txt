@@ -1,0 +1,57 @@
+diff --git a/packages/listener/CHANGELOG.md b/packages/listener/CHANGELOG.md
+index ed84d4c..4e4720c 100644
+--- a/packages/listener/CHANGELOG.md
++++ b/packages/listener/CHANGELOG.md
+@@ -2,2 +2,9 @@
+ 
++## 1.0.5
++
++### Patch Changes
++
++- bac639c: Adds `listener.unmount()` to `@flatfile/listener`
++- bac639c: Adds resetting Space on Close to @flatfile/react, adds DefaultPage to @flatfile/react
++
+ ## 1.0.4
+diff --git a/packages/listener/package.json b/packages/listener/package.json
+index bb2ac15..ce2b5a3 100644
+--- a/packages/listener/package.json
++++ b/packages/listener/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/listener",
+-  "version": "1.0.4",
++  "version": "1.0.5",
+   "description": "A PubSub Listener for configuring and using Flatfile",
+diff --git a/packages/listener/src/event-drivers/_EventDriver.ts b/packages/listener/src/event-drivers/_EventDriver.ts
+index 77d0336..18004e1 100644
+--- a/packages/listener/src/event-drivers/_EventDriver.ts
++++ b/packages/listener/src/event-drivers/_EventDriver.ts
+@@ -22,2 +22,14 @@ export abstract class EventDriver {
+ 
++  /**
++   * Unmount an event handler
++   *
++   * @param handler
++   */
++  unmountEventHandler(handler: EventHandler): this {
++    if (this._handler === handler) {
++      this._handler = undefined
++    }
++    return this
++  }
++
+   /**
+diff --git a/packages/listener/src/flatfile.listener.ts b/packages/listener/src/flatfile.listener.ts
+index 2bb9cf0..96cfd56 100644
+--- a/packages/listener/src/flatfile.listener.ts
++++ b/packages/listener/src/flatfile.listener.ts
+@@ -79,2 +79,10 @@ export class FlatfileListener extends EventHandler {
+ 
++  /**
++   * Unmount this client from the Event Driver
++   */
++  unmount(driver: EventDriver) {
++    driver.unmountEventHandler(this)
++    return this
++  }
++
+   fork() {

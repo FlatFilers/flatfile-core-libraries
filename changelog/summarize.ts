@@ -3,53 +3,52 @@ const claudeApiKey = "";
 import * as fs from "fs";
 import * as path from "path";
 import { sendPromptToClaude } from "./claude-ai";
+const { execSync } = require('child_process');
 
 function getPackageNameFromFilename(filename) {
     return filename.match(/^(.*?)(@\d+)/)[1].replace('git-diffs/', '').replace('-', '/')
 }
 
+function formattedSummary(date, version, type, summary) {
+return `
+### ${date}
+
+<div style={{ display: "table", width: "auto" }}>
+
+  <div style={{ display: "table-row", width: "auto" }}>
+      <Snippet file="chips/${type}.mdx" />
+        <div style={{ float: "left", display: "table-column", paddingLeft: "30px", width: "calc(80% - 30px)" }}>
+        ${version}
+
+        ${summary}
+        </div>
+  </div>
+
+</div>
+`
+}
+
 function getPrompt(pkg) {
-    // const pkg = getPackageNameFromFilename(fileName)
-    console.log('PKG', pkg)
-    switch (true) {
-        case ['@flatfile/react', '@flatfile/angular', '@flatfile/vue', '@flatfile/javascript'].includes(pkg):
-            console.log(pkg, 'wrapper')
-            return `You are an AI assistant responsible for writing release notes. 
-            You'll be given a git diff for Flatfile sdk package enabling developers to integrate Flatfile's data import experience into their application. 
-            From the diff pull out the changes for the ${pkg} package and write detailed release notes that summarize those changes.
-            Do not include changes for any package except the ${pkg} package.
-            Take care to note any external interface changes in detail. 
-            Use backticks to represent code blocks or property names in the output text. 
-            Each section of the release notes should have a level-4 header (####).
-            Only write release notes that are relevant to a consumer of the package. 
-            Do not reference anything internal-only, do not reference file names.`
-        case pkg.includes("listener"):
-            console.log(pkg, 'listener')
-            return `You are an AI assistant responsible for writing release notes. 
-            You'll be given a git diff for Flatfile's listener package. 
-            This package provides event handling capabilities with Flatfile-specific functionality. It's main function is to receive and respond to events.
-            From the diff pull out the changes for the @flatfile/listener package and write detailed release notes that summarize those changes.
-            Do not include changes for any package except the @flatfile/listener package.
-            Take care to note any external interface changes in detail. 
-            Use backticks to represent code blocks or property names in the output text. 
-            Each section of the release notes should have a level-4 header (####).
-            Only write release notes that are relevant to a consumer of the package. 
-            Do not reference anything internal-only, do not reference file names.`
-        case pkg.includes("flatfile@"):
-            console.log(pkg, 'cli')
-            return `You are an AI assistant responsible for writing release notes. 
-            You'll be given a git diff for Flatfile's CLI package: a command-line tool that provides developers with commands to manage and configure their Flatfile integration.
-            From the diff pull out the changes for the flatfile package and write detailed release notes that summarize those changes.
-            Do not include changes for any package except the flatfile package.
-            Take care to note any external interface changes in detail. 
-            Use backticks to represent code blocks or property names in the output text. 
-            Each section of the release notes should have a level-4 header (####).
-            Only write release notes that are relevant to a consumer of the package. 
-            Do not reference anything internal-only, do not reference file names.`
-             default:
-            console.log(pkg, 'NOT FOUND!!!!!!')
-            return ''
-    }
+    const packageInstructions = ['@flatfile/react', '@flatfile/angular', '@flatfile/vue', '@flatfile/javascript'].includes(pkg) ?
+        `This package enables developers to integrate Flatfile's data import experience into their application.` :
+    pkg.includes("listener") ?
+        `This package provides event handling capabilities with Flatfile-specific functionality. It's main function is to receive and respond to events.` :
+    pkg.includes("flatfile@") ?
+        `This package provides developers with commands to manage and configure their Flatfile integration.` : ''
+
+    return `You are an AI assistant responsible for writing release notes. 
+    ${packageInstructions}
+    From the diff write detailed release notes that summarize the changes.
+    Include no headings.
+    Write in full sentences describing the changes.
+    Limit the summary to 1-5 sentences.
+    Add a slight enthusiastic promotional element to the tone.
+    Do not include changes for any package except the ${pkg} package.
+    Take care to note any external interface changes in detail, include any new or changed parameters.
+    Only write release notes that are relevant to a consumer of the package.
+    Be specific about what the changes mean to the developer using the package.
+    Do not reference anything internal-only, do not reference file names.
+    Provide code examples where relevant.`
 }
 
 let totalCount = 0;
@@ -64,8 +63,9 @@ async function processFile(
         const fileContent = fs.readFileSync(filePath, "utf-8");
         const prompt = await callback(fileContent);
         const resultFilePath = `${filePath.replace("git-diffs", "release-notes")}.result.md`;
+        
         const pkg = getPackageNameFromFilename(filePath)
-
+     
         if (!fs.existsSync(resultFilePath)) {
             console.log(`Processing ${filePath}...`);
             try {
@@ -83,7 +83,16 @@ async function processFile(
                     [{ role: "user", content: prompt }],
                     apiKey
                 );
-                fs.writeFileSync(resultFilePath, claudeResponse);
+
+                // Variables to input into the formattedSummary function
+                const versionMatch = filePath.match(/@(\d+\.\d+\.\d+)\.diff\.txt/);
+                const version = versionMatch ? versionMatch[1] : null;
+                const tag = `${pkg}@${version}`
+                const tagDate = execSync(`git log -1 --format=%aD ${tag}`).toString().trim()
+                const releaseDate = new Date(tagDate).toLocaleDateString('en-US', { month: 'long', day: '2-digit', year: 'numeric' })
+                const type = pkg === 'flatfile' || pkg === '@flatfile/listener' ? 'core' : 'wrappers'
+            
+                fs.writeFileSync(resultFilePath, formattedSummary(releaseDate, tag, type, claudeResponse));
                 console.log(`Processed ${filePath} and saved the result to ${resultFilePath}`);
             } catch (error) {
                 console.error(`Error processing ${filePath}: ${error}`);

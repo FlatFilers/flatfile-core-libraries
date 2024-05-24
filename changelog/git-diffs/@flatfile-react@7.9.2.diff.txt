@@ -1,0 +1,103 @@
+diff --git a/packages/react/CHANGELOG.md b/packages/react/CHANGELOG.md
+index 7866d52..c0b5db9 100644
+--- a/packages/react/CHANGELOG.md
++++ b/packages/react/CHANGELOG.md
+@@ -2,2 +2,11 @@
+ 
++## 7.9.2
++
++### Patch Changes
++
++- 1473f79: Fixes bug with re-using spaces
++- 86c7505: Fix to allow clipboard read and write in embedded iframe components
++- Updated dependencies [003014c]
++  - @flatfile/embedded-utils@1.2.0
++
+ ## 7.9.1
+diff --git a/packages/react/package.json b/packages/react/package.json
+index c300a57..44ba9b0 100644
+--- a/packages/react/package.json
++++ b/packages/react/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/react",
+-  "version": "7.9.1",
++  "version": "7.9.2",
+   "description": "Flatfile React components",
+@@ -64,3 +64,3 @@
+     "@flatfile/cross-env-config": "^0.0.5",
+-    "@flatfile/embedded-utils": "^1.1.15",
++    "@flatfile/embedded-utils": "^1.2.0",
+     "@flatfile/listener": "^1.0.2",
+diff --git a/packages/react/src/components/EmbeddedIFrameWrapper.tsx b/packages/react/src/components/EmbeddedIFrameWrapper.tsx
+index 380945e..07aa897 100644
+--- a/packages/react/src/components/EmbeddedIFrameWrapper.tsx
++++ b/packages/react/src/components/EmbeddedIFrameWrapper.tsx
+@@ -84,4 +84,7 @@ export const EmbeddedIFrameWrapper = (
+         <iframe
+-          data-testid={mountElement}
++          allow="clipboard-read; clipboard-write"
+           className={mountElement}
++          data-testid={mountElement}
++          ref={iRef}
++          src={preload ? preloadUrl : spaceLink}
+           style={{
+@@ -92,4 +95,2 @@ export const EmbeddedIFrameWrapper = (
+           }}
+-          src={preload ? preloadUrl : spaceLink}
+-          ref={iRef}
+         />
+diff --git a/packages/react/src/components/Space.tsx b/packages/react/src/components/Space.tsx
+index 747cfee..3a6a322 100644
+--- a/packages/react/src/components/Space.tsx
++++ b/packages/react/src/components/Space.tsx
+@@ -7,3 +7,3 @@ type SpaceProps = {
+   id?: string
+-  config: Flatfile.SpaceConfig
++  config?: Flatfile.SpaceConfig
+   children?: React.ReactNode
+@@ -35,3 +35,3 @@ type SpaceProps = {
+ export const Space = (props: SpaceProps) => {
+-  const { config, children } = props
++  const { config, id, children } = props
+   const { updateSpace } = useContext(FlatfileContext)
+@@ -39,3 +39,6 @@ export const Space = (props: SpaceProps) => {
+   const callback = useCallback(() => {
+-    updateSpace(config)
++    updateSpace({
++      ...(config || {}),
++      id,
++    })
+   }, [config, updateSpace])
+diff --git a/packages/react/src/components/legacy/InitSpace.tsx b/packages/react/src/components/legacy/InitSpace.tsx
+index 3df2108..11e7feb 100644
+--- a/packages/react/src/components/legacy/InitSpace.tsx
++++ b/packages/react/src/components/legacy/InitSpace.tsx
+@@ -194,6 +194,7 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
+           <iframe
+-            data-testid={mountElement}
++            allow="clipboard-read; clipboard-write"
+             className={mountElement}
+-            style={getIframeStyles(iframeStyles!)}
++            data-testid={mountElement}
+             src={spaceUrl}
++            style={getIframeStyles(iframeStyles!)}
+           />
+diff --git a/packages/react/src/components/legacy/LegacySpace.tsx b/packages/react/src/components/legacy/LegacySpace.tsx
+index 44d1cfe..982e9bf 100644
+--- a/packages/react/src/components/legacy/LegacySpace.tsx
++++ b/packages/react/src/components/legacy/LegacySpace.tsx
+@@ -11,3 +11,3 @@ import '../style.scss'
+ /**
+- * @deprecated - use FlatfileProvider and Space components instead. Previously known as Space. 
++ * @deprecated - use FlatfileProvider and Space components instead. Previously known as Space.
+  * @name LegacySpace
+@@ -120,6 +120,7 @@ export const SpaceContents = (
+       <iframe
+-        data-testid={mountElement}
++        allow="clipboard-read; clipboard-write"
+         className={mountElement}
+-        style={getIframeStyles(iframeStyles!)}
++        data-testid={mountElement}
+         src={spaceUrl}
++        style={getIframeStyles(iframeStyles!)}
+       />

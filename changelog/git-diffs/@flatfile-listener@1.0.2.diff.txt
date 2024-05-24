@@ -1,0 +1,118 @@
+diff --git a/packages/listener/CHANGELOG.md b/packages/listener/CHANGELOG.md
+index 510a4d1..8fe9db8 100644
+--- a/packages/listener/CHANGELOG.md
++++ b/packages/listener/CHANGELOG.md
+@@ -2,2 +2,8 @@
+ 
++## 1.0.2
++
++### Patch Changes
++
++- d13ceb6: Adds helper functions needed in the Refactor React to use a FlatfileContext and Components to configure the Space
++
+ ## 1.0.1
+diff --git a/packages/listener/package.json b/packages/listener/package.json
+index be5a0b3..897f2d2 100644
+--- a/packages/listener/package.json
++++ b/packages/listener/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/listener",
+-  "version": "1.0.1",
++  "version": "1.0.2",
+   "description": "A PubSub Listener for configuring and using Flatfile",
+diff --git a/packages/listener/src/events/event.handler.ts b/packages/listener/src/events/event.handler.ts
+index 14ca631..7851c69 100644
+--- a/packages/listener/src/events/event.handler.ts
++++ b/packages/listener/src/events/event.handler.ts
+@@ -60,2 +60,50 @@ export class EventHandler extends AuthenticatedClient {
+ 
++  off(query: Arrayable<string>, callback: EventCallback): this
++  off(
++    query: Arrayable<string>,
++    filter: EventFilter,
++    callback: EventCallback
++  ): this
++
++  // Implementation
++  off(
++    query: Arrayable<string>,
++    filterOrCallback: EventFilter | EventCallback,
++    maybeCallback?: EventCallback
++  ): this {
++    let filter: EventFilter | undefined = undefined
++    let callback: EventCallback
++
++    if (typeof filterOrCallback === 'function') {
++      callback = filterOrCallback as EventCallback
++    } else {
++      filter = filterOrCallback
++      callback = maybeCallback!
++    }
++
++    this.listeners = this.listeners.filter(
++      ([listenerQuery, listenerFilter, listenerCallback]) => {
++        // Normalize query for comparison
++        const normalizedListenerQuery = Array.isArray(listenerQuery)
++          ? listenerQuery
++          : [listenerQuery]
++        const normalizedQuery = Array.isArray(query) ? query : [query]
++
++        // Match checks
++        const isQueryMatch =
++          JSON.stringify(normalizedListenerQuery) ===
++          JSON.stringify(normalizedQuery)
++        const isCallbackMatch = listenerCallback === callback
++        const isFilterMatch = filter
++          ? JSON.stringify(listenerFilter) === JSON.stringify(filter)
++          : true
++
++        // Keep the listener if it doesn't match all criteria for removal
++        return !(isQueryMatch && isCallbackMatch && isFilterMatch)
++      }
++    )
++
++    return this
++  }
++
+   /**
+@@ -83,3 +131,3 @@ export class EventHandler extends AuthenticatedClient {
+     if (!event) return
+-    const eventPayload = event.src ? event.src : event
++    const eventPayload = event.src || event
+ 
+@@ -180,2 +228,14 @@ export class EventHandler extends AuthenticatedClient {
+   }
++
++  public detach() {
++    // Clear the listeners array
++    this.listeners = []
++
++    // Optionally, also detach all child nodes
++    this.nodes.forEach((node) => node.detach())
++    this.nodes = []
++
++    // Additional cleanup logic, if necessary
++    // e.g., Unsubscribe from external services or event sources
++  }
+ }
+@@ -195 +255,9 @@ export type Listener = {
+ }
++
++// Utility function to compare queries/filters
++function isEqual(a: any, b: any): boolean {
++  // Implement comparison logic based on your application's needs
++  // This could be as simple as JSON.stringify(a) === JSON.stringify(b) for shallow comparison
++  // Or more complex deep comparison logic for nested objects
++  return JSON.stringify(a) === JSON.stringify(b)
++}
+diff --git a/packages/listener/src/flatfile.listener.ts b/packages/listener/src/flatfile.listener.ts
+index f6d47df..2bb9cf0 100644
+--- a/packages/listener/src/flatfile.listener.ts
++++ b/packages/listener/src/flatfile.listener.ts
+@@ -78,2 +78,6 @@ export class FlatfileListener extends EventHandler {
+   }
++
++  fork() {
++    return new FlatfileListener()
++  }
+ }

@@ -1,0 +1,137 @@
+diff --git a/packages/react/CHANGELOG.md b/packages/react/CHANGELOG.md
+index 5dbc1df..9953288 100644
+--- a/packages/react/CHANGELOG.md
++++ b/packages/react/CHANGELOG.md
+@@ -2,2 +2,10 @@
+ 
++## 7.8.9
++
++### Patch Changes
++
++- 6952740: Make environmentId optional
++- Updated dependencies [6952740]
++  - @flatfile/embedded-utils@1.1.12
++
+ ## 7.8.8
+diff --git a/packages/react/package.json b/packages/react/package.json
+index 58f1925..70a54be 100644
+--- a/packages/react/package.json
++++ b/packages/react/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/react",
+-  "version": "7.8.8",
++  "version": "7.8.9",
+   "description": "Flatfile React components",
+@@ -60,3 +60,3 @@
+     "@flatfile/cross-env-config": "^0.0.5",
+-    "@flatfile/embedded-utils": "^1.1.11",
++    "@flatfile/embedded-utils": "^1.1.12",
+     "@flatfile/listener": "^1.0.1",
+diff --git a/packages/react/src/utils/_tests_/initializeSpace.spec.ts b/packages/react/src/utils/_tests_/initializeSpace.spec.ts
+index 02944b9..2398ef7 100644
+--- a/packages/react/src/utils/_tests_/initializeSpace.spec.ts
++++ b/packages/react/src/utils/_tests_/initializeSpace.spec.ts
+@@ -22,3 +22,2 @@ const mockSpaceProps: ISpace = {
+   publishableKey: 'your-publishable-key',
+-  environmentId: 'your-environment-id',
+   name: 'your-space-name',
+@@ -49,15 +48,2 @@ describe('initializeSpace', () => {
+ 
+-  it('should throw an error when environment id is missing', async () => {
+-    const invalidSpaceProps: ISpace = {
+-      ...mockSpaceProps,
+-      environmentId: '',
+-    }
+-
+-    await expect(initializeSpace(invalidSpaceProps)).rejects.toThrowError(
+-      'Missing required environment id'
+-    )
+-    expect(authenticateMock).not.toHaveBeenCalled()
+-    expect(addSpaceInfoMock).not.toHaveBeenCalled()
+-  })
+-
+   it('should throw an error when space creation fails', async () => {
+diff --git a/packages/react/src/utils/addSpaceInfo.ts b/packages/react/src/utils/addSpaceInfo.ts
+index 3b59723..38b0ca6 100644
+--- a/packages/react/src/utils/addSpaceInfo.ts
++++ b/packages/react/src/utils/addSpaceInfo.ts
+@@ -23,3 +23,3 @@ export const addSpaceInfo = async (
+         spaceId,
+-        environmentId,
++        ...(environmentId !== undefined && { environmentId }),
+         ...createdWorkbook,
+@@ -34,3 +34,3 @@ export const addSpaceInfo = async (
+         spaceId,
+-        environmentId,
++        ...(environmentId !== undefined && { environmentId }),
+         ...workbook,
+diff --git a/packages/react/src/utils/getSpace.tsx b/packages/react/src/utils/getSpace.tsx
+index e2e6b16..913e386 100644
+--- a/packages/react/src/utils/getSpace.tsx
++++ b/packages/react/src/utils/getSpace.tsx
+@@ -11,3 +11,2 @@ export const getSpace = async (
+     apiUrl,
+-    environmentId,
+     spaceUrl = 'https://platform.flatfile.com/s/',
+@@ -23,6 +22,2 @@ export const getSpace = async (
+ 
+-    if (!environmentId) {
+-      throw new Error('Missing required environment id')
+-    }
+-
+     const limitedAccessApi = authenticate(space?.accessToken, apiUrl)
+diff --git a/packages/react/src/utils/initializeSpace.tsx b/packages/react/src/utils/initializeSpace.tsx
+index 3b57b75..30ada92 100644
+--- a/packages/react/src/utils/initializeSpace.tsx
++++ b/packages/react/src/utils/initializeSpace.tsx
+@@ -33,32 +33,23 @@ export const initializeSpace = async (
+ 
+-    if (!environmentId) {
+-      throw new Error('Missing required environment id')
+-    }
+-
+     const limitedAccessApi = authenticate(publishableKey, apiUrl)
+-    const createSpaceRequest = {
+-      name,
+-      autoConfigure: false,
+-      environmentId,
+-      ...spaceBody,
+-      labels: ['embedded', ...(labels || [])],
+-      ...(namespace ? { namespace } : {}),
+-      ...(translationsPath ? { translationsPath } : {}),
+-      ...(languageOverride ? { languageOverride } : {}),
+-      metadata: {
+-        ...metadata,
+-        theme: themeConfig,
+-        sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
+-        userInfo,
+-        spaceInfo,
+-        ...(spaceBody?.metadata || {}),
+-        ...(metadata || {}),
+-      },
+-    }
+ 
+-    if (!workbook) {
+-      createSpaceRequest.autoConfigure = true
+-    }
+     try {
+-      space = await limitedAccessApi.spaces.create(createSpaceRequest)
++      space = await limitedAccessApi.spaces.create({
++        name,
++        autoConfigure: !workbook,
++        ...spaceBody,
++        labels: ['embedded', ...(labels || [])],
++        ...(environmentId !== undefined && { environmentId }),
++        ...(namespace ? { namespace } : {}),
++        ...(translationsPath ? { translationsPath } : {}),
++        ...(languageOverride ? { languageOverride } : {}),
++        metadata: {
++          theme: themeConfig,
++          sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
++          userInfo,
++          spaceInfo,
++          ...(spaceBody?.metadata || {}),
++          ...(metadata || {}),
++        },
++      })
+     } catch (error) {

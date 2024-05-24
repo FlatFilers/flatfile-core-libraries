@@ -1,0 +1,175 @@
+diff --git a/packages/react/CHANGELOG.md b/packages/react/CHANGELOG.md
+index 3a4fc6d..8d95295 100644
+--- a/packages/react/CHANGELOG.md
++++ b/packages/react/CHANGELOG.md
+@@ -2,2 +2,10 @@
+ 
++## 7.8.2
++
++### Patch Changes
++
++- 9b6c7b2: Update package.json to have exports and browser
++- Updated dependencies [9b6c7b2]
++  - @flatfile/listener@1.0.1
++
+ ## 7.8.1
+diff --git a/packages/react/index.ts b/packages/react/index.ts
+deleted file mode 100644
+index f4b85f6..0000000
+--- a/packages/react/index.ts
++++ /dev/null
+@@ -1,18 +0,0 @@
+-import InitSpace from './src/components/InitSpace'
+-import Space from './src/components/Space'
+-
+-import type {
+-  ISidebarConfig,
+-  ISpace,
+-  ISpaceInfo,
+-  IThemeConfig,
+-  IUserInfo,
+-} from '@flatfile/embedded-utils'
+-import { usePortal } from './src/hooks/usePortal'
+-import { useSpace } from './src/hooks/useSpace'
+-import { initializeFlatfile } from './src/hooks/useSpaceTrigger'
+-import { makeTheme } from './src/utils/makeTheme'
+-
+-export { InitSpace, Space, initializeFlatfile, makeTheme, usePortal, useSpace }
+-
+-export type { ISidebarConfig, ISpace, ISpaceInfo, IThemeConfig, IUserInfo }
+diff --git a/packages/react/package.json b/packages/react/package.json
+index 47053db..e6ae9d8 100644
+--- a/packages/react/package.json
++++ b/packages/react/package.json
+@@ -2,20 +2,18 @@
+   "name": "@flatfile/react",
+-  "version": "7.8.1",
++  "version": "7.8.2",
+   "description": "Flatfile React components",
+   "type": "module",
++  "browser": {
++    "./dist/index.cjs": "./dist/index.browser.cjs",
++    "./dist/index.mjs": "./dist/index.browser.mjs"
++  },
+   "exports": {
+     "types": "./dist/index.d.ts",
+-    "node": {
+-      "import": "./dist/index.mjs",
+-      "require": "./dist/index.cjs"
+-    },
+-    "browser": {
+-      "require": "./dist/index.browser.cjs",
+-      "import": "./dist/index.browser.mjs"
+-    },
++    "import": "./dist/index.mjs",
++    "require": "./dist/index.cjs",
+     "default": "./dist/index.mjs"
+   },
+-  "source": "index.ts",
+   "main": "./dist/index.cjs",
+   "module": "./dist/index.mjs",
++  "source": "./src/index.ts",
+   "types": "./dist/index.d.ts",
+@@ -63,4 +61,4 @@
+     "@flatfile/embedded-utils": "^1.1.9",
+-    "@flatfile/listener": "^1.0.0",
+-    "@flatfile/plugin-record-hook": "^1.4.0",
++    "@flatfile/listener": "^1.0.1",
++    "@flatfile/plugin-record-hook": "^1.4.1",
+     "tinycolor2": "^1.6.0"
+@@ -74,2 +72,2 @@
+   }
+-}
++}
+\ No newline at end of file
+diff --git a/packages/react/rollup.config.js b/packages/react/rollup.config.js
+index d708751..051b7a6 100644
+--- a/packages/react/rollup.config.js
++++ b/packages/react/rollup.config.js
+@@ -14,3 +14,4 @@ dotenv.config()
+ 
+-const PROD = process.env.NODE_ENV === 'production'
++const PROD = process.env.NODE_ENV !== 'development'
++
+ if (!PROD) {
+@@ -19,7 +20,9 @@ if (!PROD) {
+ 
+-function commonPlugins(browser) {
++function commonPlugins(browser, umd = false) {
+   return [
+-    peerDepsExternal({
+-      includeDependencies: true,
+-    }),
++    !umd
++      ? peerDepsExternal({
++          includeDependencies: true,
++        })
++      : null,
+     json(),
+@@ -47,3 +50,3 @@ const config = [
+   {
+-    input: 'index.ts',
++    input: 'src/index.ts',
+     output: [
+@@ -62,3 +65,3 @@ const config = [
+     ],
+-    plugins: commonPlugins(false),
++    plugins: commonPlugins(false, false),
+   },
+@@ -66,3 +69,3 @@ const config = [
+   {
+-    input: 'index.ts',
++    input: 'src/index.ts',
+     output: [
+@@ -76,3 +79,3 @@ const config = [
+     ],
+-    plugins: commonPlugins(true),
++    plugins: commonPlugins(true, false),
+   },
+@@ -80,3 +83,3 @@ const config = [
+   {
+-    input: 'index.ts',
++    input: 'src/index.ts',
+     output: {
+@@ -89,6 +92,6 @@ const config = [
+     },
+-    plugins: commonPlugins(true),
++    plugins: commonPlugins(true, true),
+   },
+   {
+-    input: 'index.ts',
++    input: 'src/index.ts',
+     output: [{ file: 'dist/index.d.ts', format: 'es' }],
+diff --git a/packages/react/src/index.ts b/packages/react/src/index.ts
+new file mode 100644
+index 0000000..e34ad8c
+--- /dev/null
++++ b/packages/react/src/index.ts
+@@ -0,0 +1,18 @@
++import InitSpace from './components/InitSpace'
++import Space from './components/Space'
++
++import type {
++  ISidebarConfig,
++  ISpace,
++  ISpaceInfo,
++  IThemeConfig,
++  IUserInfo,
++} from '@flatfile/embedded-utils'
++import { usePortal } from './hooks/usePortal'
++import { useSpace } from './hooks/useSpace'
++import { initializeFlatfile } from './hooks/useSpaceTrigger'
++import { makeTheme } from './utils/makeTheme'
++
++export { InitSpace, Space, initializeFlatfile, makeTheme, usePortal, useSpace }
++
++export type { ISidebarConfig, ISpace, ISpaceInfo, IThemeConfig, IUserInfo }
+diff --git a/packages/react/tsconfig.json b/packages/react/tsconfig.json
+index a811a5a..b9300be 100644
+--- a/packages/react/tsconfig.json
++++ b/packages/react/tsconfig.json
+@@ -4,3 +4,3 @@
+         "./src",
+-        "index.ts"
++        "src/index.ts"
+     ],

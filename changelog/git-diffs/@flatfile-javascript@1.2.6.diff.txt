@@ -1,0 +1,35 @@
+diff --git a/packages/javascript/CHANGELOG.md b/packages/javascript/CHANGELOG.md
+index 018ba1c..2cab2ac 100644
+--- a/packages/javascript/CHANGELOG.md
++++ b/packages/javascript/CHANGELOG.md
+@@ -2,2 +2,8 @@
+ 
++## 1.2.6
++
++### Patch Changes
++
++- 5263f5b: Fix to only include defined params in the space creation request 
++
+ ## 1.2.5
+diff --git a/packages/javascript/FlatfileJavascript.ts b/packages/javascript/FlatfileJavascript.ts
+index ad20423..8e6fda4 100644
+--- a/packages/javascript/FlatfileJavascript.ts
++++ b/packages/javascript/FlatfileJavascript.ts
+@@ -347,5 +347,5 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
+         labels: ['embedded', ...(labels || [])],
+-        namespace,
+-        translationsPath,
+-        languageOverride,
++        ...(namespace ? { namespace } : {}),
++        ...(translationsPath ? { translationsPath } : {}),
++        ...(languageOverride ? { languageOverride } : {}),
+         metadata: {
+diff --git a/packages/javascript/package.json b/packages/javascript/package.json
+index 4d8c9bc..68054ec 100644
+--- a/packages/javascript/package.json
++++ b/packages/javascript/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/javascript",
+-  "version": "1.2.5",
++  "version": "1.2.6",
+   "description": "Flatfile embedded with vanilla javascript.",

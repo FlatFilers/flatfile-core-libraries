@@ -1,0 +1,310 @@
+diff --git a/packages/react/CHANGELOG.md b/packages/react/CHANGELOG.md
+index a023486..b07394b 100644
+--- a/packages/react/CHANGELOG.md
++++ b/packages/react/CHANGELOG.md
+@@ -2,2 +2,10 @@
+ 
++## 7.8.6
++
++### Patch Changes
++
++- ab0388b: Update params for the embedded wrapper initializers
++- Updated dependencies [ab0388b]
++  - @flatfile/embedded-utils@1.1.11
++
+ ## 7.8.5
+diff --git a/packages/react/package.json b/packages/react/package.json
+index 6ddadd6..34840d0 100644
+--- a/packages/react/package.json
++++ b/packages/react/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/react",
+-  "version": "7.8.5",
++  "version": "7.8.6",
+   "description": "Flatfile React components",
+@@ -60,3 +60,3 @@
+     "@flatfile/cross-env-config": "^0.0.5",
+-    "@flatfile/embedded-utils": "^1.1.10",
++    "@flatfile/embedded-utils": "^1.1.11",
+     "@flatfile/listener": "^1.0.1",
+diff --git a/packages/react/src/components/InitSpace.tsx b/packages/react/src/components/InitSpace.tsx
+index 4957144..52cb10a 100644
+--- a/packages/react/src/components/InitSpace.tsx
++++ b/packages/react/src/components/InitSpace.tsx
+@@ -67,5 +67,5 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
+ 
+-      const existingSpace = props.space && props.space.id
++      const isReusingSpace = props.space && props.space.id
+ 
+-      const { data } = existingSpace
++      const { data } = isReusingSpace
+         ? await getSpace(props)
+@@ -91,3 +91,3 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
+ 
+-      if (!existingSpace) {
++      if (!isReusingSpace && props.publishableKey) {
+         const fullAccessApi = authenticate(accessToken, apiUrl)
+diff --git a/packages/react/src/components/_tests_/Space.spec.tsx b/packages/react/src/components/_tests_/Space.spec.tsx
+index 2b4630d..5d1bfb3 100644
+--- a/packages/react/src/components/_tests_/Space.spec.tsx
++++ b/packages/react/src/components/_tests_/Space.spec.tsx
+@@ -4,4 +4,4 @@
+ 
+-import { render, screen } from '@testing-library/react'
+ import React from 'react'
++import { render, screen } from '@testing-library/react'
+ import Space, { SpaceContents } from '../Space'
+@@ -10,2 +10,5 @@ import { CreateWorkbookConfig } from '@flatfile/api/api'
+ import '@testing-library/jest-dom'
++import { FlatfileClient } from '@flatfile/api'
++
++console.error = jest.fn()
+ 
+@@ -18,3 +21,3 @@ const baseSpaceProps = {
+   >,
+-  handleCloseInstance: () => {}
++  handleCloseInstance: () => {},
+ }
+@@ -26,2 +29,7 @@ describe('Space', () => {
+     const accessToken = 'accessToken'
++
++    jest.spyOn(FlatfileClient.prototype.workbooks, 'create').mockResolvedValue({
++      data: mockWorkbook,
++    })
++
+     render(
+diff --git a/packages/react/src/hooks/_tests_/useSpace.spec.tsx b/packages/react/src/hooks/_tests_/useSpace.spec.tsx
+index e0cba96..6722f97 100644
+--- a/packages/react/src/hooks/_tests_/useSpace.spec.tsx
++++ b/packages/react/src/hooks/_tests_/useSpace.spec.tsx
+@@ -5,5 +5,4 @@
+ import { FlatfileClient } from '@flatfile/api'
+-import { render } from '@testing-library/react'
++import '@testing-library/jest-dom'
+ import { renderHook } from '@testing-library/react-hooks'
+-import React from 'react'
+ import DefaultError from '../../components/Error'
+@@ -13,3 +12,4 @@ import { ISpace } from '@flatfile/embedded-utils'
+ import useSpace from '../useSpace'
+-import '@testing-library/jest-dom'
++
++console.error = jest.fn()
+ 
+@@ -23,11 +23,2 @@ const baseSpaceProps = {
+ 
+-const TestComponent: React.FC<ISpace> = (props) => {
+-  const result = useSpace(props)
+-  return <div>{result}</div>
+-}
+-
+-const renderUseSpaceHook = (props: ISpace) =>
+-  // @ts-ignore
+-  render(<TestComponent {...props} />)
+-
+ const renderUseSpaceHookWithHookResult = (props: ISpace) =>
+@@ -44,9 +35,2 @@ describe('useSpace', () => {
+ 
+-  it('renders the loading element when pubNub is not yet available', () => {
+-    const { getByTestId } = renderUseSpaceHook({
+-      ...baseSpaceProps,
+-    } as ISpace)
+-
+-    expect(getByTestId('spinner-icon')).toBeInTheDocument()
+-  })
+   it('renders the error element when there is an error', async () => {
+@@ -61,3 +45,4 @@ describe('useSpace', () => {
+ 
+-    const error = result?.current?.type === DefaultError ? result?.current : undefined
++    const error =
++      result?.current?.type === DefaultError ? result?.current : undefined
+ 
+@@ -74,6 +59,2 @@ describe('useSpace', () => {
+ 
+-    jest.spyOn(FlatfileClient.prototype.spaces, 'update').mockResolvedValue({
+-      data: mockSpace,
+-    })
+-
+     jest.spyOn(FlatfileClient.prototype.documents, 'create').mockResolvedValue({
+@@ -88,3 +69,4 @@ describe('useSpace', () => {
+ 
+-    const spaceComponent = result?.current?.type === Space ? result?.current : undefined
++    const spaceComponent =
++      result?.current?.type === Space ? result?.current : undefined
+ 
+diff --git a/packages/react/src/hooks/usePortal.tsx b/packages/react/src/hooks/usePortal.tsx
+index 16681c0..9950234 100644
+--- a/packages/react/src/hooks/usePortal.tsx
++++ b/packages/react/src/hooks/usePortal.tsx
+@@ -94,3 +94,2 @@ export const usePortal = (
+                       } catch (error: any) {
+-                        console.error('Error:', error.stack)
+                         if (jobId) {
+diff --git a/packages/react/src/utils/_tests_/addSpaceInfo.spec.ts b/packages/react/src/utils/_tests_/addSpaceInfo.spec.ts
+index 8098d6b..f55896d 100644
+--- a/packages/react/src/utils/_tests_/addSpaceInfo.spec.ts
++++ b/packages/react/src/utils/_tests_/addSpaceInfo.spec.ts
+@@ -52,6 +52,2 @@ describe('addSpaceInfo', () => {
+ 
+-    jest.spyOn(mockApi.spaces, 'update').mockResolvedValueOnce({
+-      data: { ...mockSpaceResponse } as Space,
+-    })
+-
+     jest.spyOn(mockApi.documents, 'create').mockResolvedValueOnce({
+@@ -73,11 +69,2 @@ describe('addSpaceInfo', () => {
+ 
+-    expect(mockApi.spaces.update).toHaveBeenCalledWith(mockSpaceId, {
+-      environmentId: mockSpaceProps.environmentId,
+-      metadata: {
+-        theme: {},
+-        sidebarConfig: {},
+-        spaceInfo: {},
+-      },
+-    })
+-
+     expect(mockApi.documents.create).toHaveBeenCalledWith(mockSpaceId, {
+@@ -108,6 +95,2 @@ describe('addSpaceInfo', () => {
+ 
+-    jest.spyOn(mockApi.spaces, 'update').mockResolvedValueOnce({
+-      data: { ...mockSpaceResponse } as Space,
+-    })
+-
+     jest
+@@ -122,19 +105,2 @@ describe('addSpaceInfo', () => {
+   })
+-
+-  it('should throw an error if updating space fails', async () => {
+-    jest.spyOn(mockApi.workbooks, 'create').mockResolvedValueOnce({
+-      data: {
+-        id: 'test-workbook-id',
+-        ...innerWorkbook,
+-      } as Workbook,
+-    })
+-
+-    jest
+-      .spyOn(mockApi.spaces, 'update')
+-      .mockRejectedValueOnce(new Error('Failed to update space'))
+-
+-    await expect(
+-      addSpaceInfo(mockSpaceProps, mockSpaceId, mockApi)
+-    ).rejects.toThrow('Error adding workbook to space: Failed to update space')
+-  })
+ })
+diff --git a/packages/react/src/utils/_tests_/initializeSpace.spec.ts b/packages/react/src/utils/_tests_/initializeSpace.spec.ts
+index cf1e3ea..02944b9 100644
+--- a/packages/react/src/utils/_tests_/initializeSpace.spec.ts
++++ b/packages/react/src/utils/_tests_/initializeSpace.spec.ts
+@@ -1,3 +1,2 @@
+ import { FlatfileClient } from '@flatfile/api'
+-import { Space } from '@flatfile/api/api/resources/spaces'
+ import { ISpace } from '@flatfile/embedded-utils'
+@@ -6,2 +5,3 @@ import { mockDocument, mockSpace } from '../../test/mocks'
+ 
++console.error = jest.fn()
+ var authenticateMock: jest.Mock = jest.fn()
+@@ -84,6 +84,2 @@ describe('initializeSpace', () => {
+ 
+-    jest.spyOn(FlatfileClient.prototype.spaces, 'update').mockResolvedValue({
+-      data: mockSpace,
+-    })
+-
+     jest.spyOn(FlatfileClient.prototype.documents, 'create').mockResolvedValue({
+diff --git a/packages/react/src/utils/addSpaceInfo.ts b/packages/react/src/utils/addSpaceInfo.ts
+index 405eb24..3b59723 100644
+--- a/packages/react/src/utils/addSpaceInfo.ts
++++ b/packages/react/src/utils/addSpaceInfo.ts
+@@ -9,3 +9,3 @@ import { IReactSimpleOnboarding } from '../types/IReactSimpleOnboarding'
+ export const addSpaceInfo = async (
+-  spaceProps: IReactSimpleOnboarding | any,
++  spaceProps: IReactSimpleOnboarding,
+   spaceId: string,
+@@ -13,16 +13,5 @@ export const addSpaceInfo = async (
+ ): Promise<{
+-  space: Flatfile.SpaceResponse
+   workbook: Flatfile.WorkbookResponse | undefined
+ }> => {
+-  const {
+-    workbook,
+-    sheet,
+-    environmentId,
+-    document,
+-    themeConfig,
+-    sidebarConfig,
+-    spaceInfo,
+-    userInfo,
+-    spaceBody,
+-  } = spaceProps
++  const { workbook, sheet, environmentId, document } = spaceProps
+   let localWorkbook
+@@ -54,17 +43,2 @@ export const addSpaceInfo = async (
+ 
+-    const updatedSpace = await api.spaces.update(spaceId, {
+-      environmentId,
+-      metadata: {
+-        theme: themeConfig,
+-        sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
+-        userInfo,
+-        spaceInfo,
+-        ...(spaceBody?.metadata || {}),
+-      },
+-    })
+-
+-    if (!updatedSpace) {
+-      throw new Error('Failed to update space')
+-    }
+-
+     if (document) {
+@@ -84,3 +58,2 @@ export const addSpaceInfo = async (
+     return {
+-      space: updatedSpace,
+       workbook: localWorkbook,
+diff --git a/packages/react/src/utils/initializeSpace.tsx b/packages/react/src/utils/initializeSpace.tsx
+index 4815cbe..70be026 100644
+--- a/packages/react/src/utils/initializeSpace.tsx
++++ b/packages/react/src/utils/initializeSpace.tsx
+@@ -17,2 +17,11 @@ export const initializeSpace = async (
+     workbook,
++    themeConfig,
++    sidebarConfig,
++    spaceInfo,
++    userInfo,
++    metadata,
++    namespace,
++    labels,
++    translationsPath,
++    languageOverride,
+   } = flatfileOptions
+@@ -29,7 +38,20 @@ export const initializeSpace = async (
+     const limitedAccessApi = authenticate(publishableKey, apiUrl)
+-    const spaceRequestBody = {
++    const createSpaceRequest = {
+       name,
++      namespace,
+       autoConfigure: false,
+-      labels: ['embedded'],
++      environmentId,
+       ...spaceBody,
++      labels: ['embedded', ...(labels || [])],
++      translationsPath,
++      languageOverride,
++      metadata: {
++        ...metadata,
++        theme: themeConfig,
++        sidebarConfig: sidebarConfig ? sidebarConfig : { showSidebar: false },
++        userInfo,
++        spaceInfo,
++        ...(spaceBody?.metadata || {}),
++        ...(metadata || {}),
++      },
+     }
+@@ -37,9 +59,6 @@ export const initializeSpace = async (
+     if (!workbook) {
+-      spaceRequestBody.autoConfigure = true
++      createSpaceRequest.autoConfigure = true
+     }
+     try {
+-      space = await limitedAccessApi.spaces.create({
+-        environmentId,
+-        ...spaceRequestBody,
+-      })
++      space = await limitedAccessApi.spaces.create(createSpaceRequest)
+     } catch (error) {

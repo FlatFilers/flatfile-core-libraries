@@ -1,0 +1,28 @@
+diff --git a/packages/javascript/CHANGELOG.md b/packages/javascript/CHANGELOG.md
+index a6371ab..d5cf285 100644
+--- a/packages/javascript/CHANGELOG.md
++++ b/packages/javascript/CHANGELOG.md
+@@ -2,2 +2,9 @@
+ 
++## 1.3.2
++
++### Patch Changes
++
++- Updated dependencies [f89a6de]
++  - @flatfile/embedded-utils@1.1.14
++
+ ## 1.3.1
+diff --git a/packages/javascript/package.json b/packages/javascript/package.json
+index 7e83457..d578a0b 100644
+--- a/packages/javascript/package.json
++++ b/packages/javascript/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/javascript",
+-  "version": "1.3.1",
++  "version": "1.3.2",
+   "description": "Flatfile embedded with vanilla javascript.",
+@@ -55,3 +55,3 @@
+   "dependencies": {
+-    "@flatfile/embedded-utils": "^1.1.13",
++    "@flatfile/embedded-utils": "^1.1.14",
+     "@flatfile/listener": "^1.0.1",

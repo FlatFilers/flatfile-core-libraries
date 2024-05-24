@@ -1,0 +1,48 @@
+diff --git a/packages/react/CHANGELOG.md b/packages/react/CHANGELOG.md
+index 797187d..3a4fc6d 100644
+--- a/packages/react/CHANGELOG.md
++++ b/packages/react/CHANGELOG.md
+@@ -2,2 +2,8 @@
+ 
++## 7.8.1
++
++### Patch Changes
++
++- d3e68f1: Update types for all packages that reference the record-hook plugin
++
+ ## 7.8.0
+diff --git a/packages/react/package.json b/packages/react/package.json
+index 0b3ba27..47053db 100644
+--- a/packages/react/package.json
++++ b/packages/react/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/react",
+-  "version": "7.8.0",
++  "version": "7.8.1",
+   "description": "Flatfile React components",
+@@ -64,3 +64,3 @@
+     "@flatfile/listener": "^1.0.0",
+-    "@flatfile/plugin-record-hook": "^1.2.0",
++    "@flatfile/plugin-record-hook": "^1.4.0",
+     "tinycolor2": "^1.6.0"
+diff --git a/packages/react/src/hooks/usePortal.tsx b/packages/react/src/hooks/usePortal.tsx
+index 6472ff5..16681c0 100644
+--- a/packages/react/src/hooks/usePortal.tsx
++++ b/packages/react/src/hooks/usePortal.tsx
+@@ -47,7 +47,4 @@ export const usePortal = (
+                 client.use(
+-                  // TODO: will be fixed in the @flatfile/plugin-record-hook
+-                  // @ts-ignore
+                   recordHook(
+                     config.sheet?.slug || 'slug',
+-                    // @ts-ignore
+                     async (
+@@ -56,4 +53,6 @@ export const usePortal = (
+                     ) => {
+-                      // @ts-ignore - something weird with the `data` prop and the types upstream in the packages being declared in different places, but overall this is fine
+-                      return config.onRecordHook(record, event)
++                      return (
++                        config.onRecordHook &&
++                        config.onRecordHook(record, event)
++                      )
+                     }

@@ -1,0 +1,65 @@
+diff --git a/packages/react/CHANGELOG.md b/packages/react/CHANGELOG.md
+index 3f7806f..db5e0f4 100644
+--- a/packages/react/CHANGELOG.md
++++ b/packages/react/CHANGELOG.md
+@@ -2,2 +2,8 @@
+ 
++## 7.8.4
++
++### Patch Changes
++
++- c92bcdb: Updates default spaces url to https://platform.flatfile.com/s in order to avoid unnecessary preflight requests.
++
+ ## 7.8.3
+diff --git a/packages/react/package.json b/packages/react/package.json
+index a628af4..0adcd6d 100644
+--- a/packages/react/package.json
++++ b/packages/react/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/react",
+-  "version": "7.8.3",
++  "version": "7.8.4",
+   "description": "Flatfile React components",
+diff --git a/packages/react/src/components/InitSpace.tsx b/packages/react/src/components/InitSpace.tsx
+index 17b9b87..4957144 100644
+--- a/packages/react/src/components/InitSpace.tsx
++++ b/packages/react/src/components/InitSpace.tsx
+@@ -1,8 +1,3 @@
+-import {
+-  ISpace,
+-  InitState,
+-  SpaceComponent,
+-  State,
+-} from '@flatfile/embedded-utils'
+-import React, { JSX, useEffect, useRef, useState } from 'react'
++import { InitState } from '@flatfile/embedded-utils'
++import React, { JSX, useEffect, useState } from 'react'
+ import { useCreateListener } from '../hooks/useCreateListener'
+@@ -24,3 +19,3 @@ import './style.scss'
+ 
+-const defaultSpaceUrl = 'https://spaces.flatfile.com/space-init'
++const defaultSpaceUrl = 'https://platform.flatfile.com/s/space-init'
+ const initialState = {
+@@ -102,3 +97,3 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
+       if (iFrameEl) {
+-        const targetOrigin = new URL(guestLink).origin
++        const targetOrigin = new URL(spaceUrl).origin
+         iFrameEl.contentWindow?.postMessage(
+diff --git a/packages/react/src/utils/getSpace.tsx b/packages/react/src/utils/getSpace.tsx
+index 7a8acd3..e2e6b16 100644
+--- a/packages/react/src/utils/getSpace.tsx
++++ b/packages/react/src/utils/getSpace.tsx
+@@ -12,3 +12,3 @@ export const getSpace = async (
+     environmentId,
+-    spaceUrl = 'https://spaces.flatfile.com/',
++    spaceUrl = 'https://platform.flatfile.com/s/',
+   } = spaceProps
+diff --git a/packages/react/src/utils/initializeSpace.tsx b/packages/react/src/utils/initializeSpace.tsx
+index be77002..4815cbe 100644
+--- a/packages/react/src/utils/initializeSpace.tsx
++++ b/packages/react/src/utils/initializeSpace.tsx
+@@ -15,3 +15,3 @@ export const initializeSpace = async (
+     apiUrl,
+-    spaceUrl = 'https://spaces.flatfile.com/',
++    spaceUrl = 'https://platform.flatfile.com/s/',
+     workbook,

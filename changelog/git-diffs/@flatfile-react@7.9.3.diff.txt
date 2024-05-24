@@ -1,0 +1,113 @@
+diff --git a/packages/react/CHANGELOG.md b/packages/react/CHANGELOG.md
+index c0b5db9..ebee801 100644
+--- a/packages/react/CHANGELOG.md
++++ b/packages/react/CHANGELOG.md
+@@ -2,2 +2,10 @@
+ 
++## 7.9.3
++
++### Patch Changes
++
++- 9228a00: Makes closeSpace.operation and closeSpace.onClose optional
++- Updated dependencies [9228a00]
++  - @flatfile/embedded-utils@1.2.1
++
+ ## 7.9.2
+diff --git a/packages/react/package.json b/packages/react/package.json
+index 44ba9b0..c324268 100644
+--- a/packages/react/package.json
++++ b/packages/react/package.json
+@@ -2,3 +2,3 @@
+   "name": "@flatfile/react",
+-  "version": "7.9.2",
++  "version": "7.9.3",
+   "description": "Flatfile React components",
+@@ -64,3 +64,3 @@
+     "@flatfile/cross-env-config": "^0.0.5",
+-    "@flatfile/embedded-utils": "^1.2.0",
++    "@flatfile/embedded-utils": "^1.2.1",
+     "@flatfile/listener": "^1.0.2",
+diff --git a/packages/react/src/components/EmbeddedIFrameWrapper.tsx b/packages/react/src/components/EmbeddedIFrameWrapper.tsx
+index 07aa897..863eaf6 100644
+--- a/packages/react/src/components/EmbeddedIFrameWrapper.tsx
++++ b/packages/react/src/components/EmbeddedIFrameWrapper.tsx
+@@ -73,3 +73,5 @@ export const EmbeddedIFrameWrapper = (
+             setShowExitWarnModal(false)
+-            closeSpace?.onClose({})
++            if (closeSpace && typeof closeSpace.onClose === 'function') {
++              closeSpace.onClose({})
++            }
+           }}
+diff --git a/packages/react/src/components/FlatfileProvider.tsx b/packages/react/src/components/FlatfileProvider.tsx
+index 6198aec..6380e92 100644
+--- a/packages/react/src/components/FlatfileProvider.tsx
++++ b/packages/react/src/components/FlatfileProvider.tsx
+@@ -6,2 +6,3 @@ import { EmbeddedIFrameWrapper } from './EmbeddedIFrameWrapper'
+ import { ExclusiveFlatfileProviderProps } from '../types'
++import { handlePostMessage } from '@flatfile/embedded-utils'
+ 
+@@ -106,16 +107,14 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
+ 
+-  const handlePostMessage = (message: {
+-    data: { flatfileEvent: Record<string, any> }
+-  }) => {
+-    const { flatfileEvent } = message.data
+-    if (!flatfileEvent) return
+-
+-    listener.dispatchEvent(flatfileEvent)
+-  }
+-
+   // Listen to the postMessage event from the created iFrame
+   useEffect(() => {
+-    window.addEventListener('message', handlePostMessage, false)
++    window.addEventListener(
++      'message',
++      handlePostMessage(config?.closeSpace, listener),
++      false
++    )
+     return () => {
+-      window.removeEventListener('message', handlePostMessage)
++      window.removeEventListener(
++        'message',
++        handlePostMessage(config?.closeSpace, listener)
++      )
+     }
+diff --git a/packages/react/src/components/legacy/InitSpace.tsx b/packages/react/src/components/legacy/InitSpace.tsx
+index 11e7feb..794767e 100644
+--- a/packages/react/src/components/legacy/InitSpace.tsx
++++ b/packages/react/src/components/legacy/InitSpace.tsx
+@@ -140,3 +140,5 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
+         setUnmountIFrame(true)
+-        closeSpace?.onClose({})
++        if (closeSpace && typeof closeSpace.onClose === 'function') {
++          closeSpace.onClose({ event: flatfileEvent })
++        }
+       }
+@@ -162,3 +164,5 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
+     setShowExitWarnModal(false)
+-    closeSpace?.onClose({})
++    if (closeSpace && typeof closeSpace.onClose === 'function') {
++      closeSpace.onClose({})
++    }
+   }
+diff --git a/packages/react/src/components/legacy/LegacySpace.tsx b/packages/react/src/components/legacy/LegacySpace.tsx
+index 982e9bf..292e04e 100644
+--- a/packages/react/src/components/legacy/LegacySpace.tsx
++++ b/packages/react/src/components/legacy/LegacySpace.tsx
+@@ -73,5 +73,7 @@ export const SpaceContents = (
+       flatfileEvent.payload.status === 'complete' &&
+-      flatfileEvent.payload.operation === closeSpace?.operation
++      flatfileEvent.payload.operation === closeSpace?.operation &&
++      closeSpace &&
++      typeof closeSpace.onClose === 'function'
+     ) {
+-      closeSpace?.onClose({})
++      closeSpace.onClose({ event: flatfileEvent })
+     }
+@@ -110,3 +112,5 @@ export const SpaceContents = (
+             handleCloseInstance()
+-            closeSpace?.onClose({})
++            if (closeSpace && typeof closeSpace.onClose === 'function') {
++              closeSpace.onClose({})
++            }
+           }}
