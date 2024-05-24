@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.9.9
+
+### Patch Changes
+
+- 5672245: Fix for some instances where the iframe wasn't ready when the portal:initialize call was posted
+
 ## 7.9.8
 
 ### Patch Changes
