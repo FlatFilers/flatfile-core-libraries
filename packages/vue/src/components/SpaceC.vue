@@ -98,6 +98,10 @@ export default {
     ConfirmModal,
   },
 
+  data() {
+    return { listenerInstance: null }
+  },
+
   async created() {
     const {
       listener,
@@ -120,31 +124,23 @@ export default {
         slug: simpleListenerSlug,
       })
 
-    if (listenerInstance) {
-      listenerInstance.mount(
-        new Browser({
-          apiUrl,
-          accessToken,
-          fetchApi: fetch,
-        })
-      )
-    }
+    const browser_instance = new Browser({
+      apiUrl,
+      accessToken,
+      fetchApi: fetch,
+    })
 
-    window.addEventListener(
-      'message',
-      handlePostMessage(closeSpace, listenerInstance),
-      false
-    )
-    window.removeEventListener(
-      'message',
-      handlePostMessage(closeSpace, listenerInstance),
-      false
-    )
-    window.handlePostMessageInstance = window.removeEventListener(
-      'message',
-      handlePostMessage(closeSpace, listenerInstance),
-      false
-    )
+    const ff_message_handler = handlePostMessage(closeSpace, listener)
+
+    listener.mount(browser_instance)
+    window.addEventListener('message', ff_message_handler, false)
+
+    window.handleListenerCleanup = () => {
+      console.log('handleListenerCleanup')
+
+      window.removeEventListener('message', ff_message_handler)
+      listener.unmount(browser_instance)
+    }
   },
 
   setup(props) {
@@ -190,10 +186,12 @@ export default {
         spaceId,
         fullAccessApi
       )
+    })
 
-      onUnmounted(() => {
-        window.handlePostMessageInstance()
-      })
+    onUnmounted(() => {
+      console.log('SpaceC unmounted')
+
+      window.handleListenerCleanup()
     })
 
     return {

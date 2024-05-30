@@ -37,9 +37,9 @@ export const initializeFlatfile = (props: ISpace) => {
   const { localSpaceId, spaceUrl, accessTokenLocal, workbook } = toRefs(state)
 
   const initSpace = async () => {
-    closeInstance.value = false;
+    closeInstance.value = false
     try {
-      loading.value = true;
+      loading.value = true
       const result =
         props.publishableKey && !props?.space
           ? await initializeSpace(props as SimpleOnboarding)
@@ -72,7 +72,7 @@ export const initializeFlatfile = (props: ISpace) => {
       state.accessTokenLocal = accessToken
 
       state.workbook = workbook
-      loading.value = false;
+      loading.value = false
     } catch (error) {
       initError.value = error as Error
     }
@@ -84,23 +84,26 @@ export const initializeFlatfile = (props: ISpace) => {
       : h(DefaultError, { error: errorTitle || initError.value })
 
   const loadingElement = LoadingElement || h(SpinnerC)
-  const handleCloseInstance = () => { closeInstance.value = true }
+  const handleCloseInstance = () => {
+    closeInstance.value = true
+    console.log('CLOSE VUE')
+  }
 
   return {
     OpenEmbed: initSpace,
     Space: () => {
       if (closeInstance.value) {
-        return null;
+        return null
       }
-    
+
       if (loading.value) {
-        return loadingElement;
+        return loadingElement
       }
-    
+
       if (initError.value) {
-        return errorElement;
+        return errorElement
       }
-    
+
       if (localSpaceId.value && accessTokenLocal.value && spaceUrl.value) {
         return h(SpaceC, {
           key: localSpaceId.value,
@@ -111,11 +114,11 @@ export const initializeFlatfile = (props: ISpace) => {
           handleCloseInstance,
           apiUrl,
           ...props,
-        });
+        })
       }
-    
-      return null;
-    }
+
+      return null
+    },
   }
 }
 

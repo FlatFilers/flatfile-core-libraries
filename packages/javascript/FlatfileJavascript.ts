@@ -52,7 +52,7 @@ async function createlistener(
   window.addEventListener('message', ff_message_handler, false)
 
   return () => {
-    removeEventListener('message', ff_message_handler)
+    window.removeEventListener('message', ff_message_handler)
     listener.unmount(browser_instance)
   }
 }
