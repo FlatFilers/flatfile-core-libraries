@@ -58,14 +58,13 @@
 </template>
 
 <script>
-import { ref, onMounted, onUnmounted } from 'vue'
-import ConfirmModal from './ConfirmCloseModal.vue'
-import authenticate from '../utils/authenticate'
-import { Browser, FlatfileEvent } from '@flatfile/listener'
-import addSpaceInfo from '../utils/addSpaceInfo'
-import { getIframeStyles, getContainerStyles } from './embeddedStyles'
-import { createSimpleListener } from '../utils/createSimpleListener'
 import { handlePostMessage } from '@flatfile/embedded-utils'
+import { Browser } from '@flatfile/listener'
+import addSpaceInfo from '../utils/addSpaceInfo'
+import authenticate from '../utils/authenticate'
+import { createSimpleListener } from '../utils/createSimpleListener'
+import ConfirmModal from './ConfirmCloseModal.vue'
+import { getContainerStyles, getIframeStyles } from './embeddedStyles'
 
 export default {
   props: {
@@ -139,6 +138,8 @@ export default {
         this.listenerInstance.unmount(this.browserInstance)
       }
     },
+    getContainerStyles,
+    getIframeStyles,
   },
 
   async mounted() {
@@ -155,6 +156,7 @@ export default {
       spaceInfo,
       userInfo,
     } = this
+
     this.browserInstance = new Browser({
       apiUrl,
       accessToken,
@@ -190,13 +192,6 @@ export default {
 
   beforeUnmount() {
     this.cleanupListener()
-  },
-
-  setup() {
-    return {
-      getIframeStyles,
-      getContainerStyles,
-    }
   },
 }
 </script>
