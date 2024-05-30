@@ -22,6 +22,7 @@
       :style="getIframeStyles(iframeStyles)"
       allow="clipboard-read; clipboard-write"
       id="flatfile_iframe"
+      title="Embedded Portal Content"
     ></iframe>
     <div
       @click="showExitWarnModal = true"
@@ -98,10 +99,49 @@ export default {
     ConfirmModal,
   },
 
-  setup(props) {
-    const showExitWarnModal = ref(false)
-    const listenerInstance = ref(null)
-    const ff_message_handler = ref(null)
+  data() {
+    return {
+      showExitWarnModal: false,
+      listenerInstance: null,
+      flatfileMessageHandler: null,
+      browserInstance: null,
+    }
+  },
+  methods: {
+    handleConfirm() {
+      this.closeSpace?.onClose({})
+      this.handleCloseInstance && this.handleCloseInstance()
+    },
+
+    handleCancel() {
+      this.showExitWarnModal = false
+    },
+
+    createListenerInstance() {
+      const simpleListenerSlug =
+        this.workbook?.sheets?.[0].slug ||
+        this.workbook?.sheets?.[0].config.slug ||
+        'slug'
+
+      return (
+        this.listener ||
+        createSimpleListener({
+          onRecordHook: this.onRecordHook,
+          onSubmit: this.onSubmit,
+          slug: simpleListenerSlug,
+        })
+      )
+    },
+
+    cleanupListener() {
+      window.removeEventListener('message', this.flatfileMessageHandler)
+      if (this.listenerInstance) {
+        this.listenerInstance.unmount(this.browserInstance)
+      }
+    },
+  },
+
+  async mounted() {
     const {
       spaceId,
       accessToken,
@@ -114,89 +154,48 @@ export default {
       sidebarConfig,
       spaceInfo,
       userInfo,
-      handleCloseInstance,
-    } = props
-
-    const { listener, onRecordHook, onSubmit } = props
-
-    const handleConfirm = () => {
-      closeSpace?.onClose({})
-      handleCloseInstance && handleCloseInstance()
-    }
-
-    const handleCancel = () => {
-      showExitWarnModal.value = false
-    }
-
-    const createListenerInstance = () => {
-      const simpleListenerSlug =
-        workbook?.sheets?.[0].slug ||
-        workbook?.sheets?.[0].config.slug ||
-        'slug'
-
-      return (
-        listener ||
-        createSimpleListener({
-          onRecordHook,
-          onSubmit,
-          slug: simpleListenerSlug,
-        })
-      )
-    }
-
-    const browser_instance = new Browser({
+    } = this
+    this.browserInstance = new Browser({
       apiUrl,
       accessToken,
       fetchApi: fetch,
     })
 
-    const cleanupListener = () => {
-      window.removeEventListener('message', ff_message_handler.value)
-      if (listenerInstance.value) {
-        listenerInstance.value.unmount(browser_instance)
-      }
-    }
-
     window.CROSSENV_FLATFILE_API_KEY = accessToken
 
-    onMounted(async () => {
-      const fullAccessApi = authenticate(accessToken, apiUrl)
-      await addSpaceInfo(
-        {
-          workbook,
-          environmentId,
-          document,
-          themeConfig,
-          sidebarConfig,
-          spaceInfo,
-          userInfo,
-        },
-        spaceId,
-        fullAccessApi
-      )
+    const fullAccessApi = authenticate(accessToken, apiUrl)
+    await addSpaceInfo(
+      {
+        workbook,
+        environmentId,
+        document,
+        themeConfig,
+        sidebarConfig,
+        spaceInfo,
+        userInfo,
+      },
+      spaceId,
+      fullAccessApi
+    )
 
-      listenerInstance.value = createListenerInstance()
-      ff_message_handler.value = handlePostMessage(
-        closeSpace,
-        listenerInstance.value
-      )
+    this.listenerInstance = this.createListenerInstance()
+    this.flatfileMessageHandler = handlePostMessage(
+      closeSpace,
+      this.listenerInstance
+    )
 
-      listenerInstance.value.mount(browser_instance)
-      window.addEventListener('message', ff_message_handler.value, false)
-    })
+    this.listenerInstance.mount(this.browserInstance)
+    window.addEventListener('message', this.flatfileMessageHandler, false)
+  },
 
-    onUnmounted(() => {
-      cleanupListener()
-    })
+  beforeUnmount() {
+    this.cleanupListener()
+  },
 
+  setup() {
     return {
-      showExitWarnModal,
-      handleConfirm,
-      handleCancel,
       getIframeStyles,
       getContainerStyles,
-      listenerInstance,
-      ff_message_handler,
     }
   },
 }

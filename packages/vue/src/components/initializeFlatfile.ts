@@ -86,7 +86,6 @@ export const initializeFlatfile = (props: ISpace) => {
   const loadingElement = LoadingElement || h(SpinnerC)
   const handleCloseInstance = () => {
     closeInstance.value = true
-    console.log('CLOSE VUE')
   }
 
   return {
