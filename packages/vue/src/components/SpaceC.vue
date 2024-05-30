@@ -98,51 +98,6 @@ export default {
     ConfirmModal,
   },
 
-  async created() {
-    console.log('created')
-    // const {
-    //   listener,
-    //   apiUrl,
-    //   accessToken,
-    //   closeSpace,
-    //   onRecordHook,
-    //   onSubmit,
-    //   workbook,
-    // } = this
-
-    // const simpleListenerSlug =
-    //   workbook?.sheets?.[0].slug || workbook?.sheets?.[0].config.slug || 'slug'
-
-    // this.listenerInstance =
-    //   listener ||
-    //   createSimpleListener({
-    //     onRecordHook,
-    //     onSubmit,
-    //     slug: simpleListenerSlug,
-    //   })
-
-    // const browser_instance = new Browser({
-    //   apiUrl,
-    //   accessToken,
-    //   fetchApi: fetch,
-    // })
-
-    // this.ff_message_handler = handlePostMessage(
-    //   closeSpace,
-    //   this.listenerInstance
-    // )
-
-    // this.listenerInstance.mount(browser_instance)
-    // window.addEventListener('message', this.ff_message_handler, false)
-
-    // this.cleanupListener = () => {
-    //   console.log('Cleaning up listener')
-
-    //   window.removeEventListener('message', ff_message_handler)
-    //   this.listenerInstance.unmount(browser_instance)
-    // }
-  },
-
   setup(props) {
     const showExitWarnModal = ref(false)
     const listenerInstance = ref(null)
@@ -203,7 +158,6 @@ export default {
     }
 
     window.CROSSENV_FLATFILE_API_KEY = accessToken
-    // window.CROSSENV_FLATFILE_API_URL = apiUrl
 
     onMounted(async () => {
       const fullAccessApi = authenticate(accessToken, apiUrl)
