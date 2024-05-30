@@ -98,53 +98,55 @@ export default {
     ConfirmModal,
   },
 
-  data() {
-    return { listenerInstance: null }
-  },
-
   async created() {
-    const {
-      listener,
-      apiUrl,
-      accessToken,
-      closeSpace,
-      onRecordHook,
-      onSubmit,
-      workbook,
-    } = this
+    console.log('created')
+    // const {
+    //   listener,
+    //   apiUrl,
+    //   accessToken,
+    //   closeSpace,
+    //   onRecordHook,
+    //   onSubmit,
+    //   workbook,
+    // } = this
 
-    const simpleListenerSlug =
-      workbook?.sheets?.[0].slug || workbook?.sheets?.[0].config.slug || 'slug'
+    // const simpleListenerSlug =
+    //   workbook?.sheets?.[0].slug || workbook?.sheets?.[0].config.slug || 'slug'
 
-    const listenerInstance =
-      listener ||
-      createSimpleListener({
-        onRecordHook,
-        onSubmit,
-        slug: simpleListenerSlug,
-      })
+    // this.listenerInstance =
+    //   listener ||
+    //   createSimpleListener({
+    //     onRecordHook,
+    //     onSubmit,
+    //     slug: simpleListenerSlug,
+    //   })
 
-    const browser_instance = new Browser({
-      apiUrl,
-      accessToken,
-      fetchApi: fetch,
-    })
+    // const browser_instance = new Browser({
+    //   apiUrl,
+    //   accessToken,
+    //   fetchApi: fetch,
+    // })
 
-    const ff_message_handler = handlePostMessage(closeSpace, listener)
+    // this.ff_message_handler = handlePostMessage(
+    //   closeSpace,
+    //   this.listenerInstance
+    // )
 
-    listener.mount(browser_instance)
-    window.addEventListener('message', ff_message_handler, false)
+    // this.listenerInstance.mount(browser_instance)
+    // window.addEventListener('message', this.ff_message_handler, false)
 
-    window.handleListenerCleanup = () => {
-      console.log('handleListenerCleanup')
+    // this.cleanupListener = () => {
+    //   console.log('Cleaning up listener')
 
-      window.removeEventListener('message', ff_message_handler)
-      listener.unmount(browser_instance)
-    }
+    //   window.removeEventListener('message', ff_message_handler)
+    //   this.listenerInstance.unmount(browser_instance)
+    // }
   },
 
   setup(props) {
     const showExitWarnModal = ref(false)
+    const listenerInstance = ref(null)
+    const ff_message_handler = ref(null)
     const {
       spaceId,
       accessToken,
@@ -160,6 +162,8 @@ export default {
       handleCloseInstance,
     } = props
 
+    const { listener, onRecordHook, onSubmit } = props
+
     const handleConfirm = () => {
       closeSpace?.onClose({})
       handleCloseInstance && handleCloseInstance()
@@ -169,7 +173,37 @@ export default {
       showExitWarnModal.value = false
     }
 
+    const createListenerInstance = () => {
+      const simpleListenerSlug =
+        workbook?.sheets?.[0].slug ||
+        workbook?.sheets?.[0].config.slug ||
+        'slug'
+
+      return (
+        listener ||
+        createSimpleListener({
+          onRecordHook,
+          onSubmit,
+          slug: simpleListenerSlug,
+        })
+      )
+    }
+
+    const browser_instance = new Browser({
+      apiUrl,
+      accessToken,
+      fetchApi: fetch,
+    })
+
+    const cleanupListener = () => {
+      window.removeEventListener('message', ff_message_handler.value)
+      if (listenerInstance.value) {
+        listenerInstance.value.unmount(browser_instance)
+      }
+    }
+
     window.CROSSENV_FLATFILE_API_KEY = accessToken
+    // window.CROSSENV_FLATFILE_API_URL = apiUrl
 
     onMounted(async () => {
       const fullAccessApi = authenticate(accessToken, apiUrl)
@@ -186,12 +220,19 @@ export default {
         spaceId,
         fullAccessApi
       )
+
+      listenerInstance.value = createListenerInstance()
+      ff_message_handler.value = handlePostMessage(
+        closeSpace,
+        listenerInstance.value
+      )
+
+      listenerInstance.value.mount(browser_instance)
+      window.addEventListener('message', ff_message_handler.value, false)
     })
 
     onUnmounted(() => {
-      console.log('SpaceC unmounted')
-
-      window.handleListenerCleanup()
+      cleanupListener()
     })
 
     return {
@@ -200,6 +241,8 @@ export default {
       handleCancel,
       getIframeStyles,
       getContainerStyles,
+      listenerInstance,
+      ff_message_handler,
     }
   },
 }
