@@ -1,5 +1,11 @@
 ## 1.0.5
 
+## 1.0.17
+
+### Patch Changes
+
+- fe61f5d: fix: unmount listener properly on Space close
+
 ## 1.0.16
 
 ### Patch Changes
