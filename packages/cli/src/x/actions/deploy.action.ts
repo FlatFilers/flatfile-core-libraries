@@ -74,18 +74,20 @@ async function handleAgentSelection(
 }
 
 function findActiveTopics(allTopics: ListenerTopics[], client: any, topicsWithListeners = new Set()) {
-  client.listeners?.forEach((listener: ListenerTopics[]) => {
-    const listenerTopic = listener[0]
-    if (listenerTopic === '**') {
-      // Filter cron events out of '**' list - they must be added explicitly
-      const filteredTopics = allTopics.filter(event => !event.startsWith('cron:'))
-      filteredTopics.forEach(topic => topicsWithListeners.add(topic))
-    } else if (listenerTopic.includes('**')) {
-      const [prefix] = listenerTopic.split(':')
-      allTopics.forEach(topic => { if (topic.split(':')[0] === prefix) topicsWithListeners.add(topic) })
-    } else if (allTopics.includes(listenerTopic)) {
-      topicsWithListeners.add(listenerTopic)
-    }
+  client.listeners?.forEach((listener: ListenerTopics | ListenerTopics[]) => {
+    const listenerTopics = Array.isArray(listener[0]) ? listener[0] : [listener[0]]
+    listenerTopics.forEach(listenerTopic => {
+      if (listenerTopic === '**') {
+        // Filter cron events out of '**' list - they must be added explicitly
+        const filteredTopics = allTopics.filter(event => !event.startsWith('cron:'))
+        filteredTopics.forEach(topic => topicsWithListeners.add(topic))
+      } else if (listenerTopic.includes('**')) {
+        const [prefix] = listenerTopic.split(':')
+        allTopics.forEach(topic => { if (topic.split(':')[0] === prefix) topicsWithListeners.add(topic) })
+      } else if (allTopics.includes(listenerTopic)) {
+        topicsWithListeners.add(listenerTopic)
+      }
+    })
   })
   client.nodes?.forEach((nestedClient: any) => findActiveTopics(allTopics, nestedClient, topicsWithListeners))
   return topicsWithListeners
