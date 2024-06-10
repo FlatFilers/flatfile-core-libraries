@@ -256,7 +256,7 @@ module.exports = {
 
     async function route(event) {
       const { domain, topic, context } = event
-      if (domain === 'file' && topic === 'upload:completed') {
+      if (domain === 'file' && topic === 'file:created') {
         return fileUploadHook(context.fileId)
       } else if (
         domain === 'workbook' &&
