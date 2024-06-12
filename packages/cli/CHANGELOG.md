@@ -1,5 +1,15 @@
 # flatfile
 
+## 3.7.0
+
+### Minor Changes
+
+- b1cbbac: Updates Flatfile CLI file upload to listen for new file:created event instead of the deprecated upload:completed event
+
+### Patch Changes
+
+- 0d4089e: Enable event topic inference from arrays
+
 ## 3.6.8
 
 ### Patch Changes
