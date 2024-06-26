@@ -34,6 +34,16 @@ const displayError = (errorTitle: string, errorMessage: string) => {
   return display
 }
 
+/**
+ * Add a listener to handle postMessage events
+ *
+ * @param accessToken
+ * @param apiUrl
+ * @param listener
+ * @param closeSpace
+ * @param onClose
+ * @returns Promise<() => void>
+ */
 async function createlistener(
   accessToken: string,
   apiUrl: string,
