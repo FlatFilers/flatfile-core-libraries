@@ -1,5 +1,11 @@
 # @flatfile/javascript
 
+## 1.3.8
+
+### Patch Changes
+
+- 3af5fbf: Fix some issues with onClose
+
 ## 1.3.7
 
 ### Patch Changes
