@@ -8,7 +8,6 @@ import {
   SheetHandler,
   SimpleOnboarding,
   createWorkbookFromSheet,
-  findDefaultPage,
   handlePostMessage,
   updateDefaultPageInSpace,
 } from '@flatfile/embedded-utils'
@@ -159,13 +158,11 @@ function initializeIFrameConfirmationModal(
         document.body.removeChild(item)
       }
 
-      domElement.remove()
+      closeSpaceNow()
       if (onCancel) {
         onCancel()
       }
-      if (removeMessageListener) removeMessageListener()
-      if (closeSpace && typeof closeSpace.onClose === 'function')
-        closeSpace.onClose({})
+      closeSpace?.onClose?.({})
     },
     () => {
       // If user chooses to stay, we simply hide the confirm modal
@@ -179,20 +176,28 @@ function initializeIFrameConfirmationModal(
   confirmModal.style.display = 'none'
   document.body.appendChild(confirmModal)
 
-  window.addEventListener(
-    'message',
-    (event) => {
+  function closeFlatfileSpace(event: any) {
+    if (event?.data?.flatfileEvent) {
+      const { flatfileEvent } = event.data
       if (
-        event.data &&
-        event.data.topic === 'job:outcome-acknowledged' &&
-        event.data.payload.status === 'complete' &&
-        event.data.payload.operation === closeSpace?.operation
+        flatfileEvent.topic === 'job:outcome-acknowledged' &&
+        flatfileEvent.payload.status === 'complete' &&
+        flatfileEvent.payload.operation === closeSpace?.operation
       ) {
-        domElement.remove()
+        closeSpaceNow()
       }
-    },
-    false
-  )
+    }
+  }
+
+  function closeSpaceNow() {
+    if (removeMessageListener) {
+      removeMessageListener()
+    }
+    window.removeEventListener('message', closeFlatfileSpace, false)
+    domElement.remove()
+  }
+
+  window.addEventListener('message', closeFlatfileSpace, false)
 
   if (displayAsModal) {
     const closeButton = document.createElement('div')

@@ -42,7 +42,7 @@ const BASE_OPTIONS = {
   document: {
     title: 'my title',
     body: 'my body',
-    defaultPage: true
+    defaultPage: true,
   },
   themeConfig: {
     root: {
@@ -80,6 +80,14 @@ window.initializeFlatfile = async (publishableKey) => {
   const flatfileOptions = {
     ...BASE_OPTIONS,
     publishableKey,
+    closeSpace: {
+      operation: 'submitActionFg',
+      onClose: (event) => {
+        console.log(
+          `Close space event payload: ${JSON.stringify(event, null, 2)}`
+        )
+      },
+    },
   }
 
   const space = await initializeFlatfile(flatfileOptions)
@@ -94,6 +102,14 @@ window.preloadFlatfile = () => {
       ...BASE_OPTIONS,
       publishableKey,
       mountElement: 'Flatfile_Preload_Iframe',
+      closeSpace: {
+        operation: 'submitActionFg',
+        onClose: (event) => {
+          console.log(
+            `Close space event payload: ${JSON.stringify(event, null, 2)}`
+          )
+        },
+      },
     }
     await initializeFlatfile(flatfileOptions)
   }
