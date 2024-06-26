@@ -3,11 +3,14 @@ import { ISpace } from '../types'
 
 export const handlePostMessage = (
   closeSpace: ISpace['closeSpace'],
-  listener: FlatfileListener
+  listener: FlatfileListener,
+  onClose?: () => void
 ) => {
   return (message: MessageEvent<{ flatfileEvent: FlatfileEvent }>) => {
     const { flatfileEvent } = message.data
-    if (!flatfileEvent) return
+    if (!flatfileEvent) {
+      return
+    }
     if (
       flatfileEvent.topic === 'job:outcome-acknowledged' &&
       flatfileEvent.payload.status === 'complete' &&
@@ -15,7 +18,8 @@ export const handlePostMessage = (
       closeSpace &&
       typeof closeSpace.onClose === 'function'
     ) {
-      closeSpace.onClose({event: flatfileEvent})
+      closeSpace.onClose({ event: flatfileEvent })
+      onClose?.()
     }
     listener.dispatchEvent(flatfileEvent)
   }
