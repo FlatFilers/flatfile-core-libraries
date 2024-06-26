@@ -1,33 +1,33 @@
 name: Lint
 
 on:
-    pull_request:
-        branches:
-            - main
+  pull_request:
+    branches:
+      - main
 
 concurrency: ${{ github.workflow }}-${{ github.ref }}
 
 jobs:
-    lint:
-        name: Lint
-        runs-on: ubuntu-latest
-        if: ${{ github.head_ref != 'changeset-release/main' }}
-        env:
-          NODE_OPTIONS: --max-old-space-size=4096
-        steps:
-            - name: Checkout Repository
-              uses: actions/checkout@v3
-              with:
-                  fetch-depth: 0
+  lint:
+    name: Lint
+    runs-on: ubuntu-latest
+    if: ${{ github.head_ref != 'changeset-release/main' }}
+    env:
+      NODE_OPTIONS: --max-old-space-size=4096
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
 
-            - name: Setup Node.js 16.x
-              uses: actions/setup-node@v3
-              with:
-                  node-version: 16.x
-                  cache: 'npm'
+      - name: Setup Node.js 18.x
+        uses: actions/setup-node@v3
+        with:
+          node-version: 18.x
+          cache: 'npm'
 
-            - name: Install Dependencies
-              run: npm ci
+      - name: Install Dependencies
+        run: npm ci
 
-            - name: Lint
-              run: npm run lint
+      - name: Lint
+        run: npm run lint
