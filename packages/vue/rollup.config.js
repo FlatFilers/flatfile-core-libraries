@@ -83,6 +83,9 @@ const baseConfig = {
       extensions: ['.js', '.jsx', '.vue'],
       babelHelpers: 'bundled',
     },
+    replace: {
+      preventAssignment: true
+    }
   },
 }
 

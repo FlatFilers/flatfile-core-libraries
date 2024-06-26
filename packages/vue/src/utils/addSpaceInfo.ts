@@ -18,6 +18,18 @@ const addSpaceInfo = async (
     spaceInfo,
     userInfo,
   } = spaceProps
+  let defaultPage
+  let defaultPageSet = false
+  const setDefaultPage = (incomingDefaultPage: any) => {
+    if (defaultPageSet === true) {
+      console.warn(
+        'Default page is already set. Multiple default pages are not allowed.'
+      )
+    } else {
+      defaultPage = incomingDefaultPage
+      defaultPageSet = true
+    }
+  }
 
   try {
     if (workbook) {
@@ -27,23 +39,24 @@ const addSpaceInfo = async (
         ...workbook,
       })
 
+      console.log({ localWorkbook })
+
+      if (workbook.defaultPage) {
+        setDefaultPage({
+          workbook: {
+            workbookId: localWorkbook.data.id,
+          },
+        })
+      } else if (workbook.sheets) {
+        const defaultSheet = workbook.sheets.find((sheet) => sheet.defaultPage)
+        if (defaultSheet && defaultSheet.slug) {
+          setDefaultPage({ workbook: { sheet: defaultSheet.slug } })
+        }
+      }
+
       if (!localWorkbook || !localWorkbook.data || !localWorkbook.data.id) {
         throw new Error('Failed to create workbook')
       }
-    }
-
-    const updatedSpace = await api.spaces.update(spaceId, {
-      ...(environmentId !== undefined && { environmentId }),
-      metadata: {
-        theme: themeConfig,
-        sidebarConfig: sidebarConfig || { showSidebar: false },
-        userInfo,
-        spaceInfo,
-      },
-    })
-
-    if (!updatedSpace) {
-      throw new Error('Failed to update space')
     }
 
     if (document) {
@@ -59,6 +72,27 @@ const addSpaceInfo = async (
       ) {
         throw new Error('Failed to create document')
       }
+      if (document.defaultPage) {
+        setDefaultPage({ documentId: createdDocument.data.id })
+      }
+    }
+
+    const updatedSpace = await api.spaces.update(spaceId, {
+      ...(environmentId !== undefined && { environmentId }),
+      metadata: {
+        theme: themeConfig,
+        sidebarConfig: {
+          ...sidebarConfig,
+          showSidebar: sidebarConfig?.showSidebar ?? false,
+          ...(defaultPage ? { defaultPage } : {}),
+        },
+        userInfo,
+        spaceInfo,
+      },
+    })
+
+    if (!updatedSpace) {
+      throw new Error('Failed to update space')
     }
   } catch (error) {
     const message = getErrorMessage(error)
