@@ -9,7 +9,7 @@ const ENVIRONMENT_ID = 'us_env_1234'
 
 export default defineComponent({
   setup() {
-    const publishableKey = 'pk_ixtxE3L9iVMYgaaxePSn5hGxLffNJhiS'
+    const publishableKey = 'your_key'
     const spaceProps = ref({
       name: 'Trste!',
       publishableKey,
