@@ -194,6 +194,12 @@ function initializeIFrameConfirmationModal(
       removeMessageListener()
     }
     window.removeEventListener('message', closeFlatfileSpace, false)
+    const outerShell = document.querySelector(
+      '.flatfile_outer-shell'
+    ) as HTMLElement
+    if (outerShell) {
+      outerShell.remove()
+    }
     domElement.remove()
   }
 
