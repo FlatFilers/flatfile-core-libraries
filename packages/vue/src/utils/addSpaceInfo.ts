@@ -20,7 +20,11 @@ const addSpaceInfo = async (
   } = spaceProps
   let defaultPage
   let defaultPageSet = false
-  const setDefaultPage = (incomingDefaultPage: any) => {
+  const setDefaultPage = (
+    incomingDefaultPage:
+      | { workbook: { workbookId: string; sheetId?: string } }
+      | { documentId: string }
+  ) => {
     if (defaultPageSet === true) {
       console.warn(
         'Default page is already set. Multiple default pages are not allowed.'
@@ -39,8 +43,6 @@ const addSpaceInfo = async (
         ...workbook,
       })
 
-      console.log({ localWorkbook })
-
       if (workbook.defaultPage) {
         setDefaultPage({
           workbook: {
@@ -49,8 +51,19 @@ const addSpaceInfo = async (
         })
       } else if (workbook.sheets) {
         const defaultSheet = workbook.sheets.find((sheet) => sheet.defaultPage)
-        if (defaultSheet && defaultSheet.slug) {
-          setDefaultPage({ workbook: { sheet: defaultSheet.slug } })
+        if (!defaultSheet || !defaultSheet.slug) {
+          throw new Error('Default sheet not found')
+        }
+        const foundSheet = localWorkbook.data.sheets?.find(
+          (sheet) => sheet.slug === defaultSheet.slug
+        )
+        if (defaultSheet && defaultSheet.slug && foundSheet) {
+          setDefaultPage({
+            workbook: {
+              workbookId: localWorkbook.data.id,
+              sheetId: foundSheet.id,
+            },
+          })
         }
       }
 
