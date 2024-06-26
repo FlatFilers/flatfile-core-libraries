@@ -127,8 +127,8 @@ const createSimpleListener = ({
  * @param exitText
  * @param exitPrimaryButtonText
  * @param exitSecondaryButtonText
+ * @param closeSpaceNow
  * @param closeSpace
- * @param removeMessageListener
  * @param onCancel
  */
 function initializeIFrameConfirmationModal(
