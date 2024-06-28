@@ -28,7 +28,7 @@ export const workbook = {
       name: 'Contacts 2',
       slug: 'contacts2',
       allowAdditionalFields: true,
-      defaultPage: true,
+      // defaultPage: true,
       fields: [
         {
           key: 'firstName',

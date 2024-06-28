@@ -24,7 +24,6 @@ export const initializeSpace = async (
     sheet,
     onSubmit,
   } = flatfileOptions
-
   try {
     if (!publishableKey) {
       throw new Error('Missing required publishable key')

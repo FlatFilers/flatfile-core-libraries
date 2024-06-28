@@ -1,4 +1,4 @@
-import { FlatfileClient } from '@flatfile/api'
+import { Flatfile, FlatfileClient } from '@flatfile/api'
 import {
   NewSpaceFromPublishableKey,
   getErrorMessage,
@@ -36,6 +36,17 @@ const addSpaceInfo = async (
   }
 
   try {
+    if (document) {
+      const createdDocument = await api.documents.create(spaceId, {
+        title: document.title,
+        body: document.body,
+      })
+
+      if (document.defaultPage) {
+        setDefaultPage({ documentId: createdDocument.data.id })
+      }
+    }
+
     if (workbook) {
       const localWorkbook = await api.workbooks.create({
         spaceId,
@@ -51,45 +62,21 @@ const addSpaceInfo = async (
         })
       } else if (workbook.sheets) {
         const defaultSheet = workbook.sheets.find((sheet) => sheet.defaultPage)
-        if (!defaultSheet || !defaultSheet.slug) {
-          throw new Error('Default sheet not found')
+        if (defaultSheet && defaultSheet.slug) {
+          const foundSheet = localWorkbook.data.sheets?.find(
+            (sheet) => sheet.slug === defaultSheet.slug
+          )
+          if (defaultSheet && defaultSheet.slug && foundSheet) {
+            setDefaultPage({
+              workbook: {
+                workbookId: localWorkbook.data.id,
+                sheetId: foundSheet.id,
+              },
+            })
+          }
         }
-        const foundSheet = localWorkbook.data.sheets?.find(
-          (sheet) => sheet.slug === defaultSheet.slug
-        )
-        if (defaultSheet && defaultSheet.slug && foundSheet) {
-          setDefaultPage({
-            workbook: {
-              workbookId: localWorkbook.data.id,
-              sheetId: foundSheet.id,
-            },
-          })
-        }
-      }
-
-      if (!localWorkbook || !localWorkbook.data || !localWorkbook.data.id) {
-        throw new Error('Failed to create workbook')
       }
     }
-
-    if (document) {
-      const createdDocument = await api.documents.create(spaceId, {
-        title: document.title,
-        body: document.body,
-      })
-
-      if (
-        !createdDocument ||
-        !createdDocument.data ||
-        !createdDocument.data.id
-      ) {
-        throw new Error('Failed to create document')
-      }
-      if (document.defaultPage) {
-        setDefaultPage({ documentId: createdDocument.data.id })
-      }
-    }
-
     const updatedSpace = await api.spaces.update(spaceId, {
       ...(environmentId !== undefined && { environmentId }),
       metadata: {
@@ -103,7 +90,6 @@ const addSpaceInfo = async (
         spaceInfo,
       },
     })
-
     if (!updatedSpace) {
       throw new Error('Failed to update space')
     }

@@ -12,7 +12,7 @@ export default defineComponent({
     const publishableKey = 'your_key'
     const spaceProps = ref({
       name: 'Trste!',
-      publishableKey,
+      publishableKey: "",
       workbook,
       listener,
       document: {
