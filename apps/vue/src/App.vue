@@ -4,9 +4,11 @@ import { initializeFlatfile } from '@flatfile/vue'
 import { workbook } from './config'
 import { listener } from './listener'
 
+const FLATFILE_PUBLISHABLE_KEY = 'your_key'
+
 export default defineComponent({
   setup() {
-    const publishableKey = 'your_key'
+    const publishableKey = FLATFILE_PUBLISHABLE_KEY
     const spaceProps = ref({
       // apiUrl: 'https://platform.flatfile.com/api',
       name: 'Trste!',
