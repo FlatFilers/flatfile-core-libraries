@@ -1,5 +1,13 @@
 # @flatfile/javascript
 
+## 1.3.9
+
+### Patch Changes
+
+- 61aced2: Use updated embedded-utils to avoid registering two 'message' event handlers
+- Updated dependencies [61aced2]
+  - @flatfile/embedded-utils@1.3.0
+
 ## 1.3.8
 
 ### Patch Changes

@@ -1,5 +1,11 @@
 # embedded-utils
 
+## 1.3.0
+
+### Minor Changes
+
+- 61aced2: Use updated embedded-utils to avoid registering two 'message' event handlers
+
 ## 1.2.4
 
 ### Patch Changes

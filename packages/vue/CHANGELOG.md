@@ -1,5 +1,13 @@
 ## 1.0.17
 
+## 1.0.18
+
+### Patch Changes
+
+- 77f0ad9: Add setting DefaultPage to Document, Workbook and Sheet
+- Updated dependencies [61aced2]
+  - @flatfile/embedded-utils@1.3.0
+
 ### Patch Changes
 
 - fe61f5d: fix: unmount listener properly on Space close
