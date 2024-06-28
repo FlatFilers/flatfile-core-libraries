@@ -4,13 +4,11 @@ import { initializeFlatfile } from '@flatfile/vue'
 import { workbook } from './config'
 import { listener } from './listener'
 
-const SPACE_ID = 'us_sp_12314'
-const ENVIRONMENT_ID = 'us_env_1234'
-
 export default defineComponent({
   setup() {
     const publishableKey = 'your_key'
     const spaceProps = ref({
+      // apiUrl: 'https://platform.flatfile.com/api',
       name: 'Trste!',
       publishableKey,
       workbook,
@@ -32,12 +30,9 @@ export default defineComponent({
         name: 'my space name',
       },
       displayAsModal: true,
-      spaceBody: {
-        metadata: {
-          sidebarConfig: {
-            showSidebar: true,
-          },
-        },
+      spaceBody: {},
+      sidebarConfig: {
+        showSidebar: true,
       },
     })
 
