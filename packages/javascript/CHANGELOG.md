@@ -12,7 +12,7 @@
 
 ### Patch Changes
 
-- 3af5fbf: Fix some issues with `closeSpace.onClose()`
+- 3af5fbf: Improved functionality and fixed some issues with `closeSpace.onClose()`
 
 ## 1.3.7
 
