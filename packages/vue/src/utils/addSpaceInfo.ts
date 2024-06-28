@@ -1,4 +1,4 @@
-import { Flatfile, FlatfileClient } from '@flatfile/api'
+import { FlatfileClient } from '@flatfile/api'
 import {
   NewSpaceFromPublishableKey,
   getErrorMessage,

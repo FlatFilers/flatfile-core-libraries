@@ -23,7 +23,7 @@ export const initializeFlatfile = (props: ISpace) => {
     loading: LoadingElement,
     apiUrl = 'https://platform.flatfile.com/api',
   } = props
-  console.log('initializeFlatfile', { props })
+
   const initError = ref<Error | null>(null)
   const closeInstance = ref<boolean>(false)
   const loading = ref<boolean>(false)
