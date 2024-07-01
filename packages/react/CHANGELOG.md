@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.9.10
+
+### Patch Changes
+
+- c5dda87: Prevents Flatfile modal from blocking scroll on some browsers when closed.
+
 ## 7.9.9
 
 ### Patch Changes
