@@ -1,4 +1,11 @@
-import React, { JSX, useContext, useEffect, useState } from 'react'
+import React, {
+  JSX,
+  useContext,
+  useEffect,
+  useLayoutEffect,
+  useRef,
+  useState,
+} from 'react'
 import { IFrameTypes } from '../types'
 import { useIsIFrameLoaded } from '../utils/useIsIFrameLoaded'
 import { CloseButton } from './CloseButton'
@@ -16,14 +23,14 @@ export const EmbeddedIFrameWrapper = (
   const [showExitWarnModal, setShowExitWarnModal] = useState(false)
   const {
     closeSpace,
-    iframeStyles,
-    mountElement = 'flatfile_iFrameContainer',
-    exitText = 'Are you sure you want to exit? Any unsaved changes will be lost.',
-    exitTitle = 'Close Window',
+    displayAsModal = true,
     exitPrimaryButtonText = 'Yes, exit',
     exitSecondaryButtonText = 'No, stay',
-    displayAsModal = true,
+    exitText = 'Are you sure you want to exit? Any unsaved changes will be lost.',
+    exitTitle = 'Close Window',
     handleCloseInstance,
+    iframeStyles,
+    mountElement = 'flatfile_iFrameContainer',
     preload = true,
     spaceUrl,
   } = props
@@ -58,19 +65,31 @@ export const EmbeddedIFrameWrapper = (
   const openVisible = (open: boolean): React.CSSProperties => ({
     opacity: ready && open ? 1 : 0,
     pointerEvents: ready && open ? 'all' : 'none',
+    visibility: open ? 'visible' : 'hidden',
+    left: ready && open ? '0' : '-200vw',
+    top: ready && open ? '0' : '-200vh',
   })
-
   const iframeSrc = preload ? preloadUrl : spaceLink
+  const modalRef = useRef<HTMLDivElement | null>(null)
+
+  useLayoutEffect(() => {
+    if (modalRef.current) {
+      const containerStyles = getContainerStyles(displayAsModal)
+      Object.assign(modalRef.current.style, {
+        ...containerStyles,
+        ...openVisible(open),
+        width: ready && open ? containerStyles.width : '0',
+        height: ready && open ? containerStyles.height : '0',
+      })
+    }
+  }, [open, ready, modalRef.current])
 
   return (
     <div
       className={`flatfile_iframe-wrapper ${
         displayAsModal ? 'flatfile_displayAsModal' : ''
       }`}
-      style={{
-        ...getContainerStyles(displayAsModal),
-        ...openVisible(open),
-      }}
+      ref={modalRef}
       data-testid="space-contents"
     >
       {showExitWarnModal && (

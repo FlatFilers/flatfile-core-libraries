@@ -16,15 +16,13 @@ export const getIframeStyles = (styles: React.CSSProperties) => {
 export const getContainerStyles = (isModal: boolean): React.CSSProperties => {
   if (isModal) {
     return {
-      width: 'calc(100% - 100px)',
-      height: 'calc(100vh - 40px)',
-      position: 'fixed',
-      top: 0,
-      left: 0,
-      zIndex: 1000,
       backgroundColor: 'rgba(0, 0, 0, 0.1)',
       display: 'flex',
+      height: 'calc(100vh - 40px)',
+      width: 'calc(100% - 100px)',
       padding: '50px',
+      position: 'fixed',
+      zIndex: '1000',
     }
   } else {
     return {

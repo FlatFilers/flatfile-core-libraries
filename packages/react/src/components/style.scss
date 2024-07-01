@@ -45,7 +45,7 @@
   font-size: var(--size-base);
   line-height: 1.5;
   margin: 0;
-  transition: 0.25s ease-in-out;
+  transition: opacity 0.25s ease-in-out;
 }
 
 .flatfile-close-button {
