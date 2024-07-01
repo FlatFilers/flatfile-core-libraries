@@ -14,23 +14,21 @@ export const getIframeStyles = (styles: React.CSSProperties) => {
 }
 
 export const getContainerStyles = (isModal: boolean): React.CSSProperties => {
-  if (isModal) {
-    return {
-      backgroundColor: 'rgba(0, 0, 0, 0.1)',
-      display: 'flex',
-      height: 'calc(100vh - 40px)',
-      width: 'calc(100% - 100px)',
-      padding: '50px',
-      position: 'fixed',
-      zIndex: '1000',
-    }
-  } else {
-    return {
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
-    }
-  }
+  return isModal
+    ? {
+        backgroundColor: 'rgba(0, 0, 0, 0.1)',
+        display: 'flex',
+        height: 'calc(100vh - 40px)',
+        width: 'calc(100% - 100px)',
+        padding: '50px',
+        position: 'fixed',
+        zIndex: '1000',
+      }
+    : {
+        width: '100%',
+        height: '100%',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+      }
 }
