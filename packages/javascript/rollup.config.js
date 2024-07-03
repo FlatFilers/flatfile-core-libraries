@@ -1,13 +1,13 @@
-import { dts } from 'rollup-plugin-dts'
 import commonjs from '@rollup/plugin-commonjs'
-import css from 'rollup-plugin-import-css'
-import dotenv from 'dotenv'
 import json from '@rollup/plugin-json'
-import peerDepsExternal from 'rollup-plugin-peer-deps-external'
 import resolve from '@rollup/plugin-node-resolve'
 import sucrase from '@rollup/plugin-sucrase'
 import terser from '@rollup/plugin-terser'
 import url from '@rollup/plugin-url'
+import dotenv from 'dotenv'
+import { dts } from 'rollup-plugin-dts'
+import css from 'rollup-plugin-import-css'
+import peerDepsExternal from 'rollup-plugin-peer-deps-external'
 
 dotenv.config()
 
@@ -25,6 +25,7 @@ const external = [
 // Common plugins function
 function commonPlugins(umd = true) {
   return [
+    json(),
     umd
       ? peerDepsExternal({
           includeDependencies: true,
@@ -35,7 +36,6 @@ function commonPlugins(umd = true) {
       exclude: ['node_modules/**'],
       transforms: ['typescript'],
     }),
-    json(),
     commonjs(),
     css(),
     url({
@@ -78,7 +78,6 @@ const config = [
       name: 'FlatFileJavaScript',
     },
     plugins: commonPlugins(false),
-    include: external,
   },
   {
     input: 'index.ts',

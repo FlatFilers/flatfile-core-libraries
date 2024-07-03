@@ -2,6 +2,16 @@ import { createIframe, initializeFlatfile } from '@flatfile/javascript'
 
 import { config } from './config'
 import { listener } from './listener'
+
+const overrideLanguageSelect = document.getElementById('override-language')
+overrideLanguageSelect.addEventListener('change', () => {
+  localStorage.setItem('overrideLanguage', overrideLanguageSelect.value)
+})
+const overrideLanguage = localStorage.getItem('overrideLanguage')
+if (overrideLanguage) {
+  overrideLanguageSelect.value = overrideLanguage
+}
+
 /*
 // ---Get a space to reuse it, load automatically
 const flatfile = new FlatfileClient({
@@ -33,6 +43,7 @@ getSpace()
 */
 
 const BASE_OPTIONS = {
+  languageOverride: overrideLanguageSelect.value,
   spaceBody: { name: 'Hello' },
   // listener,
   // Additional parameters...

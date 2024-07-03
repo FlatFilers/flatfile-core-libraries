@@ -1,0 +1,9 @@
+{
+  "host": {
+    "errorTitle": "Something went wrong",
+    "exitPrimaryButtonText": "Yes, exit",
+    "exitSecondaryButtonText": "No, stay",
+    "exitText": "Are you sure you would like to close this window? This will end your current data import session.",
+    "exitTitle": "Close Window"
+  }
+}
