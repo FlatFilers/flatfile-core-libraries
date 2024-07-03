@@ -1,6 +1,28 @@
 import { ISpace } from '@flatfile/embedded-utils'
 import { createModal } from './createModal'
 
+/**
+ * @description Creates an HTML division element with a heading and paragraph containing
+ * an error message for display to the user.
+ * 
+ * @param {string} errorTitle - 1-line heading for the error message to be displayed
+ * inside the `<h1>` element, which is appended to the parent HTML element.
+ * 
+ * @param {string} errorMessage - error message to be displayed next to the error
+ * title in the generated container.
+ * 
+ * @returns {HTMLDivElement} a HTML div element containing an error heading and message.
+ * 
+ * 	* `display`: This is an HTML `div` element that contains the error message and
+ * heading. It has a class attribute set to `"ff_error_container"`.
+ * 	* `title`: This is an HTML `h1` element that contains the error title. It has a
+ * class attribute set to `"ff_error_heading"`.
+ * 	* `error`: This is an HTML `p` element that contains the error message. It has a
+ * class attribute set to `"ff_error_text"`
+ * 
+ * 	Overall, this function creates a basic structure for displaying an error message
+ * and heading in a HTML container element.
+ */
 export const displayError = (errorTitle: string, errorMessage: string) => {
   const display = document.createElement('div')
   display.classList.add('ff_error_container')
