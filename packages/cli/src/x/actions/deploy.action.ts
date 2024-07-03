@@ -73,36 +73,50 @@ async function handleAgentSelection(
   }
 }
 
-function findActiveTopics(allTopics: ListenerTopics[], client: any, topicsWithListeners = new Set()) {
+function findActiveTopics(
+  allTopics: ListenerTopics[],
+  client: any,
+  topicsWithListeners = new Set()
+) {
   client.listeners?.forEach((listener: ListenerTopics | ListenerTopics[]) => {
-    const listenerTopics = Array.isArray(listener[0]) ? listener[0] : [listener[0]]
-    listenerTopics.forEach(listenerTopic => {
+    const listenerTopics = Array.isArray(listener[0])
+      ? listener[0]
+      : [listener[0]]
+    listenerTopics.forEach((listenerTopic) => {
       if (listenerTopic === '**') {
         // Filter cron events out of '**' list - they must be added explicitly
-        const filteredTopics = allTopics.filter(event => !event.startsWith('cron:'))
-        filteredTopics.forEach(topic => topicsWithListeners.add(topic))
+        const filteredTopics = allTopics.filter(
+          (event) => !event.startsWith('cron:')
+        )
+        filteredTopics.forEach((topic) => topicsWithListeners.add(topic))
       } else if (listenerTopic.includes('**')) {
         const [prefix] = listenerTopic.split(':')
-        allTopics.forEach(topic => { if (topic.split(':')[0] === prefix) topicsWithListeners.add(topic) })
+        allTopics.forEach((topic) => {
+          if (topic.split(':')[0] === prefix) topicsWithListeners.add(topic)
+        })
       } else if (allTopics.includes(listenerTopic)) {
         topicsWithListeners.add(listenerTopic)
       }
     })
   })
-  client.nodes?.forEach((nestedClient: any) => findActiveTopics(allTopics, nestedClient, topicsWithListeners))
+  client.nodes?.forEach((nestedClient: any) =>
+    findActiveTopics(allTopics, nestedClient, topicsWithListeners)
+  )
   return topicsWithListeners
 }
 
-async function getActiveTopics(file: string): Promise<Flatfile.EventTopic[]>{
+async function getActiveTopics(file: string): Promise<Flatfile.EventTopic[]> {
   const allTopics = Object.values(Flatfile.events.EventTopic)
 
   let mount
   try {
     mount = await import(url.pathToFileURL(file).href)
-  } catch(e) {
+  } catch (e) {
     return program.error(messages.error(e))
   }
-  return Array.from(findActiveTopics(allTopics, mount.default)) as Flatfile.EventTopic[];
+  return Array.from(
+    findActiveTopics(allTopics, mount.default)
+  ) as Flatfile.EventTopic[]
 }
 
 export async function deployAction(
@@ -164,8 +178,10 @@ export async function deployAction(
         path.basename(file!)
       )
     )
-
+    const fileContent = fs.readFileSync(file, 'utf8')
+    console.log({ file, fileContent })
     const entry = result.split(path.sep).join(path.posix.sep)
+    // console.log({ entry })
     fs.writeFileSync(path.join(outDir, '_entry.js'), entry, 'utf8')
     const buildingSpinner = ora({
       text: `Building deployable code package`,
@@ -215,7 +231,9 @@ export async function deployAction(
 
       const deployFile = path.join(outDir, 'deploy.js')
       fs.writeFileSync(deployFile, code, 'utf8')
-      const activeTopics: Flatfile.EventTopic[] = await getActiveTopics(deployFile)
+      const activeTopics: Flatfile.EventTopic[] = await getActiveTopics(
+        deployFile
+      )
 
       if (err) {
         return program.error(messages.error(err))
