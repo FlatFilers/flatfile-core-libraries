@@ -2,9 +2,6 @@ sourceDirectory: 'packages'
 destinationRepo: 'flatfilers/guides'
 destinationDirectory: 'libraries'
 packages:
-  - name: '@flatfile/angular'
-    dir: angular
-    type: wrappers
   - name: 'flatfile'
     dir: cli
     type: core
