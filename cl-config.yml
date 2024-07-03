@@ -1,0 +1,22 @@
+sourceDirectory: 'packages'
+destinationRepo: 'flatfilers/guides'
+destinationDirectory: 'libraries'
+packages:
+  - name: '@flatfile/angular'
+    dir: angular
+    type: wrappers
+  - name: 'flatfile'
+    dir: cli
+    type: core
+  - name: '@flatfile/javascript'
+    dir: wrappers
+    type: wrappers
+  - name: '@flatfile/listener'
+    dir: listener
+    type: listener 
+  - name: '@flatfile/react'
+    dir: react
+    type: wrappers
+  - name: '@flatfile/vue'
+    dir: vue
+    type: wrappers
