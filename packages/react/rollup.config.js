@@ -47,7 +47,10 @@ function commonPlugins(browser, umd = false) {
       fileName: '[dirname][name][extname]',
     }),
     PROD ? terser() : null,
-    postcss(),
+    postcss({
+      extract: false,
+      inject: false,
+    }),
   ]
 }
 

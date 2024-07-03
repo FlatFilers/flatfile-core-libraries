@@ -1,6 +1,4 @@
 import React from 'react'
-// TODO: make this style import configurable
-import './style.scss'
 
 export const ConfirmCloseModal = ({
   onConfirm,

@@ -1,19 +1,22 @@
 'use client'
-import { workbook } from '@/utils/workbook'
 import { document } from '@/utils/document'
+import { workbook } from '@/utils/workbook'
+import { recordHook } from '@flatfile/plugin-record-hook'
 import {
+  attachStyleSheet,
+  Document,
+  Sheet,
+  Space,
+  useEvent,
   useFlatfile,
   useListener,
   usePlugin,
-  useEvent,
   Workbook,
-  Space,
-  Document,
-  Sheet,
 } from '@flatfile/react'
-import React, { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import styles from './page.module.css'
-import { recordHook } from '@flatfile/plugin-record-hook'
+
+attachStyleSheet({ nonce: 'flatfile-abc123' }) // add custom nonce
 
 const App = () => {
   const { open, openPortal, closePortal } = useFlatfile()
