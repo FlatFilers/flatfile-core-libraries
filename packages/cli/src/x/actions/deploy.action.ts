@@ -21,34 +21,27 @@ const readPackageJson = util.promisify(require('read-package-json'))
 type ListenerTopics = Flatfile.EventTopic | '**'
 
 /**
- * @description 1) returns an selected agent from a list of agents if multiple agents
- * are present in the environment and a slug is not provided, 2) provides information
- * about having multiple agents in the environment, 3) confirms user selection of an
- * agent to deploy to, 4) allows user to select an agent from a list, and 5) returns
- * the selected agent.
+ * @description Handles selecting an agent from a list of agents based on user input.
+ * If multiple agents are provided, it prompts the user to select one. Otherwise, it
+ * returns the first or only agent depending on the input.
  * 
- * @param {Flatfile.Agent[] | undefined} data - array of agents to deploy from, and
- * it allows the function to check if there are multiple agents present in the
- * environment before prompting the user to select one.
+ * @param {Flatfile.Agent[] | undefined} data - list of Flatfile.Agent objects that
+ * can be filtered or selected by the user based on their slugs or other properties.
  * 
- * @param {string | undefined} slug - input of the selected agent to deploy if only
- * one is available.
+ * @param {string | undefined} slug - identifier assigned to each agent in the
+ * environment, which the function uses to find and return the selected agent.
  * 
- * @param {ora.Ora} validatingSpinner - ora Ora object that provides a spinner for
- * validating user inputs, showing messages to the user in real-time based on the
- * success or failure of their inputs.
+ * @param {ora.Ora} validatingSpinner - ora spinner used to display informative failure
+ * messages when multiple agents are found in the environment.
  * 
- * @returns {Flatfile.Agent element} an array of agents selected by the user.
+ * @returns {Flatfile.Agent} a selected agent from a list of multiple agents, based
+ * on user input.
  * 
- * 	* If `data` is defined and has multiple elements, and a slug is already provided,
- * the function returns the agent with the matching slug.
- * 	* If there are multiple agents and no slug is provided, the function prompts the
- * user to select an agent and returns the selected agent.
- * 	* If there is only one agent, the function returns the first element of the `data`
- * array.
+ * 	* `data`: The found agent or `undefined` if there's no data.
+ * 	* `slug`: The selected slug or `<no-slug>` if no slug was provided.
+ * 	* `validatingSpinner`: The Ora spinner used for validating the selection process.
  * 
- * 	In summary, the output returned by the `handleAgentSelection` function depends
- * on the input provided and whether a slug is already provided or not.
+ * 	The output is directly returned without any additional summaries or information.
  */
 async function handleAgentSelection(
   data: Flatfile.Agent[] | undefined,
@@ -104,32 +97,23 @@ async function handleAgentSelection(
 }
 
 /**
- * @description Iterates through client.listeners and client.nodes, filtering and
- * adding topics to a Set of active topics based on their prefixes. It returns the
- * filtered topics with listeners attached.
+ * @description Processes a list of listener topics and sub-clients to filter and
+ * identify active topics based on inclusion patterns. It iterates over the listeners,
+ * nodes, and topics to find matching and non-matching patterns and add them to a Set
+ * data structure for further processing.
  * 
- * @param {ListenerTopics[]} allTopics - list of all available topics to be processed
- * by the function, which is then filtered and transformed based on the client's
- * listeners to generate the active topics with listeners.
+ * @param {ListenerTopics[]} allTopics - list of all topics that the listener is
+ * interested in, which are filtered and added to a new Set data structure to form
+ * the active topics list returned by the function.
  * 
- * @param {any} client - client that will have its listeners searched for active
- * topics, and it is used to recursively call the function on nested clients.
+ * @param {any} client - client to search for listeners in, and its `listeners`
+ * property is traversed to find active topics.
  * 
- * @param {new_expression} topicsWithListeners - Set of active topics after filtering
- * out duplicates and removing cron events explicitly added, and it is updated at
- * each iteration with new topics found in listeners.
+ * @param {new_expression} topicsWithListeners - Set of all the active topics that
+ * have listeners attached to them after filtering out any cron events and iterating
+ * over nested clients.
  * 
- * @returns {Set} a new `Set` containing the active topics and their listeners.
- * 
- * 	* `topicsWithListeners`: A `Set` containing the active topics that have listeners
- * registered on them.
- * 
- * 	Explanation:
- * 	This set contains the active topics that have listeners registered on them after
- * filtering out cron events and adding them to the set using the `includes()` method.
- * 
- * 	Note: The function does not destructure the output directly, but rather explains
- * its properties for understanding its behavior.
+ * @returns {object} a set of top-level and nested topics with listeners.
  */
 function findActiveTopics(
   allTopics: ListenerTopics[],
@@ -164,14 +148,13 @@ function findActiveTopics(
 }
 
 /**
- * @description Imports a file, then uses `findActiveTopics` to identify topics that
- * are active based on mount points. Finally, it returns the identified active topics
- * as a promise.
+ * @description Retrieves a list of active topics from a given file and returns them
+ * as an array of `Flatfile.EventTopic`.
  * 
- * @param {string} file - file to be scanned for active topics.
+ * @param {string} file - Flatfile file to be analyzed for active topics, and the
+ * function retrieves and returns an array of event topics from that file.
  * 
- * @returns {Promise<Flatfile.EventTopic[]>} an array of `Flatfile.EventTopic` objects
- * representing the active topics in the provided file.
+ * @returns {Promise<Flatfile.EventTopic[]>} an array of Flatfile event topics.
  */
 async function getActiveTopics(file: string): Promise<Flatfile.EventTopic[]> {
   const allTopics = Object.values(Flatfile.events.EventTopic)
@@ -188,28 +171,23 @@ async function getActiveTopics(file: string): Promise<Flatfile.EventTopic[]> {
 }
 
 /**
- * @description Generates high-quality documentation for code given to it, by:
+ * @description * Deploys an event listener to a Flatfile environment using an
+ * authenticated API client
+ * * Creates a build package from a source file, validates it, and deploys it to the
+ * environment.
  * 
- * * Checking if a directory exists and creating it if needed.
- * * Reading a package.json file and installing any missing dependencies.
- * * Creating an authenticated API client using an API key.
- * * Validating the code package.
- * * Selecting a Flatfile agent based on slug or environment name.
- * * Deploying an event listener to Flatfile using the selected agent.
- * 
- * @param {string | null | undefined} file - entry file containing the Flatfile event
- * listener code, which is read and compiled into a deployable package for Flatfile
- * environments.
+ * @param {string | null | undefined} file - entry file for Flatfile, which is used
+ * to compile and deploy an event listener code package.
  * 
  * @param {Partial<{
  *     slug: string
  *     topics: string
  *     apiUrl: string
  *     token: string
- *   }>} options - Optional partial state of the agent to deploy, which includes the
- * slug, topics, API URL, and token.
+ *   }>} options - 2-level nested object that allows passing various deployment
+ * configuration settings, including the `slug`, `topics`, `apiUrl`, and `token` properties.
  * 
- * @returns {Promise<void>} a successful deployment of an event listener to Flatfile.
+ * @returns {Promise<void>} a list of events generated by the deployed event listener.
  */
 export async function deployAction(
   file?: string | null | undefined,
