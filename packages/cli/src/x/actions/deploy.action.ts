@@ -220,9 +220,10 @@ export async function deployAction(
     }).start()
 
     try {
-      const { err, code } = await ncc(path.join(outDir, '_entry.js'), {
+      const { err, code, map } = await ncc(path.join(outDir, '_entry.js'), {
         minify: liteMode,
         target: 'es2020',
+        sourceMap: true,
         cache: false,
         // TODO: add debug flag to add this and other debug options
         quiet: true,
@@ -231,6 +232,8 @@ export async function deployAction(
 
       const deployFile = path.join(outDir, 'deploy.js')
       fs.writeFileSync(deployFile, code, 'utf8')
+      const mapFile = path.join(outDir, 'deploy.js.map')
+      fs.writeFileSync(mapFile, map, 'utf8')
       const activeTopics: Flatfile.EventTopic[] = await getActiveTopics(
         deployFile
       )
@@ -245,6 +248,9 @@ export async function deployAction(
           topics: activeTopics,
           compiler: 'js',
           source: code,
+          // TODO: Add this to the Agent Table
+          // @ts-ignore
+          map,
           slug: slug ?? selectedAgent?.slug,
         },
       })
