@@ -86,15 +86,17 @@ const localTranslations: Record<SupportedLanguage, Translations | any> = {
 }
 
 /**
- * @description Sets up an instance of `i18n` using the `LanguageDetector` and provides
- * fallback languages. It also handles missing keys and adds them to a list for
- * logging. Additionally, it adds resource bundles for specified localization files.
+ * @description Sets up i18n for the given languageOverride optionally provided,
+ * preloads two languages (the default one and the specified one), and adds resources
+ * for the given localTranslations object or language override. It also logs any
+ * missing keys to the console if they are not already logged.
  * 
- * @param {string} languageOverride - language to be initialized for the i18n instance,
- * and is used to customize the initialization process when it's different from the
- * system language.
+ * @param {string} languageOverride - language to be initialized and used as a fallback
+ * language when no language is provided in the URL or through other means, and it
+ * defaults to the value of `navigator.language` if not provided.
  * 
- * @returns {object} an initialized i18n instance with preloaded language resources.
+ * @returns {object} an initialized i18n object with added missing key handler and
+ * resource bundles for the provided languages.
  */
 export const getI18n = (languageOverride?: string) => {
   const loggedMissingKeys = new Set<string>()
@@ -108,20 +110,21 @@ export const getI18n = (languageOverride?: string) => {
     },
     saveMissing: true, //required for missing key handler
     /**
-     * @description Checks if a given key is valid and logs an error message to the console
-     * if it's not. If the key is missing, it adds it to a logging list for subsequent handling.
+     * @description Checks if a given key is present in an array of translations, logs
+     * an error message if it's missing and adds it to a list of missed keys for further
+     * processing.
      * 
-     * @param {readonly string[]} lng - 𝔄 for which to check the provided key is not a
-     * regular string or filename, and it is used to identify the language being checked.
+     * @param {readonly string[]} lng - language code of the translations, which is a
+     * readonly string array.
      * 
-     * @param {string} ns - namespace for which the function is checking the existence
-     * of the key.
+     * @param {string} ns - namespace of the translations, which is used to check if the
+     * key provided is within the specified namespace.
      * 
-     * @param {string} key - property that needs to be validated in order for the function
-     * to return successfully without any errors.
+     * @param {string} key - string value that will be used as a key for a translation
+     * in the given namespace.
      * 
-     * @param {any} fallbackValue - default value that will be used to display if the key
-     * is missing or cannot be translated.
+     * @param {any} fallbackValue - value that will be used as the default value for the
+     * key if it is not found in the translations or if there is an error checking the key.
      */
     missingKeyHandler: (
       lng: readonly string[],
@@ -157,14 +160,12 @@ export const getI18n = (languageOverride?: string) => {
 
 /**
  * @description Checks if a given string is a valid file name for translations by
- * checking if it matches a pattern of accepted file extensions separated by a pipe
- * | and a regex that matches any string starting with a letter or underscore followed
- * by any characters except those prohibited.
+ * matching against an extensions pattern and a filename regular expression.
  * 
- * @param {string} str - given string to be checked for extensions.
+ * @param {string} str - given string to be checked for file extension pattern matches.
  * 
- * @returns {boolean} a boolean indicating whether a given string represents a valid
- * translation file name.
+ * @returns {boolean} a boolean value indicating whether a given string represents a
+ * valid file name.
  */
 const isTranslationFileName = (str: string) => {
   const extensionsPattern = ['json'].join('|')

@@ -10,19 +10,21 @@ import { createSimpleListener, createlistener } from './listener'
 import { displayError, initializeIFrameConfirmationModal } from './utils'
 
 /**
- * @description Sets up an Flatfile space for users. It generates a new space and
- * workbook if one does not exist, obtains the required resources, initializes the
- * embedded UI, and sets up listeners for authentication.
+ * @description Generates high-quality documentation for given code and handles
+ * onboarding for a Flatfile application, creating a space and workbook as needed,
+ * obtaining an access token for authentication with the Flatfile API, and displaying
+ * initial resources to the user.
  * 
- * @param {SimpleOnboarding | ISpace} options - flatfile configuration object that
- * provides various options for initialization, including display settings, space ID
- * and access token, listeners, and more.
+ * @param {SimpleOnboarding | ISpace} options - 3-level object containing information
+ * about the space creation, including properties like publishableKey, displayAsModal,
+ * baseUrl, and API URL, which are used to generate the corresponding values for the
+ * mount iframe configuration.
  * 
- * @returns {object} an object containing the space ID and other properties.
+ * @returns {object} an object containing the ID of the created space.
  */
 /**
- * @description Performs cleanup operations on an HTML document by removing event
- * listeners, DOM elements, and an iframe wrapper.
+ * @description Clears various elements associated with a web application. It removes
+ * message listeners, a specific HTML element, and an IFRAME wrapper.
  */
 export async function startFlatfile(options: SimpleOnboarding | ISpace) {
   function closeSpaceNow() {

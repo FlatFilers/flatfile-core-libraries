@@ -24,21 +24,14 @@ const external = [
 
 // Common plugins function
 /**
- * @description Returns an array of plugins for a web build configuration. It includes:
+ * @description Generates a configuration array for a JavaScript build tool, comprising
+ * various plugins for tasks such as TypeScript transformation, CSS compilation, and
+ * production mode optimization with Terser.
  * 
- * * `json()`: A JSON plugin
- * * `peerDepsExternal()`: An external plugin for peer dependencies
- * * `resolve()`: A resolution plugin for browser and TypeScript extensions
- * * `sucrase()`: A transform plugin for Typescript files
- * * `commonjs()`: A CommonJS plugin
- * * `css()`: A CSS plugin
- * * `url()`: An URl plugin with custom filtering
+ * @param {true} umd - if condition for whether to include the `peerDepsExternal`
+ * plugin or not.
  * 
- * @param {true} umd - UMD configuration for the plugins in the function, which
- * determines whether to include peer dependencies externaly or not.
- * 
- * @returns {array} an array of seven plugins for handling different aspects of
- * JavaScript code.
+ * @returns {array} an array of seven plugins for building and bundling JavaScript code.
  */
 function commonPlugins(umd = true) {
   return [

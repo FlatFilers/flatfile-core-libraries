@@ -45,38 +45,50 @@ export async function createlistener(
 }
 
 /**
- * @description Creates a Flatfile listener that handles simple submissions and record
- * hooks. It uses the `FlatfileClient` class to interact with the Flatfile API and
- * listens for job "ready" events to handle submission and record hooks.
+ * @description Creates a Flatfile listener for the given slug, using the `FlatfileClient`
+ * API to interact with the Flatfile platform. It sets up an onRecordHook and an
+ * onSubmit action, if provided, and then filters the events emitted by the client
+ * to handle the onSubmit action.
  * 
- * @param {SimpleListenerType} .onRecordHook - hook function that is triggered after
- * each record has been processed during data ingestion, allowing for custom behavior
- * or actions to be taken on individual records.
+ * @param {SimpleListenerType} .onRecordHook - function to be called when a record
+ * is received, and allows for custom logic to be added before the record is processed
+ * by the Flatfile listener.
  * 
- * @param {SimpleListenerType} .onSubmit - onSubmit callback function that will be
- * called after a job is submitted, allowing it to process and respond to the event.
+ * @param {SimpleListenerType} .onSubmit - callback function that will be called when
+ * the submit action is completed successfully, with the `job`, `sheet`, and `event`
+ * objects as arguments.
  * 
- * @param {SimpleListenerType} .slug - unique identifier for the space where the
- * Flatfile data will be stored.
+ * @param {SimpleListenerType} .slug - slug of the workbook, which is used to identify
+ * the specific workbook for which the Flatfile listener is created and configured.
  * 
- * @param {SimpleListenerType} .submitSettings - 3rd party application's settings for
- * submitting data to the server, such as whether or not to delete the space after submission.
+ * @param {SimpleListenerType} .submitSettings - submit settings for the Flatfile
+ * listener, allowing you to customize how the listener handles submitted jobs.
  * 
- * @returns {FlatfileListener} a FlatfileClient instance that can be used to handle
- * Flatfile events.
+ * @returns {FlatfileListener} a Flatfile listener that listens for simple submissions
+ * and performs the specified actions on job ready events.
  * 
- * 	* `client`: A new FlatfileClient instance is created to handle listener functions.
- * 	* `use`: If `onRecordHook` is defined, a record hook is used to process records.
- * The hook function takes two arguments: `record` (the current record being processed)
- * and `event` (the event emitted by the flatfile client).
- * 	* `onSubmitSettings`: An object containing submit settings, which are merged with
- * the default settings provided in the `SimpleListenerType`.
- * 	* `jobId`, `spaceId`, `workbookId`: These properties represent the context of the
- * job being listened to, including the job ID, space ID, and workbook ID.
+ * 	* `client`: A FlatfileClient object that can be used to interact with the Flatfile
+ * API.
+ * 	* `onRecordHook`: An optional callback function that will be called when a record
+ * is hit in the Flatfile stream. The function takes two arguments: `record` (the
+ * recorded event) and `event` (the original event).
+ * 	* `onSubmit`: An optional callback function that will be called when a submission
+ * occurs. The function takes three arguments: `job`, `sheet`, and `event`. The `job`
+ * argument is an instance of JobHandler, the `sheet` argument is an instance of
+ * SheetHandler, and the `event` argument is an object containing information about
+ * the submission event.
+ * 	* `slug`: A unique identifier for the listener, used to differentiate between
+ * multiple listeners in a single space.
+ * 	* `submitSettings`: An optional object that contains settings for submission
+ * behavior. The properties of this object are:
+ * 		+ `deleteSpaceAfterSubmit`: A boolean value indicating whether the space should
+ * be archived after a successful submission.
  * 
- * 	In summary, the `createSimpleListener` function creates a new FlatfileClient
- * instance and sets up a simple listener to handle jobs and submits. It also allows
- * for customization of submit settings through the `onSubmitSettings` property.
+ * 	In summary, the `createSimpleListener` function takes in various configuration
+ * options and returns a FlatfileClient object with an optional onRecordHook callback
+ * function and an optional onSubmit callback function, as well as a unique slug
+ * identifier and an optionally passed submitSettings object containing space deletion
+ * settings after submission.
  */
 export const createSimpleListener = ({
   onRecordHook,

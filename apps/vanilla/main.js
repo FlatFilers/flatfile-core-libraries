@@ -5,8 +5,8 @@ import { listener } from './listener'
 
 const overrideLanguageSelect = document.getElementById('override-language')
 /**
- * @description Sets the `localStorage` item named 'overrideLanguage' to the value
- * of the `overrideLanguageSelect` element.
+ * @description Sets a item in `localStorage` with key `'overrideLanguage'` and its
+ * value is the selected option from `<overrideLanguageSelect>`.
  */
 overrideLanguageSelect.addEventListener('change', () => {
   localStorage.setItem('overrideLanguage', overrideLanguageSelect.value)
@@ -92,11 +92,12 @@ const BASE_OPTIONS = {
 }
 // ---Create a new Space + Workbook and load an iFrame
 /**
- * @description Initializes a Flatfile client using a provided publishable key, then
- * logs the resulting `space` object to the console.
+ * @description Sets up a Flatfile instance with the given `publishableKey`, and logs
+ * the resulting `space` object to the console.
  * 
- * @param {string} publishableKey - 256-bit publishable key used for signing and
- * verifying data during the flatfile submission operation.
+ * @param {string} publishableKey - 256-bitlong identifier that identifies the Spot
+ * instance, which is utilized to submit an action and produce a close space occasion
+ * with further information on the occurrence.
  */
 window.initializeFlatfile = async (publishableKey) => {
   const flatfileOptions = {
@@ -105,10 +106,11 @@ window.initializeFlatfile = async (publishableKey) => {
     closeSpace: {
       operation: 'submitActionFg',
       /**
-       * @description Logs the event payload to the console in a JSON-formatted string with
-       * indentation and spacing for readability.
+       * @description Consoles the JSON-formatted event payload upon receiving a close space
+       * event.
        * 
-       * @param {object} event - payload of an close space event in the format of JSON string.
+       * @param {object} event - space event to be logged and passed as a JSON string to
+       * the `console.log()` method.
        */
       onClose: (event) => {
         console.log(
@@ -124,8 +126,7 @@ window.initializeFlatfile = async (publishableKey) => {
 
 // ---Pre-load iFrame by specific mountID for faster initial load-time
 /**
- * @description Creates an iframe and sets up a Flatfile instance within it, using
- * the given publishable key to preload resources.
+ * @description Preloads a Flatfile application and sets up an iframe to display it.
  */
 window.preloadFlatfile = () => {
   createIframe('Flatfile_Preload_Iframe', true)
@@ -137,9 +138,11 @@ window.preloadFlatfile = () => {
       closeSpace: {
         operation: 'submitActionFg',
         /**
-         * @description Consoles the payload of a close space event as a string.
+         * @description Logs a close event's JSON-formatted payload to the console.
          * 
-         * @param {object} event - payload of an event that is passed to the function for processing.
+         * @param {object} event - space event that is passed to the function as its sole
+         * argument and whose details are logged through the `console.log()` call using JSON
+         * stringifying.
          */
         onClose: (event) => {
           console.log(

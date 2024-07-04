@@ -56,13 +56,15 @@ export const initNewSpace = async ({
   }
 
   /**
-   * @description Updates a request body with a specified resource name by merging the
-   * existing body with an updated value for that resource.
+   * @description Modifies a pre-existing request body object by adding a new key-value
+   * pair where the key is the name of a resource and the value is the corresponding
+   * resource itself.
    * 
-   * @param {any} resource - additional resource to be included in the space request body.
+   * @param {any} resource - resource to be added or updated within the space Request
+   * Body.
    * 
-   * @param {string} resourceName - name of the resource for which the space request
-   * body is being constructed.
+   * @param {string} resourceName - name of the resource that should be updated in the
+   * space Request body.
    */
   const addResourceToRequestBody = (resource: any, resourceName: string) => {
     spaceRequestBody = {
@@ -71,11 +73,11 @@ export const initNewSpace = async ({
     }
   }
   /**
-   * @description Sets a page as the default page for a given type, preventing multiple
-   * default pages from being set.
+   * @description Sets a default page for future user navigations, marking it as already
+   * set if necessary and assigning it to a variable.
    * 
-   * @param {DefaultPageType} incomingDefaultPage - default page to be set or retrieved
-   * within the function.
+   * @param {DefaultPageType} incomingDefaultPage - default page that is to be set,
+   * which determines whether a warning is issued or not.
    */
   const setDefaultPage = (incomingDefaultPage: DefaultPageType) => {
     if (defaultPageSet === true) {
