@@ -19,6 +19,8 @@ import { getSpace } from '../utils/getSpace'
 import { EmbeddedIFrameWrapper } from './EmbeddedIFrameWrapper'
 import FlatfileContext, { DEFAULT_CREATE_SPACE } from './FlatfileContext'
 
+import { attachStyleSheet } from '../utils/attachStyleSheet'
+
 const configDefaults: IFrameTypes = {
   preload: true,
   resetOnClose: true,
@@ -214,6 +216,14 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       // Works but only after the iframe is visible
     }
   }
+  const styleSheetRef = useRef(false)
+
+  useEffect(() => {
+    if (!styleSheetRef.current) {
+      attachStyleSheet(config?.styleSheetOptions)
+      styleSheetRef.current = true
+    }
+  }, [config?.styleSheetOptions, styleSheetRef])
 
   // Listen to the postMessage event from the created iFrame
   useEffect(() => {

@@ -1,5 +1,5 @@
 import { ISpace } from '@flatfile/embedded-utils'
-
+import { StyleSheetOptions } from '../utils/attachStyleSheet'
 export type IFrameTypes = Partial<
   Pick<
     ISpace,
@@ -12,5 +12,9 @@ export type IFrameTypes = Partial<
     | 'displayAsModal'
     | 'closeSpace'
     | 'spaceUrl'
-  > & { preload?: boolean; resetOnClose?: boolean }
+  > & {
+    preload?: boolean
+    resetOnClose?: boolean
+    styleSheetOptions?: StyleSheetOptions
+  }
 >
