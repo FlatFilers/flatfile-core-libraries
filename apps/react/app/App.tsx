@@ -3,7 +3,6 @@ import { document } from '@/utils/document'
 import { workbook } from '@/utils/workbook'
 import { recordHook } from '@flatfile/plugin-record-hook'
 import {
-  attachStyleSheet,
   Document,
   Sheet,
   Space,
@@ -16,64 +15,19 @@ import {
 import { useEffect, useState } from 'react'
 import styles from './page.module.css'
 
-attachStyleSheet({ nonce: 'flatfile-abc123' }) // add custom nonce
-
 /**
- * @description Is a React component that provides a portal interface to Flatfile,
- * enabling listeners and plugins to interact with the portal. It renders a button
- * for opening or closing the portal and allows users to set the label of an listener
- * using a drop-down menu.
+ * @description Generates high-quality documentation for given code by using different
+ * listeners and plugins to log events and handle submissions, and by creating a
+ * portal iFrame window that can be opened or closed.
  * 
- * @returns {HTML div element} a React component that displays a portal with several
- * sheets, including a hooked sheet that sets an email field to a specific value.
- * 
- * 	* `<div className={styles.main}>` - This is the main container element for the
- * Flatfile application. It contains all the other elements.
- * 	* `<div className={styles.description}>` - This element contains buttons and
- * labels related to the portal. The button with the label "CLOSE" or "OPEN" opens
- * or closes the portal iFrame window, respectively. Two buttons with labels "blue
- * listener" and "green listener" are also present, which are not explained in this
- * output.
- * 	* `<button onClick={toggleOpen}>{open ? 'CLOSE' : 'OPEN'} PORTAL</button>` - This
- * button is used to toggle the state of the portal iFrame window. When the button
- * is clicked, the `toggleOpen` function is called, which in turn calls the `closePortal`
- * or `openPortal` function depending on the current state of the portal.
- * 	* `<button onClick={() => setLabel('blue')}>blue listener</button>` - This button
- * is used to set the label for the blue listener. When clicked, the `setLabel`
- * function is called with the value "blue".
- * 	* `<button onClick={() => setLabel('green')}>green listener</button>` - This
- * button is used to set the label for the green listener. When clicked, the `setLabel`
- * function is called with the value "green".
- * 	* `<Space config={...workbook}>` - This element contains the Flatfile workbook
- * instance and its configuration options. It renders the `Document` and `Workbook`
- * elements inside it.
- * 	* `<Document defaultPage config={document} />` - This element renders the Flatfile
- * document instance with the specified configuration options. The `defaultPage`
- * property specifies that the first page of the document should be rendered.
- * 	* `<Workbook config={{...workbook, name: 'Alex's Workbook', metadata: {...metadata,
- * sidebarConfig: {showSidebar: true}}}}>` - This element renders the Flatfile workbook
- * instance with the specified configuration options. The `name` property specifies
- * the name of the workbook, and the `metadata` property specifies the metadata for
- * the workbook. The `sidebarConfig` property specifies that the sidebar should be shown.
- * 	* `<Sheet config={{...sheet, slug: 'contacts3', name: 'Contacts 3'}}>` - This
- * element renders a single sheet inside the Flatfile workbook instance with the
- * specified configuration options. The `slug` property specifies the slug for the
- * sheet, and the `name` property specifies the display name of the sheet.
- * 	* `<Sheet onRecordHook={(record) => {...}}>` - This element is used to render a
- * single sheet inside the Flatfile workbook instance with a custom record hook. When
- * the hook is called, it takes the record as an argument and can perform any logic
- * needed for the record.
- * 	* `<Sheet onSubmit={async (sheet) => {...}}>` - This element is used to render a
- * single sheet inside the Flatfile workbook instance with a custom submit hook. When
- * the hook is called, it takes the sheet as an argument and can perform any logic
- * needed for the sheet.
+ * @returns {Component} a React component that renders a portal and various listeners
+ * for event handling.
  */
 const App = () => {
   const { open, openPortal, closePortal } = useFlatfile()
   const [label, setLabel] = useState('Rock')
   /**
-   * @description Updates the open state of a portal by calling either `closePortal`
-   * or `openPortal`, depending on whether the `reset` parameter is set to `false`.
+   * @description Either opens or closes a portal based on the provided `open` state.
    */
   const toggleOpen = () => {
     open ? closePortal({ reset: false }) : openPortal()
@@ -153,26 +107,25 @@ const App = () => {
       >
         <Document defaultPage config={document} />
         {/**
-         * @description Generates high-quality documentation for given code and enables
-         * submission and record hooks on separate sheets within the workbook.
+         * @description Generates high-quality documentation for code given to it, including
+         * information on sheets submitted or recorded hooks.
          * 
-         * @param {object} config - Workbook's configuration, which includes setting various
-         * properties of the Workbook and its sheets, such as name, email, and record hooks.
+         * @param {object} config - Workbook configuration object, which defines various
+         * properties of the Workbook such as its name, onSubmit event handler, and record
+         * hooks for each sheet.
          * 
-         * @param {`AsyncFunction`.} onSubmit - 3rd sheet submitted by the user, which will
-         * log the sheet's data to the console in a structured format using `{ sheet }`.
+         * @param {`AsyncFunction`.} onSubmit - 2nd sheet's onSubmit callback, which logs
+         * information to the console when called.
          * 
-         * 	* `async (sheet) => { console.log('onSubmit from', { sheet }); }`: This is an
-         * asynchronous function that logs a message to the console with the `onSubmit`
-         * function as an argument, along with its parameters (`{ sheet }`). The `console.log()`
-         * statement will execute after the `onSubmit` function is called, and it will log
-         * the value of `sheet`.
-         * 	* `config={{ ...workbook, name: 'ALEX’S WORKBOOK' }}`: This sets the `name`
-         * property of the `Workbook` configuration to `'ALEX’S WORKBOOK'`.
+         * 	* `onSubmit`: This function takes an argument called `sheet` which is an instance
+         * of the `Sheet` class.
+         * 	* `async`: This indicates that the function returns a promise.
+         * 	* `{ console.log('onWorkbookSubmission', sheet ) }`: This line logs a message to
+         * the console with the `sheet` object as its argument whenever the `onSubmit` function
+         * is called.
          * 
-         * @param {object} onRecordHooks - 2-dimensional array of record hook functions for
-         * each sheet in the workbook, where each function updates the `email` property of
-         * the records before they are saved to the corresponding sheet.
+         * @param {object} onRecordHooks - 2-element array of hook functions that will be
+         * called for each record when the Sheet is submitted or updated.
          */}
         <Workbook
           config={{
@@ -198,25 +151,30 @@ const App = () => {
           ]}
         >
           {/**
-           * @description Defines a new sheet with the given default page and configuration,
-           * and sets an onRecordHook to modify email values for records, and an onSubmit hook
-           * to log information when the sheet is submitted.
+           * @description Generates high-quality documentation for code given to it. In this
+           * case, it creates a new sheet with a name and slug specified, sets an onRecordHook
+           * to modify record data, and an onSubmit hook to log the submitted sheet information
+           * to the console.
            * 
-           * @param {object} config - configuration for a new worksheet, including its slug and
-           * name, and overrides any defaults provided by the `workbook` object.
+           * @param {object} config - configuration for a specific sheet, which includes setting
+           * the sheet name and overriding certain properties of the `workbook` object.
            * 
-           * @param {asynchronous function that returns a/an Google Sheets record.} onRecordHook
-           * - 4-ary function that gets called each time a new record is created or updated
-           * within the `Contacts3` sheet, allowing you to perform arbitrary actions on the
-           * newly created or updated records before they are persisted in the underlying storage.
+           * @param {Anonymous Function.} onRecordHook - 1-time function that gets executed
+           * after each record is transformed into an Immutable record, resulting in an updated
+           * Immutable record with modified email property set to 'SHEET 3 RECORDHOOK'.
            * 
-           * 	* `(record) => {...}` denotes an inline hook that performs actions on the current
-           * record.
-           * 	* `record.set('email', 'SHEET 3 RECORDHOOK')` modifies the `email` field of the
-           * current record by setting it to `'SHEET 3 RECORDHOOK'`.
+           * 	* `record`: The recorded data in the sheet. It is an object with the following
+           * structure: `record => { email: string }`.
+           * 	* `sheet`: The `Sheet` instance itself, which contains additional metadata and
+           * configuration options for the sheet.
            * 
-           * @param {object} onSubmit - callback function that is triggered when the changes
-           * made to the sheet are committed or saved.
+           * @param {asynchronous function.} onSubmit - occurrence of a user submitting information
+           * through the Sheet 3 form, and when it is triggered, it logs an information message
+           * containing the sheet's data to the console.
+           * 
+           * 	* `onSubmit`: A function that gets called when the sheet is submitted. The function
+           * takes the updated sheet as an argument (`{sheet}`) in the shape of an object
+           * containing the latest values for each record.
            */}
           <Sheet
             defaultPage
@@ -234,21 +192,25 @@ const App = () => {
             }}
           />
           {/**
-           * @description Sets up a Google Sheets document with configuration for sheet 4,
-           * including setting an onRecordHook function to update a record's email field, and
-           * an onSubmit function to log information about the submitted sheet.
+           * @description Sets up a new Google Sheets spreadsheet with a custom slug, name, and
+           * hooks for records and submissions.
            * 
-           * @param {object} config - 0th sheet of the workbook, providing its slug and name.
+           * @param {object} config - configuration for the generated documentation, including
+           * the slug and name of the new sheet, as well as specifying the hook function for
+           * recording and submitting records.
            * 
-           * @param {functions reference.} onRecordHook - function to be called when a new
-           * record is created, where it sets the 'email' field of the record to `'SHEET 4 RECORDHOOK'`.
+           * @param {Anonymous Function.} onRecordHook - function to execute on each record
+           * when it is hooked, and in this case, the function modifies the `email` field of
+           * the record by adding the string " SHEET 4 RECORDHOOK".
            * 
-           * 	* `(record)`: The current record being processed in the hook. It is an object
-           * with fields corresponding to the defined `onRecordHook` schema.
-           * 	* `'SHEET 4 RECORDHOOK'`: The value of the `email` field for the current record.
+           * 	* `record`: The updated record that is being hooked on to after being serialized
+           * and sent to the server for processing. Its value is a ` Record <string, any> `.
+           * 	* `set(key: string, value: any)`: A function that updates the specified property
+           * of the record with the provided value. The keys are assumed to be valid string
+           * identifiers of properties in a JSON object.
            * 
-           * @param {object} onSubmit - `console.log` statement, which will log an event
-           * notification to the console whenever a change is made in sheet 4.
+           * @param {object} onSubmit - sheet that is submitted after a record has been modified
+           * in the specified hook.
            */}
           <Sheet
             config={{
