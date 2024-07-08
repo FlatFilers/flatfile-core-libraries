@@ -1,10 +1,10 @@
 # @flatfile/react
 
-## 8.0.0
+## 7.10.0
 
-### Major Changes
+### Minor Changes
 
-- 25a89ef: Now required to attach stylesheet explicitly with attachStyleSheet() from @flatfile/react
+- 25a89ef: Adds `styleSheetOptions` to `FlatfileProvider` config for setting nonce value and postion of injected stylesheet
 
 ## 7.9.10
 
