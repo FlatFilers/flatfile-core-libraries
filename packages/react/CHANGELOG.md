@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 8.0.0
+
+### Major Changes
+
+- 25a89ef: Now required to attach stylesheet explicitly with attachStyleSheet() from @flatfile/react
+
 ## 7.9.10
 
 ### Patch Changes
