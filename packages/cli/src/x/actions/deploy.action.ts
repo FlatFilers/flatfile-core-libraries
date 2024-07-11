@@ -178,8 +178,7 @@ export async function deployAction(
         path.basename(file!)
       )
     )
-    const fileContent = fs.readFileSync(file, 'utf8')
-    console.log({ file, fileContent })
+
     const entry = result.split(path.sep).join(path.posix.sep)
     // console.log({ entry })
     fs.writeFileSync(path.join(outDir, '_entry.js'), entry, 'utf8')
@@ -220,10 +219,15 @@ export async function deployAction(
     }).start()
 
     try {
-      const { err, code, map } = await ncc(path.join(outDir, '_entry.js'), {
+      const {
+        err,
+        code,
+        map: sourceMap,
+      } = await ncc(path.join(outDir, '_entry.js'), {
         minify: liteMode,
         target: 'es2020',
         sourceMap: true,
+        sourceMapRegister: false,
         cache: false,
         // TODO: add debug flag to add this and other debug options
         quiet: true,
@@ -233,7 +237,7 @@ export async function deployAction(
       const deployFile = path.join(outDir, 'deploy.js')
       fs.writeFileSync(deployFile, code, 'utf8')
       const mapFile = path.join(outDir, 'deploy.js.map')
-      fs.writeFileSync(mapFile, map, 'utf8')
+      fs.writeFileSync(mapFile, sourceMap, 'utf8')
       const activeTopics: Flatfile.EventTopic[] = await getActiveTopics(
         deployFile
       )
@@ -241,7 +245,6 @@ export async function deployAction(
       if (err) {
         return program.error(messages.error(err))
       }
-
       const agent = await apiClient.agents.create({
         environmentId: environment!.id, // Assuming environment is always defined; otherwise, check for its existence before.
         body: {
@@ -250,7 +253,7 @@ export async function deployAction(
           source: code,
           // TODO: Add this to the Agent Table
           // @ts-ignore
-          map,
+          sourceMap,
           slug: slug ?? selectedAgent?.slug,
         },
       })
