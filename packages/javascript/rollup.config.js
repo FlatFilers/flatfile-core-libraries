@@ -1,3 +1,14 @@
+/**
+ * The above code is a Rollup configuration for bundling a JavaScript library with multiple output
+ * formats and plugins for common tasks like transpilation, minification, and handling external
+ * dependencies.
+ * @param [umd=true] - The `umd` parameter in the `commonPlugins` function is a boolean flag that
+ * determines whether the Rollup configuration is generating a Universal Module Definition (UMD)
+ * bundle. When `umd` is set to `true`, the UMD format will be used for the output bundle. UMD bundles
+ * @returns The `config` array containing three objects with configurations for Rollup bundling is
+ * being returned. Each object specifies input file, output format, output file path, plugins to use,
+ * and external dependencies.
+ */
 import { dts } from 'rollup-plugin-dts'
 import commonjs from '@rollup/plugin-commonjs'
 import css from 'rollup-plugin-import-css'
@@ -23,20 +34,24 @@ const external = [
 ]
 
 // Common plugins function
-function commonPlugins(umd = true) {
+function commonPlugins(excludePeerDeps = false) {
   return [
-    umd
+    !excludePeerDeps
       ? peerDepsExternal({
           includeDependencies: true,
         })
       : null,
-    resolve({ browser: true, extensions: ['.ts'] }),
+    resolve({
+      browser: true,
+      extensions: ['.ts', '.js'],
+      preferBuiltins: false,
+    }),
+    commonjs(),
     sucrase({
       exclude: ['node_modules/**'],
       transforms: ['typescript'],
     }),
     json(),
-    commonjs(),
     css(),
     url({
       include: ['**/*.otf'],
@@ -44,7 +59,7 @@ function commonPlugins(umd = true) {
       fileName: '[dirname][name][extname]',
     }),
     PROD ? terser() : null,
-  ]
+  ].filter(Boolean)
 }
 
 const config = [
@@ -77,8 +92,7 @@ const config = [
       format: 'umd',
       name: 'FlatFileJavaScript',
     },
-    plugins: commonPlugins(false),
-    include: external,
+    plugins: commonPlugins(true),
   },
   {
     input: 'index.ts',
