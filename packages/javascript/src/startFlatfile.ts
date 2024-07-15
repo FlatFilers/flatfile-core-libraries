@@ -19,6 +19,20 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
 
   let removeMessageListener: (() => void) | undefined
 
+  let i18n: { t(key: string, defaultText: string): string } = {
+    t(_key: string, defaultText: string) {
+      return defaultText
+    },
+  }
+
+  const onInit = ({
+    localTranslations,
+  }: {
+    localTranslations: Translations
+  }) => {
+    i18n = getI18n(localTranslations, languageOverride)
+  }
+
   const {
     publishableKey,
     displayAsModal = true,
@@ -62,12 +76,6 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
    **/
   if (mountIFrameWrapper && mountIFrameElement) {
     mountIFrameWrapper.style.display = 'block'
-  }
-
-  let i18n: { t(key: string, defaultText: string): string } = {
-    t(_key: string, defaultText: string) {
-      return defaultText
-    },
   }
 
   /**
@@ -144,14 +152,6 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
 
     const simpleListenerSlug: string =
       createdWorkbook?.sheets?.[0].slug || 'slug'
-
-    function onInit({
-      localTranslations,
-    }: {
-      localTranslations: Translations
-    }) {
-      i18n = getI18n(localTranslations, languageOverride)
-    }
 
     if (listener) {
       removeMessageListener = await createlistener(
