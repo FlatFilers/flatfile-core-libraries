@@ -3,6 +3,16 @@ export const config = {
   labels: ['pinned'],
   sheets: [
     {
+      actions: [
+        {
+          operation: 'customAction',
+          mode: 'foreground',
+          label: 'Custom Action',
+          icon: 'none',
+          description: 'Do something custom',
+          primary: true,
+        },
+      ],
       name: 'Contacts',
       slug: 'contacts',
       allowAdditionalFields: true,

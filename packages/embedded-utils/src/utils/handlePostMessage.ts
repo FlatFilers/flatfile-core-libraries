@@ -4,14 +4,18 @@ import { ISpace } from '../types'
 export const handlePostMessage = (
   closeSpace: ISpace['closeSpace'],
   listener: FlatfileListener,
-  onClose?: () => void
+  onClose?: () => void,
+  onInit?: (data: { localTranslations: Record<string, any> }) => void
 ) => {
   return (message: MessageEvent<{ flatfileEvent: FlatfileEvent }>) => {
     const { flatfileEvent } = message.data
     if (!flatfileEvent) {
       return
     }
-    if (
+    if (flatfileEvent.topic === 'space:opened') {
+      const { localTranslations } = flatfileEvent.payload
+      onInit?.({ localTranslations })
+    } else if (
       flatfileEvent.topic === 'job:outcome-acknowledged' &&
       flatfileEvent.payload.status === 'complete' &&
       flatfileEvent.payload.operation === closeSpace?.operation &&

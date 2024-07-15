@@ -8,13 +8,75 @@
 
   <body>
     <!-- optional: initialize with button and a modal -->
-    <button onclick="initializePreloadedFlatfile('pk_123456')">
+    <button
+      onclick="initializePreloadedFlatfile(localStorage.getItem('override-publishable-key') ?? 'pk_123456')"
+    >
       Open "Preloaded" Flatfile
     </button>
 
-    <button onclick="initializeFlatfile('pk_123456')">
+    <button
+      onclick="initializeFlatfile(localStorage.getItem('override-publishable-key') ?? 'pk_123456')"
+    >
       Open "On Demand" Flatfile
     </button>
+
+    <br />
+    <br />
+
+    <label>Publishable Key:</label>
+    <select id="override-publishable-key">
+      <option selected value="default">pk_123456</option>
+      <option value="other">Enter Publishable Key...</option>
+    </select>
+
+    <br />
+    <br />
+
+    <label>API URL:</label>
+    <select id="override-api-url">
+      <option selected value="default">
+        https://platform.flatfile.com/api
+      </option>
+      <option value="http://localhost:3000">http://localhost:3000</option>
+      <option value="other">Enter API URL...</option>
+    </select>
+
+    <br />
+    <br />
+
+    <label>Space UI URL:</label>
+    <select id="override-space-url">
+      <option selected value="default">https://platform.flatfile.com/s</option>
+      <option value="http://localhost:6789">http://localhost:6789</option>
+      <option value="other">Enter Space URL...</option>
+    </select>
+
+    <br />
+    <br />
+
+    <label>Override language:</label>
+    <select id="override-language">
+      <option selected value=""></option>
+      <option value="de">de</option>
+      <option value="en">en</option>
+      <option value="en-GB">en-GB</option>
+      <option value="en-CA">en-CA</option>
+      <option value="en-ZA">en-ZA</option>
+      <option value="es">es</option>
+      <option value="fr">fr</option>
+      <option value="fr-CA">fr-CA</option>
+      <option value="fr-FR">fr-FR</option>
+      <option value="id">id</option>
+      <option value="it">it</option>
+      <option value="jp">jp</option>
+      <option value="kr">kr</option>
+      <option value="pt">pt</option>
+      <option value="pt-BR">pt-BR</option>
+      <option value="tr">tr</option>
+      <option value="vi">vi</option>
+      <option value="zh">zh</option>
+    </select>
+
     <script>
       window.addEventListener('load', (event) => {
         preloadFlatfile()

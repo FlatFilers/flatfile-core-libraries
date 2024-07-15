@@ -1,11 +1,11 @@
 export function createModal(
   onConfirm: () => void,
   onCancel: () => void,
-  exitTitle: string,
-  exitText: string,
-  exitPrimaryButtonText: string,
-  exitSecondaryButtonText: string
-): HTMLElement {
+  exitTitle: () => string,
+  exitText: () => string,
+  exitPrimaryButtonText: () => string,
+  exitSecondaryButtonText: () => string
+): { outerShell: HTMLElement; updateText(): void } {
   // Outer Shell
   const outerShell = document.createElement('div')
   outerShell.classList.add('flatfile_outer-shell')
@@ -25,17 +25,14 @@ export function createModal(
   // Modal Heading
   const modalHeading = document.createElement('div')
   modalHeading.classList.add('flatfile_modal-heading')
-  modalHeading.textContent = exitTitle
 
   // Modal Text
   const modalText = document.createElement('div')
   modalText.classList.add('flatfile_modal-text')
-  modalText.textContent = exitText
 
   // 'No, stay' button
   const noStayButton = document.createElement('div')
   noStayButton.classList.add('flatfile_button', 'flatfile_secondary')
-  noStayButton.textContent = exitSecondaryButtonText
   noStayButton.addEventListener('click', (e) => {
     e.stopPropagation()
     onCancel()
@@ -44,7 +41,6 @@ export function createModal(
   // 'Yes, exit' button
   const yesExitButton = document.createElement('div')
   yesExitButton.classList.add('flatfile_button', 'flatfile_primary')
-  yesExitButton.textContent = exitPrimaryButtonText
   yesExitButton.addEventListener('click', (e) => {
     e.stopPropagation()
     onConfirm()
@@ -56,5 +52,11 @@ export function createModal(
   innerShell.appendChild(modal)
   outerShell.appendChild(innerShell)
 
-  return outerShell
+  function updateText() {
+    modalHeading.textContent = exitTitle()
+    modalText.textContent = exitText()
+    noStayButton.textContent = exitSecondaryButtonText()
+    yesExitButton.textContent = exitPrimaryButtonText()
+  }
+  return { outerShell, updateText }
 }

@@ -2,6 +2,59 @@ import { createIframe, initializeFlatfile } from '@flatfile/javascript'
 
 import { config } from './config'
 import { listener } from './listener'
+
+const overrideLanguageSelect = document.getElementById('override-language')
+overrideLanguageSelect.addEventListener('change', () => {
+  localStorage.setItem('overrideLanguage', overrideLanguageSelect.value)
+})
+const overrideLanguage = localStorage.getItem('overrideLanguage')
+if (overrideLanguage) {
+  overrideLanguageSelect.value = overrideLanguage
+}
+
+function overrideByKey(key) {
+  const overrideSelect = document.getElementById(`override-${key}`)
+  function createAndSelectOption(newValue) {
+    overrideSelect.value = newValue
+    if (overrideSelect.value !== newValue) {
+      const newOption = document.createElement('option')
+      newOption.setAttribute('value', newValue)
+      newOption.textContent = newValue
+      overrideSelect.appendChild(newOption)
+      overrideSelect.value = newValue
+    }
+  }
+  overrideSelect.addEventListener('change', () => {
+    if (overrideSelect.value === 'other') {
+      const newValue = prompt(`Enter new value for ${key}:`)
+      if (typeof newValue === 'string' && newValue.length > 0) {
+        createAndSelectOption(newValue)
+      } else {
+        overrideSelect.value = 'default'
+      }
+    }
+    localStorage.setItem(`override-${key}`, overrideSelect.value)
+  })
+  const override = localStorage.getItem(`override-${key}`)
+  if (typeof override === 'string' && override.length > 0) {
+    createAndSelectOption(override)
+  }
+  return overrideSelect
+}
+
+const overrideApiUrlSelect = overrideByKey('api-url')
+const overrideSpaceUrlSelect = overrideByKey('space-url')
+overrideByKey('publishable-key')
+
+function getUrls() {
+  const apiUrl = overrideApiUrlSelect.value
+  const spaceUrl = overrideSpaceUrlSelect.value
+  return {
+    ...(apiUrl === 'default' ? {} : { apiUrl }),
+    ...(spaceUrl === 'default' ? {} : { spaceUrl }),
+  }
+}
+
 /*
 // ---Get a space to reuse it, load automatically
 const flatfile = new FlatfileClient({
@@ -33,12 +86,13 @@ getSpace()
 */
 
 const BASE_OPTIONS = {
+  languageOverride: overrideLanguageSelect.value,
   spaceBody: { name: 'Hello' },
   // listener,
   // Additional parameters...
   workbook: config,
-  exitPrimaryButtonText: 'CLOSE!',
-  exitSecondaryButtonText: 'KEEP IT!',
+  // exitPrimaryButtonText: 'CLOSE!',
+  // exitSecondaryButtonText: 'KEEP IT!',
   document: {
     title: 'my title',
     body: 'my body',
@@ -79,6 +133,7 @@ const BASE_OPTIONS = {
 window.initializeFlatfile = async (publishableKey) => {
   const flatfileOptions = {
     ...BASE_OPTIONS,
+    ...getUrls(),
     publishableKey,
     closeSpace: {
       operation: 'submitActionFg',
@@ -100,6 +155,7 @@ window.preloadFlatfile = () => {
   window.initializePreloadedFlatfile = async (publishableKey) => {
     const flatfileOptions = {
       ...BASE_OPTIONS,
+      ...getUrls(),
       publishableKey,
       mountElement: 'Flatfile_Preload_Iframe',
       closeSpace: {

@@ -1,7 +1,9 @@
-import * as FlatfileJavascript from './FlatfileJavascript'
-export * from './FlatfileJavascript'
-import { FlatfileListener } from '@flatfile/listener'
 import api from '@flatfile/api'
+import { FlatfileListener } from '@flatfile/listener'
 import * as RecordHookPlugin from '@flatfile/plugin-record-hook'
-export { FlatfileListener, api, RecordHookPlugin }
-export default FlatfileJavascript
+import { createIframe } from './src/createIframe'
+import { startFlatfile } from './src/startFlatfile'
+
+export { api, createIframe, FlatfileListener, RecordHookPlugin }
+
+export const initializeFlatfile = startFlatfile
