@@ -21,10 +21,10 @@ export const handlePostMessage = (
       return
     }
     if (
+      closeSpace &&
       flatfileEvent.topic === 'job:outcome-acknowledged' &&
       flatfileEvent.payload.status === 'complete' &&
-      flatfileEvent.payload.operation === closeSpace?.operation &&
-      closeSpace &&
+      flatfileEvent.payload.operation === closeSpace.operation &&
       typeof closeSpace.onClose === 'function'
     ) {
       closeSpace.onClose({ event: flatfileEvent })
