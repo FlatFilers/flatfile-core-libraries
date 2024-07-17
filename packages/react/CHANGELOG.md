@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.11.0
+
+### Minor Changes
+
+- 85e0ffd: Replaced CSS text color variable name to be consistent with other variable names, --ff-color-text is now --ff-text-color
+
 ## 7.10.0
 
 ### Minor Changes
