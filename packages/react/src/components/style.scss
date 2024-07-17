@@ -13,11 +13,10 @@
   --color-pigeon-200: #e8edf4;
   --color-pigeon-100: #f6f8fc;
   --color-pigeon-primary: var(--color-pigeon-800);
-  --ff-color-text: var(--color-pigeon-primary);
+  --ff-text-color: var(--color-pigeon-primary);
   --ff-text-font: var(--ff-brand-font-sans-serif);
   --ff-primary-color: #4c48ef;
   --ff-secondary-color: #616a7d;
-  --ff-text-color: #090b2b;
   --ff-dialog-border-radius: 4px;
   --ff-border-radius: 5px;
   --ff-bg-fade: rgba(0, 0, 0, 0.2);
@@ -40,7 +39,7 @@
 }
 
 .flatfile_iframe-wrapper {
-  color: var(ff-color-text);
+  color: var(--ff-text-color);
   font-family: var(--ff-text-font);
   font-size: var(--size-base);
   line-height: 1.5;
@@ -122,7 +121,7 @@
 }
 .flatfile_secondary {
   border: 1px solid var(--color-pigeon-300, #d7dee8);
-  color: var(--ff-color-text, #404857);
+  color: var(--ff-text-color, #404857);
 
   &:hover {
     background-color: var(--color-pigeon-200, #e8edf4);
@@ -142,7 +141,7 @@
   font-size: 1.225em;
   font-weight: 600;
   margin-bottom: 0.4em;
-  color: var(--ff-color-text);
+  color: var(--ff-text-color);
 }
 .flatfile_inner-shell {
   box-sizing: border-box;
