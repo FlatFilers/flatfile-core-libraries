@@ -251,8 +251,6 @@ export async function deployAction(
           topics: activeTopics,
           compiler: 'js',
           source: code,
-          // TODO: Add this to the Agent Table
-          // @ts-ignore
           sourceMap,
           slug: slug ?? selectedAgent?.slug,
         },
