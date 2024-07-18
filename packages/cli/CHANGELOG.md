@@ -4,7 +4,7 @@
 
 ### Minor Changes
 
-- 2093c4d: Adds the sourceMap for the listner file to the deploy action
+- 2093c4d: Adds the `sourceMap` for the listner file to the deploy action
 
 ## 3.7.0
 
