@@ -1,5 +1,11 @@
 # flatfile
 
+## 3.8.0
+
+### Minor Changes
+
+- 2093c4d: Adds the sourceMap for the listner file to the deploy action
+
 ## 3.7.0
 
 ### Minor Changes
