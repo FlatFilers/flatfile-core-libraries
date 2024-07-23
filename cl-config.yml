@@ -6,7 +6,7 @@ packages:
     dir: cli
     type: core
   - name: '@flatfile/javascript'
-    dir: wrappers
+    dir: javascript
     type: wrappers
   - name: '@flatfile/listener'
     dir: listener
