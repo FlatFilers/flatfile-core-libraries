@@ -6,15 +6,15 @@ export function usePlugin(
   plugin?: (cb: FlatfileListener) => void,
   dependencies: any[] = []
 ) {
-  const { listener } = useContext(FlatfileContext)
+  const { listener, accessToken } = useContext(FlatfileContext)
   useEffect(() => {
     if (!listener) return
-    
+
     if (plugin) {
       listener.use(plugin)
     }
     return () => {
       listener.detach()
     }
-  }, [listener, plugin, ...dependencies])
+  }, [listener, accessToken, plugin, ...dependencies])
 }

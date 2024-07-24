@@ -24,7 +24,7 @@ function useEvent(
     | any[] = [],
   dependencies: any[] = []
 ) {
-  const { listener } = useContext(FlatfileContext)
+  const { listener, accessToken } = useContext(FlatfileContext)
 
   let callback: (event: any) => void | Promise<void>
   let actualDependencies: any[] = dependencies
@@ -38,7 +38,7 @@ function useEvent(
   }
 
   useEffect(() => {
-    if (!listener || !callback) return
+    if (!listener || !callback || callback.toString() === '() => {}') return
     // Conditionally apply the filter
     if (typeof filterOrCallback !== 'function') {
       listener.on(eventType, filterOrCallback, callback)
@@ -53,7 +53,14 @@ function useEvent(
         listener.off(eventType, callback)
       }
     }
-  }, [listener, eventType, filterOrCallback, callback, ...actualDependencies])
+  }, [
+    listener,
+    accessToken,
+    eventType,
+    filterOrCallback,
+    callback,
+    ...actualDependencies,
+  ])
 }
 
 export { useEvent }

@@ -6,7 +6,7 @@ export function useListener(
   cb: FlatfileListener | ((cb: FlatfileListener) => void),
   dependencies: any[] = []
 ) {
-  const { listener } = useContext(FlatfileContext)
+  const { listener, accessToken } = useContext(FlatfileContext)
   useEffect(() => {
     if (!listener) return
 
@@ -19,5 +19,5 @@ export function useListener(
     return () => {
       listener.detach()
     }
-  }, [listener, cb, ...dependencies])
+  }, [listener, accessToken, cb, ...dependencies])
 }
