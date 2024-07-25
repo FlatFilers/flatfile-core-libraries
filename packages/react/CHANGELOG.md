@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.11.1
+
+### Patch Changes
+
+- 8bdf04f: Fix for adding and changing listeners when not inline
+
 ## 7.11.0
 
 ### Minor Changes
