@@ -28,11 +28,18 @@ jobs:
       - name: Install Dependencies
         run: npm ci
 
+      - name: Get Release token
+        id: release_token
+        uses: peter-murray/workflow-application-token-action@v2
+        with:
+          application_id: ${{ secrets.RELEASE_APP_ID }}
+          application_private_key: ${{ secrets.RELEASE_APP_KEY }}   
+
       - name: Create Release Pull Request or Publish to npm
         id: changesets
         uses: changesets/action@v1
         with:
           publish: npm run release
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ steps.release_token_token.outputs.token }}
           NPM_TOKEN: ${{ secrets.NPM_TOKEN  }}
