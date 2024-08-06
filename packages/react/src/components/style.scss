@@ -46,12 +46,11 @@
   margin: 0;
   transition: opacity 0.25s ease-in-out;
 }
-
+.flatfile-close-button svg {
+  fill: lightgray;
+  width: 10px;
+}
 .flatfile-close-button {
-  svg {
-    fill: lightgray;
-    width: 10px;
-  }
   position: relative;
   top: 20px;
   right: -20px;
