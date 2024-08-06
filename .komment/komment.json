@@ -1,0 +1,15 @@
+{
+  "meta": {
+    "version": "1",
+    "updated_at": "2024-08-06T02:44:48.655Z",
+    "created_at": "2024-08-06T02:44:49.925Z",
+    "pipelines": [
+      "b6ae3d16-3a08-4a94-a92c-72af0a5a0a40"
+    ]
+  },
+  "lookup": [
+    [
+      "packages/listener/src/flatfile.listener.ts"
+    ]
+  ]
+}

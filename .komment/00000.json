@@ -1,0 +1,256 @@
+[
+  {
+    "name": "flatfile.listener.ts",
+    "path": "packages/listener/src/flatfile.listener.ts",
+    "content": {
+      "structured": {
+        "description": "A Flatfile Listener class that extends an EventHandler and provides various methods for subscribing to events, filtering by namespace, mounting/unmounting event drivers, and forking instances. The listener can be used with different event drivers such as Webhook, Websocket, and Serverless. It utilizes EventFilter and EventDriver classes from external packages.",
+        "items": [
+          {
+            "id": "e7ed0802-de24-5d9d-504e-954945983709",
+            "ancestors": [],
+            "description": "Enables subscribing to events within a specific namespace and provides methods for filtering, creating, mounting, and unmounting event listeners using an Event Driver. It facilitates the handling of events by providing a flexible and reusable event listener infrastructure.",
+            "interfaces": [],
+            "superclass": "EventHandler",
+            "is_abstract": false,
+            "fields": [],
+            "name": "FlatfileListener",
+            "location": {
+              "start": 34,
+              "insert": 34,
+              "offset": " ",
+              "indent": 0,
+              "comment": null
+            },
+            "item_type": "class",
+            "length": 58,
+            "docLength": null
+          },
+          {
+            "id": "3c8f8688-6f4f-a7ad-0e45-2a36aac3ed9d",
+            "ancestors": [
+              "e7ed0802-de24-5d9d-504e-954945983709"
+            ],
+            "description": "Filters an array-like object using a callback function and returns the result, passing two parameters: an array of strings representing namespaces and an optional callback function.",
+            "params": [
+              {
+                "name": "namespaces",
+                "default_value": null,
+                "optional": false,
+                "type_name": "string | string[]",
+                "description": "Used for filtering purposes."
+              }
+            ],
+            "returns": {
+              "type_name": "Array<this>",
+              "description": "A filtered array of objects based on the given `namespaces` and callback function `cb`."
+            },
+            "usage": {
+              "language": "typescript",
+              "code": "const listener = FlatfileListener.create(() => {\n  listener.namespace(['namespace1', 'namespace2'], (client) => {\n    // namespace specific code\n  });\n});\n",
+              "description": ""
+            },
+            "name": "namespace",
+            "location": {
+              "start": 41,
+              "insert": 35,
+              "offset": " ",
+              "indent": 2,
+              "comment": {
+                "start": 34,
+                "end": 40
+              }
+            },
+            "item_type": "function",
+            "length": 3,
+            "docLength": 6
+          },
+          {
+            "id": "3ef1687e-8061-0787-394e-5c8c677208f3",
+            "ancestors": [
+              "e7ed0802-de24-5d9d-504e-954945983709"
+            ],
+            "description": "Creates an instance of the same class with a given `EventFilter`, adds it as a node, and optionally calls a callback function with the created node as an argument. The method returns the created client instance.",
+            "params": [
+              {
+                "name": "filter",
+                "default_value": null,
+                "optional": false,
+                "type_name": "EventFilter",
+                "description": "Used to specify filtering criteria."
+              }
+            ],
+            "returns": {
+              "type_name": "this",
+              "description": "An instance of the class that contains the method."
+            },
+            "usage": {
+              "language": "typescript",
+              "code": "const flatfileListener = FlatfileListener.create((listener) => {\n  listener.namespace('event namespace').filter({ namespaces: ['event namespace'] }, (client) => {\n    // Event handling code here\n  });\n});\n",
+              "description": ""
+            },
+            "name": "filter",
+            "location": {
+              "start": 51,
+              "insert": 45,
+              "offset": " ",
+              "indent": 2,
+              "comment": {
+                "start": 44,
+                "end": 50
+              }
+            },
+            "item_type": "function",
+            "length": 6,
+            "docLength": 6
+          },
+          {
+            "id": "9557b21b-b4ac-9cad-b147-589ce839699a",
+            "ancestors": [
+              "e7ed0802-de24-5d9d-504e-954945983709"
+            ],
+            "description": "Generates an instance of itself, calls a provided callback function with this instance as argument, and returns the instance. The type parameter `T` ensures that the method can only be called on constructors of types that extend `FlatfileListener`.",
+            "params": [
+              {
+                "name": "cb",
+                "default_value": null,
+                "optional": false,
+                "type_name": "SubFn<T>",
+                "description": "Callback function."
+              }
+            ],
+            "returns": {
+              "type_name": "T",
+              "description": "A constructor of FlatfileListener that has been initialized by calling the callback function with it as an argument."
+            },
+            "usage": {
+              "language": "typescript",
+              "code": "const listener = FlatfileListener.create((client) => {\n  client.namespace('myNamespace')\n})\n",
+              "description": ""
+            },
+            "name": "create",
+            "location": {
+              "start": 63,
+              "insert": 58,
+              "offset": " ",
+              "indent": 2,
+              "comment": {
+                "start": 57,
+                "end": 62
+              }
+            },
+            "item_type": "function",
+            "length": 8,
+            "docLength": 5
+          },
+          {
+            "id": "574b75f4-4b2d-40bb-8f43-2a7f4690f9ee",
+            "ancestors": [
+              "e7ed0802-de24-5d9d-504e-954945983709"
+            ],
+            "description": "Mounts an event handler for the provided `driver`. It binds the current object (`this`) to the driver's event handling mechanism, allowing it to receive and process events from the driver. The method returns the modified instance of `FlatfileListener`.",
+            "params": [
+              {
+                "name": "driver",
+                "default_value": null,
+                "optional": false,
+                "type_name": "EventDriver",
+                "description": "Intended to provide event handling capabilities."
+              }
+            ],
+            "returns": {
+              "type_name": "this",
+              "description": "An instance of the current class. The exact nature and purpose of this object are not specified within the provided code snippet."
+            },
+            "usage": {
+              "language": "typescript",
+              "code": "const listener = new FlatfileListener();\nlistener.mount(new EventDriver());\n",
+              "description": "\nMount attaches this client using an acceptable event driver."
+            },
+            "name": "mount",
+            "location": {
+              "start": 75,
+              "insert": 72,
+              "offset": " ",
+              "indent": 2,
+              "comment": {
+                "start": 71,
+                "end": 74
+              }
+            },
+            "item_type": "function",
+            "length": 4,
+            "docLength": 3
+          },
+          {
+            "id": "ff766c70-5ac9-cca1-7e41-e597d6b52449",
+            "ancestors": [
+              "e7ed0802-de24-5d9d-504e-954945983709"
+            ],
+            "description": "Unregisters an event handler from the underlying `EventDriver`. It removes the reference to the listener and returns the instance itself for further method chaining.",
+            "params": [
+              {
+                "name": "driver",
+                "default_value": null,
+                "optional": false,
+                "type_name": "EventDriver",
+                "description": "Intended to unmount an event handler."
+              }
+            ],
+            "returns": {
+              "type_name": "this",
+              "description": "A reference to the object on which the function was called."
+            },
+            "usage": {
+              "language": "typescript",
+              "code": "const flatfileListener = FlatfileListener.create((listener) => {\n  listener.namespace('event namespace').on('some event', (data) => {\n    // handle some event\n  });\n});\nflatfileListener.mount(driver);\n// use the listener\nflatfileListener.unmount(driver);",
+              "description": ""
+            },
+            "name": "unmount",
+            "location": {
+              "start": 83,
+              "insert": 80,
+              "offset": " ",
+              "indent": 2,
+              "comment": {
+                "start": 79,
+                "end": 82
+              }
+            },
+            "item_type": "function",
+            "length": 4,
+            "docLength": 3
+          },
+          {
+            "id": "3a1bfa77-9468-d9a1-f64b-a623266850a8",
+            "ancestors": [
+              "e7ed0802-de24-5d9d-504e-954945983709"
+            ],
+            "description": "Returns a new instance of `FlatfileListener`. This allows for the creation of multiple instances of the same listener, which can be used to handle different tasks or events independently.",
+            "params": [],
+            "returns": {
+              "type_name": "object",
+              "description": "An instance of `FlatfileListener`."
+            },
+            "usage": {
+              "language": "typescript",
+              "code": "const listener = new FlatfileListener()\nlistener.fork().namespace('test', (client) => {\n  // Do something with client\n})\n",
+              "description": "\nMount the returned `FlatfileListener` instance to a driver."
+            },
+            "name": "fork",
+            "location": {
+              "start": 88,
+              "insert": 88,
+              "offset": " ",
+              "indent": 2,
+              "comment": null
+            },
+            "item_type": "function",
+            "length": 3,
+            "docLength": null
+          }
+        ]
+      }
+    }
+  }
+]
