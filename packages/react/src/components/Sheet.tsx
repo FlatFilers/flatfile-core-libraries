@@ -74,7 +74,7 @@ export const Sheet = (props: SheetProps) => {
       updateWorkbook({
         actions: [
           workbookOnSubmitAction(config.slug),
-          ...(createSpace.workbook.actions || []),
+          ...(createSpace.workbook?.actions || []),
         ],
       })
     }
