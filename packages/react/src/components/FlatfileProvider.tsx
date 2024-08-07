@@ -51,8 +51,8 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   >(undefined)
 
   const [createSpace, setCreateSpace] = useState<{
-    document: Flatfile.DocumentConfig | undefined
-    workbook: Flatfile.CreateWorkbookConfig | undefined
+    document?: Flatfile.DocumentConfig
+    workbook?: Flatfile.CreateWorkbookConfig
     space: Flatfile.SpaceConfig & { id?: string }
   }>(DEFAULT_CREATE_SPACE)
 
