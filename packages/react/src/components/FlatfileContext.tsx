@@ -12,10 +12,7 @@ type ReUseSpace = Partial<Flatfile.SpaceConfig> & {
 
 export const DEFAULT_CREATE_SPACE = {
   document: undefined,
-  workbook: {
-    name: 'Embedded Workbook',
-    sheets: [],
-  },
+  workbook: undefined,
   space: {
     name: 'Embedded Space',
     labels: ['embedded'],

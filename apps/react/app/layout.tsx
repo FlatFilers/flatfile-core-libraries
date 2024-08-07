@@ -17,7 +17,7 @@ const menuStyles: React.CSSProperties = {
   borderBottom: '1px solid #ccc',
   borderLeft: '1px solid #ccc',
   position: 'absolute',
-  right: 0
+  right: 0,
 }
 
 const menuLinkStyles: React.CSSProperties = {
@@ -26,20 +26,27 @@ const menuLinkStyles: React.CSSProperties = {
 
 export default function RootLayout({
   children,
-}: {
+}: Readonly<{
   children: React.ReactNode
-}) {
+}>) {
+  const menuItems = [
+    { href: '/', label: 'Create a New Space' },
+    { href: '/re-used-space', label: 'Re-use a Space' },
+    { href: '/sheet', label: 'Sheet' },
+    { href: '/workbook', label: 'Workbook' },
+    { href: '/server-side-configure', label: 'Server Side Configure' },
+  ];
+
   return (
     <html lang="en">
       <body className={inter.className}>
-        <div
-          style={menuStyles}
-        >
-          <a style={menuLinkStyles} href="/">Create a New Space</a>
-          <a style={menuLinkStyles} href="/re-used-space">Re-use a Space</a>
-          <a style={menuLinkStyles} href="/sheet">Sheet</a>
-          <a style={menuLinkStyles} href="/workbook">Workbook</a>
-        </div>
+        <nav style={menuStyles}>
+          {menuItems.map(({ href, label }) => (
+            <a key={href} style={menuLinkStyles} href={href}>
+              {label}
+            </a>
+          ))}
+        </nav>
         {children}
       </body>
     </html>

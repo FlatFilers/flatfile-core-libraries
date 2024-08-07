@@ -51,8 +51,8 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   >(undefined)
 
   const [createSpace, setCreateSpace] = useState<{
-    document: Flatfile.DocumentConfig | undefined
-    workbook: Flatfile.CreateWorkbookConfig
+    document?: Flatfile.DocumentConfig
+    workbook?: Flatfile.CreateWorkbookConfig
     space: Flatfile.SpaceConfig & { id?: string }
   }>(DEFAULT_CREATE_SPACE)
 
@@ -119,7 +119,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   const addSheet = (newSheet: Flatfile.SheetConfig) => {
     setCreateSpace((prevSpace) => {
       // Check if the sheet already exists
-      const sheetExists = prevSpace.workbook.sheets?.some(
+      const sheetExists = prevSpace.workbook?.sheets?.some(
         (sheet) => sheet.slug === newSheet.slug
       )
       if (sheetExists) {
@@ -130,7 +130,8 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         ...prevSpace,
         workbook: {
           ...prevSpace.workbook,
-          sheets: [...(prevSpace.workbook.sheets || []), newSheet],
+          name: prevSpace.workbook?.name ?? 'Embedded Workbook',
+          sheets: [...(prevSpace.workbook?.sheets || []), newSheet],
         },
       }
     })
@@ -141,7 +142,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     sheetUpdates: Partial<Flatfile.SheetConfig>
   ) => {
     setCreateSpace((prevSpace) => {
-      const updatedSheets = prevSpace.workbook.sheets?.map((sheet: any) => {
+      const updatedSheets = prevSpace.workbook?.sheets?.map((sheet: any) => {
         if (sheet.slug === sheetSlug) {
           return { ...sheet, ...sheetUpdates }
         }
@@ -152,6 +153,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         ...prevSpace,
         workbook: {
           ...prevSpace.workbook,
+          name: prevSpace.workbook?.name ?? 'Embedded Workbook',
           sheets: updatedSheets,
         },
       }
@@ -167,11 +169,11 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         // Prioritize order of sheets passed along in the Workbook.config then subsequent <Sheet config /> components
         actions: [
           ...(workbookUpdates.actions || []),
-          ...(prevSpace.workbook.actions || []),
+          ...(prevSpace.workbook?.actions || []),
         ],
         sheets: [
           ...(workbookUpdates.sheets || []),
-          ...(prevSpace.workbook.sheets || []),
+          ...(prevSpace.workbook?.sheets || []),
         ],
       },
     }))

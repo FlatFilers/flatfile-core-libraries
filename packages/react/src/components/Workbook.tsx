@@ -90,11 +90,11 @@ export const Workbook = (props: WorkbookProps) => {
         if (typeof slug === 'function') {
           if (
             onRecordHooks?.length === 1 &&
-            createSpace.workbook.sheets?.length > 1
+            createSpace.workbook?.sheets?.length > 1
           ) {
             actualSlug = '**'
           } else {
-            actualSlug = createSpace.workbook.sheets?.[index]?.slug
+            actualSlug = createSpace.workbook?.sheets?.[index]?.slug
           }
         } else {
           actualSlug = slug
@@ -112,7 +112,7 @@ export const Workbook = (props: WorkbookProps) => {
         )
       })
     },
-    [config, createSpace.workbook.sheets, onRecordHooks]
+    [config, createSpace.workbook?.sheets, onRecordHooks]
   )
 
   useEvent(
