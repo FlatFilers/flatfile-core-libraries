@@ -17,9 +17,15 @@ import { convertDatesToISO } from '../utils/convertDatesToISO'
 import { createSpaceInternal } from '../utils/createSpaceInternal'
 import { getSpace } from '../utils/getSpace'
 import { EmbeddedIFrameWrapper } from './EmbeddedIFrameWrapper'
-import FlatfileContext, { DEFAULT_CREATE_SPACE } from './FlatfileContext'
+import FlatfileContext, {
+  DEFAULT_CREATE_SPACE,
+  FlatfileContextType,
+} from './FlatfileContext'
 
-import { attachStyleSheet } from '../utils/attachStyleSheet'
+import {
+  attachStyleSheet,
+  useAttachStyleSheet,
+} from '../utils/attachStyleSheet'
 
 const configDefaults: IFrameTypes = {
   preload: true,
@@ -41,6 +47,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   apiUrl = 'https://platform.flatfile.com/api',
   config,
 }) => {
+  useAttachStyleSheet(config?.styleSheetOptions)
   const [internalAccessToken, setInternalAccessToken] = useState<
     string | undefined | null
   >(accessToken)
@@ -55,6 +62,8 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     workbook?: Flatfile.CreateWorkbookConfig
     space: Flatfile.SpaceConfig & { id?: string }
   }>(DEFAULT_CREATE_SPACE)
+
+  const [onClose, setOnClose] = useState<undefined | (() => void)>()
 
   const iframe = useRef<HTMLIFrameElement>(null)
 
@@ -217,15 +226,9 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       }
       // Works but only after the iframe is visible
     }
-  }
-  const styleSheetRef = useRef(false)
 
-  useEffect(() => {
-    if (!styleSheetRef.current) {
-      attachStyleSheet(config?.styleSheetOptions)
-      styleSheetRef.current = true
-    }
-  }, [config?.styleSheetOptions, styleSheetRef])
+    onClose?.()
+  }
 
   // Listen to the postMessage event from the created iFrame
   useEffect(() => {
@@ -280,12 +283,14 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   }, [ready, open])
 
   const providerValue = useMemo(
-    () => ({
+    (): FlatfileContextType => ({
       ...(publishableKey ? { publishableKey } : {}),
       ...(internalAccessToken ? { accessToken: internalAccessToken } : {}),
       apiUrl,
       environmentId,
       open,
+      onClose,
+      setOnClose,
       setOpen,
       sessionSpace,
       setSessionSpace,
@@ -319,6 +324,8 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       ready,
       iframe,
       FLATFILE_PROVIDER_CONFIG,
+      onClose,
+      setOnClose,
     ]
   )
 

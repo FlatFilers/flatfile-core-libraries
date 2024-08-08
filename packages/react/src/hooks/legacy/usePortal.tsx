@@ -1,23 +1,24 @@
+// Bug where the default export function is not being used properly in some build tooling
+import { FlatfileClient } from '@flatfile/api'
+import {
+  createWorkbookFromSheet,
+  DefaultSubmitSettings,
+  JobHandler,
+  SheetHandler,
+  State,
+} from '@flatfile/embedded-utils'
+import { FlatfileRecord } from '@flatfile/hooks'
+import { FlatfileEvent, FlatfileListener } from '@flatfile/listener'
+import { recordHook } from '@flatfile/plugin-record-hook'
 import React, { JSX, useEffect, useState } from 'react'
 import DefaultError from '../../components/legacy/Error'
 import Space from '../../components/legacy/LegacySpace'
 import Spinner from '../../components/Spinner'
-import {
-  State,
-  JobHandler,
-  SheetHandler,
-  createWorkbookFromSheet,
-  DefaultSubmitSettings,
-} from '@flatfile/embedded-utils'
-import { initializeSpace } from '../../utils/initializeSpace'
-import { getSpace } from '../../utils/getSpace'
-import { FlatfileRecord } from '@flatfile/hooks'
-import { FlatfileEvent, FlatfileListener } from '@flatfile/listener'
-import { recordHook } from '@flatfile/plugin-record-hook'
 import { IReactSimpleOnboarding } from '../../types/IReactSimpleOnboarding'
+import { useAttachStyleSheet } from '../../utils/attachStyleSheet'
+import { getSpace } from '../../utils/getSpace'
+import { initializeSpace } from '../../utils/initializeSpace'
 
-// Bug where the default export function is not being used properly in some build tooling
-import { FlatfileClient } from '@flatfile/api'
 const api = new FlatfileClient()
 /**
  * @deprecated - use FlatfileProvider and Space components instead
@@ -26,6 +27,7 @@ const api = new FlatfileClient()
 export const usePortal = (
   props: IReactSimpleOnboarding
 ): JSX.Element | null => {
+  useAttachStyleSheet()
   const { errorTitle, loading: LoadingElement, apiUrl } = props
   const [initError, setInitError] = useState<string>()
   const [state, setState] = useState<State>({

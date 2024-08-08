@@ -28,6 +28,8 @@ export interface FlatfileContextType {
   environmentId?: string
   apiUrl: string
   open: boolean
+  onClose?: () => void
+  setOnClose: (onClose: () => (undefined | (() => void))) => void,
   setOpen: (open: boolean) => void
   space?: CreateNewSpace | ReUseSpace
   sessionSpace?: any
@@ -59,6 +61,8 @@ export const FlatfileContext = createContext<FlatfileContextType>({
   environmentId: undefined,
   apiUrl: '',
   open: true,
+  onClose: undefined,
+  setOnClose: () => {},
   setOpen: () => {},
   space: undefined,
   sessionSpace: undefined,

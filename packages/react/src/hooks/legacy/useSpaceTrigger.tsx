@@ -1,11 +1,12 @@
+import { State } from '@flatfile/embedded-utils'
 import React, { JSX, useState } from 'react'
 import DefaultError from '../../components/legacy/Error'
 import Space from '../../components/legacy/LegacySpace'
 import Spinner from '../../components/Spinner'
-import { State } from '@flatfile/embedded-utils'
-import { initializeSpace } from '../../utils/initializeSpace'
-import { getSpace } from '../../utils/getSpace'
 import { IReactSpaceProps } from '../../types'
+import { useAttachStyleSheet } from '../../utils/attachStyleSheet'
+import { getSpace } from '../../utils/getSpace'
+import { initializeSpace } from '../../utils/initializeSpace'
 
 type IUseSpace = { OpenEmbed: () => Promise<void>; Space: () => JSX.Element }
 
@@ -15,6 +16,7 @@ type IUseSpace = { OpenEmbed: () => Promise<void>; Space: () => JSX.Element }
  */
 
 export const initializeFlatfile = (props: IReactSpaceProps): IUseSpace => {
+  useAttachStyleSheet()
   const { error: ErrorElement, errorTitle, loading: LoadingElement } = props
   const [initError, setInitError] = useState<Error | string>()
   const [loading, setLoading] = useState<boolean>(false)

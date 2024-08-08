@@ -17,16 +17,19 @@ export const getContainerStyles = (isModal: boolean): React.CSSProperties => {
   return isModal
     ? {
         backgroundColor: 'rgba(0, 0, 0, 0.1)',
+        boxSizing: 'border-box',
         display: 'flex',
-        height: 'calc(100vh - 40px)',
-        width: 'calc(100% - 100px)',
+        height: '100dvh',
+        width: '100dvw',
+        left: '0',
+        top: '0',
         padding: '50px',
         position: 'fixed',
         zIndex: '1000',
       }
     : {
-        width: '100%',
         height: '100%',
+        width: '100%',
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',

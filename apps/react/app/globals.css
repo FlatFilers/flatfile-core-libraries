@@ -110,7 +110,13 @@ a {
   }
 }
 
+.flatfile_iframe-wrapper,
+.flatfile_initIframe-wrapper {
+  top: 60px !important;
+  height: calc(100dvh - 60px) !important;
+}
 
-.flatfile_iframe-wrapper {
-  top: 100px !important;
+.flatfile_iFrameContainer,
+.flatfile_initIFrameContainer {
+  height: auto !important;
 }

@@ -16,7 +16,10 @@ import { useEffect, useState } from 'react'
 import styles from './page.module.css'
 
 const App = () => {
-  const { open, openPortal, closePortal } = useFlatfile()
+  function logClosed() {
+    console.log('Flatfile Portal closed')
+  }
+  const { open, openPortal, closePortal } = useFlatfile({ onClose: logClosed })
   const [label, setLabel] = useState('Rock')
   const toggleOpen = () => {
     open ? closePortal({ reset: false }) : openPortal()

@@ -1,7 +1,7 @@
 'use client'
 import { sheet } from '@/utils/sheet'
 import { InitSpace, initializeFlatfile, usePortal } from '@flatfile/react'
-import React, { Dispatch, SetStateAction, useState } from 'react'
+import { Dispatch, SetStateAction, useState } from 'react'
 import { config } from './config'
 import { listener } from './listener'
 import styles from './page.module.css'
@@ -85,33 +85,43 @@ function App() {
 
   return (
     <div className={styles.main}>
-      <div className={styles.description}>
-        <button
-          onClick={async () => {
-            setShowSpace(!showSpace)
-            await OpenEmbed()
-          }}
-        >
-          {showSpace === true ? 'Close' : 'Open'} space
-        </button>
-      </div>
-      <div className={styles.description}>
-        <button
-          onClick={() => {
-            setShowSimplified(!showSimplified)
-          }}
-        >
-          {showSimplified === true ? 'Close' : 'Open'} Simplified
-        </button>
-      </div>
-      <div className={styles.description}>
-        <button
-          onClick={() => {
-            setActivatePreloaded(!showSimplified)
-          }}
-        >
-          {showSimplified === true ? 'Close' : 'Open'} Pre-loaded
-        </button>
+      <div
+        className={styles.description}
+        style={{
+          display: 'flex',
+          flexDirection: 'row',
+          justifyContent: 'flex-start',
+          gap: '10px',
+        }}
+      >
+        <div>
+          <button
+            onClick={async () => {
+              setShowSpace(!showSpace)
+              await OpenEmbed()
+            }}
+          >
+            {showSpace === true ? 'Close' : 'Open'} space
+          </button>
+        </div>
+        <div>
+          <button
+            onClick={() => {
+              setShowSimplified(!showSimplified)
+            }}
+          >
+            {showSimplified === true ? 'Close' : 'Open'} Simplified
+          </button>
+        </div>
+        <div>
+          <button
+            onClick={() => {
+              setActivatePreloaded(!showSimplified)
+            }}
+          >
+            {showSimplified === true ? 'Close' : 'Open'} Pre-loaded
+          </button>
+        </div>
       </div>
       {showSpace && (
         <div className={styles.spaceWrapper}>
