@@ -18,7 +18,7 @@
             const flatfileApi = new FlatfileClient({ environment: 'https://platform.eu.flatfile.com/api/v1' })
 
             startFlatfile({
-                publishableKey: "pk_1a2e6dace98342cb8d9692ed3b79f844",
+                publishableKey: localStorage.getItem('override-publishable-key') ?? 'pk_123456',
                 apiUrl: 'https://platform.eu.flatfile.com/api',
                 spaceBody: {
                     namespace: "portal",
