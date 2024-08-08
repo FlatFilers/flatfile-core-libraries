@@ -1,5 +1,17 @@
 # @flatfile/react
 
+## 7.12.0
+
+### Minor Changes
+
+- 794560a: Adds new useFlatfile({ onClose }) close event handler on useFlatfile hook
+  Restores missing stylesheet for legacy deprecated useSpace and usePortal flows
+  Flatfile modal now fills entire screen by default, style overrides may need to be adjusted
+
+### Patch Changes
+
+- 339773c: Fixes bug preventing server side configuration of Spaces
+
 ## 7.11.1
 
 ### Patch Changes
