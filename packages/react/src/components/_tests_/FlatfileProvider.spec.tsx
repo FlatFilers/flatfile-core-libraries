@@ -13,6 +13,8 @@ export const FlatfileProviderValue: FlatfileContextType = {
   apiUrl: '',
   open: false,
   setOpen: jest.fn(),
+  onClose: undefined,
+  setOnClose: jest.fn(),
   setSessionSpace: jest.fn(),
   listener: new FlatfileListener(),
   setListener: jest.fn(),
