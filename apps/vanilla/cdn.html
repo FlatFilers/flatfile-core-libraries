@@ -12,81 +12,27 @@
 
     <script>
         start = () => {
-            const { FlatfileListener, api, RecordHookPlugin: { recordHook } } = FlatFileJavaScript
+            const { initializeFlatfile: startFlatfile, FlatfileClient } = FlatFileJavaScript
 
-            const listener = FlatfileListener.create(listener => {
-                listener.on("**", (event) => {
-                    console.log("EVENT -> ", event.topic);
-                })
+            console.log({ FlatfileClient })
+            const flatfileApi = new FlatfileClient({ environment: 'https://platform.eu.flatfile.com/api/v1' })
 
-                listener.use(recordHook('contacts', (record) => {
-                    console.log("recordHook", record)
-                    record.set("lastName", "Rock")
-                    record.addInfo('lastName', 'Welcome to the Rock fam')
-                    return record
-                }))
-
-                // handle submit action
-                listener.on(
-                    "job:ready",
-                    { job: "workbook:submitActionFg" },
-                    async ({ context: { jobId } }) => {
-                        try {
-                            await api.jobs.ack(jobId, {
-                                info: "Getting started.",
-                                progress: 10,
-                            });
-
-                            // Make changes after cells in a Sheet have been updated
-                            console.log("Make changes here when an action is clicked");
-
-                            await api.jobs.complete(jobId, {
-                                outcome: {
-                                    acknowledge: true,
-                                    message: "This is now complete.",
-                                    next: {
-                                        type: "wait",
-                                    },
-                                },
-                            });
-                        } catch (error) {
-                            console.error("Error:", error.stack);
-
-                            await api.jobs.fail(jobId, {
-                                outcome: {
-                                    message: "This job encountered an error.",
-                                },
-                            });
-                        }
-                    }
-                );
-            })
-
-
-            FlatFileJavaScript.startFlatfile({
-                publishableKey: "pk_123456",
-
+            startFlatfile({
+                publishableKey: "pk_1a2e6dace98342cb8d9692ed3b79f844",
+                apiUrl: 'https://platform.eu.flatfile.com/api',
                 spaceBody: {
                     namespace: "portal",
                 },
-
-                workbook: {
-                    name: "My Workbook",
-                    sheets: [
-                        blueprint
-                    ],
-                    actions: [
-                        {
-                            operation: "submitActionFg",
-                            mode: "foreground",
-                            label: "Submit foreground",
-                            description: "Submit data to webhook.site",
-                            primary: true,
-                        },
-                    ]
+                sheet: blueprint,
+                onSubmit: async ({ event }) => {
+                    console.log('onSubmit', { event })
+                    const {
+                        data,
+                    } = await flatfileApi.files.list({
+                        spaceId: event.context.spaceId,
+                    });
+                    console.log('file', { data });
                 },
-
-                listener,
             });
         };
     </script>
