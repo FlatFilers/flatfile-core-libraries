@@ -1,5 +1,5 @@
 ---
-'@flatfile/react': patch
+'@flatfile/react': minor
 ---
 
 Adds new useFlatfile({ onClose }) close event handler on useFlatfile hook
