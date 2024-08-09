@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.12.1
+
+### Patch Changes
+
+- 6ca035f: Fixes a bug where the space was not completely reset upon close of the Flatfile Portal
+
 ## 7.12.0
 
 ### Minor Changes
