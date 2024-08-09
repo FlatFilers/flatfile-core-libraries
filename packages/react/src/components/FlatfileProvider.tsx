@@ -182,7 +182,11 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         ],
         sheets: [
           ...(workbookUpdates.sheets || []),
-          ...(prevSpace.workbook?.sheets || []),
+          ...(prevSpace.workbook?.sheets?.filter?.(
+            (x) =>
+              !x.slug ||
+              !workbookUpdates.sheets?.find?.((y) => y.slug === x.slug)
+          ) || []),
         ],
       },
     }))
@@ -211,6 +215,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     if (reset ?? FLATFILE_PROVIDER_CONFIG.resetOnClose) {
       setInternalAccessToken(null)
       setSessionSpace(undefined)
+      setCreateSpace(DEFAULT_CREATE_SPACE)
 
       const spacesUrl =
         FLATFILE_PROVIDER_CONFIG.spaceUrl ?? 'https://platform.flatfile.com/s'
