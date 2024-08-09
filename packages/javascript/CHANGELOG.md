@@ -1,5 +1,11 @@
 # @flatfile/javascript
 
+## 1.4.1
+
+### Patch Changes
+
+- 0b66de8: export startFlatfile as well as initializeFlatfile
+
 ## 1.4.0
 
 ### Minor Changes
