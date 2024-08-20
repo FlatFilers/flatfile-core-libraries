@@ -22,6 +22,19 @@ jobs:
         
       - name: Install dependencies
         run: npm ci
+  
+      - name: Set souce repository owner and name
+        id: set_repo_info
+        run: |
+          REPO_FULL_NAME="${{ github.repository }}"
+          REPO_OWNER="${REPO_FULL_NAME%/*}"
+          REPO_NAME="${REPO_FULL_NAME#*/}"
+      
+          echo "Repository Owner: $REPO_OWNER"
+          echo "Repository Name: $REPO_NAME"
+      
+          echo "::set-output name=repo_owner::${REPO_OWNER}"
+          echo "::set-output name=repo_name::${REPO_NAME}"
 
       - name: Set variables from cl-config.yml
         id: set_vars
@@ -32,6 +45,21 @@ jobs:
           echo "::set-output name=destination_repo::${destinationRepo}"
           echo "::set-output name=destination_directory::${destinationDirectory}"
       
+      - name: Get reviewer
+        id: get_reviewer
+        run: echo "::set-output name=reviewer::$(node scripts/getReview.js)"
+        env:
+          OWNER: ${{ steps.set_repo_info.outputs.repo_owner }}
+          REPO: ${{ steps.set_repo_info.outputs.repo_name }}
+          TAG: ${{ github.event.release.tag_name }}
+
+      - name: Get Changelog token
+        id: changelog_token
+        uses: peter-murray/workflow-application-token-action@v3
+        with:
+          application_id: ${{ secrets.CHANGELOG_APP_ID }}
+          application_private_key: ${{ secrets.CHANGELOG_APP_KEY }}   
+
       - name: Create a changelog update
         run: npx changelog generate tag ${{ github.event.release.tag_name }}
         env:
@@ -42,13 +70,6 @@ jobs:
         run: |
           FILE_NAME=$(ls temp)
           echo "::set-output name=file_name::${FILE_NAME}"
-
-      - name: Get Changelog token
-        id: changelog_token
-        uses: peter-murray/workflow-application-token-action@v3
-        with:
-          application_id: ${{ secrets.CHANGELOG_APP_ID }}
-          application_private_key: ${{ secrets.CHANGELOG_APP_KEY }}   
 
       - name: Create branch in guides repo with changelog update
         uses: dmnemec/copy_file_to_another_repo_action@main
@@ -63,27 +84,6 @@ jobs:
           user_name: github-actions[bot]
           commit_message: "Updating the changelog for ${{ github.event.release.tag_name }}"
 
-      - name: Set repository owner and name
-        id: set_repo_info
-        run: |
-          REPO_FULL_NAME="${{ github.repository }}"
-          REPO_OWNER="${REPO_FULL_NAME%/*}"
-          REPO_NAME="${REPO_FULL_NAME#*/}"
-      
-          echo "Repository Owner: $REPO_OWNER"
-          echo "Repository Name: $REPO_NAME"
-      
-          echo "::set-output name=repo_owner::${REPO_OWNER}"
-          echo "::set-output name=repo_name::${REPO_NAME}"
-
-      - name: Get reviewer
-        id: get_reviewer
-        run: echo "::set-output name=reviewer::$(node scripts/getReview.js)"
-        env:
-          OWNER: ${{ steps.set_repo_info.outputs.repo_owner }}
-          REPO: ${{ steps.set_repo_info.outputs.repo_name }}
-          TAG: ${{ github.event.release.tag_name }}
-        
       - name: Create pull request
         id: create_pr
         uses: peter-evans/create-pull-request@v6
