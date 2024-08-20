@@ -46,8 +46,8 @@ jobs:
           echo "::set-output name=destination_directory::${destinationDirectory}"
       
       - name: Get reviewer
-        id: get_reviewer
-        run: echo "::set-output name=reviewer::$(node scripts/getReview.js)"
+        id: get_reviewers
+        run: echo "::set-output name=reviewers::$(node scripts/getReview.js)"
         env:
           OWNER: ${{ steps.set_repo_info.outputs.repo_owner }}
           REPO: ${{ steps.set_repo_info.outputs.repo_name }}
@@ -93,7 +93,7 @@ jobs:
           branch: changelog/${{ github.event.release.tag_name }}
           base: main
           title: "Changelog update changelog/${{ github.event.release.tag_name }}"
-          reviewers:  ${{ steps.get_reviewer.outputs.reviewer }}
+          reviewers:  ${{ steps.get_reviewers.outputs.reviewers }}
           body:  |
             This pull request has been automatically created to update the changelog.
 

@@ -21,10 +21,12 @@
   "devDependencies": {
     "@changesets/cli": "^2.23.0",
     "@flatfile/eslint-config-platform-sdk": "*",
+    "@octokit/rest": "^21.0.2",
     "@types/jest": "^28.1.4",
     "@types/lodash": "^4.14.191",
     "@types/node": "^18.11.9",
     "@types/rollup-plugin-node-globals": "^1.4.1",
+    "dotenv": "^16.4.5",
     "eslint": "^8.18.0",
     "flatfile": "*",
     "jest": "^28.1.2",

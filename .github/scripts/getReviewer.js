@@ -1,13 +1,25 @@
-import dotenv from "dotenv";
-dotenv.config();
+import dotenv from "dotenv"
+dotenv.config()
 
-import { Octokit } from "@octokit/rest";
+import { Octokit } from "@octokit/rest"
 const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
-});
+})
 
-const owner = 'orgname'
-const repo = 'reponame'
+const owner = process.env.OWNER
+const repo = process.env.REPO
+const tag = process.env.TAG
+
+function extractCommits(prDescription) {
+  const shaPattern = /### Patch Changes[\s\S]*?-\s+([a-f0-9]{7,40}):/g;
+  const commitSHAs = []
+  
+  let match;
+  while ((match = shaPattern.exec(prDescription)) !== null) {
+    commitSHAs.push(match[1].trim())
+  }
+  return commitSHAs;
+}
 
 async function getAuthor(ref) {
   const { data } = await octokit.repos.getCommit({
@@ -16,17 +28,6 @@ async function getAuthor(ref) {
     ref,
   })
   return data.author.login;
-}
-
-function extractCommits(prDescription) {
-  const shaPattern = /### Patch Changes[\s\S]*?-\s+([a-f0-9]{7,40}):/g;
-  const commitSHAs = [];
-  
-  let match;
-  while ((match = shaPattern.exec(prDescription)) !== null) {
-    commitSHAs.push(match[1].trim());
-  }
-  return commitSHAs;
 }
 
 async function getReviewers({ tag }) {
@@ -41,9 +42,9 @@ async function getReviewers({ tag }) {
     return await Promise.all(commits.map(getAuthor))
 
   } catch (error) {
-    console.error(`Error getting reviewers for release ${tag}`, error);
-    return false;
+    console.error(`Error getting reviewers for release ${tag}`, error)
+    return false
   }
 }
 
-getReviewers({ tag: '@flatfile/react@7.12.1' })
+getReviewers({ tag })
