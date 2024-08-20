@@ -11,12 +11,12 @@ const repo = process.env.REPO
 const tag = process.env.TAG
 
 function extractCommits(prDescription) {
-  const shaPattern = /### Patch Changes[\s\S]*?-\s+([a-f0-9]{7,40}):/g;
-  const commitSHAs = []
+  const shaPattern = /-\s+([a-f0-9]{7,40}):/g;
+  const commitSHAs = [];
   
   let match;
   while ((match = shaPattern.exec(prDescription)) !== null) {
-    commitSHAs.push(match[1].trim())
+    commitSHAs.push(match[1].trim());
   }
   return commitSHAs;
 }
