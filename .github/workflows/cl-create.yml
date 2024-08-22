@@ -47,7 +47,7 @@ jobs:
       
       - name: Get reviewer
         id: get_reviewers
-        run: echo "::set-output name=reviewers::$(node scripts/getReview.js)"
+        run: echo "::set-output name=reviewers::$(node .github/scripts/getReviewers.js)"
         env:
           OWNER: ${{ steps.set_repo_info.outputs.repo_owner }}
           REPO: ${{ steps.set_repo_info.outputs.repo_name }}

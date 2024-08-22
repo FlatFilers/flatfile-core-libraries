@@ -5,7 +5,6 @@
 
   const { Octokit } = await import("@octokit/rest");
 
-
   const octokit = new Octokit({
     auth: process.env.GITHUB_TOKEN,
   });
@@ -51,6 +50,7 @@
     }
   }
 
-  return getReviewers({ tag })
+  const reviewers = await getReviewers({ tag })
+  console.log(reviewers)
 
 })();
