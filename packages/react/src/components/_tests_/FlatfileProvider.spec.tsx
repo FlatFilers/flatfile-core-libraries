@@ -21,6 +21,7 @@ export const FlatfileProviderValue: FlatfileContextType = {
   setAccessToken: jest.fn(),
   addSheet: jest.fn(),
   updateSheet: jest.fn(),
+  removeSheet: jest.fn(),
   updateWorkbook: jest.fn(),
   createSpace: DEFAULT_CREATE_SPACE,
   setCreateSpace: jest.fn(),
