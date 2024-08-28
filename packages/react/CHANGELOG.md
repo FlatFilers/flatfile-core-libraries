@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.12.2
+
+### Patch Changes
+
+- 0ea5677: Fix to allow seamless changing of Sheet config between opening the Portal instance
+
 ## 7.12.1
 
 ### Patch Changes
