@@ -26,6 +26,7 @@ import {
   attachStyleSheet,
   useAttachStyleSheet,
 } from '../utils/attachStyleSheet'
+import { workbookOnSubmitAction } from '../utils/constants'
 
 const configDefaults: IFrameTypes = {
   preload: true,
@@ -67,8 +68,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
 
   const iframe = useRef<HTMLIFrameElement>(null)
 
-  const FLATFILE_PROVIDER_CONFIG = { ...config, ...configDefaults }
-
+  const FLATFILE_PROVIDER_CONFIG = { ...configDefaults, ...config }
   const defaultPage = useRef<DefaultPageType | undefined>(undefined)
 
   const setDefaultPage = useCallback((incomingDefaultPage: DefaultPageType) => {
@@ -146,6 +146,48 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     })
   }
 
+  const removeSheet = (sheetSlug: string) => {
+    setCreateSpace((prevSpace) => {
+      const sheetToRemove = prevSpace.workbook?.sheets?.find(
+        (sheet) => sheet.slug === sheetSlug
+      )
+      if (!sheetToRemove) {
+        return prevSpace
+      }
+      const currentDefaultPage = defaultPage.current
+
+      if (
+        sheetToRemove &&
+        sheetToRemove.slug ===
+          (typeof currentDefaultPage?.workbook === 'object'
+            ? currentDefaultPage.workbook.sheet
+            : currentDefaultPage?.workbook)
+      ) {
+        defaultPage.current = undefined
+      }
+
+      const sheetWorkbookAction = workbookOnSubmitAction(sheetToRemove.slug)
+
+      const updatedWorkbookActions = prevSpace.workbook?.actions?.filter(
+        (action) => action.operation !== sheetWorkbookAction.operation
+      )
+
+      const updatedSheets = prevSpace.workbook?.sheets?.filter(
+        (sheet) => sheet.slug !== sheetSlug
+      )
+
+      return {
+        ...prevSpace,
+        workbook: {
+          ...prevSpace.workbook,
+          name: prevSpace.workbook?.name ?? 'Embedded Workbook',
+          sheets: updatedSheets,
+          actions: updatedWorkbookActions,
+        },
+      }
+    })
+  }
+
   const updateSheet = (
     sheetSlug: string,
     sheetUpdates: Partial<Flatfile.SheetConfig>
@@ -215,7 +257,6 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     if (reset ?? FLATFILE_PROVIDER_CONFIG.resetOnClose) {
       setInternalAccessToken(null)
       setSessionSpace(undefined)
-      setCreateSpace(DEFAULT_CREATE_SPACE)
 
       const spacesUrl =
         FLATFILE_PROVIDER_CONFIG.spaceUrl ?? 'https://platform.flatfile.com/s'
@@ -304,6 +345,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       setAccessToken: setInternalAccessToken,
       addSheet,
       updateSheet,
+      removeSheet,
       updateWorkbook,
       updateDocument,
       createSpace,

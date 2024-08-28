@@ -29,7 +29,7 @@ export interface FlatfileContextType {
   apiUrl: string
   open: boolean
   onClose?: () => void
-  setOnClose: (onClose: () => (undefined | (() => void))) => void,
+  setOnClose: (onClose: () => undefined | (() => void)) => void
   setOpen: (open: boolean) => void
   space?: CreateNewSpace | ReUseSpace
   sessionSpace?: any
@@ -39,6 +39,7 @@ export interface FlatfileContextType {
   accessToken?: string
   setAccessToken: (accessToken?: string | null) => void
   addSheet: (config: any) => void
+  removeSheet: (sheetSlug: string) => void
   updateSheet: (
     sheetSlug: string,
     sheetUpdates: Partial<Flatfile.SheetConfig>
@@ -72,6 +73,7 @@ export const FlatfileContext = createContext<FlatfileContextType>({
   accessToken: undefined,
   setAccessToken: () => {},
   addSheet: () => {},
+  removeSheet: () => {},
   updateSheet: () => {},
   updateWorkbook: () => {},
   updateDocument: () => {},
@@ -83,7 +85,7 @@ export const FlatfileContext = createContext<FlatfileContextType>({
   resetSpace: () => {},
   config: undefined,
   ready: false,
-  iframe: createRef<HTMLIFrameElement>()
+  iframe: createRef<HTMLIFrameElement>(),
 })
 export const useFlatfileInternal = () => useContext(FlatfileContext)
 export default FlatfileContext

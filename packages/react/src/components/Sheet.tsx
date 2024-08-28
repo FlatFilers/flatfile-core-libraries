@@ -1,11 +1,11 @@
 import { Flatfile } from '@flatfile/api'
 import {
   DefaultSubmitSettings,
-  SimpleOnboarding
+  SimpleOnboarding,
 } from '@flatfile/embedded-utils'
 import { FlatfileEvent } from '@flatfile/listener'
 import { FlatfileRecord, recordHook } from '@flatfile/plugin-record-hook'
-import React, { useContext } from 'react'
+import React, { useContext, useRef } from 'react'
 import { useEvent, usePlugin } from '../hooks'
 import { OnSubmitAction, workbookOnSubmitAction } from '../utils/constants'
 import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
@@ -63,30 +63,48 @@ type SheetProps = {
  * @param {Boolean} [props.defaultPage] - Sets this as the default Page that the Space opens up to
  */
 
-export const Sheet = (props: SheetProps) => {
+export const Sheet: React.FC<SheetProps> = (props: SheetProps) => {
   const { config, onRecordHook, onSubmit, submitSettings, defaultPage } = props
-  const { addSheet, updateWorkbook, createSpace, setDefaultPage } =
+  const { addSheet, updateWorkbook, createSpace, setDefaultPage, removeSheet } =
     useContext(FlatfileContext)
-
+  const sheetRef = useRef<Flatfile.SheetConfig>()
+  
   useDeepCompareEffect(() => {
-    // Manage actions immutably
-    if (onSubmit) {
-      updateWorkbook({
-        actions: [
-          workbookOnSubmitAction(config.slug),
-          ...(createSpace.workbook?.actions || []),
-        ],
-      })
+    const updateSheetConfig = () => {
+      sheetRef.current = config
+      if (onSubmit && !createSpace.workbook?.actions?.some(
+        (action: Flatfile.Action) =>
+          action.operation === workbookOnSubmitAction(config.slug).operation
+      )) {
+        updateWorkbook({
+          actions: [workbookOnSubmitAction(config.slug)],
+        })
+      }
+      addSheet(config)
+      if (defaultPage) {
+        setDefaultPage({
+          workbook: { sheet: config.slug },
+        })
+      } else {
+        setDefaultPage(undefined)
+      }
     }
-    addSheet(config)
-    if (defaultPage) {
-      setDefaultPage({
-        workbook: {
-          sheet: config.slug,
-        },
-      })
+
+    if (!sheetRef.current || (sheetRef.current.slug && sheetRef.current.slug !== config.slug)) {
+      if (sheetRef.current?.slug) {
+        removeSheet(sheetRef.current.slug)
+      }
+      updateSheetConfig()
+    } else {
+      sheetRef.current = config
     }
-  }, [config, defaultPage])
+
+    return () => {
+      if (sheetRef.current?.slug) {
+        removeSheet(sheetRef.current.slug)
+      }
+    }
+  }, [config, defaultPage, createSpace])
 
   usePlugin(
     onRecordHook
