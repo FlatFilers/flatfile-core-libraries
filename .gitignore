@@ -136,3 +136,4 @@ dist
 .flatfilerc.json
 
 *.code-workspace
+.aider*
