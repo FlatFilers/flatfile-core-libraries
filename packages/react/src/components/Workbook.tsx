@@ -80,21 +80,19 @@ export const Workbook = (props: WorkbookProps) => {
 
     let updatedActions = existingActions
 
-    if (onSubmit) {
-      if (hasSubmitAction) {
-        updatedActions = existingActions.map((action: Flatfile.Action) =>
-          action.operation === submitAction.operation ? submitAction : action
-        )
-      } else {
-        updatedActions = [submitAction, ...existingActions]
-      }
+    if (hasSubmitAction) {
+      updatedActions = existingActions.map((action: Flatfile.Action) =>
+        action.operation === submitAction.operation ? submitAction : action
+      )
+    } else if (onSubmit) {
+      updatedActions = [submitAction, ...existingActions]
     }
 
     updateWorkbook({
       ...config,
       actions: updatedActions,
     })
-  }, [config, onSubmit, createSpace.workbook?.actions])
+  }, [config])
 
   usePlugin(
     (client) => {
