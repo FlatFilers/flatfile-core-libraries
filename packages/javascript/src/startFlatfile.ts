@@ -170,6 +170,7 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
           onRecordHook: simpleOnboardingOptions?.onRecordHook,
           onSubmit: simpleOnboardingOptions?.onSubmit,
           slug: simpleListenerSlug,
+          submitSettings: simpleOnboardingOptions?.submitSettings,
         }),
         closeSpace,
         closeSpaceNow,

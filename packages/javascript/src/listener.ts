@@ -87,7 +87,8 @@ export const createSimpleListener = ({
 
             await api.jobs.complete(jobId, {
               outcome: {
-                message: 'complete',
+                acknowledge: submitSettings?.complete?.acknowledge ?? false,
+                message: submitSettings?.complete?.message ?? 'complete',
               },
             })
             if (onSubmitSettings.deleteSpaceAfterSubmit) {
