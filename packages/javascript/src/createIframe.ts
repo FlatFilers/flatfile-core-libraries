@@ -137,7 +137,6 @@ function attachStyles() {
   border-width: 0px;
   width: 100%;
   height: 100%;
-  padding: 16px 0;
   position: relative;
 }
 
