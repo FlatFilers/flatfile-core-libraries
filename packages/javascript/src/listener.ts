@@ -87,7 +87,7 @@ export const createSimpleListener = ({
 
             await api.jobs.complete(jobId, {
               outcome: {
-                acknowledge: submitSettings?.complete?.acknowledge ?? false,
+                acknowledge: submitSettings?.complete?.acknowledge ?? true,
                 message: submitSettings?.complete?.message ?? 'complete',
               },
             })
