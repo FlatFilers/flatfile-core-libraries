@@ -39,7 +39,6 @@ const mockCreateSpace = {
 
 const mockConfig: Flatfile.CreateWorkbookConfig = {
   name: 'Test Workbook',
-  // actions: [],
   sheets: [
     {
       name: 'Test Sheet',
