@@ -1,5 +1,11 @@
 # embedded-utils
 
+## 1.3.1
+
+### Patch Changes
+
+- d6e80ce: JavaScript: allow specifying submit complete options
+
 ## 1.3.0
 
 ### Minor Changes
