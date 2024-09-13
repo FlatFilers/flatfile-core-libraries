@@ -90,7 +90,7 @@ export const Workbook = (props: WorkbookProps) => {
 
     updateWorkbook({
       ...config,
-      actions: updatedActions,
+      actions: updatedActions.length > 0 ? updatedActions : undefined,
     })
   }, [config])
 
