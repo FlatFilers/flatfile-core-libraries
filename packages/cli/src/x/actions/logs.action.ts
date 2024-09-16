@@ -135,16 +135,21 @@ export async function logsAction(
    */
   const fetchLogs = async (
     agentId: Flatfile.AgentId,
-    sinceEventId?: Flatfile.EventId
+    sinceEvent?: Flatfile.AgentLog
   ): Promise<Flatfile.AgentLog[]> => {
     const { data: logs = [] } = await apiClient.agents.getAgentLogs(agentId, {
       environmentId: environment.id!,
     })
 
-    if (!sinceEventId) return logs
+    if (!sinceEvent) return logs
 
-    const lastLog = logs.findLastIndex((log) => log.eventId === sinceEventId)
-    return logs.slice(0, lastLog)
+    const filtered = logs.filter(
+      (log) =>
+        log.createdAt >= sinceEvent.createdAt &&
+        log.eventId !== sinceEvent.eventId
+    )
+
+    return filtered
   }
 
   try {
@@ -176,16 +181,16 @@ export async function logsAction(
     printLogs(initialLogs)
 
     if (options?.tail) {
-      let lastEventId = initialLogs[initialLogs.length - 1].eventId
+      let lastEvent = initialLogs[initialLogs.length - 1]
       let timer: ReturnType<typeof setTimeout>
 
       // The logs endpoint does not support streaming responses, so we need to poll every few seconds.
       const poll = async () => {
-        const newLogs = await fetchLogs(selectedAgent.id, lastEventId)
+        const newLogs = (await fetchLogs(selectedAgent.id, lastEvent)).reverse()
 
         if (newLogs.length > 0) {
           printLogs(newLogs)
-          lastEventId = newLogs[newLogs.length - 1].eventId
+          lastEvent = newLogs[newLogs.length - 1]
         }
 
         timer = setTimeout(poll, 2500)
