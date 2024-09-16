@@ -101,6 +101,10 @@ export interface ReusedSpaceWithAccessToken extends BaseSpace {
 }
 
 type SubmitSettings = {
+  complete?: {
+    acknowledge?: boolean
+    message?: string
+  }
   deleteSpaceAfterSubmit?: boolean
 }
 export const DefaultSubmitSettings = {

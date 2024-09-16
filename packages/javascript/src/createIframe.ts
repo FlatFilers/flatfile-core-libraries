@@ -1,3 +1,5 @@
+let styleSheetAttached = false
+
 export function createIframe(
   mountElement: string,
   displayAsModal: boolean,
@@ -59,9 +61,18 @@ export function createIframe(
     console.error('An error occurred while loading Flatfile.')
   }
 
+  if (!styleSheetAttached) {
+    attachStyles()
+    styleSheetAttached = true
+  }
+
+  return iFrameContainer
+}
+
+function attachStyles() {
   // Inject styles dynamically
   const styles = `
-   :root {
+:root {
   --ff-primary-color: #4c48ef;
   --ff-secondary-color: #616a7d;
   --ff-text-color: #090b2b;
@@ -91,7 +102,7 @@ export function createIframe(
   height: calc(100vh - 60px); /* 30px padding on the top and bottom */
   padding: 30px;
   background: var(--ff-bg-fade);
-  z-index: 1000; 
+  z-index: 1000;
 }
 
 .flatfile_displayAsModal .flatfile-close-button {
@@ -107,7 +118,7 @@ export function createIframe(
   cursor: pointer;
   border: none;
   background: #000;
-  box-shadow: 0px 0px 10px 0px rgba(0,0,0,0.5);
+  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
   animation: glow 1.5s linear infinite alternate;
   transition: box-shadow 0.3s ease;
   height: 25px;
@@ -126,7 +137,6 @@ export function createIframe(
   border-width: 0px;
   width: 100%;
   height: 100%;
-  padding: 16px 0;
   position: relative;
 }
 
@@ -239,6 +249,4 @@ export function createIframe(
   const styleElement = document.createElement('style')
   styleElement.innerHTML = styles
   document.head.appendChild(styleElement)
-
-  return iFrameContainer
 }

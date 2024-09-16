@@ -1,5 +1,14 @@
 # @flatfile/javascript
 
+## 1.4.2
+
+### Patch Changes
+
+- 7b8cda2: JavaScript: Portal style sheet is now only attached once, instead of every time the Portal is opened.
+- d6e80ce: JavaScript: allow specifying submit complete options
+- Updated dependencies [d6e80ce]
+  - @flatfile/embedded-utils@1.3.1
+
 ## 1.4.1
 
 ### Patch Changes

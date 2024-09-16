@@ -1,7 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
-
-<head>
+  <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Hello, world!</title>
@@ -11,35 +10,50 @@
     <link rel="stylesheet" type="text/css" href="./styles.css" />
 
     <script>
-        start = () => {
-            const { initializeFlatfile: startFlatfile, FlatfileClient } = FlatFileJavaScript
+      const publishableKey =
+        localStorage.getItem('override-publishable-key') ?? 'pk_123456'
 
-            console.log({ FlatfileClient })
-            const flatfileApi = new FlatfileClient({ environment: 'https://platform.eu.flatfile.com/api/v1' })
+      start = () => {
+        const { initializeFlatfile: startFlatfile, FlatfileClient } =
+          FlatFileJavaScript
 
-            startFlatfile({
-                publishableKey: localStorage.getItem('override-publishable-key') ?? 'pk_123456',
-                apiUrl: 'https://platform.eu.flatfile.com/api',
-                spaceBody: {
-                    namespace: "portal",
-                },
-                sheet: blueprint,
-                onSubmit: async ({ event }) => {
-                    console.log('onSubmit', { event })
-                    const {
-                        data,
-                    } = await flatfileApi.files.list({
-                        spaceId: event.context.spaceId,
-                    });
-                    console.log('file', { data });
-                },
-            });
-        };
+        console.log({ FlatfileClient })
+        const flatfileApi = new FlatfileClient({
+          //   environment: 'https://platform.eu.flatfile.com/api/v1',
+        })
+
+        startFlatfile({
+          publishableKey,
+          //   apiUrl: 'https://platform.eu.flatfile.com/api',
+          spaceBody: {
+            namespace: 'portal',
+          },
+          sheet: blueprint,
+          submitSettings: {
+            complete: {
+              acknowledge: true, // required for auto close
+              message: 'Submitting data is now complete!',
+            },
+          },
+          onSubmit: async ({ event }) => {
+            console.log('onSubmit', { event })
+            const { data } = await flatfileApi.files.list({
+              spaceId: event.context.spaceId,
+            })
+            console.log('file', { data })
+          },
+          closeSpace: {
+            operation: 'simpleSubmitAction',
+            onClose: () => {
+              console.log('Portal is now closed!')
+            },
+          },
+        })
+      }
     </script>
-</head>
+  </head>
 
-<body>
+  <body>
     <button onClick="start()">Open Flatfile</button>
-</body>
-
+  </body>
 </html>
