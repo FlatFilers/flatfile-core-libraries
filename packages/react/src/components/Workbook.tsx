@@ -74,18 +74,11 @@ export const Workbook = (props: WorkbookProps) => {
   useDeepCompareEffect(() => {
     const submitAction = workbookOnSubmitAction()
     const existingActions = createSpace.workbook?.actions || []
-    const hasSubmitAction = existingActions.some(
-      (action: Flatfile.Action) => action.operation === submitAction.operation
-    )
+    
+    let updatedActions = [...existingActions, ...(config?.actions || [])]
 
-    let updatedActions = existingActions
-
-    if (hasSubmitAction) {
-      updatedActions = existingActions.map((action: Flatfile.Action) =>
-        action.operation === submitAction.operation ? submitAction : action
-      )
-    } else if (onSubmit) {
-      updatedActions = [submitAction, ...existingActions]
+    if (!updatedActions.some(action => action.operation === submitAction.operation) && onSubmit) {
+      updatedActions = [submitAction, ...updatedActions]
     }
 
     updateWorkbook({
