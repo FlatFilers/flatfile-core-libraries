@@ -132,8 +132,13 @@ const App = () => {
               record.set('email', 'SHEET 3 RECORDHOOK')
               return record
             }}
-            onSubmit={async (sheet) => {
-              console.log('onSubmit from Sheet 3', { sheet })
+            onSubmit={{
+              handler: async (sheet) => {
+                console.log('onSubmit from Sheet 3', { sheet })
+              },
+              config: {
+                label: 'Sheet 3 Submit',
+              },
             }}
           />
           <Sheet

@@ -5,8 +5,15 @@ import {
   SimpleOnboarding,
 } from '@flatfile/embedded-utils'
 import { FlatfileEvent } from '@flatfile/listener'
+import { OnSubmitActionWithConfig } from '../components'
 
-export const workbookOnSubmitAction = (sheetSlug?: string): Flatfile.Action => {
+export const workbookOnSubmitAction = ({
+  sheetSlug,
+  config,
+}: {
+  sheetSlug?: string
+  config?: Partial<Flatfile.Action>
+} = {}): Flatfile.Action => {
   const operation = sheetSlug
     ? `sheetSubmitAction-${sheetSlug}`
     : 'workbookSubmitAction'
@@ -16,11 +23,12 @@ export const workbookOnSubmitAction = (sheetSlug?: string): Flatfile.Action => {
     label: 'Submit',
     description: 'Action for handling data inside of onSubmit',
     primary: true,
+    ...config,
   }
 }
 
 export const OnSubmitAction = (
-  onSubmit: SimpleOnboarding['onSubmit'],
+  onSubmit: SimpleOnboarding['onSubmit'] | OnSubmitActionWithConfig,
   onSubmitSettings: SimpleOnboarding['submitSettings']
 ) => {
   return async (event: FlatfileEvent) => {
@@ -41,7 +49,11 @@ export const OnSubmitAction = (
       const sheet = new SheetHandler(workbookSheets[0].id)
 
       if (onSubmit) {
-        await onSubmit({ job, sheet, event })
+        if (typeof onSubmit === 'function') {
+          await onSubmit({ job, sheet, event })
+        } else if (typeof onSubmit.handler === 'function') {
+          await onSubmit.handler({ job, sheet, event })
+        }
       }
 
       await FlatfileAPI.jobs.complete(jobId, {

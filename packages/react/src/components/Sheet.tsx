@@ -10,10 +10,11 @@ import { useEvent, usePlugin } from '../hooks'
 import { OnSubmitAction, workbookOnSubmitAction } from '../utils/constants'
 import { useDeepCompareEffect } from '../utils/useDeepCompareEffect'
 import FlatfileContext from './FlatfileContext'
+import { OnSubmitActionWithConfig } from './Workbook'
 
 type SheetProps = {
   config: Flatfile.SheetConfig
-  onSubmit?: SimpleOnboarding['onSubmit']
+  onSubmit?: SimpleOnboarding['onSubmit'] | OnSubmitActionWithConfig
   submitSettings?: SimpleOnboarding['submitSettings']
   onRecordHook?: SimpleOnboarding['onRecordHook']
   defaultPage?: boolean
@@ -68,16 +69,20 @@ export const Sheet: React.FC<SheetProps> = (props: SheetProps) => {
   const { addSheet, updateWorkbook, createSpace, setDefaultPage, removeSheet } =
     useContext(FlatfileContext)
   const sheetRef = useRef<Flatfile.SheetConfig>()
-  
+
   useDeepCompareEffect(() => {
     const updateSheetConfig = () => {
       sheetRef.current = config
-      if (onSubmit && !createSpace.workbook?.actions?.some(
-        (action: Flatfile.Action) =>
-          action.operation === workbookOnSubmitAction(config.slug).operation
-      )) {
+      if (
+        onSubmit &&
+        !createSpace.workbook?.actions?.some(
+          (action: Flatfile.Action) =>
+            action.operation ===
+            workbookOnSubmitAction({ sheetSlug: config.slug, config: 'config' in onSubmit ? onSubmit.config : undefined  }).operation
+        )
+      ) {
         updateWorkbook({
-          actions: [workbookOnSubmitAction(config.slug)],
+          actions: [workbookOnSubmitAction({ sheetSlug: config.slug, config: 'config' in onSubmit ? onSubmit.config : undefined  })],
         })
       }
       addSheet(config)
@@ -90,7 +95,10 @@ export const Sheet: React.FC<SheetProps> = (props: SheetProps) => {
       }
     }
 
-    if (!sheetRef.current || (sheetRef.current.slug && sheetRef.current.slug !== config.slug)) {
+    if (
+      !sheetRef.current ||
+      (sheetRef.current.slug && sheetRef.current.slug !== config.slug)
+    ) {
       if (sheetRef.current?.slug) {
         removeSheet(sheetRef.current.slug)
       }
@@ -120,7 +128,11 @@ export const Sheet: React.FC<SheetProps> = (props: SheetProps) => {
 
   useEvent(
     'job:ready',
-    { job: `workbook:${workbookOnSubmitAction(config.slug).operation}` },
+    {
+      job: `workbook:${
+        workbookOnSubmitAction({ sheetSlug: config.slug }).operation
+      }`,
+    },
     onSubmit
       ? OnSubmitAction(onSubmit, {
           ...DefaultSubmitSettings,
