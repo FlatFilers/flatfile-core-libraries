@@ -21,9 +21,14 @@ type HookConfig<T> = [string, onRecordHook<T>] | [onRecordHook<T>]
 
 export type onRecordHooks<T> = HookConfig<T>[]
 
+export type OnSubmitActionWithConfig = {
+  handler: SimpleOnboarding['onSubmit']
+  config: Partial<Flatfile.Action>
+}
+
 type WorkbookProps = Partial<{
   config: Flatfile.CreateWorkbookConfig
-  onSubmit: SimpleOnboarding['onSubmit']
+  onSubmit: SimpleOnboarding['onSubmit'] | OnSubmitActionWithConfig
   submitSettings: SimpleOnboarding['submitSettings']
   onRecordHooks: onRecordHooks<FlatfileRecord<TRecordDataWithLinks<TPrimitive>>>
   children: React.ReactNode
@@ -74,10 +79,15 @@ export const Workbook = (props: WorkbookProps) => {
   useDeepCompareEffect(() => {
     const submitAction = workbookOnSubmitAction()
     const existingActions = createSpace.workbook?.actions || []
-    
+
     let updatedActions = [...existingActions, ...(config?.actions || [])]
 
-    if (!updatedActions.some(action => action.operation === submitAction.operation) && onSubmit) {
+    if (
+      !updatedActions.some(
+        (action) => action.operation === submitAction.operation
+      ) &&
+      onSubmit
+    ) {
       updatedActions = [submitAction, ...updatedActions]
     }
 
@@ -121,7 +131,13 @@ export const Workbook = (props: WorkbookProps) => {
 
   useEvent(
     'job:ready',
-    { job: `workbook:${workbookOnSubmitAction().operation}` },
+    {
+      job: `workbook:${
+        workbookOnSubmitAction(
+          onSubmit && 'config' in onSubmit ? { config: onSubmit.config } : {}
+        ).operation
+      }`,
+    },
     onSubmit
       ? OnSubmitAction(onSubmit, {
           ...DefaultSubmitSettings,

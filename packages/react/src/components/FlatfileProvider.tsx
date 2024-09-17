@@ -52,6 +52,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   const [internalAccessToken, setInternalAccessToken] = useState<
     string | undefined | null
   >(accessToken)
+
   const [listener, setListener] = useState(new FlatfileListener())
   const [open, setOpen] = useState<boolean>(false)
   const [sessionSpace, setSessionSpace] = useState<
@@ -166,7 +167,9 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         defaultPage.current = undefined
       }
 
-      const sheetWorkbookAction = workbookOnSubmitAction(sheetToRemove.slug)
+      const sheetWorkbookAction = workbookOnSubmitAction({
+        sheetSlug: sheetToRemove.slug,
+      })
 
       const updatedWorkbookActions = prevSpace.workbook?.actions?.filter(
         (action) => action.operation !== sheetWorkbookAction.operation
