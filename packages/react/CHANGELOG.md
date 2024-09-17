@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.12.3
+
+### Patch Changes
+
+- b3f88bf: Fix bug with Workbook onSubmit
+
 ## 7.12.2
 
 ### Patch Changes
