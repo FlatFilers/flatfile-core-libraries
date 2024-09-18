@@ -1,5 +1,12 @@
 # @flatfile/react
 
+## 7.12.4
+
+### Patch Changes
+
+- cc58f40: fixes a bug when relaunching a re-used space
+- 8eae8fa: Fix bug causing "Maximum update depth exceeded" React error when multiple Portals are used within the same FlatfileProvider (this is not supported).
+
 ## 7.12.3
 
 ### Patch Changes
