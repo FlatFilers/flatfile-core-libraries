@@ -56,7 +56,7 @@ export interface FlatfileContextType {
   updateSpace: (config: any) => void
   defaultPage: DefaultPageType | undefined
   setDefaultPage: (object: any) => void
-  resetSpace: (options?: ClosePortalOptions, id?: number) => void
+  resetSpace: (options?: ClosePortalOptions) => void
   config?: IFrameTypes
   iframe: RefObject<HTMLIFrameElement>
   ready: boolean
