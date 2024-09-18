@@ -30,7 +30,7 @@ const createSimpleListener = ({
       client.use(
         recordHook(
           slug,
-          async (record: FlatfileRecord, event?: FlatfileEvent) =>
+          async (record: FlatfileRecord, event: FlatfileEvent | undefined) =>
             onRecordHook(record, event)
         )
       )
