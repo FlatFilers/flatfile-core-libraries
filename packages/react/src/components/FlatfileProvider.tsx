@@ -22,10 +22,7 @@ import FlatfileContext, {
   FlatfileContextType,
 } from './FlatfileContext'
 
-import {
-  attachStyleSheet,
-  useAttachStyleSheet,
-} from '../utils/attachStyleSheet'
+import { useAttachStyleSheet } from '../utils/attachStyleSheet'
 import { workbookOnSubmitAction } from '../utils/constants'
 
 const configDefaults: IFrameTypes = {
@@ -48,6 +45,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   apiUrl = 'https://platform.flatfile.com/api',
   config,
 }) => {
+  const onClose = useRef<undefined | (() => void)>()
   useAttachStyleSheet(config?.styleSheetOptions)
   const [internalAccessToken, setInternalAccessToken] = useState<
     string | undefined | null
@@ -63,8 +61,6 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     workbook?: Flatfile.CreateWorkbookConfig
     space: Flatfile.SpaceConfig & { id?: string }
   }>(DEFAULT_CREATE_SPACE)
-
-  const [onClose, setOnClose] = useState<undefined | (() => void)>()
 
   const iframe = useRef<HTMLIFrameElement>(null)
 
@@ -251,7 +247,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     }))
   }
 
-  const resetSpace = ({ reset }: ClosePortalOptions = {}) => {
+  const resetSpace = ({ reset }: ClosePortalOptions = {}, id?: number) => {
     setOpen(false)
 
     if (reset ?? FLATFILE_PROVIDER_CONFIG.resetOnClose) {
@@ -272,8 +268,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       }
       // Works but only after the iframe is visible
     }
-
-    onClose?.()
+    onClose.current?.()
   }
 
   // Listen to the postMessage event from the created iFrame
@@ -336,7 +331,6 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       environmentId,
       open,
       onClose,
-      setOnClose,
       setOpen,
       sessionSpace,
       setSessionSpace,
@@ -372,7 +366,6 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       iframe,
       FLATFILE_PROVIDER_CONFIG,
       onClose,
-      setOnClose,
     ]
   )
 

@@ -12,18 +12,21 @@ import {
   usePlugin,
   Workbook,
 } from '@flatfile/react'
-import { useEffect, useState } from 'react'
+import { useCallback, useEffect, useState } from 'react'
 import styles from './page.module.css'
 
-const App = () => {
-  function logClosed() {
-    console.log('Flatfile Portal closed')
-  }
+const App = ({ id }: { id?: string }) => {
+  const logClosed = useCallback(() => {
+    console.log(`Flatfile Portal ${JSON.stringify(id)} closed`)
+  }, [id])
+  useEffect(() => {
+    console.log('opening portal', { id })
+  }, [id])
   const { open, openPortal, closePortal } = useFlatfile({ onClose: logClosed })
   const [label, setLabel] = useState('Rock')
-  const toggleOpen = () => {
+  const toggleOpen = useCallback(() => {
     open ? closePortal({ reset: false }) : openPortal()
-  }
+  }, [open, closePortal, openPortal])
 
   useEffect(() => {
     openPortal()
@@ -83,7 +86,9 @@ const App = () => {
   return (
     <div className={styles.main}>
       <div className={styles.description}>
-        <button onClick={toggleOpen}>{open ? 'CLOSE' : 'OPEN'} PORTAL</button>
+        <button onClick={toggleOpen}>
+          {open ? 'CLOSE' : 'OPEN'} PORTAL {id}
+        </button>
         <button onClick={() => setLabel('blue')}>blue listener</button>
         <button onClick={() => setLabel('green')}>green listener</button>
       </div>

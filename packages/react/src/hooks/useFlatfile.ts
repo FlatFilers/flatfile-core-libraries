@@ -19,16 +19,11 @@ export const useFlatfile: (useFlatfileOptions?: UseFlatfileOptions) => {
     throw new Error('useFlatfile must be used within a FlatfileProvider')
   }
 
-  const onCloseCallback = useCallback(
-    useFlatfileOptions.onClose ?? (() => {}),
-    [typeof useFlatfileOptions.onClose]
-  )
-
   useEffect(() => {
-    if (context.onClose !== onCloseCallback) {
-      context.setOnClose(() => onCloseCallback)
+    if (context.onClose.current !== useFlatfileOptions.onClose) {
+      context.onClose.current = useFlatfileOptions.onClose
     }
-  }, [context.onClose, context.setOnClose, onCloseCallback])
+  }, [context.onClose.current, useFlatfileOptions.onClose])
 
   const { open, setOpen, setListener, listener, apiUrl, resetSpace, ready } =
     context
