@@ -247,7 +247,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     }))
   }
 
-  const resetSpace = ({ reset }: ClosePortalOptions = {}, id?: number) => {
+  const resetSpace = ({ reset }: ClosePortalOptions = {}) => {
     setOpen(false)
 
     if (reset ?? FLATFILE_PROVIDER_CONFIG.resetOnClose) {
