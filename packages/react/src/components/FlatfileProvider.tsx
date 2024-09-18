@@ -64,7 +64,10 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
 
   const iframe = useRef<HTMLIFrameElement>(null)
 
-  const FLATFILE_PROVIDER_CONFIG = { ...configDefaults, ...config }
+  const [FLATFILE_PROVIDER_CONFIG, setFLATFILE_PROVIDER_CONFIG] = useState({
+    ...configDefaults,
+    ...config,
+  })
   const defaultPage = useRef<DefaultPageType | undefined>(undefined)
 
   const setDefaultPage = useCallback((incomingDefaultPage: DefaultPageType) => {
@@ -106,6 +109,10 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   }
 
   const handleReUseSpace = async () => {
+    setFLATFILE_PROVIDER_CONFIG({
+      ...FLATFILE_PROVIDER_CONFIG,
+      resetOnClose: false,
+    })
     if (internalAccessToken && createSpace.space.id) {
       const { data: reUsedSpace } = await getSpace({
         space: { id: createSpace.space.id, accessToken: internalAccessToken },
@@ -248,6 +255,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   }
 
   const resetSpace = ({ reset }: ClosePortalOptions = {}) => {
+    console.log('resetting space', { FLATFILE_PROVIDER_CONFIG, providerValue })
     setOpen(false)
 
     if (reset ?? FLATFILE_PROVIDER_CONFIG.resetOnClose) {
