@@ -51,6 +51,6 @@
   }
 
   const reviewers = await getReviewers({ tag })
-  console.log(reviewers)
+  console.log(reviewers.join(','))
 
 })();
