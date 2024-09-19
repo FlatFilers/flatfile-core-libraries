@@ -1,23 +1,27 @@
 {
   "name": "react-17-example",
-  "version": "0.0.0",
   "private": true,
+  "version": "0.0.0",
+  "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
-    "serve": "vite preview"
+    "build": "tsc -b && vite build",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "preview": "vite preview"
   },
   "dependencies": {
     "@flatfile/api": "*",
-    "@flatfile/react": "*",
+    "@flatfile/hooks": "*",
+    "@flatfile/listener": "*",
     "@flatfile/plugin-record-hook": "*",
+    "@flatfile/react": "*",
     "react": "^17.0.2",
     "react-dom": "^17.0.2"
   },
   "devDependencies": {
-    "vite": "^2.6.14",
-    "@vitejs/plugin-react": "^1.0.0",
     "@types/react": "^17.0.2",
-    "@types/react-dom": "^17.0.2"
+    "@types/react-dom": "^17.0.2",
+    "@vitejs/plugin-react": "^4.3.1",
+    "vite": "^4.5.5"
   }
 }
