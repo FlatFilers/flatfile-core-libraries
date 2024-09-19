@@ -19,7 +19,7 @@ export const App = ({ PUBLISHABLE_KEY }: { PUBLISHABLE_KEY: string }) => {
   return (
     <FlatfileProvider publishableKey={PUBLISHABLE_KEY}>
       <div>
-        <h1>Hello from {ReactVersion}</h1>
+        <h1>Hello from React {ReactVersion}</h1>
         <a href="https://vitejs.dev" target="_blank">
           <img src={viteLogo} className="logo" alt="Vite logo" />
         </a>
