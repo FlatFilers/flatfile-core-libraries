@@ -149,12 +149,13 @@ export class FlatfileEvent extends AuthenticatedClient {
    */
   async secrets(
     key: string,
-    options?: { environmentId?: string; spaceId?: string }
+    options?: { environmentId?: string; spaceId?: string, actorId?: string }
   ) {
     // Allow options overrides, then take from context, else are absent
     const environmentId =
       options?.environmentId || this.context.environmentId || ''
     const spaceId = options?.spaceId || this.context.spaceId || ''
+    const actorId = options?.actorId || this.context.actorId || ''
 
     if (!environmentId) {
       throw new Error('environmentId is required to fetch secrets')
@@ -166,7 +167,11 @@ export class FlatfileEvent extends AuthenticatedClient {
       getSecrets += `&spaceId=${spaceId}`
     }
 
-    const secretCacheKey = `secrets:${environmentId}${spaceId && `:${spaceId}`}`
+    if (actorId) {
+      getSecrets += `&actorId=${actorId}`
+    }
+
+    const secretCacheKey = `secrets:${environmentId}${spaceId && `:${spaceId}`}${actorId && `:${actorId}`}`
 
     const secrets = await this.cache.init(secretCacheKey, async () => {
       const secretsResponse = await this.fetch(getSecrets)
