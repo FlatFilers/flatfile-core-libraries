@@ -1,5 +1,11 @@
 # @flatfile/listener
 
+## 1.1.0
+
+### Minor Changes
+
+- 4b25544: Support for user-level secrets in the SDK by introducing an optional actorId parameter to the secrets method. This allows fetching and managing secrets scoped to a specific actor without affecting existing behavior.
+
 ## 1.0.5
 
 ### Patch Changes
