@@ -1,6 +1,6 @@
 {
   "name": "@flatfile/react",
-  "version": "7.12.4",
+  "version": "7.12.5",
   "description": "Flatfile React components",
   "type": "module",
   "browser": {
