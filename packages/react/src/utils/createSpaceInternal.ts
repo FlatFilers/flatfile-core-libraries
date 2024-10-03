@@ -8,7 +8,6 @@ export const createSpaceInternal = async ({
   document,
 }: CREATE_SPACE_INTERNAL) => {
   const createSpaceEndpoint = `${apiUrl}/v1/internal/spaces/init?publishableKey=${publishableKey}`
-
   let spaceRequestBody: any = {
     space,
   }

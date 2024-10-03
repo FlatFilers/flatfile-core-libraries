@@ -16,5 +16,6 @@ export type IFrameTypes = Partial<
     preload?: boolean
     resetOnClose?: boolean
     styleSheetOptions?: StyleSheetOptions
+    debug?: boolean
   }
 >

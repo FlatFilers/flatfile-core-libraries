@@ -56,6 +56,12 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     { space: ISessionSpace } | undefined
   >(undefined)
 
+  const debugLogger = (...args: any[]) => {
+    if (config?.debug === true) {
+      console.log(...args)
+    }
+  }
+
   const [createSpace, setCreateSpace] = useState<{
     document?: Flatfile.DocumentConfig
     workbook?: Flatfile.CreateWorkbookConfig
@@ -89,18 +95,21 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     }
     // autoConfigure if no workbook or workbook.sheets are provided as they should be handled in the listener space:configure event
     const autoConfigure = !createSpace.workbook?.sheets
-    const { data: createdSpace } = await createSpaceInternal({
+    const createSpaceConfig = {
       apiUrl,
       publishableKey,
       space: { ...createSpace.space, autoConfigure },
       workbook: createSpace.workbook,
       document: createSpace.document,
-    })
-
+    }
+    debugLogger('Created space:', { createSpaceConfig })
+    const { data: createdSpace } = await createSpaceInternal(createSpaceConfig)
+    debugLogger('Created space:', { createdSpace })
     // A bit of a hack to wire up the Flatfile API key to the window object for internal client side @flatfile/api usage
     ;(window as any).CROSSENV_FLATFILE_API_KEY = createdSpace.space.accessToken
 
     if (defaultPage.current) {
+      debugLogger('Setting default page:', defaultPage.current)
       await updateDefaultPageInSpace(createdSpace, defaultPage.current)
     }
 
@@ -118,6 +127,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         space: { id: createSpace.space.id, accessToken: internalAccessToken },
         apiUrl,
       })
+      debugLogger('Found space:', { reUsedSpace })
 
       if (reUsedSpace.accessToken) {
         ;(window as any).CROSSENV_FLATFILE_API_KEY = reUsedSpace.accessToken
@@ -283,10 +293,26 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   useEffect(() => {
     const ff = (message: MessageEvent) =>
       handlePostMessage(FLATFILE_PROVIDER_CONFIG?.closeSpace, listener)(message)
+    const debugMessager = (message: MessageEvent) => {
+      const { flatfileEvent } = message.data
+      if (!flatfileEvent) {
+        return
+      }
+      console.log('Flatfile event ->  ', flatfileEvent.topic, {
+        flatfileEvent,
+        message,
+      })
+    }
 
     window.addEventListener('message', ff, false)
+    if (config?.debug) {
+      window.addEventListener('message', debugMessager, false)
+    }
     return () => {
       window.removeEventListener('message', ff)
+      if (config?.debug) {
+        window.removeEventListener('message', debugMessager, false)
+      }
     }
   }, [listener])
 
@@ -297,10 +323,20 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         accessToken: internalAccessToken,
         fetchApi: fetch,
       })
+      debugLogger('Mounting listener:', {
+        listener,
+        apiUrl,
+        accessToken: internalAccessToken,
+        browserInstance,
+      })
       listener.mount(browserInstance)
 
       // Cleanup function to unmount the listener
       return () => {
+        debugLogger('Unmounting listener:', {
+          listener,
+          browserInstance,
+        })
         listener.unmount(browserInstance)
       }
     }
