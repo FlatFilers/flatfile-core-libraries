@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.12.5
+
+### Patch Changes
+
+- 0a246e7: Adds debug logging
+
 ## 7.12.4
 
 ### Patch Changes
