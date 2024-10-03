@@ -304,7 +304,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         listener.unmount(browserInstance)
       }
     }
-  }, [internalAccessToken, apiUrl])
+  }, [listener, internalAccessToken, apiUrl])
 
   // Sets a ready variable if the createSpace context has been updated.
   useEffect(() => {
