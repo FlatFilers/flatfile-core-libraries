@@ -18,7 +18,8 @@ export const EmbeddedIFrameWrapper = (
     handleCloseInstance: () => void
   }
 ): JSX.Element => {
-  const { open, sessionSpace, ready, iframe } = useContext(FlatfileContext)
+  const { open, sessionSpace, ready, iframe, spaceUrl } =
+    useContext(FlatfileContext)
 
   const [showExitWarnModal, setShowExitWarnModal] = useState(false)
   const {
@@ -32,7 +33,6 @@ export const EmbeddedIFrameWrapper = (
     iframeStyles,
     mountElement = 'flatfile_iFrameContainer',
     preload = true,
-    spaceUrl,
   } = props
   const spacesUrl = spaceUrl ?? 'https://platform.flatfile.com/s'
   const preloadUrl = `${spacesUrl}/space-init`

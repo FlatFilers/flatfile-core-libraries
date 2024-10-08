@@ -33,6 +33,7 @@ export interface FlatfileContextType {
   publishableKey?: string
   environmentId?: string
   apiUrl: string
+  spaceUrl: string
   open: boolean
   onClose: MutableRefObject<null | undefined | (() => void)>
   setOpen: (open: boolean) => void
@@ -66,6 +67,7 @@ export const FlatfileContext = createContext<FlatfileContextType>({
   publishableKey: undefined,
   environmentId: undefined,
   apiUrl: '',
+  spaceUrl: '',
   open: true,
   onClose: createRef<(() => void) | undefined>(),
   setOpen: () => {},

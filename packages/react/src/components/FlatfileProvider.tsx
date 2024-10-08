@@ -42,7 +42,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   publishableKey,
   accessToken,
   environmentId,
-  apiUrl = 'https://platform.flatfile.com/api',
+  baseUrl = 'https://platform.flatfile.com',
   config,
 }) => {
   const onClose = useRef<undefined | (() => void)>()
@@ -61,6 +61,9 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       console.log(...args)
     }
   }
+
+  const apiUrl = `${baseUrl}/api`
+  const spaceUrl = `${baseUrl}/s`
 
   const [createSpace, setCreateSpace] = useState<{
     document?: Flatfile.DocumentConfig
@@ -272,9 +275,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       setInternalAccessToken(null)
       setSessionSpace(undefined)
 
-      const spacesUrl =
-        FLATFILE_PROVIDER_CONFIG.spaceUrl ?? 'https://platform.flatfile.com/s'
-      const preloadUrl = `${spacesUrl}/space-init`
+      const preloadUrl = `${spaceUrl}/space-init`
 
       const spaceLink = sessionSpace?.space?.guestLink ?? null
       const iFrameSrc = FLATFILE_PROVIDER_CONFIG.preload
@@ -372,6 +373,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       ...(publishableKey ? { publishableKey } : {}),
       ...(internalAccessToken ? { accessToken: internalAccessToken } : {}),
       apiUrl,
+      spaceUrl,
       environmentId,
       open,
       onClose,
