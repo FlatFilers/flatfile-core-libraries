@@ -8,7 +8,9 @@ export type Exclusive<T, U> =
 export interface BaseSpace {
   children: ReactNode
   environmentId?: string
+  /** @deprecated Use baseUrl instead */
   apiUrl?: string
+  baseUrl?: string
   config?: IFrameTypes
 }
 
