@@ -1,5 +1,11 @@
 # embedded-utils
 
+## 1.3.2
+
+### Patch Changes
+
+- bf1a718: Fix bug in message handling
+
 ## 1.3.1
 
 ### Patch Changes
