@@ -11,7 +11,6 @@ export type IFrameTypes = Partial<
     | 'exitSecondaryButtonText'
     | 'displayAsModal'
     | 'closeSpace'
-    | 'spaceUrl'
   > & {
     preload?: boolean
     resetOnClose?: boolean
