@@ -7,8 +7,13 @@ export const handlePostMessage = (
   onClose?: () => void,
   onInit?: (data: { localTranslations: Record<string, any> }) => void
 ) => {
-  return (message: MessageEvent<{ flatfileEvent: FlatfileEvent }>) => {
-    if (message.data && 'localTranslations' in message.data) {
+  return (message: MessageEvent<{ flatfileEvent: FlatfileEvent } | string>) => {
+    // Silently return if message.data is not an object
+    if (typeof message.data !== 'object' || message.data === null) {
+      return
+    }
+
+    if ('localTranslations' in message.data) {
       const localTranslations = message.data.localTranslations as Record<
         string,
         any
@@ -16,10 +21,13 @@ export const handlePostMessage = (
       onInit?.({ localTranslations })
       return
     }
-    const { flatfileEvent } = message.data
+
+    const { flatfileEvent } = message.data as { flatfileEvent: FlatfileEvent }
     if (!flatfileEvent) {
       return
     }
+
+    // Rest of the function remains the same
     if (
       closeSpace &&
       flatfileEvent.topic === 'job:outcome-acknowledged' &&
