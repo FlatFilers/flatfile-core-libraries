@@ -73,7 +73,7 @@ const App = () => {
         }}
       />
 
-      {/* <Sheet
+      <Sheet
         config={{ ...sheet, slug: 'second-sheet', name: 'Second Sheet' }}
         onRecordHook={(record) => {
           const email = record.get('email')
@@ -82,7 +82,7 @@ const App = () => {
           }
           return record
         }}
-      /> */}
+      />
     </div>
   )
 }
