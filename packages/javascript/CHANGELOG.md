@@ -1,5 +1,12 @@
 # @flatfile/javascript
 
+## 1.4.3
+
+### Patch Changes
+
+- Updated dependencies [bf1a718]
+  - @flatfile/embedded-utils@1.3.2
+
 ## 1.4.2
 
 ### Patch Changes
