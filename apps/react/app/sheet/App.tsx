@@ -68,10 +68,13 @@ const App = () => {
         onSubmit={(sheet) => {
           console.log('onSubmit from Sheet Action', { sheet })
         }}
+        submitSettings={{
+          startingJobMessage: 'Custom submit message',
+        }}
       />
 
-      <Sheet
-        config={{...sheet, slug: 'second-sheet', name: 'Second Sheet'}}
+      {/* <Sheet
+        config={{ ...sheet, slug: 'second-sheet', name: 'Second Sheet' }}
         onRecordHook={(record) => {
           const email = record.get('email')
           if (!email) {
@@ -79,7 +82,7 @@ const App = () => {
           }
           return record
         }}
-      />
+      /> */}
     </div>
   )
 }
