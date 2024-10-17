@@ -1,4 +1,9 @@
-export const workbook = {
+import type {Flatfile} from "@flatfile/api"
+
+export const workbook:  Pick<
+Flatfile.CreateWorkbookConfig,
+'name' | 'labels' | 'sheets' | 'actions'
+> = {
   name: 'All Data',
   labels: ['pinned'],
   sheets: [
