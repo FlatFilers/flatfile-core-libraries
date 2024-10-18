@@ -28,10 +28,13 @@ export const OnSubmitAction = (
     const FlatfileAPI = new FlatfileClient()
     try {
       await FlatfileAPI.jobs.ack(jobId, {
-        info: 'Starting job',
+        // pass null to omit info, otherwise string or undefined for default 'Starting job' message
+        info:
+          onSubmitSettings?.startingJobMessage === null
+            ? undefined
+            : onSubmitSettings?.startingJobMessage ?? 'Starting job',
         progress: 10,
       })
-
       const job = new JobHandler(jobId)
       const { data: workbookSheets } = await FlatfileAPI.sheets.list({
         workbookId,

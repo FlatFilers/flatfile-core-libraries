@@ -29,6 +29,9 @@ const App = () => {
         onSubmit={async (sheet) => {
           console.log('on Workbook Submit ', { sheet })
         }}
+        submitSettings={{
+          startingJobMessage: 'Custom workbook submit',
+        }}
         onRecordHooks={[
           [
             'contacts',

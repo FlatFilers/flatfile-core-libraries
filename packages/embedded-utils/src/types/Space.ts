@@ -106,6 +106,7 @@ type SubmitSettings = {
     message?: string
   }
   deleteSpaceAfterSubmit?: boolean
+  startingJobMessage?: string | null
 }
 export const DefaultSubmitSettings = {
   deleteSpaceAfterSubmit: false,
