@@ -4,15 +4,15 @@ import { defineConfig } from 'tsup'
 
 dotenv.config()
 
-const PROD = process.env.NODE_ENV === 'production'
-if (!PROD) {
+const minify = process.env.NODE_ENV !== 'development'
+if (!minify) {
   console.log('Not in production mode - skipping minification')
 }
 
 const nodeConfig = {
   name: 'node',
   platform: 'node',
-  minify: process.env.NODE_ENV === 'production',
+  // minify,
   entryPoints: ['src/index.ts'],
   format: ['cjs', 'esm'],
   dts: true,
@@ -21,18 +21,13 @@ const nodeConfig = {
   outExtension: ({ format }) => ({
     js: format === 'cjs' ? '.cjs' : '.js',
   }),
-  esbuildPlugins: [
-    sassPlugin({
-      type: 'lit-css',
-    }),
-  ],
-  external: ['lit-element/lit-element.js'],
+  esbuildPlugins: [sassPlugin({ type: 'css-text' })],
 }
 
 const browserConfig = {
   name: 'browser',
   platform: 'browser',
-  minify: process.env.NODE_ENV === 'production',
+  // minify,
   entryPoints: ['src/index.ts'],
   format: ['cjs', 'esm'],
   dts: true,
@@ -41,12 +36,7 @@ const browserConfig = {
   outExtension: ({ format }) => ({
     js: format === 'cjs' ? '.browser.cjs' : '.browser.js',
   }),
-  esbuildPlugins: [
-    sassPlugin({
-      type: 'lit-css',
-    }),
-  ],
-  external: ['lit-element/lit-element.js'],
+  esbuildPlugins: [sassPlugin({ type: 'css-text' })],
 }
 
 export default defineConfig([nodeConfig, browserConfig])
