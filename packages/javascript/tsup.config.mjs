@@ -3,15 +3,15 @@ import { defineConfig } from 'tsup'
 
 dotenv.config()
 
-const PROD = process.env.NODE_ENV === 'production'
-if (!PROD) {
+const minify = process.env.NODE_ENV !== 'development'
+if (!minify) {
   console.log('Not in production mode - skipping minification')
 }
 
 const nodeConfig = {
   name: 'node',
   platform: 'node',
-  minify: process.env.NODE_ENV === 'production',
+  minify,
   entryPoints: ['index.ts'],
   format: ['cjs', 'esm'],
   dts: true,
@@ -25,7 +25,7 @@ const nodeConfig = {
 const browserConfig = {
   name: 'browser',
   platform: 'browser',
-  minify: process.env.NODE_ENV === 'production',
+  minify,
   entryPoints: ['index.ts'],
   format: ['cjs', 'esm'],
   dts: true,
