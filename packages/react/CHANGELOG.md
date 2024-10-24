@@ -1,5 +1,13 @@
 # @flatfile/react
 
+## 7.12.7
+
+### Patch Changes
+
+- 2306e53: Added option submitSettings startingJobMessage to configure the initial message displayed in the job progress modal.
+- Updated dependencies [2306e53]
+  - @flatfile/embedded-utils@1.3.3
+
 ## 7.12.6
 
 ### Patch Changes
