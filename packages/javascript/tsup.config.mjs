@@ -8,32 +8,40 @@ if (!minify) {
   console.log('Not in production mode - skipping minification')
 }
 
-const nodeConfig = {
-  name: 'node',
-  platform: 'node',
-  minify,
-  entryPoints: ['index.ts'],
-  format: ['cjs', 'esm'],
-  dts: true,
-  outDir: 'dist',
-  clean: true,
-  outExtension: ({ format }) => ({
-    js: format === 'cjs' ? '.cjs' : '.js',
-  }),
-}
+const getOutExtension =
+  (isBrowser) =>
+  ({ format }) => ({
+    js:
+      format === 'cjs'
+        ? isBrowser
+          ? '.browser.cjs'
+          : '.cjs'
+        : format === 'iife'
+        ? isBrowser
+          ? '.browser.umd.js'
+          : '.umd.js'
+        : isBrowser
+        ? '.browser.js'
+        : '.js',
+  })
 
-const browserConfig = {
-  name: 'browser',
-  platform: 'browser',
+const createConfig = (name, platform, isBrowser) => ({
+  name,
+  platform,
   minify,
   entryPoints: ['index.ts'],
-  format: ['cjs', 'esm'],
+  format: ['cjs', 'esm', 'iife'],
   dts: true,
   outDir: 'dist',
   clean: true,
-  outExtension: ({ format }) => ({
-    js: format === 'cjs' ? '.browser.cjs' : '.browser.js',
-  }),
-}
+  sourcemap: true,
+  treeshake: true,
+  splitting: true,
+  globalName: 'FlatFileJavaScript',
+  outExtension: getOutExtension(isBrowser),
+})
+
+const nodeConfig = createConfig('node', 'node', false)
+const browserConfig = createConfig('browser', 'browser', true)
 
 export default defineConfig([nodeConfig, browserConfig])
