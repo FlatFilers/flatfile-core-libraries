@@ -2,6 +2,7 @@
   "private": true,
   "workspaces": [
     "packages/*",
+    "packages/angular/angular-sdk",
     "apps/*",
     "cfg/*"
   ],

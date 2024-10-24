@@ -3,7 +3,7 @@ import { BrowserModule } from '@angular/platform-browser'
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
-import { SpaceModule, SpaceService } from '@flatfile/angular';
+import { SpaceModule, SpaceService } from '@flatfile/angular-sdk';
 
 @NgModule({
   declarations: [

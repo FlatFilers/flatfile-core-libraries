@@ -1,5 +1,5 @@
 import { Component } from '@angular/core'
-import { ISpace, SpaceService } from '@flatfile/angular'
+import { ISpace, SpaceService } from '@flatfile/angular-sdk'
 import { workbook } from './workbook'
 import { listener } from './listener'
 
