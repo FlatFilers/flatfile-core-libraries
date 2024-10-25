@@ -9,25 +9,14 @@ export default function Home() {
     return <>No Publishable Key Available</>
   }
   return (
-    <>
-      <FlatfileProvider
-        publishableKey={PUBLISHABLE_KEY}
-        config={{
-          preload: true,
-          styleSheetOptions: { nonce: 'flatfile-abc123' },
-        }}
-      >
-        <App id="1" />
-      </FlatfileProvider>
-      <FlatfileProvider
-        publishableKey={PUBLISHABLE_KEY}
-        config={{
-          preload: true,
-          styleSheetOptions: { nonce: 'flatfile-abc123' },
-        }}
-      >
-        <App id="2" />
-      </FlatfileProvider>
-    </>
+    <FlatfileProvider
+      publishableKey={PUBLISHABLE_KEY}
+      config={{
+        preload: true,
+        displayAsModal: false,
+      }}
+    >
+      <App id="1" />
+    </FlatfileProvider>
   )
 }

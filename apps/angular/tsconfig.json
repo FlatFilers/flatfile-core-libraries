@@ -1,15 +1,8 @@
-/* To learn more about this file see: https://angular.io/config/tsconfig. */
 {
   "compileOnSave": false,
   "compilerOptions": {
-    "paths": {
-      "@flatfile/angular": [
-        "dist"
-      ]
-    },
     "baseUrl": "./",
     "outDir": "./dist/out-tsc",
-    "allowSyntheticDefaultImports": true,
     "forceConsistentCasingInFileNames": true,
     "strict": true,
     "noImplicitOverride": true,
@@ -22,11 +15,10 @@
     "experimentalDecorators": true,
     "moduleResolution": "node",
     "importHelpers": true,
-    "target": "ES2022",
-    "module": "ES2022",
-    "useDefineForClassFields": false,
+    "target": "es2017",
+    "module": "es2020",
     "lib": [
-      "ES2022",
+      "es2020",
       "dom"
     ]
   },

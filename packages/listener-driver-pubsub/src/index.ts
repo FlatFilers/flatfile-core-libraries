@@ -1,8 +1,8 @@
 import { EventDriver } from '@flatfile/listener'
 import api, { Flatfile } from '@flatfile/api'
-import PubNub, { PubnubStatus } from 'pubnub'
 import { axiosInterceptor, Debugger } from '@flatfile/utils-debugger'
 import axios from 'axios'
+import PubNub, { StatusEvent } from 'pubnub'
 
 export class PubSubDriver extends EventDriver {
   public events = new Map()
@@ -39,7 +39,7 @@ export class PubSubDriver extends EventDriver {
 
         pubnub.setToken(token.token!)
         pubnub.addListener({
-          status: (event: PubNub.StatusEvent | PubnubStatus) => {
+          status: (event: PubNub.StatusEvent | StatusEvent) => {
             if (
               event.category === 'PNConnectedCategory' &&
               event.operation === 'PNSubscribeOperation'
