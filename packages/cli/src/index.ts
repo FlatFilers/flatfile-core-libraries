@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-import { program } from 'commander'
+import { program, Option } from 'commander'
 import dotenv from 'dotenv'
 import ora from 'ora'
 
@@ -13,10 +13,11 @@ import { createEnvironmentAction } from './x/actions/create.environment.action'
 import { deployAction } from './x/actions/deploy.action'
 import { deleteAction } from './x/actions/delete.action'
 import { developAction } from './x/actions/develop.action'
+import { listAgentsAction } from './x/actions/list-agents.action'
+import { logsAction } from './x/actions/logs.action'
 import { publishAction } from './x/actions/publish.action'
 import { publishPubSub } from './x/actions/publish.pubsub'
 import { quickstartAction } from './x/actions/quickstart.action'
-import { listAgentsAction } from './x/actions/list-agents.action'
 
 dotenv.config()
 
@@ -61,6 +62,33 @@ program
     '(optional) the API URL to use (or set env FLATFILE_API_URL)'
   )
   .action(deployAction)
+
+program
+  .command('logs')
+  .description('Display the logs from a specified Agent')
+  .option(
+    '-s, --slug <slug>',
+    'the slug of the project to display the logs for (or set env FLATFILE_AGENT_SLUG)'
+  )
+  .option(
+    '-t, --tail',
+    'continuously display logs as they are generated until the process is terminated'
+  )
+  .addOption(
+    new Option(
+      '-n, --number <number>',
+      'the number of logs to display'
+    ).argParser((val) => parseInt(val))
+  )
+  .option(
+    '-k, --token <token>',
+    'the authentication token to use (or set env FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN)'
+  )
+  .option(
+    '-h, --api-url <url>',
+    '(optional) the API URL to use (or set env FLATFILE_API_URL)'
+  )
+  .action(logsAction)
 
 program
   .command('develop [file]')
