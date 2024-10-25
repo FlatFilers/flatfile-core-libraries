@@ -1,5 +1,17 @@
 # embedded-utils
 
+## 1.3.3
+
+### Patch Changes
+
+- 2306e53: Added option submitSettings startingJobMessage to configure the initial message displayed in the job progress modal.
+
+## 1.3.2
+
+### Patch Changes
+
+- bf1a718: Fix bug in message handling
+
 ## 1.3.1
 
 ### Patch Changes

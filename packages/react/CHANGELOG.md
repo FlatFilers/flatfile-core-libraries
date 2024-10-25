@@ -1,5 +1,39 @@
 # @flatfile/react
 
+## 7.12.7
+
+### Patch Changes
+
+- 2306e53: Added option submitSettings startingJobMessage to configure the initial message displayed in the job progress modal.
+- Updated dependencies [2306e53]
+  - @flatfile/embedded-utils@1.3.3
+
+## 7.12.6
+
+### Patch Changes
+
+- Updated dependencies [bf1a718]
+  - @flatfile/embedded-utils@1.3.2
+
+## 7.12.5
+
+### Patch Changes
+
+- 0a246e7: Adds debug logging
+
+## 7.12.4
+
+### Patch Changes
+
+- cc58f40: Fixes a bug when relaunching a re-used space
+- 8eae8fa: Fix bug causing "Maximum update depth exceeded" React error when multiple Portals are used within the same FlatfileProvider (this is not supported).
+
+## 7.12.3
+
+### Patch Changes
+
+- b3f88bf: Fix bug with Workbook onSubmit
+
 ## 7.12.2
 
 ### Patch Changes

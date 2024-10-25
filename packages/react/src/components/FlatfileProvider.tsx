@@ -22,10 +22,7 @@ import FlatfileContext, {
   FlatfileContextType,
 } from './FlatfileContext'
 
-import {
-  attachStyleSheet,
-  useAttachStyleSheet,
-} from '../utils/attachStyleSheet'
+import { useAttachStyleSheet } from '../utils/attachStyleSheet'
 import { workbookOnSubmitAction } from '../utils/constants'
 
 const configDefaults: IFrameTypes = {
@@ -48,6 +45,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   apiUrl = 'https://platform.flatfile.com/api',
   config,
 }) => {
+  const onClose = useRef<undefined | (() => void)>()
   useAttachStyleSheet(config?.styleSheetOptions)
   const [internalAccessToken, setInternalAccessToken] = useState<
     string | undefined | null
@@ -58,17 +56,24 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     { space: ISessionSpace } | undefined
   >(undefined)
 
+  const debugLogger = (...args: any[]) => {
+    if (config?.debug === true) {
+      console.log(...args)
+    }
+  }
+
   const [createSpace, setCreateSpace] = useState<{
     document?: Flatfile.DocumentConfig
     workbook?: Flatfile.CreateWorkbookConfig
     space: Flatfile.SpaceConfig & { id?: string }
   }>(DEFAULT_CREATE_SPACE)
 
-  const [onClose, setOnClose] = useState<undefined | (() => void)>()
-
   const iframe = useRef<HTMLIFrameElement>(null)
 
-  const FLATFILE_PROVIDER_CONFIG = { ...configDefaults, ...config }
+  const [FLATFILE_PROVIDER_CONFIG, setFLATFILE_PROVIDER_CONFIG] = useState({
+    ...configDefaults,
+    ...config,
+  })
   const defaultPage = useRef<DefaultPageType | undefined>(undefined)
 
   const setDefaultPage = useCallback((incomingDefaultPage: DefaultPageType) => {
@@ -90,18 +95,21 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     }
     // autoConfigure if no workbook or workbook.sheets are provided as they should be handled in the listener space:configure event
     const autoConfigure = !createSpace.workbook?.sheets
-    const { data: createdSpace } = await createSpaceInternal({
+    const createSpaceConfig = {
       apiUrl,
       publishableKey,
       space: { ...createSpace.space, autoConfigure },
       workbook: createSpace.workbook,
       document: createSpace.document,
-    })
-
+    }
+    debugLogger('Created space:', { createSpaceConfig })
+    const { data: createdSpace } = await createSpaceInternal(createSpaceConfig)
+    debugLogger('Created space:', { createdSpace })
     // A bit of a hack to wire up the Flatfile API key to the window object for internal client side @flatfile/api usage
     ;(window as any).CROSSENV_FLATFILE_API_KEY = createdSpace.space.accessToken
 
     if (defaultPage.current) {
+      debugLogger('Setting default page:', defaultPage.current)
       await updateDefaultPageInSpace(createdSpace, defaultPage.current)
     }
 
@@ -110,11 +118,16 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   }
 
   const handleReUseSpace = async () => {
+    setFLATFILE_PROVIDER_CONFIG({
+      ...FLATFILE_PROVIDER_CONFIG,
+      resetOnClose: false,
+    })
     if (internalAccessToken && createSpace.space.id) {
       const { data: reUsedSpace } = await getSpace({
         space: { id: createSpace.space.id, accessToken: internalAccessToken },
         apiUrl,
       })
+      debugLogger('Found space:', { reUsedSpace })
 
       if (reUsedSpace.accessToken) {
         ;(window as any).CROSSENV_FLATFILE_API_KEY = reUsedSpace.accessToken
@@ -252,6 +265,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   }
 
   const resetSpace = ({ reset }: ClosePortalOptions = {}) => {
+    console.log('resetting space', { FLATFILE_PROVIDER_CONFIG, providerValue })
     setOpen(false)
 
     if (reset ?? FLATFILE_PROVIDER_CONFIG.resetOnClose) {
@@ -272,18 +286,33 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       }
       // Works but only after the iframe is visible
     }
-
-    onClose?.()
+    onClose.current?.()
   }
 
   // Listen to the postMessage event from the created iFrame
   useEffect(() => {
     const ff = (message: MessageEvent) =>
       handlePostMessage(FLATFILE_PROVIDER_CONFIG?.closeSpace, listener)(message)
+    const debugMessager = (message: MessageEvent) => {
+      const { flatfileEvent } = message.data
+      if (!flatfileEvent) {
+        return
+      }
+      console.log('Flatfile event ->  ', flatfileEvent.topic, {
+        flatfileEvent,
+        message,
+      })
+    }
 
     window.addEventListener('message', ff, false)
+    if (config?.debug) {
+      window.addEventListener('message', debugMessager, false)
+    }
     return () => {
       window.removeEventListener('message', ff)
+      if (config?.debug) {
+        window.removeEventListener('message', debugMessager, false)
+      }
     }
   }, [listener])
 
@@ -294,14 +323,24 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
         accessToken: internalAccessToken,
         fetchApi: fetch,
       })
+      debugLogger('Mounting listener:', {
+        listener,
+        apiUrl,
+        accessToken: internalAccessToken,
+        browserInstance,
+      })
       listener.mount(browserInstance)
 
       // Cleanup function to unmount the listener
       return () => {
+        debugLogger('Unmounting listener:', {
+          listener,
+          browserInstance,
+        })
         listener.unmount(browserInstance)
       }
     }
-  }, [internalAccessToken, apiUrl])
+  }, [listener, internalAccessToken, apiUrl])
 
   // Sets a ready variable if the createSpace context has been updated.
   useEffect(() => {
@@ -336,7 +375,6 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       environmentId,
       open,
       onClose,
-      setOnClose,
       setOpen,
       sessionSpace,
       setSessionSpace,
@@ -372,7 +410,6 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       iframe,
       FLATFILE_PROVIDER_CONFIG,
       onClose,
-      setOnClose,
     ]
   )
 

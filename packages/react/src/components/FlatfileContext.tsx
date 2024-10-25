@@ -1,8 +1,14 @@
 import { Flatfile } from '@flatfile/api'
-import FlatfileListener from '@flatfile/listener'
-import { RefObject, createContext, createRef, useContext } from 'react'
-import { IFrameTypes, ClosePortalOptions } from '../types'
 import { DefaultPageType } from '@flatfile/embedded-utils'
+import FlatfileListener from '@flatfile/listener'
+import {
+  MutableRefObject,
+  RefObject,
+  createContext,
+  createRef,
+  useContext,
+} from 'react'
+import { ClosePortalOptions, IFrameTypes } from '../types'
 
 type CreateNewSpace = Partial<Flatfile.SpaceConfig>
 type ReUseSpace = Partial<Flatfile.SpaceConfig> & {
@@ -28,8 +34,7 @@ export interface FlatfileContextType {
   environmentId?: string
   apiUrl: string
   open: boolean
-  onClose?: () => void
-  setOnClose: (onClose: () => undefined | (() => void)) => void
+  onClose: MutableRefObject<null | undefined | (() => void)>
   setOpen: (open: boolean) => void
   space?: CreateNewSpace | ReUseSpace
   sessionSpace?: any
@@ -62,8 +67,7 @@ export const FlatfileContext = createContext<FlatfileContextType>({
   environmentId: undefined,
   apiUrl: '',
   open: true,
-  onClose: undefined,
-  setOnClose: () => {},
+  onClose: createRef<(() => void) | undefined>(),
   setOpen: () => {},
   space: undefined,
   sessionSpace: undefined,

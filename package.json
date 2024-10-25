@@ -16,7 +16,8 @@
     "format": "prettier --ignore-path .gitignore --write \"**/*.{js,jsx,ts,tsx,md}\"",
     "changeset": "changeset",
     "changeset-apply": "changeset version",
-    "release": "turbo run build && changeset publish"
+    "release": "turbo run build && changeset publish",
+    "example:reuse-space": "npm run example:reuse-space -w apps/react/app"
   },
   "devDependencies": {
     "@changesets/cli": "^2.23.0",

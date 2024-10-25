@@ -72,15 +72,19 @@ export const Workbook = (props: WorkbookProps) => {
   // Accept a workbook onSubmit function and add it to the workbook actions
 
   useDeepCompareEffect(() => {
-    // adds workbook action if onSubmit is passed along
-    updateWorkbook(
-      onSubmit
-        ? {
-            ...config,
-            actions: [workbookOnSubmitAction(), ...(config?.actions || [])],
-          }
-        : config
-    )
+    const submitAction = workbookOnSubmitAction()
+    const existingActions = createSpace.workbook?.actions || []
+    
+    let updatedActions = [...existingActions, ...(config?.actions || [])]
+
+    if (!updatedActions.some(action => action.operation === submitAction.operation) && onSubmit) {
+      updatedActions = [submitAction, ...updatedActions]
+    }
+
+    updateWorkbook({
+      ...config,
+      actions: updatedActions.length > 0 ? updatedActions : undefined,
+    })
   }, [config])
 
   usePlugin(
