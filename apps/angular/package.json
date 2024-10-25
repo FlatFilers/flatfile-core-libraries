@@ -16,7 +16,7 @@
     "@angular/platform-browser": "^16.2.0",
     "@angular/platform-browser-dynamic": "^16.2.0",
     "@angular/router": "^16.2.0",
-    "@flatfile/angular-sdk": "file:../../packages/angular/dist/",
+    "@flatfile/angular-sdk": "*",
     "ajv": "^8.17.1",
     "rxjs": "~7.8.0",
     "symbol-observable": "^4.0.0",

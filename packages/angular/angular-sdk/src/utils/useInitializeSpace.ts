@@ -5,7 +5,7 @@ import {
 } from '@flatfile/embedded-utils'
 import authenticate from './authenticate'
 import { Flatfile } from '@flatfile/api'
-
+import { initNewSpace } from '@flatfile/javascript'
 type useInitializeSpaceReturn = {
   space: Flatfile.SpaceResponse | undefined
   initializeSpace: () => Promise<{
@@ -32,6 +32,25 @@ const useInitializeSpace = (
         sheet,
         onSubmit,
       } = flatfileOptions
+
+      initNewSpace({
+        apiUrl,
+        document: documentConfig,
+        environmentId,
+        isAutoConfig,
+        labels,
+        languageOverride,
+        metadata,
+        name,
+        namespace,
+        publishableKey,
+        sidebarConfig,
+        spaceBody,
+        themeConfig,
+        translationsPath,
+        userInfo,
+        workbook: createdWorkbook,
+      })
 
       if (!publishableKey) {
         throw new Error('Missing required publishable key')
