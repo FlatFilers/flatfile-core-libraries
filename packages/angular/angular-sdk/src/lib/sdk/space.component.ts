@@ -1,11 +1,11 @@
 import { Component, Input, OnInit } from '@angular/core'
-import type {
-  ISpace,
-  ReusedSpaceWithAccessToken,
-  SimpleOnboarding,
+import {
+  type ISpace,
+  type ReusedSpaceWithAccessToken,
+  type SimpleOnboarding,
+  createWorkbookFromSheet,
 } from '@flatfile/embedded-utils'
 import getSpace from '../../utils/getSpace'
-import useInitializeSpace from '../../utils/useInitializeSpace'
 import { SpaceFramePropsType } from './space-frame/spaceFrame.component'
 import { SpaceService } from './space.service'
 import { initNewSpace, InitialResourceData } from '@flatfile/javascript'
@@ -52,19 +52,41 @@ export class Space implements OnInit {
   getOrCreateSpace = async (
     spaceProps: ReusedOrOnboarding
   ): Promise<Partial<InitialResourceData> & { space: Flatfile.Space }> => {
-    if (!spaceProps.publishableKey) {
+    const {
+      publishableKey,
+      workbook,
+      document,
+      themeConfig,
+      sidebarConfig,
+      userInfo,
+      apiUrl,
+    } = spaceProps
+    if (!publishableKey) {
       return await getSpace(spaceProps)
     } else {
+      let createdWorkbook = workbook
+      let isAutoConfig = false
+
+      if (!createdWorkbook) {
+        if (!spaceProps.sheet) {
+          isAutoConfig = true
+        } else {
+          createdWorkbook = createWorkbookFromSheet(
+            spaceProps.sheet,
+            !!spaceProps.onSubmit
+          )
+        }
+      }
+
       return await initNewSpace({
-        publishableKey: spaceProps.publishableKey,
-        workbook: spaceProps.workbook,
-        environmentId: spaceProps.environmentId,
-        document: spaceProps.document,
-        themeConfig: spaceProps.themeConfig,
-        sidebarConfig: spaceProps.sidebarConfig,
-        userInfo: spaceProps.userInfo,
-        isAutoConfig: false,
-        apiUrl: spaceProps.apiUrl || 'https://platform.flatfile.com/api',
+        publishableKey,
+        workbook: createdWorkbook,
+        document,
+        themeConfig,
+        sidebarConfig,
+        userInfo,
+        isAutoConfig,
+        apiUrl: apiUrl || 'https://platform.flatfile.com/api',
       })
     }
   }
@@ -74,8 +96,8 @@ export class Space implements OnInit {
 
     try {
       this.loading = true
-      const { space } = await this.getOrCreateSpace(spaceProps)
-      const { id: spaceId, accessToken, guestLink } = space
+      const spaceResponse = await this.getOrCreateSpace(spaceProps)
+      const { id: spaceId, accessToken, guestLink } = spaceResponse.space
 
       if (!spaceId || typeof spaceId !== 'string') {
         throw new Error('Missing spaceId from space response')
@@ -100,7 +122,7 @@ export class Space implements OnInit {
         ...this.spaceProps,
         ...this.localSpaceData,
         apiUrl: spaceProps.apiUrl || 'https://platform.flatfile.com/api',
-        workbook: spaceProps.workbook,
+        workbook: spaceProps.workbook || spaceResponse.workbooks?.[0],
         handleCloseInstance: this.handleCloseInstance,
       } as SpaceFramePropsType
     } catch (error) {

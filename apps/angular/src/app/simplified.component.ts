@@ -18,6 +18,7 @@ export class AppComponent implements OnInit {
   title = 'angular'
 
   toggleSpace() {
+    this.spaceService.OpenEmbed()
     this.showSpace = !this.showSpace
   }
 

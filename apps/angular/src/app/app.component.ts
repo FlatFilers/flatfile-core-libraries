@@ -39,5 +39,8 @@ export class AppComponent {
         random: 'param',
       },
     },
+    sidebarConfig: {
+      showSidebar: true,
+    },
   }
 }

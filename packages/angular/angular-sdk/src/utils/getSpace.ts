@@ -10,11 +10,9 @@ const getSpace = async (spaceProps: ISpace): Promise<GetSpaceReturn> => {
   const {
     space,
     apiUrl,
-    environmentId,
     spaceUrl = 'https://platform.flatfile.com/s/',
   } = spaceProps
   let spaceResponse
-  let workbookResponse
 
   try {
     if (!space?.id) {
@@ -22,10 +20,6 @@ const getSpace = async (spaceProps: ISpace): Promise<GetSpaceReturn> => {
     }
     if (!space?.accessToken) {
       throw new Error('Missing required accessToken for Space')
-    }
-
-    if (!environmentId) {
-      throw new Error('Missing required environment id')
     }
 
     const limitedAccessApi = authenticate(space?.accessToken, apiUrl)
