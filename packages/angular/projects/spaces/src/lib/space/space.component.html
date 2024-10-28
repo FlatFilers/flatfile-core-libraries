@@ -1,14 +1,22 @@
-<div *ngIf="!this.closeInstance">
-  <spinner *ngIf="this.loading"/>
+<div *ngIf="!closeInstance">
+  <ng-container
+    *ngIf="loadingTemplate && loading"
+    [ngTemplateOutlet]="loadingTemplate"
+  ></ng-container>
+  <spinner *ngIf="loading && !loadingTemplate" />
 
-  <div *ngIf="this.spaceFrameProps !== undefined;else error_content">
-    <space-frame *ngIf="this.spaceFrameProps.localAccessToken" [loading]="this.loading" [spaceFrameProps]="this.spaceFrameProps" />
+  <div *ngIf="spaceFrameProps !== undefined; else error_content">
+    <space-frame
+      *ngIf="spaceFrameProps.localAccessToken"
+      [loading]="loading"
+      [spaceFrameProps]="spaceFrameProps"
+    />
   </div>
   <ng-template #error_content>
-    <div *ngIf="this.error" class="ff_error_container">
+    <div *ngIf="error" class="ff_error_container">
       <h3 class="ff_error_heading">Something Went Wrong</h3>
       <p class="ff_error_text">
-        {{this.error?.message}}
+        {{ error?.message }}
       </p>
     </div>
   </ng-template>

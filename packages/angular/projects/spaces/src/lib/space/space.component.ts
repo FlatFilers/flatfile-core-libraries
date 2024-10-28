@@ -1,56 +1,79 @@
-import { Component, Input, OnInit } from '@angular/core';
-import type { ISpace, ReusedSpaceWithAccessToken, SimpleOnboarding } from '@flatfile/embedded-utils';
-import getSpace from '../../utils/getSpace';
-import useInitializeSpace from '../../utils/useInitializeSpace';
-import { SpaceFramePropsType } from './space-frame/spaceFrame.component';
-import { SpaceService } from './space.service';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  Input,
+  OnInit,
+  TemplateRef,
+} from '@angular/core'
+import type {
+  ISpace,
+  ReusedSpaceWithAccessToken,
+  SimpleOnboarding,
+} from '@flatfile/embedded-utils'
+import getSpace from '../../utils/getSpace'
+import useInitializeSpace from '../../utils/useInitializeSpace'
+import { SpaceFramePropsType } from './space-frame/spaceFrame.component'
+import { SpaceService } from './space.service'
 
 type ReusedOrOnboarding = ReusedSpaceWithAccessToken | SimpleOnboarding
-
 @Component({
   selector: 'flatfile-space',
   templateUrl: './space.component.html',
   styleUrls: ['./space.component.scss'],
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Space implements OnInit{
+export class Space implements OnInit {
   @Input({ required: true }) spaceProps: ISpace = {} as ISpace
   @Input() openDirectly: boolean = false
+  /**
+   * Override the default loading component.
+   *
+   * Accepts a template ref.
+   * Replaces the loading property on the ISpace interface.
+   */
+  @Input() loadingTemplate: TemplateRef<any> | undefined
 
-  title = 'Space';
+  title = 'Space'
   localSpaceData: Record<string, any> | undefined
   spaceFrameProps: SpaceFramePropsType | undefined
   error: { message: string } | undefined
-  loading: boolean = false;
-  closeInstance: boolean = false;
-   
+  loading: boolean = false
+  closeInstance: boolean = false
+
   constructor(private appService: SpaceService) {}
 
   async ngOnInit() {
-    if(!this.spaceProps) throw new Error("Please define the space props");
-    
+    console.log(this.spaceProps)
+
+    if (!this.spaceProps) throw new Error('Please define the space props')
+
     if (this.openDirectly) {
       await this.initSpace(this.spaceProps)
     } else {
-      this.appService.signal.subscribe(async event => {
+      this.appService.signal.subscribe(async (event) => {
         if (event) {
           await this.initSpace(this.spaceProps)
         }
-      });
+      })
     }
   }
 
-  handleCloseInstance = () => { 
-    this.closeInstance = true;
+  handleCloseInstance = () => {
+    this.closeInstance = true
   }
 
   initSpace = async (spaceProps: ReusedOrOnboarding) => {
     this.closeInstance = false
-    const { space, initializeSpace } = useInitializeSpace(spaceProps as SimpleOnboarding);
+    const { space, initializeSpace } = useInitializeSpace(
+      spaceProps as SimpleOnboarding
+    )
 
-    try{
+    try {
       this.loading = true
-      const { space, workbook } = this.spaceProps.publishableKey ? await initializeSpace() : await getSpace(spaceProps);
-      const { id: spaceId, accessToken, guestLink } = space.data;
+      const { space, workbook } = this.spaceProps.publishableKey
+        ? await initializeSpace()
+        : await getSpace(spaceProps)
+      const { id: spaceId, accessToken, guestLink } = space.data
 
       if (!spaceId || typeof spaceId !== 'string') {
         throw new Error('Missing spaceId from space response')
@@ -76,10 +99,8 @@ export class Space implements OnInit{
         ...this.localSpaceData,
         apiUrl: spaceProps.apiUrl || 'https://platform.flatfile.com/api',
         workbook,
-        handleCloseInstance: this.handleCloseInstance
-      } as SpaceFramePropsType;
-
-      
+        handleCloseInstance: this.handleCloseInstance,
+      } as SpaceFramePropsType
     } catch (error) {
       this.loading = false
       this.error = error as Error
