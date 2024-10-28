@@ -3,8 +3,7 @@ import authenticate from './authenticate'
 import { Flatfile } from '@flatfile/api'
 
 type GetSpaceReturn = {
-  space: Flatfile.SpaceResponse
-  workbook: Flatfile.Workbook[]
+  space: Flatfile.Space
 }
 
 const getSpace = async (spaceProps: ISpace): Promise<GetSpaceReturn> => {
@@ -32,9 +31,6 @@ const getSpace = async (spaceProps: ISpace): Promise<GetSpaceReturn> => {
     const limitedAccessApi = authenticate(space?.accessToken, apiUrl)
     try {
       spaceResponse = await limitedAccessApi.spaces.get(space?.id)
-      workbookResponse = await limitedAccessApi.workbooks.list({
-        spaceId: space?.id,
-      })
     } catch (error) {
       throw new Error(`Failed to get space: ${getErrorMessage(error)}`)
     }
@@ -48,7 +44,7 @@ const getSpace = async (spaceProps: ISpace): Promise<GetSpaceReturn> => {
       spaceResponse.data.guestLink = guestLink
     }
 
-    return { space: spaceResponse, workbook: workbookResponse.data }
+    return { space: spaceResponse.data }
   } catch (error) {
     const message = getErrorMessage(error)
     console.error(`Failed to initialize space: ${message}`)

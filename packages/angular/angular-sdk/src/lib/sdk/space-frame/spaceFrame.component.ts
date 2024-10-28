@@ -11,7 +11,7 @@ import authenticate from '../../../utils/authenticate'
 import createSimpleListener from '../../../utils/createSimpleListener'
 import { SpaceCloseModalPropsType } from '../space-close-modal/spaceCloseModal.component'
 import { getContainerStyles, getIframeStyles } from './embeddedStyles'
-import { initNewSpace } from '@flatfile/javascript'
+import { createListener, initNewSpace } from '@flatfile/javascript'
 export type SpaceFramePropsType = ISpace & {
   spaceId: string
   spaceUrl: string
@@ -41,85 +41,121 @@ export class SpaceFrame implements OnInit {
   @Input({ required: true }) loading: boolean = false
 
   async created() {
+    console.log('CREATED!! 🚀🚀🚀')
     const { listener, apiUrl, closeSpace, workbook } = this.spaceFrameProps
     const accessToken = this.spaceFrameProps.localAccessToken
-
+    let removeMessageListener: (() => void) | undefined
     const simpleListenerSlug = workbook?.sheets?.[0].slug || 'slug'
-    const listenerInstance =
-      listener ||
-      createSimpleListener({
-        onRecordHook: (this.spaceFrameProps as SimpleOnboarding).onRecordHook,
-        onSubmit: (this.spaceFrameProps as SimpleOnboarding).onSubmit,
-        submitSettings: (this.spaceFrameProps as SimpleOnboarding)
-          .submitSettings,
-        slug: simpleListenerSlug,
-      })
+    console.log('created', {
+      workbook,
+      apiUrl,
+      closeSpace,
+      accessToken,
+      simpleListenerSlug,
+    })
+    // const listenerInstance =
+    //   listener ||
+    //   createSimpleListener({
+    //     onRecordHook: (this.spaceFrameProps as SimpleOnboarding).onRecordHook,
+    //     onSubmit: (this.spaceFrameProps as SimpleOnboarding).onSubmit,
+    //     submitSettings: (this.spaceFrameProps as SimpleOnboarding)
+    //       .submitSettings,
+    //     slug: simpleListenerSlug,
+    //   })
 
-    if (listenerInstance && typeof apiUrl === 'string') {
-      listenerInstance.mount(
-        new Browser({
-          apiUrl,
-          accessToken,
-          fetchApi: fetch,
-        })
+    // if (listenerInstance && typeof apiUrl === 'string') {
+    //   listenerInstance.mount(
+    //     new Browser({
+    //       apiUrl,
+    //       accessToken,
+    //       fetchApi: fetch,
+    //     })
+    //   )
+    // }
+
+    // const configuredHandlePostMessage = handlePostMessage(
+    //   closeSpace,
+    //   listenerInstance
+    // )
+    // window.addEventListener('message', configuredHandlePostMessage, false)
+    // this.handlePostMessageInstance = configuredHandlePostMessage
+    if (listener) {
+      console.log('listener', listener)
+      removeMessageListener = await createListener(
+        accessToken,
+        apiUrl!,
+        listener,
+        closeSpace,
+        () => {},
+        () => {}
+      )
+    } else {
+      console.log('no listener')
+      removeMessageListener = await createListener(
+        accessToken,
+        apiUrl!,
+        createSimpleListener({
+          onRecordHook: (this.spaceFrameProps as SimpleOnboarding).onRecordHook,
+          onSubmit: (this.spaceFrameProps as SimpleOnboarding).onSubmit,
+          slug: simpleListenerSlug,
+          submitSettings: (this.spaceFrameProps as SimpleOnboarding)
+            .submitSettings,
+        }),
+        closeSpace,
+        () => {},
+        () => {}
       )
     }
-
-    const configuredHandlePostMessage = handlePostMessage(
-      closeSpace,
-      listenerInstance
-    )
-    window.addEventListener('message', configuredHandlePostMessage, false)
-    this.handlePostMessageInstance = configuredHandlePostMessage
   }
 
-  async initializeSpace() {
-    await this.created()
-    const {
-      publishableKey,
-      workbook,
-      environmentId,
-      document,
-      themeConfig,
-      sidebarConfig,
-      userInfo,
-      // spaceId,
-      apiUrl = 'https://platform.flatfile.com/api',
-    } = this.spaceFrameProps
+  // async initializeSpace() {
+  //   await this.created()
+  //   const {
+  //     publishableKey,
+  //     workbook,
+  //     environmentId,
+  //     document,
+  //     themeConfig,
+  //     sidebarConfig,
+  //     userInfo,
+  //     // spaceId,
+  //     apiUrl = 'https://platform.flatfile.com/api',
+  //   } = this.spaceFrameProps
 
-    const accessToken = this.spaceFrameProps.localAccessToken
+  //   const accessToken = this.spaceFrameProps.localAccessToken
 
-    if (publishableKey) {
-      // const fullAccessApi = authenticate(accessToken, apiUrl)
-      // await addSpaceInfo(
-      //   {
-      //     publishableKey,
-      //     workbook,
-      //     environmentId,
-      //     document,
-      //     themeConfig,
-      //     sidebarConfig,
-      //     userInfo,
-      //   },
-      //   spaceId,
-      //   fullAccessApi
-      // )
+  //   if (publishableKey) {
+  //     // const fullAccessApi = authenticate(accessToken, apiUrl)
+  //     // await addSpaceInfo(
+  //     //   {
+  //     //     publishableKey,
+  //     //     workbook,
+  //     //     environmentId,
+  //     //     document,
+  //     //     themeConfig,
+  //     //     sidebarConfig,
+  //     //     userInfo,
+  //     //   },
+  //     //   spaceId,
+  //     //   fullAccessApi
+  //     // )
 
-      const initNewSpaceResponse = await initNewSpace({
-        publishableKey,
-        workbook,
-        environmentId,
-        document,
-        themeConfig,
-        sidebarConfig,
-        userInfo,
-        isAutoConfig: false,
-        apiUrl,
-      })
+  //     const initNewSpaceResponse = await initNewSpace({
+  //       publishableKey,
+  //       workbook,
+  //       environmentId,
+  //       document,
+  //       themeConfig,
+  //       sidebarConfig,
+  //       userInfo,
+  //       isAutoConfig: false,
+  //       apiUrl,
+  //     })
 
-      console.log('initNewSpaceResponse', initNewSpaceResponse)
-    }
-  }
+  //     console.log('initNewSpaceResponse', initNewSpaceResponse)
+  //     return initNewSpaceResponse
+  //   }
+  // }
 
   openCloseModalDialog() {
     this.showExitWarnModal = true
@@ -138,6 +174,7 @@ export class SpaceFrame implements OnInit {
   }
 
   ngOnInit(): void {
+    console.log('NGONINIT!! 🚀🚀🚀')
     const {
       spaceId,
       exitText,
@@ -157,7 +194,7 @@ export class SpaceFrame implements OnInit {
 
     window.CROSSENV_FLATFILE_API_KEY = accessToken
 
-    this.initializeSpace()
+    // this.initializeSpace()
 
     this.spaceCloseModalProps = {
       onConfirm: this.handleConfirm.bind(this),
@@ -167,6 +204,8 @@ export class SpaceFrame implements OnInit {
       exitPrimaryButtonText,
       exitSecondaryButtonText,
     }
+
+    this.created()
   }
 
   ngOnDestroy(): void {

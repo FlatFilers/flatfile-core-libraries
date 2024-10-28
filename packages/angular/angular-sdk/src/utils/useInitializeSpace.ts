@@ -33,24 +33,6 @@ const useInitializeSpace = (
         onSubmit,
       } = flatfileOptions
 
-      initNewSpace({
-        apiUrl,
-        document: documentConfig,
-        environmentId,
-        isAutoConfig,
-        labels,
-        languageOverride,
-        metadata,
-        name,
-        namespace,
-        publishableKey,
-        sidebarConfig,
-        spaceBody,
-        themeConfig,
-        translationsPath,
-        userInfo,
-        workbook: createdWorkbook,
-      })
 
       if (!publishableKey) {
         throw new Error('Missing required publishable key')
@@ -95,6 +77,8 @@ const useInitializeSpace = (
         const guestLink = `${spaceUrl}space/${space.data.id}?token=${space.data.accessToken}`
         space.data.guestLink = guestLink
       }
+
+      console.log({ space, createdWorkbook })
 
       return { space, workbook: createdWorkbook }
     } catch (error) {

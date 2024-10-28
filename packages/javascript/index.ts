@@ -12,6 +12,9 @@ export {
   RecordHookPlugin,
   startFlatfile,
   FlatfileClient,
-  initNewSpace
+  initNewSpace,
 }
+
+export * from './src/types'
+export * from './src/listener'
 export const initializeFlatfile = startFlatfile

@@ -21,7 +21,7 @@ import { SimpleListenerType } from './types'
  * @param onClose
  * @returns Promise<() => void>
  */
-export async function createlistener(
+export async function createListener(
   accessToken: string,
   apiUrl: string,
   listener: FlatfileListener,
