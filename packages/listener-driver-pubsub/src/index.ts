@@ -1,8 +1,8 @@
-import { EventDriver } from '@flatfile/listener'
 import api, { Flatfile } from '@flatfile/api'
-import PubNub, { PubnubStatus } from 'pubnub'
+import { EventDriver } from '@flatfile/listener'
 import { axiosInterceptor, Debugger } from '@flatfile/utils-debugger'
 import axios from 'axios'
+import PubNub, { PubnubStatus } from 'pubnub'
 
 export class PubSubDriver extends EventDriver {
   public events = new Map()

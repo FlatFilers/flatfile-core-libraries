@@ -1,14 +1,15 @@
 import {
+  createListener,
+  createSimpleListener,
+  createWorkbookFromSheet,
+  InitialResourceData,
+  initNewSpace,
   ISpace,
   SimpleOnboarding,
-  createWorkbookFromSheet,
 } from '@flatfile/embedded-utils'
 import { createIframe } from './createIframe'
 import { getI18n, Translations } from './i18n'
-import { initNewSpace } from './initNewSpace'
-import { createSimpleListener, createlistener } from './listener'
 import { displayError, initializeIFrameConfirmationModal } from './utils'
-import { InitialResourceData } from './types'
 
 export async function startFlatfile(options: SimpleOnboarding | ISpace) {
   function closeSpaceNow() {
@@ -154,7 +155,7 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
       createdWorkbook?.sheets?.[0].slug || 'slug'
 
     if (listener) {
-      removeMessageListener = await createlistener(
+      removeMessageListener = await createListener(
         spaceResult.accessToken,
         apiUrl,
         listener,
@@ -163,7 +164,7 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
         onInit
       )
     } else {
-      removeMessageListener = await createlistener(
+      removeMessageListener = await createListener(
         spaceResult.accessToken,
         apiUrl,
         createSimpleListener({

@@ -1,5 +1,5 @@
 import { Component } from '@angular/core'
-import { ISpace, SpaceService } from '@flatfile/angular'
+import { ISpace, SpaceService } from '@flatfile/angular-sdk'
 import { workbook } from './workbook'
 import { listener } from './listener'
 
@@ -11,20 +11,15 @@ import { listener } from './listener'
 export class AppComponent {
   showSpace: boolean = false
 
-  constructor(private spaceService: SpaceService) {}
+  constructor(private readonly spaceService: SpaceService) {}
 
   toggleSpace() {
     this.spaceService.OpenEmbed()
     this.showSpace = !this.showSpace
   }
-
-  closeSpace() {
-    this.showSpace = false
-  }
-
   spaceProps: ISpace = {
     name: 'Trste!',
-    publishableKey: 'sk_1234',
+    publishableKey: 'pk_123456',
     workbook,
     listener,
     userInfo: {
@@ -37,6 +32,14 @@ export class AppComponent {
     spaceBody: {
       metadata: {
         random: 'param',
+      },
+    },
+    sidebarConfig: {
+      showSidebar: true,
+    },
+    closeSpace: {
+      onClose: () => {
+        this.showSpace = false
       },
     },
   }

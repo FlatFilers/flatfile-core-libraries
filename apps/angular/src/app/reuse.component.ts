@@ -1,5 +1,5 @@
 import { Component } from '@angular/core'
-import { ISpace, SpaceService } from '@flatfile/angular'
+import { ISpace, SpaceService } from '@flatfile/angular-sdk'
 import { listener } from './listener'
 
 @Component({
@@ -10,7 +10,7 @@ import { listener } from './listener'
 export class AppComponent {
   showSpace: boolean = false
 
-  constructor(private spaceService: SpaceService) {}
+  constructor(private readonly spaceService: SpaceService) {}
 
   toggleSpace() {
     this.spaceService.OpenEmbed()
@@ -23,8 +23,8 @@ export class AppComponent {
 
   spaceProps: ISpace = {
     space: {
-      id: 'us_sp_123',
-      accessToken: 'sk_1234',
+      id: 'us_sp_123456',
+      accessToken: 'ey123456',
     },
     listener,
     closeSpace: {

@@ -1,15 +1,24 @@
 import { FlatfileClient } from '@flatfile/api'
-import {
-  DefaultSubmitSettings,
-  handlePostMessage,
-  JobHandler,
-  NewSpaceFromPublishableKey,
-  SheetHandler,
-} from '@flatfile/embedded-utils'
+
 import { FlatfileRecord } from '@flatfile/hooks'
 import { Browser, FlatfileEvent, FlatfileListener } from '@flatfile/listener'
 import { recordHook } from '@flatfile/plugin-record-hook'
-import { SimpleListenerType } from './types'
+import {
+  SimpleOnboarding,
+  NewSpaceFromPublishableKey,
+  DefaultSubmitSettings,
+} from '../types'
+import { handlePostMessage } from './handlePostMessage'
+import { JobHandler } from './JobHandler'
+import { SheetHandler } from './SheetHandler'
+
+export interface SimpleListenerType
+  extends Pick<
+    SimpleOnboarding,
+    'onRecordHook' | 'onSubmit' | 'submitSettings'
+  > {
+  slug: string
+}
 
 /**
  * Add a listener to handle postMessage events
