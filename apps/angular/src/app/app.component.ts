@@ -11,7 +11,7 @@ import { listener } from './listener'
 export class AppComponent {
   showSpace: boolean = false
 
-  constructor(private spaceService: SpaceService) {}
+  constructor(private readonly spaceService: SpaceService) {}
 
   toggleSpace() {
     this.spaceService.OpenEmbed()
@@ -19,7 +19,7 @@ export class AppComponent {
   }
   spaceProps: ISpace = {
     name: 'Trste!',
-    publishableKey: 'pk_ixtxE3L9iVMYgaaxePSn5hGxLffNJhiS',
+    publishableKey: 'pk_123456',
     workbook,
     listener,
     userInfo: {

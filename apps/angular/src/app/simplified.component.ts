@@ -28,7 +28,7 @@ export class AppComponent implements OnInit {
 
   spaceProps = {
     name: 'My simplified space!',
-    publishableKey: 'pk_ixtxE3L9iVMYgaaxePSn5hGxLffNJhiS',
+    publishableKey: 'pk_123456',
     sheet,
     onSubmit: async ({
       job,

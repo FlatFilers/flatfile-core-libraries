@@ -20,7 +20,7 @@ type ReusedOrOnboarding = ReusedSpaceWithAccessToken | SimpleOnboarding
   styleUrls: ['./space.component.scss'],
 })
 export class Space implements OnInit {
-  @Input({ required: true }) spaceProps: ISpace = {} as ISpace
+  @Input() spaceProps!: ISpace
   @Input() openDirectly: boolean = false
 
   title = 'Space'
@@ -30,11 +30,11 @@ export class Space implements OnInit {
   loading: boolean = false
   closeInstance: boolean = false
 
-  constructor(private appService: SpaceService) {}
+  constructor(private readonly appService: SpaceService) {}
 
   async ngOnInit() {
     if (!this.spaceProps) throw new Error('Please define the space props')
-    console.log('OPEN DIRECTLY', this.openDirectly)
+
     if (this.openDirectly) {
       await this.initSpace(this.spaceProps)
     } else {
@@ -44,7 +44,7 @@ export class Space implements OnInit {
     }
   }
 
-  handleCloseInstance = () => {
+  handleCloseInstance() {
     this.closeInstance = true
   }
 
@@ -127,7 +127,7 @@ export class Space implements OnInit {
     } catch (error) {
       this.loading = false
       this.error = error as Error
-      throw new Error(`An error has occurred: ${error}`)
+      throw error
     }
   }
 }
