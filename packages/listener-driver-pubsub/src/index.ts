@@ -51,7 +51,7 @@ export class PubSubDriver extends EventDriver {
             }
             if ('error' in event && event.error) {
               Debugger.logError(
-                event.errorData?.message,
+                (event as any).errorData?.message || 'Unknown error',
                 event.operation,
                 event.category
               )
