@@ -1,5 +1,11 @@
 # embedded-utils
 
+## 1.3.4
+
+### Patch Changes
+
+- 8a4c06a: Add more utilities from @flatfile/javascript
+
 ## 1.3.3
 
 ### Patch Changes
