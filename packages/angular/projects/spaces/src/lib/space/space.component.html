@@ -2,7 +2,7 @@
   <ng-container
     *ngIf="loadingTemplate && loading"
     [ngTemplateOutlet]="loadingTemplate"
-  ></ng-container>
+  />
   <spinner *ngIf="loading && !loadingTemplate" />
 
   <div *ngIf="spaceFrameProps !== undefined; else error_content">
@@ -15,8 +15,8 @@
   <ng-template #error_content>
     <div *ngIf="error" class="ff_error_container">
       <h3 class="ff_error_heading">Something Went Wrong</h3>
-      <p class="ff_error_text">
-        {{ error?.message }}
+      <p class="ff_error_text" *ngIf="error.message">
+        {{ error.message }}
       </p>
     </div>
   </ng-template>

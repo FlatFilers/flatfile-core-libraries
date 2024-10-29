@@ -1,8 +1,11 @@
 import {
   ChangeDetectionStrategy,
+  ChangeDetectorRef,
   Component,
   Input,
+  OnChanges,
   OnInit,
+  SimpleChanges,
   TemplateRef,
 } from '@angular/core'
 import type {
@@ -22,29 +25,24 @@ type ReusedOrOnboarding = ReusedSpaceWithAccessToken | SimpleOnboarding
   styleUrls: ['./space.component.scss'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Space implements OnInit {
+export class Space implements OnInit, OnChanges {
   @Input({ required: true }) spaceProps: ISpace = {} as ISpace
   @Input() openDirectly: boolean = false
-  /**
-   * Override the default loading component.
-   *
-   * Accepts a template ref.
-   * Replaces the loading property on the ISpace interface.
-   */
-  @Input() loadingTemplate: TemplateRef<any> | undefined
 
   title = 'Space'
   localSpaceData: Record<string, any> | undefined
   spaceFrameProps: SpaceFramePropsType | undefined
   error: { message: string } | undefined
   loading: boolean = false
+  loadingTemplate: TemplateRef<any> | undefined
   closeInstance: boolean = false
 
-  constructor(private appService: SpaceService) {}
+  constructor(
+    private appService: SpaceService,
+    private changeDetectorRef: ChangeDetectorRef
+  ) {}
 
   async ngOnInit() {
-    console.log(this.spaceProps)
-
     if (!this.spaceProps) throw new Error('Please define the space props')
 
     if (this.openDirectly) {
@@ -58,13 +56,24 @@ export class Space implements OnInit {
     }
   }
 
+  ngOnChanges(changes: SimpleChanges): void {
+    if (
+      'spaceProps' in changes &&
+      !changes['spaceProps'].firstChange &&
+      changes['spaceProps'].currentValue.loading
+    ) {
+      this.loadingTemplate = changes['spaceProps'].currentValue.loading
+    }
+  }
+
   handleCloseInstance = () => {
     this.closeInstance = true
   }
 
   initSpace = async (spaceProps: ReusedOrOnboarding) => {
+    this.changeDetectorRef.markForCheck()
     this.closeInstance = false
-    const { space, initializeSpace } = useInitializeSpace(
+    const { initializeSpace } = useInitializeSpace(
       spaceProps as SimpleOnboarding
     )
 
@@ -102,9 +111,12 @@ export class Space implements OnInit {
         handleCloseInstance: this.handleCloseInstance,
       } as SpaceFramePropsType
     } catch (error) {
+      console.log('error', error)
       this.loading = false
       this.error = error as Error
       throw new Error(`An error has occurred: ${error}`)
+    } finally {
+      this.changeDetectorRef.markForCheck()
     }
   }
 }
