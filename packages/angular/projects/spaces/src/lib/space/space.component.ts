@@ -6,7 +6,6 @@ import {
   OnChanges,
   OnInit,
   SimpleChanges,
-  TemplateRef,
 } from '@angular/core'
 import type {
   ISpace,
@@ -34,7 +33,6 @@ export class Space implements OnInit, OnChanges {
   spaceFrameProps: SpaceFramePropsType | undefined
   error: { message: string } | undefined
   loading: boolean = false
-  loadingTemplate: TemplateRef<any> | undefined
   closeInstance: boolean = false
 
   constructor(
@@ -57,12 +55,11 @@ export class Space implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (
-      'spaceProps' in changes &&
-      !changes['spaceProps'].firstChange &&
-      changes['spaceProps'].currentValue.loading
-    ) {
-      this.loadingTemplate = changes['spaceProps'].currentValue.loading
+    if ('spaceProps' in changes && !changes['spaceProps'].firstChange) {
+      this.spaceProps = {
+        ...this.spaceProps,
+        ...changes['spaceProps'].currentValue,
+      }
     }
   }
 

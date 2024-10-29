@@ -1,9 +1,9 @@
 <div *ngIf="!closeInstance">
   <ng-container
-    *ngIf="loadingTemplate && loading"
-    [ngTemplateOutlet]="loadingTemplate"
+    *ngIf="spaceProps.loading && loading"
+    [ngTemplateOutlet]="spaceProps.loading"
   />
-  <spinner *ngIf="loading && !loadingTemplate" />
+  <spinner *ngIf="loading && !spaceProps.loading" />
 
   <div *ngIf="spaceFrameProps !== undefined; else error_content">
     <space-frame
