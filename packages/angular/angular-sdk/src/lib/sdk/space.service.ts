@@ -1,14 +1,14 @@
-import { EventEmitter, Injectable } from '@angular/core';
+import { EventEmitter, Injectable } from '@angular/core'
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SpaceService {
-  signal: EventEmitter<boolean> = new EventEmitter<boolean>();
+  signal: EventEmitter<boolean> = new EventEmitter<boolean>()
 
-  constructor() { }
+  constructor() {}
 
   OpenEmbed() {
-    setTimeout(() => this.signal.emit(true), 1);
+    setTimeout(() => this.signal.emit(true), 1)
   }
 }

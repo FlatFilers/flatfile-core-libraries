@@ -17,11 +17,6 @@ export class AppComponent {
     this.spaceService.OpenEmbed()
     this.showSpace = !this.showSpace
   }
-
-  closeSpace() {
-    this.showSpace = false
-  }
-
   spaceProps: ISpace = {
     name: 'Trste!',
     publishableKey: 'pk_ixtxE3L9iVMYgaaxePSn5hGxLffNJhiS',
@@ -41,6 +36,11 @@ export class AppComponent {
     },
     sidebarConfig: {
       showSidebar: true,
+    },
+    closeSpace: {
+      onClose: () => {
+        this.showSpace = false
+      },
     },
   }
 }

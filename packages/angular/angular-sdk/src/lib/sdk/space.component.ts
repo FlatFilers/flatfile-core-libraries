@@ -33,14 +33,12 @@ export class Space implements OnInit {
 
   async ngOnInit() {
     if (!this.spaceProps) throw new Error('Please define the space props')
-
+    console.log('OPEN DIRECTLY', this.openDirectly)
     if (this.openDirectly) {
       await this.initSpace(this.spaceProps)
     } else {
-      this.appService.signal.subscribe(async (event) => {
-        if (event) {
-          await this.initSpace(this.spaceProps)
-        }
+      this.appService.signal.subscribe(async () => {
+        await this.initSpace(this.spaceProps)
       })
     }
   }

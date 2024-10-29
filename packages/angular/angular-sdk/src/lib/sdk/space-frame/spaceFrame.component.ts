@@ -1,20 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core'
-import {
-  ISpace,
-  SimpleOnboarding,
-  handlePostMessage,
-} from '@flatfile/embedded-utils'
-import { Browser, FlatfileEvent } from '@flatfile/listener'
+import { ISpace, SimpleOnboarding } from '@flatfile/embedded-utils'
+import { FlatfileEvent } from '@flatfile/listener'
 
-import addSpaceInfo from '../../../utils/addSpaceInfo'
-import authenticate from '../../../utils/authenticate'
+import { createListener, createSimpleListener } from '@flatfile/javascript'
 import { SpaceCloseModalPropsType } from '../space-close-modal/spaceCloseModal.component'
 import { getContainerStyles, getIframeStyles } from './embeddedStyles'
-import {
-  createListener,
-  initNewSpace,
-  createSimpleListener,
-} from '@flatfile/javascript'
 export type SpaceFramePropsType = ISpace & {
   spaceId: string
   spaceUrl: string
@@ -44,9 +34,11 @@ export class SpaceFrame implements OnInit {
   @Input({ required: true }) loading: boolean = false
 
   async created() {
-    console.log('CREATED!! 🚀🚀🚀')
     const { listener, apiUrl, closeSpace, workbook, space } =
       this.spaceFrameProps
+    function closeSpaceNow() {
+      removeMessageListener?.()
+    }
     const accessToken = this.spaceFrameProps.localAccessToken
     let removeMessageListener: (() => void) | undefined
     const simpleListenerSlug = workbook?.sheets?.[0].slug || 'slug'
@@ -57,7 +49,8 @@ export class SpaceFrame implements OnInit {
         apiUrl!,
         listener,
         closeSpace,
-        () => {},
+        closeSpaceNow,
+        // TODO: add onInit for translations
         () => {}
       )
     } else {
@@ -72,7 +65,8 @@ export class SpaceFrame implements OnInit {
             .submitSettings,
         }),
         closeSpace,
-        () => {},
+        closeSpaceNow,
+        // TODO: add onInit for translations
         () => {}
       )
     }
