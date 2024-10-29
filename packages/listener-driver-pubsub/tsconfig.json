@@ -13,8 +13,6 @@
             "ESNext"
         ],
         "module": "ESNext",
-        "target": "es2020",
-        "allowSyntheticDefaultImports": true,
-        "esModuleInterop": true
+        "target": "es2020"
     },
 }
