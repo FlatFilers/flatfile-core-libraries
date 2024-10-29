@@ -35,6 +35,6 @@
     "@flatfile/listener": "^1.0.5",
     "@flatfile/utils-debugger": "^0.0.6",
     "axios": "^1.6.0",
-    "pubnub": "^8.2.0"
+    "pubnub": "8.2.4"
   }
 }
