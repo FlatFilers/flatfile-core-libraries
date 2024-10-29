@@ -1,14 +1,15 @@
 import {
+  createListener,
+  createSimpleListener,
+  createWorkbookFromSheet,
+  InitialResourceData,
+  initNewSpace,
   ISpace,
   SimpleOnboarding,
-  createWorkbookFromSheet,
 } from '@flatfile/embedded-utils'
 import { createIframe } from './createIframe'
 import { getI18n, Translations } from './i18n'
-import { initNewSpace } from './initNewSpace'
-import { createSimpleListener, createListener } from './listener'
 import { displayError, initializeIFrameConfirmationModal } from './utils'
-import { InitialResourceData } from './types'
 
 export async function startFlatfile(options: SimpleOnboarding | ISpace) {
   function closeSpaceNow() {

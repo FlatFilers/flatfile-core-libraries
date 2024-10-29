@@ -1,8 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core'
-import { ISpace, SimpleOnboarding } from '@flatfile/embedded-utils'
+import { ISpace, SimpleOnboarding, createListener, createSimpleListener } from '@flatfile/embedded-utils'
 import { FlatfileEvent } from '@flatfile/listener'
-
-import { createListener, createSimpleListener } from '@flatfile/javascript'
 import { SpaceCloseModalPropsType } from '../space-close-modal/spaceCloseModal.component'
 import { getContainerStyles, getIframeStyles } from './embeddedStyles'
 export type SpaceFramePropsType = ISpace & {

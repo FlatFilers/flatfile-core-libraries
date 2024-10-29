@@ -4,11 +4,12 @@ import {
   type ReusedSpaceWithAccessToken,
   type SimpleOnboarding,
   createWorkbookFromSheet,
+  initNewSpace,
+  InitialResourceData,
 } from '@flatfile/embedded-utils'
 import getSpace from '../../utils/getSpace'
 import { SpaceFramePropsType } from './space-frame/spaceFrame.component'
 import { SpaceService } from './space.service'
-import { initNewSpace, InitialResourceData } from '@flatfile/javascript'
 import { Flatfile } from '@flatfile/api'
 
 type ReusedOrOnboarding = ReusedSpaceWithAccessToken | SimpleOnboarding

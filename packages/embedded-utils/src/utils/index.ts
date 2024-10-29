@@ -6,4 +6,5 @@ export { findDefaultPage } from './findDefaultPage'
 export { getErrorMessage } from './getErrorMessage'
 export { handlePostMessage } from './handlePostMessage'
 export { updateDefaultPageInSpace } from './updateDefaultPageInSpace'
-
+export { initNewSpace } from './initNewSpace'
+export * from './createListener'
