@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core'
 import { sheet } from './sheet'
+import { SpaceService } from '@flatfile/angular-sdk'
 
 @Component({
   selector: 'app-root',
@@ -10,13 +11,14 @@ export class AppComponent implements OnInit {
   showSpace: boolean = false
   data: any
 
-  constructor() {}
+  constructor(private spaceService: SpaceService) {}
 
   ngOnInit() {}
 
   title = 'angular'
 
   toggleSpace() {
+    this.spaceService.OpenEmbed()
     this.showSpace = !this.showSpace
   }
 
@@ -25,8 +27,8 @@ export class AppComponent implements OnInit {
   }
 
   spaceProps = {
-    name: 'My space!',
-    publishableKey: 'sk_1234',
+    name: 'My simplified space!',
+    publishableKey: 'pk_123456',
     sheet,
     onSubmit: async ({
       job,

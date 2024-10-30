@@ -1,8 +1,9 @@
 import {
   DefaultPageType,
+  InitialResourceData,
+  InitSpaceType,
   updateDefaultPageInSpace,
-} from '@flatfile/embedded-utils'
-import { InitSpaceType, InitialResourceData } from './types'
+} from '..'
 
 /**
  * Full-service utility which takes incoming space configuration data and calls the internal backend-for-frontend

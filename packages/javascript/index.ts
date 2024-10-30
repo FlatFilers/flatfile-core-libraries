@@ -12,4 +12,7 @@ export {
   startFlatfile,
   FlatfileClient,
 }
+
+export * from './src/types'
+export * from './src/listener'
 export const initializeFlatfile = startFlatfile

@@ -1,4 +1,3 @@
-export * from './InitialResourceData'
 export * from './UpdateSpaceInfo'
 
 import { ISpace, SimpleOnboarding } from '@flatfile/embedded-utils'

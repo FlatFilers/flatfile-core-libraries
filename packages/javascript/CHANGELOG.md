@@ -1,5 +1,13 @@
 # @flatfile/javascript
 
+## 1.4.4
+
+### Patch Changes
+
+- 8a4c06a: Update Angular to use the @flatfile/javascript functions
+- Updated dependencies [8a4c06a]
+  - @flatfile/embedded-utils@1.3.4
+
 ## 1.4.3
 
 ### Patch Changes
