@@ -109,7 +109,6 @@ export class Space implements OnInit, OnChanges {
         handleCloseInstance: this.handleCloseInstance,
       } as SpaceFramePropsType
     } catch (error) {
-      console.log('error', error)
       this.loading = false
       this.error = error as Error
       throw new Error(`An error has occurred: ${error}`)
