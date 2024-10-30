@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.13.0
+
+### Minor Changes
+
+- bf1c93a: This release swaps the package's bundler.
+
 ## 7.12.7
 
 ### Patch Changes

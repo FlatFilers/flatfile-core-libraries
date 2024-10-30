@@ -1,5 +1,11 @@
 # @flatfile/javascript
 
+## 1.5.0
+
+### Minor Changes
+
+- bf1c93a: This release swaps the package's bundler.
+
 ## 1.4.4
 
 ### Patch Changes
