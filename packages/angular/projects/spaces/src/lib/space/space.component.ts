@@ -60,6 +60,7 @@ export class Space implements OnInit, OnChanges {
         ...this.spaceProps,
         ...changes['spaceProps'].currentValue,
       }
+      this.changeDetectorRef.markForCheck()
     }
   }
 
