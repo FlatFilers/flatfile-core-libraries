@@ -3,7 +3,7 @@ import { defineConfig } from 'tsup'
 
 dotenv.config()
 
-const minify = process.env.NODE_ENV === 'production'
+const minify = process.env.NODE_ENV !== 'development'
 if (!minify) {
   console.log('Not in production mode - skipping minification')
 }
