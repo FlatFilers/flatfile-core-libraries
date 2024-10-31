@@ -60,13 +60,12 @@ export async function developAction(
       (process.env.FLATFILE_SKIP_DEPLOYED_CHECK ?? '').trim().toLowerCase() ===
         'true'
 
-    if (!skipDeployedCheck) {
-      const agents = await apiClient.agents.list({
-        environmentId: environment.id,
-      })
-      if (agents?.data && agents?.data?.length > 0) {
-        console.error(messages.warnDeployedAgents(agents.data))
-
+    const agents = await apiClient.agents.list({
+      environmentId: environment.id,
+    })
+    if (agents?.data && agents?.data?.length > 0) {
+      console.error(messages.warnDeployedAgents(agents.data))
+      if (!skipDeployedCheck) {
         const { developLocally } = await prompts({
           type: 'confirm',
           name: 'developLocally',
