@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.13.1
+
+### Patch Changes
+
+- 5b2b3b0: This release cleans up the packages' builds by removing the Node builds and reverting the UMD build file name back to index.js.
+
 ## 7.13.0
 
 ### Minor Changes
