@@ -8,26 +8,9 @@ if (!minify) {
   console.log('Not in production mode - skipping minification')
 }
 
-const EXTENSION_MAP = {
-  browser: {
-    cjs: '.browser.cjs',
-    default: '.browser.js',
-  },
-  node: {
-    cjs: '.cjs',
-    default: '.js',
-  },
-}
-
-const getOutExtension =
-  (platform) =>
-  ({ format }) => ({
-    js: EXTENSION_MAP[platform][format] || EXTENSION_MAP[platform].default,
-  })
-
-const createConfig = (platform) => ({
-  name: platform,
-  platform,
+export default defineConfig({
+  name: 'browser',
+  platform: 'browser',
   minify,
   entryPoints: ['index.ts'],
   format: ['cjs', 'esm'],
@@ -37,10 +20,7 @@ const createConfig = (platform) => ({
   sourcemap: true,
   treeshake: true,
   splitting: true,
-  outExtension: getOutExtension(platform),
+  outExtension: ({ format }) => ({
+    js: format === 'cjs' ? '.cjs' : '.mjs',
+  }),
 })
-
-const nodeConfig = createConfig('node')
-const browserConfig = createConfig('browser')
-
-export default defineConfig([nodeConfig, browserConfig])
