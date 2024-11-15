@@ -1,25 +1,16 @@
-import api from "@flatfile/api";
 import { FlatfileListener } from "@flatfile/listener";
-import { recordHook } from "@flatfile/plugin-record-hook";
+import api from "@flatfile/api";
 
+/**
+ * Example Listener
+ */
 export const listener = FlatfileListener.create((listener) => {
   listener.on("**", (event) => {
-    console.log("Event =>", event.topic);
+    console.log(`Received event: ${event.topic}`);
   });
 
-  listener.use(
-    recordHook("contacts", (record) => {
-      const firstName = record.get("firstName");
-      console.log({ firstName });
-      record.set("lastName", "Rock");
-      return record;
-    })
-  );
-
-  listener.on(
-    "job:ready",
-    { job: "workbook:submitActionFg" },
-    async ({ context: { jobId } }) => {
+  listener.filter({ job: "workbook:submitActionFg" }, (configure) => {
+    configure.on("job:ready", async ({ context: { jobId } }) => {
       try {
         await api.jobs.ack(jobId, {
           info: "Getting started.",
@@ -47,6 +38,6 @@ export const listener = FlatfileListener.create((listener) => {
           },
         });
       }
-    }
-  );
+    });
+  });
 });

@@ -1,46 +1,55 @@
-import { Component } from '@angular/core'
-import { ISpace, SpaceService } from '@flatfile/angular-sdk'
-import { workbook } from './workbook'
-import { listener } from './listener'
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
+import { SpaceModule, ISpace, SpaceService } from '@flatfile/angular-sdk';
+import { workbook } from "./workbook";
+import { listener } from "./listener";
 
 @Component({
   selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, SpaceModule],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  styleUrl: './app.component.css'
 })
 export class AppComponent {
-  showSpace: boolean = false
+  title = 'create-flatfile-angular';
+  showSpace: boolean = false;
+  data: any;
 
-  constructor(private readonly spaceService: SpaceService) {}
+  constructor(private spaceService: SpaceService) {
+    console.log('ANGULAR 17');
+  }
 
   toggleSpace() {
     this.spaceService.OpenEmbed()
-    this.showSpace = !this.showSpace
+    this.showSpace = !this.showSpace;
   }
+
+  closeSpace() {
+    this.showSpace = false;
+  }
+
   spaceProps: ISpace = {
-    name: 'Trste!',
-    publishableKey: 'pk_123456',
+    name: 'Test Space!',
+    publishableKey: 'pk_8e77d1b186364d50bba47bacf10c0f32',
     workbook,
-    listener,
+    listener: listener as any,
+    closeSpace: {
+      operation: 'submitActionFg',
+      onClose: this.closeSpace.bind(this),
+    },
     userInfo: {
-      name: 'my space name',
+      name: 'my space name'
     },
     spaceInfo: {
-      name: 'my space name',
+      name: 'my space name'
     },
-    displayAsModal: false,
+    displayAsModal: true,
     spaceBody: {
       metadata: {
-        random: 'param',
-      },
-    },
-    sidebarConfig: {
-      showSidebar: true,
-    },
-    closeSpace: {
-      onClose: () => {
-        this.showSpace = false
-      },
-    },
+        random: 'param'
+      }
+    }
   }
 }

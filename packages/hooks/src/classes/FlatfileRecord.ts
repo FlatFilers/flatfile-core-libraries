@@ -243,7 +243,6 @@ export class FlatfileRecord<
         }
       }
     }
-    console.error('Field has no links.')
 
     return null
   }
