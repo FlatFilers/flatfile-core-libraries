@@ -1,5 +1,11 @@
 # @flatfile/hooks
 
+## 1.5.1
+
+### Patch Changes
+
+- e4b8313: Remove console.error
+
 ## 1.5.0
 
 ### Minor Changes
