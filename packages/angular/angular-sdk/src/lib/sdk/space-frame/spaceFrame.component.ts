@@ -34,6 +34,7 @@ export class SpaceFrame implements OnInit {
   async created() {
     const { listener, apiUrl, closeSpace, workbook, space } =
       this.spaceFrameProps
+    console.log('[[SpaceFrame]]', { spaceFrameProps: this.spaceFrameProps })
     function closeSpaceNow() {
       removeMessageListener?.()
     }
