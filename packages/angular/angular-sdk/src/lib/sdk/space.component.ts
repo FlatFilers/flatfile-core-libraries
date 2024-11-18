@@ -1,16 +1,23 @@
-import { Component, Input, OnInit } from '@angular/core'
+import {
+  ChangeDetectorRef,
+  Component,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChanges,
+} from '@angular/core'
+import { Flatfile } from '@flatfile/api'
 import {
   type ISpace,
+  InitialResourceData,
   type ReusedSpaceWithAccessToken,
   type SimpleOnboarding,
   createWorkbookFromSheet,
   initNewSpace,
-  InitialResourceData,
 } from '@flatfile/embedded-utils'
 import getSpace from '../../utils/getSpace'
 import { SpaceFramePropsType } from './space-frame/spaceFrame.component'
 import { SpaceService } from './space.service'
-import { Flatfile } from '@flatfile/api'
 
 type ReusedOrOnboarding = ReusedSpaceWithAccessToken | SimpleOnboarding
 
@@ -19,7 +26,7 @@ type ReusedOrOnboarding = ReusedSpaceWithAccessToken | SimpleOnboarding
   templateUrl: './space.component.html',
   styleUrls: ['./space.component.scss'],
 })
-export class Space implements OnInit {
+export class Space implements OnInit, OnChanges {
   @Input() spaceProps!: ISpace
   @Input() openDirectly: boolean = false
 
@@ -30,7 +37,10 @@ export class Space implements OnInit {
   loading: boolean = false
   closeInstance: boolean = false
 
-  constructor(private readonly appService: SpaceService) {}
+  constructor(
+    private readonly appService: SpaceService,
+    private readonly changeDetectorRef: ChangeDetectorRef
+  ) {}
 
   async ngOnInit() {
     if (!this.spaceProps) throw new Error('Please define the space props')
@@ -41,6 +51,16 @@ export class Space implements OnInit {
       this.appService.signal.subscribe(async () => {
         await this.initSpace(this.spaceProps)
       })
+    }
+  }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    if ('spaceProps' in changes && !changes['spaceProps'].firstChange) {
+      this.spaceProps = {
+        ...this.spaceProps,
+        ...changes['spaceProps'].currentValue,
+      }
+      this.changeDetectorRef.markForCheck()
     }
   }
 
@@ -91,6 +111,7 @@ export class Space implements OnInit {
   }
 
   initSpace = async (spaceProps: ReusedOrOnboarding) => {
+    this.changeDetectorRef.markForCheck()
     this.closeInstance = false
 
     try {
@@ -128,6 +149,8 @@ export class Space implements OnInit {
       this.loading = false
       this.error = error as Error
       throw error
+    } finally {
+      this.changeDetectorRef.markForCheck()
     }
   }
 }
