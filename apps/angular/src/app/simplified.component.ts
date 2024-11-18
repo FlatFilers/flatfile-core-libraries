@@ -1,42 +1,59 @@
-import { Component, OnInit } from '@angular/core'
-import { sheet } from './sheet'
-import { SpaceService } from '@flatfile/angular-sdk'
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { RouterOutlet } from '@angular/router';
+import { SpaceModule, SpaceService } from '@flatfile/angular-sdk';
+
+const sheet = {
+  name: 'Contacts',
+  slug: 'contacts',
+  fields: [
+    {
+      key: 'firstName',
+      type: 'string',
+      label: 'First Name',
+    },
+    {
+      key: 'lastName',
+      type: 'string',
+      label: 'Last Name',
+    },
+    {
+      key: 'email',
+      type: 'string',
+      label: 'Email',
+    },
+  ],
+}
 
 @Component({
   selector: 'app-root',
+  standalone: true,
+  imports: [CommonModule, RouterOutlet, SpaceModule],
   templateUrl: './app.component.html',
-  styleUrls: ['./app.component.scss'],
+  styleUrl: './app.component.css'
 })
-export class AppComponent implements OnInit {
-  showSpace: boolean = false
-  data: any
+export class AppComponent {
+  title = 'create-flatfile-angular';
+  showSpace: boolean = false;
+  data: any;
 
   constructor(private spaceService: SpaceService) {}
 
-  ngOnInit() {}
-
-  title = 'angular'
-
   toggleSpace() {
     this.spaceService.OpenEmbed()
-    this.showSpace = !this.showSpace
+    this.showSpace = !this.showSpace;
   }
 
   closeSpace() {
-    this.showSpace = false
+    this.showSpace = false;
   }
 
   spaceProps = {
-    name: 'My simplified space!',
-    publishableKey: 'pk_123456',
+    name: 'My space!',
+    environmentId: 'us_env_1234',
+    publishableKey: 'pk_1234',
     sheet,
-    onSubmit: async ({
-      job,
-      sheet,
-    }: {
-      job?: any
-      sheet?: any
-    }): Promise<any> => {
+    onSubmit: async ({ job, sheet, }: { job?: any, sheet?: any }): Promise<any> => {
       const data = await sheet.allData()
       console.log('onSubmit', data)
     },
@@ -53,5 +70,6 @@ export class AppComponent implements OnInit {
       operation: 'submitActionFg',
       onClose: this.closeSpace.bind(this),
     },
+    displayAsModal: true
   }
 }
