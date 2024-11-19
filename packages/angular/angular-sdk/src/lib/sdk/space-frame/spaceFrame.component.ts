@@ -1,5 +1,10 @@
 import { Component, Input, OnInit } from '@angular/core'
-import { ISpace, SimpleOnboarding, createListener, createSimpleListener } from '@flatfile/embedded-utils'
+import {
+  ISpace,
+  SimpleOnboarding,
+  createListener,
+  createSimpleListener,
+} from '@flatfile/embedded-utils'
 import { FlatfileEvent } from '@flatfile/listener'
 import { SpaceCloseModalPropsType } from '../space-close-modal/spaceCloseModal.component'
 import { getContainerStyles, getIframeStyles } from './embeddedStyles'
@@ -32,8 +37,8 @@ export class SpaceFrame implements OnInit {
   @Input({ required: true }) loading: boolean = false
 
   async created() {
-    const { listener, apiUrl, closeSpace, workbook, space } =
-      this.spaceFrameProps
+    const { listener, apiUrl, closeSpace, workbook } = this.spaceFrameProps
+
     function closeSpaceNow() {
       removeMessageListener?.()
     }
@@ -88,7 +93,6 @@ export class SpaceFrame implements OnInit {
 
   ngOnInit(): void {
     const {
-      spaceId,
       exitText,
       exitTitle,
       exitPrimaryButtonText,
@@ -101,7 +105,7 @@ export class SpaceFrame implements OnInit {
     this.iframeStyle = getIframeStyles(this.spaceFrameProps.iframeStyles)
 
     if (!this.spaceFrameProps.localAccessToken)
-      throw new Error('please wait until access token is recieved')
+      throw new Error('please wait until access token is received')
     const accessToken = this.spaceFrameProps.localAccessToken
 
     window.CROSSENV_FLATFILE_API_KEY = accessToken

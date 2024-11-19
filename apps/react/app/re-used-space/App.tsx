@@ -44,6 +44,8 @@ const App = () => {
     console.log({ topic: event.topic })
   })
 
+  api
+
   useEvent('job:ready', { job: 'sheet:submitActionFg' }, async (event) => {
     const { jobId } = event.context
     try {

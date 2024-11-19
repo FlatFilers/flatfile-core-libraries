@@ -2,7 +2,7 @@ import { ISpace, getErrorMessage } from '@flatfile/embedded-utils'
 import authenticate from './authenticate'
 import { Flatfile } from '@flatfile/api'
 
-type GetSpaceReturn = {
+export type GetSpaceReturn = {
   space: Flatfile.Space
 }
 
