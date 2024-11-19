@@ -1,10 +1,9 @@
-import { Component } from '@angular/core'
+import { Component, effect } from '@angular/core'
 import { CommonModule } from '@angular/common'
 // import { RouterOutlet } from '@angular/router'
 import { SpaceModule, ISpace, SpaceService } from '@flatfile/angular-sdk'
 import { workbook } from './workbook'
 import { listener } from './listener'
-import { State } from '../../../../packages/embedded-utils/src/types/State';
 
 @Component({
   selector: 'app-root',
@@ -21,17 +20,26 @@ export class AppComponent {
 
   constructor(private spaceService: SpaceService) {
     console.log('ANGULAR 18')
+
+    effect(() => {
+      const loading = this.spaceService.loading()
+      console.log('Space loading state changed:', { loading })
+    })
+
+    effect(() => {
+      const spaceInitialized = this.spaceService.spaceInitialized()
+      console.log('Space spaceInitialized state changed:', { spaceInitialized })
+    })
   }
 
   async toggleSpace() {
+    this.showSpace = !this.showSpace
     const spaceResponse = await this.spaceService.OpenEmbed(this.spaceProps)
     console.log('space', spaceResponse)
-    this.showSpace = !this.showSpace
   }
 
   closeSpace() {
     this.showSpace = false
-
   }
   spaceProps: ISpace = {
     name: 'my space!',
@@ -54,14 +62,5 @@ export class AppComponent {
         random: 'param',
       },
     },
-  }
-
-  ngOnInit() {
-    this.spaceService.spaceInitialized$.subscribe((spaceInitialized) => {
-      console.log('Space spaceInitialized state changed:', { spaceInitialized })
-    })
-    this.spaceService.loading$.subscribe((loading) => {
-      console.log('Space loading state changed:', { loading })
-    })
   }
 }

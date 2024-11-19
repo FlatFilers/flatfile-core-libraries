@@ -1,19 +1,7 @@
-import { Component, Input, OnInit } from '@angular/core'
-import {
-  type ISpace,
-  type ReusedSpaceWithAccessToken,
-  type SimpleOnboarding,
-  createWorkbookFromSheet,
-  initNewSpace,
-  InitialResourceData,
-} from '@flatfile/embedded-utils'
-import getSpace from '../../utils/getSpace'
+import { Component, effect, Input, OnInit } from '@angular/core'
+import { type ISpace } from '@flatfile/embedded-utils'
 import { SpaceFramePropsType } from './space-frame/spaceFrame.component'
 import { SpaceService } from './space.service'
-import { Flatfile } from '@flatfile/api'
-import { filter } from 'rxjs'
-
-type ReusedOrOnboarding = ReusedSpaceWithAccessToken | SimpleOnboarding
 
 @Component({
   selector: 'flatfile-space',
@@ -22,36 +10,43 @@ type ReusedOrOnboarding = ReusedSpaceWithAccessToken | SimpleOnboarding
 })
 export class Space implements OnInit {
   @Input() spaceProps!: ISpace
-  @Input() openDirectly: boolean = false
+  @Input() openDirectly = false
+  @Input() config?: {
+    resetOnClose: boolean
+  } = {
+    resetOnClose: true,
+  }
 
-  title = 'Space'
-  localSpaceData: Record<string, any> | undefined
-  spaceFrameProps: SpaceFramePropsType | undefined
-  error: { message: string } | undefined
-  loading: boolean = false
-  closeInstance: boolean = false
+  readonly title = 'Space'
+  spaceFrameProps?: SpaceFramePropsType
+  error?: { message: string }
+  loading = false
+  closeInstance = false
 
-  constructor(private readonly appService: SpaceService) {}
-
-  async ngOnInit() {
-    if (!this.spaceProps) throw new Error('Please define the space props')
-
-    if (this.openDirectly) {
-      await this.appService.initSpace(this.spaceProps)
-    }
-    const self = this
-    this.appService.spaceInitialized$.subscribe(async (initialized) => {
-      if (initialized) {
-        this.spaceFrameProps = {
-          ...initialized,
-          handleCloseInstance: self.handleCloseInstance,
-        } as SpaceFramePropsType
-      }
-      this.loading = !initialized
+  constructor(private readonly spaceService: SpaceService) {
+    effect(() => {
+      this.loading = this.spaceService.loading()
+      this.spaceFrameProps = this.spaceService.spaceInitialized()
+        ? ({
+            ...this.spaceService.spaceInitialized(),
+            handleCloseInstance: this.handleCloseInstance.bind(this),
+          } as SpaceFramePropsType)
+        : undefined
     })
   }
 
-  handleCloseInstance() {
+  async ngOnInit(): Promise<void> {
+    if (!this.spaceProps) {
+      throw new Error('Please define the space props')
+    }
+    this.spaceService.config = this.config
+    if (this.openDirectly) {
+      await this.spaceService.initSpace(this.spaceProps)
+    }
+  }
+
+  handleCloseInstance(): void {
     this.closeInstance = true
+    this.spaceFrameProps = undefined
   }
 }

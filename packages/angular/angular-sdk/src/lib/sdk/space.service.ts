@@ -1,5 +1,4 @@
-import { Injectable } from '@angular/core'
-import { BehaviorSubject, Observable, filter, firstValueFrom } from 'rxjs'
+import { Injectable, signal, computed } from '@angular/core'
 import {
   type ISpace,
   type ReusedSpaceWithAccessToken,
@@ -8,98 +7,96 @@ import {
   initNewSpace,
   InitialResourceData,
 } from '@flatfile/embedded-utils'
-import c from 'ansi-colors'
-import getSpace from '../../utils/getSpace'
+import getSpace, { GetSpaceReturn } from '../../utils/getSpace'
 import { Flatfile } from '@flatfile/api'
 
 type ReusedOrOnboarding = ReusedSpaceWithAccessToken | SimpleOnboarding
 
-type SpaceProps = any
+const DEFAULT_API_URL = 'https://platform.flatfile.com/api'
+
 @Injectable({
   providedIn: 'root',
 })
 export class SpaceService {
-  private loadingSubject = new BehaviorSubject<boolean>(false)
-  loading$: Observable<boolean> = this.loadingSubject.asObservable()
+  private readonly _loading = signal(false)
+  readonly loading = computed(() => this._loading())
 
-  private currentSpaceProps?: SpaceProps
-  private spaceInitializedSubject = new BehaviorSubject<object | undefined>(
-    undefined
-  )
-  spaceInitialized$: Observable<object | undefined> =
-    this.spaceInitializedSubject.asObservable()
-  get spaceInitialized(): object | undefined {
-    return this.spaceInitializedSubject.value
-  }
-  set spaceInitialized(value: object | undefined) {
-    this.spaceInitializedSubject.next(value)
-  }
-  spaceResponse: any
+  private readonly _spaceInitialized = signal<object | undefined>(undefined)
+  readonly spaceInitialized = computed(() => this._spaceInitialized())
+
+  private currentSpaceProps?: ISpace
   localSpaceData: Record<string, any> | undefined
 
-  constructor() {}
+  spaceResponse?: Partial<InitialResourceData> & { space: Flatfile.Space }
 
-  getOrCreateSpace = async (
+  config?: {
+    resetOnClose: boolean
+  }
+
+  private async getOrCreateSpace(
     spaceProps: ReusedOrOnboarding
-  ): Promise<Partial<InitialResourceData> & { space: Flatfile.Space }> => {
+  ): Promise<InitialResourceData | GetSpaceReturn> {
+    const { publishableKey } = spaceProps
+    if (!publishableKey) {
+      return getSpace(spaceProps)
+    }
+
     const {
-      publishableKey,
       workbook,
       document,
       themeConfig,
       sidebarConfig,
       userInfo,
       apiUrl,
+      sheet,
+      onSubmit,
     } = spaceProps
-    if (!publishableKey) {
-      return await getSpace(spaceProps)
-    } else {
-      let createdWorkbook = workbook
-      let isAutoConfig = false
 
-      if (!createdWorkbook) {
-        if (!spaceProps.sheet) {
-          isAutoConfig = true
-        } else {
-          createdWorkbook = createWorkbookFromSheet(
-            spaceProps.sheet,
-            !!spaceProps.onSubmit
-          )
-        }
-      }
+    let createdWorkbook = workbook
+    const isAutoConfig = !createdWorkbook && !sheet
 
-      return await initNewSpace({
-        publishableKey,
-        workbook: createdWorkbook,
-        document,
-        themeConfig,
-        sidebarConfig,
-        userInfo,
-        isAutoConfig,
-        apiUrl: apiUrl || 'https://platform.flatfile.com/api',
-      })
+    if (!createdWorkbook && sheet) {
+      createdWorkbook = createWorkbookFromSheet(sheet, !!onSubmit)
     }
+
+    return initNewSpace({
+      publishableKey,
+      workbook: createdWorkbook,
+      document,
+      themeConfig,
+      sidebarConfig,
+      userInfo,
+      isAutoConfig,
+      apiUrl: apiUrl || DEFAULT_API_URL,
+    })
   }
 
-  async initSpace(spaceProps: SpaceProps): Promise<any> {
+  async initSpace(spaceProps: ISpace): Promise<any> {
     if (!spaceProps) {
       console.warn('spaceProps is required')
       return
     }
-    if (this.spaceInitialized) {
+
+    if (this.spaceInitialized() && !this.config?.resetOnClose) {
       console.warn('Space is already initialized')
       return
     }
+    this._loading.set(true)
 
-    if (!spaceProps.apiUrl) {
-      spaceProps.apiUrl = 'https://platform.flatfile.com/api'
-    }
+    spaceProps.apiUrl ||= DEFAULT_API_URL
     ;(window as any).CROSSENV_FLATFILE_API_URL = spaceProps.apiUrl
 
     this.currentSpaceProps = spaceProps
+
     try {
       this.spaceResponse = await this.getOrCreateSpace(spaceProps)
-      const { id: spaceId, accessToken, guestLink } = this.spaceResponse.space
+      const { space } = this.spaceResponse
+
+      if (!space) {
+        throw new Error('Missing space from response')
+      }
+
+      const { id: spaceId, accessToken, guestLink } = space
 
       if (!spaceId || typeof spaceId !== 'string') {
         throw new Error('Missing spaceId from space response')
@@ -113,22 +110,16 @@ export class SpaceService {
         throw new Error('Missing access token from space response')
       }
 
-      this.localSpaceData = {
-        spaceId,
-        spaceUrl: guestLink,
-        localAccessToken: accessToken,
-      }
-
       const formattedSpaceProps = {
         ...spaceProps,
-        ...this.localSpaceData,
-        apiUrl:
-          this.spaceResponse.apiUrl || 'https://platform.flatfile.com/api',
-        workbook:
-          this.spaceResponse.workbook || this.spaceResponse.workbooks?.[0],
+        spaceUrl: guestLink,
+        localAccessToken: accessToken,
+        apiUrl: spaceProps.apiUrl,
+        workbook: spaceProps.workbook || this.spaceResponse.workbooks?.[0],
       }
 
-      this.spaceInitializedSubject.next(formattedSpaceProps)
+      this._spaceInitialized.set(formattedSpaceProps)
+      this._loading.set(false)
       return formattedSpaceProps
     } catch (error) {
       console.error('Failed to initialize space:', error)
@@ -137,14 +128,13 @@ export class SpaceService {
   }
 
   OpenEmbed = this.startFlatfile
-  async startFlatfile(spaceProps: SpaceProps): Promise<void> {
-    this.loadingSubject.next(true)
+  async startFlatfile(spaceProps: ISpace): Promise<void> {
     this.currentSpaceProps = spaceProps
-    return await this.initSpace(this.currentSpaceProps)
+    return this.initSpace(this.currentSpaceProps)
   }
 
   closeEmbed(): void {
-    this.loadingSubject.next(false)
-    this.spaceInitializedSubject.next(undefined)
+    this._loading.set(false)
+    this._spaceInitialized.set(undefined)
   }
 }
