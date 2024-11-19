@@ -3,10 +3,17 @@
     "pipeline": {
         "build": {
             "dependsOn": ["^build"],
-            "outputs": ["dist/**", ".next/**", "!.next/cache/**"]
+            "outputs": [
+                "dist/**",
+                ".next/**",
+                "!.next/cache/**"
+            ]
         },
         "packages#build": {
             "dependsOn": ["^build"],
+            "outputs": ["dist/**"]
+        },
+        "@flatfile/angular-sdk#build": {
             "outputs": ["dist/**"]
         },
         "apps#build": {
@@ -14,13 +21,15 @@
             "outputs": [
                 "dist/**",
                 ".next/**",
-                "!.next/cache/**",
-                ".flatfile/**"
+                "!.next/cache/**"
             ]
         },
+        "create-flatfile-angular#build": {
+            "dependsOn": ["@flatfile/angular-sdk#build"],
+            "outputs": ["dist/**"]
+        },
         "test": {
-            "dependsOn": ["^build"],
-            "outputs": []
+            "dependsOn": ["^build"]
         },
         "lint": {
             "outputs": []
