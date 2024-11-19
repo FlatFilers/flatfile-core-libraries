@@ -18,7 +18,7 @@
     "@angular/platform-browser": "^17.2.0",
     "@angular/platform-browser-dynamic": "^17.2.0",
     "@angular/router": "^17.2.0",
-    "@flatfile/angular-sdk": "*",
+    "@flatfile/angular-sdk": "../../packages/angular/angular-sdk/",
     "@flatfile/api": "^1.9.19",
     "@flatfile/listener": "^1.1.0",
     "@flatfile/plugin-record-hook": "^1.7.1",
