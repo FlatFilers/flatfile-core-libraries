@@ -14,6 +14,7 @@
             "outputs": ["dist/**"]
         },
         "@flatfile/angular-sdk#build": {
+            "dependsOn": ["^build"],
             "outputs": ["dist/**"]
         },
         "apps#build": {
