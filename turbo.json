@@ -13,10 +13,6 @@
             "dependsOn": ["^build"],
             "outputs": ["dist/**"]
         },
-        "@flatfile/angular-sdk#build": {
-            "dependsOn": ["^build"],
-            "outputs": ["dist/**"]
-        },
         "apps#build": {
             "dependsOn": ["^build", "packages#build"],
             "outputs": [
@@ -24,10 +20,6 @@
                 ".next/**",
                 "!.next/cache/**"
             ]
-        },
-        "create-flatfile-angular#build": {
-            "dependsOn": ["@flatfile/angular-sdk#build"],
-            "outputs": ["dist/**"]
         },
         "test": {
             "dependsOn": ["^build"]
