@@ -20,19 +20,22 @@ type SpaceProps = any
 })
 export class SpaceService {
   private loadingSubject = new BehaviorSubject<boolean>(false)
-  public loading$: Observable<boolean> = this.loadingSubject.asObservable()
+  loading$: Observable<boolean> = this.loadingSubject.asObservable()
 
   private currentSpaceProps?: SpaceProps
-  private spaceInitializedSubject = new BehaviorSubject<boolean>(false)
-  public spaceInitialized$: Observable<boolean> =
+  private spaceInitializedSubject = new BehaviorSubject<object | undefined>(
+    undefined
+  )
+  spaceInitialized$: Observable<object | undefined> =
     this.spaceInitializedSubject.asObservable()
-  get spaceInitialized(): boolean {
+  get spaceInitialized(): object | undefined {
     return this.spaceInitializedSubject.value
   }
-  set spaceInitialized(value: boolean) {
+  set spaceInitialized(value: object | undefined) {
     this.spaceInitializedSubject.next(value)
   }
-  public spaceResponse: any
+  spaceResponse: any
+  localSpaceData: Record<string, any> | undefined
 
   constructor() {}
 
@@ -79,9 +82,8 @@ export class SpaceService {
   }
 
   async initSpace(spaceProps: SpaceProps): Promise<any> {
-    console.log('initSpace', { spaceProps })
     if (!spaceProps) {
-      console.log('spaceProps is required')
+      console.warn('spaceProps is required')
       return
     }
     if (this.spaceInitialized) {
@@ -95,26 +97,54 @@ export class SpaceService {
     ;(window as any).CROSSENV_FLATFILE_API_URL = spaceProps.apiUrl
 
     this.currentSpaceProps = spaceProps
-    console.log({ spaceProps })
     try {
       this.spaceResponse = await this.getOrCreateSpace(spaceProps)
-      this.spaceInitializedSubject.next(true)
+      const { id: spaceId, accessToken, guestLink } = this.spaceResponse.space
+
+      if (!spaceId || typeof spaceId !== 'string') {
+        throw new Error('Missing spaceId from space response')
+      }
+
+      if (!guestLink || typeof guestLink !== 'string') {
+        throw new Error('Missing guest link from space response')
+      }
+
+      if (!accessToken || typeof accessToken !== 'string') {
+        throw new Error('Missing access token from space response')
+      }
+
+      this.localSpaceData = {
+        spaceId,
+        spaceUrl: guestLink,
+        localAccessToken: accessToken,
+      }
+
+      const formattedSpaceProps = {
+        ...spaceProps,
+        ...this.localSpaceData,
+        apiUrl:
+          this.spaceResponse.apiUrl || 'https://platform.flatfile.com/api',
+        workbook:
+          this.spaceResponse.workbook || this.spaceResponse.workbooks?.[0],
+      }
+
+      this.spaceInitializedSubject.next(formattedSpaceProps)
+      return formattedSpaceProps
     } catch (error) {
       console.error('Failed to initialize space:', error)
       throw error
     }
   }
 
-  async OpenEmbed(spaceProps: SpaceProps): Promise<void> {
-    console.log('OpenEmbed', { this: this })
+  OpenEmbed = this.startFlatfile
+  async startFlatfile(spaceProps: SpaceProps): Promise<void> {
     this.loadingSubject.next(true)
     this.currentSpaceProps = spaceProps
-    await this.initSpace(this.currentSpaceProps)
+    return await this.initSpace(this.currentSpaceProps)
   }
 
   closeEmbed(): void {
     this.loadingSubject.next(false)
-    this.spaceInitializedSubject.next(false)
-    this.spaceInitialized = false
+    this.spaceInitializedSubject.next(undefined)
   }
 }

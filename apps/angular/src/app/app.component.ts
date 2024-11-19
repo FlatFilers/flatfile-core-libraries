@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common'
 import { SpaceModule, ISpace, SpaceService } from '@flatfile/angular-sdk'
 import { workbook } from './workbook'
 import { listener } from './listener'
+import { State } from '../../../../packages/embedded-utils/src/types/State';
 
 @Component({
   selector: 'app-root',
@@ -22,13 +23,15 @@ export class AppComponent {
     console.log('ANGULAR 18')
   }
 
-  toggleSpace() {
-    this.spaceService.OpenEmbed(this.spaceProps)
+  async toggleSpace() {
+    const spaceResponse = await this.spaceService.OpenEmbed(this.spaceProps)
+    console.log('space', spaceResponse)
     this.showSpace = !this.showSpace
   }
 
   closeSpace() {
     this.showSpace = false
+
   }
   spaceProps: ISpace = {
     name: 'my space!',
@@ -54,10 +57,11 @@ export class AppComponent {
   }
 
   ngOnInit() {
-    // if (this.spaceService.spaceInitialized) {
     this.spaceService.spaceInitialized$.subscribe((spaceInitialized) => {
-      console.log('Space loading state changed:', { spaceInitialized })
+      console.log('Space spaceInitialized state changed:', { spaceInitialized })
     })
-    // }
+    this.spaceService.loading$.subscribe((loading) => {
+      console.log('Space loading state changed:', { loading })
+    })
   }
 }
