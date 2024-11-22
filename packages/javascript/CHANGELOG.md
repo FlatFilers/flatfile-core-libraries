@@ -1,5 +1,11 @@
 # @flatfile/javascript
 
+## 1.5.2
+
+### Patch Changes
+
+- ba4e241: Fix UMD build by removing externals
+
 ## 1.5.1
 
 ### Patch Changes
