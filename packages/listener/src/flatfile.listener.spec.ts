@@ -155,4 +155,15 @@ describe('Client', () => {
       expect(testFn).toHaveBeenCalledTimes(3)
     })
   })
+
+  describe('AGENT_INTERNAL_URL', () => {
+    test('throws error when not set', () => {
+      process.env.AGENT_INTERNAL_URL = undefined
+      expect(() => {
+        FlatfileListener.create((c) => {
+          c.on('foo', () => {})
+        })
+      }).toThrow('AGENT_INTERNAL_URL must be set in the environment')
+    })
+  })
 })
