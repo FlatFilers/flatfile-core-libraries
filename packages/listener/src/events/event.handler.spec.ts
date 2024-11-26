@@ -1,7 +1,12 @@
+import { CrossEnvConfig } from '@flatfile/cross-env-config'
 import { EventHandler } from './event.handler'
 
 describe('EventHandler', () => {
   let testFn: jest.Mock
+
+  if (CrossEnvConfig.get('AGENT_INTERNAL_URL') == null) {
+    process.env.AGENT_INTERNAL_URL = 'agent_internal_url'
+  }
 
   beforeEach(() => {
     testFn = jest.fn()
@@ -84,6 +89,21 @@ describe('EventHandler', () => {
       await handler.dispatchEvent({ topic: 'records:created' })
       await handler.dispatchEvent({ topic: 'records:created', domain: 'foo' })
       expect(testFn).toHaveBeenCalledTimes(1)
+    })
+  })
+
+  describe('AGENT_INTERNAL_URL', () => {
+    test('throws error when not set', () => {
+      process.env.AGENT_INTERNAL_URL = undefined
+
+      try {
+        new EventHandler().on('foo', testFn)
+      } catch (e) {
+        expect(e).toBeInstanceOf(Error)
+        expect((e as Error).message).toBe(
+          'AGENT_INTERNAL_URL must be set in the environment'
+        )
+      }
     })
   })
 })

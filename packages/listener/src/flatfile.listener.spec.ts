@@ -1,7 +1,12 @@
+import { CrossEnvConfig } from '@flatfile/cross-env-config'
 import { FlatfileListener } from './flatfile.listener'
 
 describe('Client', () => {
   let testFn: jest.Mock
+
+  if (CrossEnvConfig.get('AGENT_INTERNAL_URL') == null) {
+    process.env.AGENT_INTERNAL_URL = 'agent_internal_url'
+  }
 
   beforeEach(() => {
     testFn = jest.fn()
@@ -148,6 +153,23 @@ describe('Client', () => {
         topic: 'records:created',
       })
       expect(testFn).toHaveBeenCalledTimes(3)
+    })
+  })
+
+  describe('AGENT_INTERNAL_URL', () => {
+    test('throws error when not set', () => {
+      process.env.AGENT_INTERNAL_URL = undefined
+
+      try {
+        FlatfileListener.create((c) => {
+          c.on('foo', () => {})
+        })
+      } catch (e) {
+        expect(e).toBeInstanceOf(Error)
+        expect((e as Error).message).toBe(
+          'AGENT_INTERNAL_URL must be set in the environment'
+        )
+      }
     })
   })
 })
