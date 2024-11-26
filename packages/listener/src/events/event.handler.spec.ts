@@ -95,9 +95,15 @@ describe('EventHandler', () => {
   describe('AGENT_INTERNAL_URL', () => {
     test('throws error when not set', () => {
       process.env.AGENT_INTERNAL_URL = undefined
-      expect(() => new EventHandler()).toThrow(
-        'AGENT_INTERNAL_URL must be set in the environment'
-      )
+
+      try {
+        new EventHandler().on('foo', testFn)
+      } catch (e) {
+        expect(e).toBeInstanceOf(Error)
+        expect((e as Error).message).toBe(
+          'AGENT_INTERNAL_URL must be set in the environment'
+        )
+      }
     })
   })
 })
