@@ -158,12 +158,10 @@ describe('Client', () => {
 
   describe('AGENT_INTERNAL_URL', () => {
     test('throws error when not set', () => {
-      process.env.AGENT_INTERNAL_URL = undefined
-      expect(() => {
-        FlatfileListener.create((c) => {
-          c.on('foo', () => {})
-        })
-      }).toThrow('AGENT_INTERNAL_URL must be set in the environment')
+      delete process.env.AGENT_INTERNAL_URL
+      expect(() => new FlatfileListener()).toThrow(
+        'AGENT_INTERNAL_URL must be set in the environment'
+      )
     })
   })
 })

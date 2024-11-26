@@ -8,8 +8,8 @@ export class AuthenticatedClient {
 
   constructor(accessToken?: string, apiUrl?: string) {
     const FLATFILE_API_URL = CrossEnvConfig.get('AGENT_INTERNAL_URL')
-
-    if (FLATFILE_API_URL == null) {
+    console.log('FLATFILE_API_URL', FLATFILE_API_URL)
+    if (!FLATFILE_API_URL) {
       throw new Error('AGENT_INTERNAL_URL must be set in the environment')
     }
 
