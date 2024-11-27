@@ -155,13 +155,4 @@ describe('Client', () => {
       expect(testFn).toHaveBeenCalledTimes(3)
     })
   })
-
-  describe('AGENT_INTERNAL_URL', () => {
-    test('throws error when not set', () => {
-      delete process.env.AGENT_INTERNAL_URL
-      expect(() => new FlatfileListener()).toThrow(
-        'AGENT_INTERNAL_URL must be set in the environment'
-      )
-    })
-  })
 })

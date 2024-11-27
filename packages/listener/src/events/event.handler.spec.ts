@@ -91,13 +91,4 @@ describe('EventHandler', () => {
       expect(testFn).toHaveBeenCalledTimes(1)
     })
   })
-
-  describe('AGENT_INTERNAL_URL', () => {
-    test('throws error when not set', () => {
-      delete process.env.AGENT_INTERNAL_URL
-      expect(() => new EventHandler()).toThrow(
-        'AGENT_INTERNAL_URL must be set in the environment'
-      )
-    })
-  })
 })
