@@ -1,5 +1,11 @@
 # @flatfile/listener
 
+## 1.1.1
+
+### Patch Changes
+
+- 57fdba7: Remove fallback to localhost
+
 ## 1.1.0
 
 ### Minor Changes
