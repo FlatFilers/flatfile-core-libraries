@@ -3,7 +3,7 @@ import { Configuration, DefaultApi } from '@flatfile/api'
 import fetch, { RequestInit } from 'node-fetch'
 
 const FLATFILE_API_URL =
-  process.env.AGENT_INTERNAL_URL || 'http://localhost:3000'
+  process.env.AGENT_INTERNAL_URL ?? 'https://platform.flatfile.com/api'
 
 export class AuthenticatedClient {
   private _api?: DefaultApi
@@ -36,6 +36,9 @@ export class AuthenticatedClient {
         `Bearer ${process.env.FLATFILE_BEARER_TOKEN}` ?? `Bearer ...`,
       'x-disable-hooks': 'true',
       ...options.headers,
+    }
+    if (FLATFILE_API_URL == null) {
+      throw new Error('AGENT_INTERNAL_URL must be set in the environment')
     }
     const fetchUrl = FLATFILE_API_URL + '/' + url
 

@@ -1,3 +1,4 @@
+import { CrossEnvConfig } from '@flatfile/cross-env-config'
 import { EventHandler } from './event.handler'
 
 describe('EventHandler', () => {

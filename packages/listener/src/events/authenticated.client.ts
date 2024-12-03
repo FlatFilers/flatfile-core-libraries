@@ -8,15 +8,17 @@ export class AuthenticatedClient {
 
   constructor(accessToken?: string, apiUrl?: string) {
     const FLATFILE_API_URL =
-      CrossEnvConfig.get('AGENT_INTERNAL_URL') || 'http://localhost:3000'
+      CrossEnvConfig.get('AGENT_INTERNAL_URL') ??
+      apiUrl ??
+      'https://platform.flatfile.com/api'
+
     const bearerToken = CrossEnvConfig.get('FLATFILE_BEARER_TOKEN')
 
-    this._accessToken = accessToken || bearerToken || '...'
+    this._accessToken = accessToken ?? bearerToken ?? '...'
 
-    this._apiUrl =
-      apiUrl || FLATFILE_API_URL
-        ? ensureSingleTrailingSlash(apiUrl || FLATFILE_API_URL)
-        : undefined
+    this._apiUrl = FLATFILE_API_URL
+      ? ensureSingleTrailingSlash(FLATFILE_API_URL)
+      : undefined
   }
 
   async fetch(url: string, options?: any) {
