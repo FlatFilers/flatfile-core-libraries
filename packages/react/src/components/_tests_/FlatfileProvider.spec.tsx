@@ -10,7 +10,7 @@ import { FlatfileProvider } from '../FlatfileProvider'
 
 export const FlatfileProviderValue: FlatfileContextType = {
   updateDocument: jest.fn(),
-  apiUrl: 'https://platform.flatfile.com/api',
+  apiUrl: '',
   open: false,
   setOpen: jest.fn(),
   onClose: createRef<undefined | (() => void)>(),

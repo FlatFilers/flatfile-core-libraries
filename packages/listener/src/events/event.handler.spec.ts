@@ -4,10 +4,6 @@ import { EventHandler } from './event.handler'
 describe('EventHandler', () => {
   let testFn: jest.Mock
 
-  if (CrossEnvConfig.get('AGENT_INTERNAL_URL') == null) {
-    process.env.AGENT_INTERNAL_URL = 'agent_internal_url'
-  }
-
   beforeEach(() => {
     testFn = jest.fn()
   })

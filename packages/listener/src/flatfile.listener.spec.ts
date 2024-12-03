@@ -1,12 +1,7 @@
-import { CrossEnvConfig } from '@flatfile/cross-env-config'
 import { FlatfileListener } from './flatfile.listener'
 
 describe('Client', () => {
   let testFn: jest.Mock
-
-  if (CrossEnvConfig.get('AGENT_INTERNAL_URL') == null) {
-    process.env.AGENT_INTERNAL_URL = 'agent_internal_url'
-  }
 
   beforeEach(() => {
     testFn = jest.fn()

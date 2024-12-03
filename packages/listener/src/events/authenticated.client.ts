@@ -7,11 +7,14 @@ export class AuthenticatedClient {
   public _apiUrl?: string
 
   constructor(accessToken?: string, apiUrl?: string) {
-    const FLATFILE_API_URL = CrossEnvConfig.get('AGENT_INTERNAL_URL') || apiUrl
+    const FLATFILE_API_URL =
+      CrossEnvConfig.get('AGENT_INTERNAL_URL') ??
+      apiUrl ??
+      'https://platform.flatfile.com/api'
 
     const bearerToken = CrossEnvConfig.get('FLATFILE_BEARER_TOKEN')
 
-    this._accessToken = accessToken || bearerToken || '...'
+    this._accessToken = accessToken ?? bearerToken ?? '...'
 
     this._apiUrl = FLATFILE_API_URL
       ? ensureSingleTrailingSlash(FLATFILE_API_URL)

@@ -2,7 +2,8 @@ import { Configuration, DefaultApi } from '@flatfile/api'
 // TODO: We will need to make this conditional depending on if it's in the NodeVM or the Browser
 import fetch, { RequestInit } from 'node-fetch'
 
-const FLATFILE_API_URL = process.env.AGENT_INTERNAL_URL
+const FLATFILE_API_URL =
+  process.env.AGENT_INTERNAL_URL ?? 'https://platform.flatfile.com/api'
 
 export class AuthenticatedClient {
   private _api?: DefaultApi
@@ -12,9 +13,6 @@ export class AuthenticatedClient {
       return this._api
     }
 
-    if (FLATFILE_API_URL == null) {
-      throw new Error('AGENT_INTERNAL_URL must be set in the environment')
-    }
     const ClientConfig = new Configuration({
       basePath: `${FLATFILE_API_URL}/v1`,
       fetchApi: fetch,
