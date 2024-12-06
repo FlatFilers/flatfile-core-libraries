@@ -93,6 +93,108 @@ describe('FlatfileRecord', () => {
     })
   })
 
+  it('returns the errors for a record', () => {
+    person.addInfo('name', 'Rad name')
+    person.addWarning('age', 'What a name')
+    person.addComment('age', 'What a name')
+    person.addError('age', 'So immature')
+
+    const errors = person.getErrors()
+    expect(errors.length).toBe(1)
+    expect(errors[0]).toEqual({
+      field: 'age',
+      message: 'So immature',
+      level: 'error',
+      stage: 'other',
+    })
+  })
+
+  it('returns an empty array when there are no errors', () => {
+    person.addInfo('name', 'Rad name')
+    person.addWarning('age', 'What a name')
+    person.addComment('age', 'What a name')
+
+    const errors = person.getErrors()
+    expect(errors.length).toBe(0)
+  })
+
+  it('returns multiple errors for a record', () => {
+    person.addError('name', 'Invalid name')
+    person.addError('age', 'Invalid age')
+
+    const errors = person.getErrors()
+    expect(errors.length).toBe(2)
+    expect(errors.every((e) => e.level === 'error')).toBe(true)
+    expect(errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          field: 'name',
+          message: 'Invalid name',
+          level: 'error',
+        }),
+        expect.objectContaining({
+          field: 'age',
+          message: 'Invalid age',
+          level: 'error',
+        }),
+      ])
+    )
+  })
+
+  it('returns the errors for a specific field', () => {
+    person.addError('name', 'Invalid name')
+    person.addError('age', 'Invalid age')
+
+    const error = person.getErrors('name')
+    expect(error).toEqual([
+      {
+        field: 'name',
+        message: 'Invalid name',
+        level: 'error',
+        stage: 'other',
+      },
+    ])
+  })
+
+  it('returns the errors for specific fields', () => {
+    person.addError('name', 'Invalid name')
+    person.addError('age', 'Invalid age')
+
+    const errors = person.getErrors(['name', 'age'])
+    expect(errors.length).toBe(2)
+    expect(errors.every((e) => e.level === 'error')).toBe(true)
+    expect(errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          field: 'name',
+          message: 'Invalid name',
+          level: 'error',
+        }),
+        expect.objectContaining({
+          field: 'age',
+          message: 'Invalid age',
+          level: 'error',
+        }),
+      ])
+    )
+  })
+
+  it('should return an empty array if the field does not exist', () => {
+    person.addError('name', 'Invalid name')
+    person.addError('age', 'Invalid age')
+
+    const error = person.getErrors('lastName')
+    expect(error).toEqual([])
+  })
+
+  it('should return an empty array for multiple non-existent fields', () => {
+    person.addError('name', 'Invalid name')
+    person.addError('age', 'Invalid age')
+
+    const errors = person.getErrors(['lastName', 'email'])
+    expect(errors).toEqual([])
+  })
+
   it('does not return an updated record if a record value that does not exist is changed', () => {
     person.set('job', 'engineer')
 
