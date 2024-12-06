@@ -95,6 +95,8 @@ describe('FlatfileRecord', () => {
 
   it('returns the errors for a record', () => {
     person.addInfo('name', 'Rad name')
+    person.addWarning('age', 'What a name')
+    person.addComment('age', 'What a name')
     person.addError('age', 'So immature')
 
     const errors = person.getErrors()
@@ -109,7 +111,8 @@ describe('FlatfileRecord', () => {
 
   it('returns an empty array when there are no errors', () => {
     person.addInfo('name', 'Rad name')
-    person.addInfo('age', 'What a name')
+    person.addWarning('age', 'What a name')
+    person.addComment('age', 'What a name')
 
     const errors = person.getErrors()
     expect(errors.length).toBe(0)
