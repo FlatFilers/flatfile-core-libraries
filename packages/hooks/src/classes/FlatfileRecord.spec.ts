@@ -125,6 +125,20 @@ describe('FlatfileRecord', () => {
     const errors = person.getErrors()
     expect(errors.length).toBe(2)
     expect(errors.every((e) => e.level === 'error')).toBe(true)
+    expect(errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          field: 'name',
+          message: 'Invalid name',
+          level: 'error',
+        }),
+        expect.objectContaining({
+          field: 'age',
+          message: 'Invalid age',
+          level: 'error',
+        }),
+      ])
+    )
   })
 
   it('returns the errors for a specific field', () => {
@@ -149,6 +163,20 @@ describe('FlatfileRecord', () => {
     const errors = person.getErrors(['name', 'age'])
     expect(errors.length).toBe(2)
     expect(errors.every((e) => e.level === 'error')).toBe(true)
+    expect(errors).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          field: 'name',
+          message: 'Invalid name',
+          level: 'error',
+        }),
+        expect.objectContaining({
+          field: 'age',
+          message: 'Invalid age',
+          level: 'error',
+        }),
+      ])
+    )
   })
 
   it('should return an empty array if the field does not exist', () => {
@@ -157,6 +185,14 @@ describe('FlatfileRecord', () => {
 
     const error = person.getErrors('lastName')
     expect(error).toEqual([])
+  })
+
+  it('should return an empty array for multiple non-existent fields', () => {
+    person.addError('name', 'Invalid name')
+    person.addError('age', 'Invalid age')
+
+    const errors = person.getErrors(['lastName', 'email'])
+    expect(errors).toEqual([])
   })
 
   it('does not return an updated record if a record value that does not exist is changed', () => {
