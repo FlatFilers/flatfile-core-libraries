@@ -151,6 +151,14 @@ describe('FlatfileRecord', () => {
     expect(errors.every((e) => e.level === 'error')).toBe(true)
   })
 
+  it('should return an empty array if the field does not exist', () => {
+    person.addError('name', 'Invalid name')
+    person.addError('age', 'Invalid age')
+
+    const error = person.getErrors('lastName')
+    expect(error).toEqual([])
+  })
+
   it('does not return an updated record if a record value that does not exist is changed', () => {
     person.set('job', 'engineer')
 
