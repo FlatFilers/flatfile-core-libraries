@@ -1,5 +1,11 @@
 # @flatfile/hooks
 
+## 1.6.0
+
+### Minor Changes
+
+- ad5f2a5: Added public `getErrors()` method on the FlatfileRecord class
+
 ## 1.5.1
 
 ### Patch Changes
