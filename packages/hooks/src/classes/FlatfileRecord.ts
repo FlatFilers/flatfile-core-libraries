@@ -231,6 +231,19 @@ export class FlatfileRecord<
 
   /**
    * Returns an array of the error-level messages for the record
+   * @param fields - Optional field or array of fields to filter errors by
+   * @returns Array of error messages with level 'error'
+   * @example
+   * ```typescript
+   * // Get all errors
+   * const allErrors = record.getErrors();
+   * 
+   * // Get errors for specific field
+   * const nameErrors = record.getErrors('name');
+   * 
+   * // Get errors for multiple fields
+   * const errors = record.getErrors(['name', 'age']);
+   * ```
    */
   public getErrors(fields?: keyof M | (keyof M)[]): IRecordInfo<M>[] {
     if (fields) {
