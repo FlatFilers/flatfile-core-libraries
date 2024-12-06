@@ -229,6 +229,10 @@ export class FlatfileRecord<
     return null
   }
 
+  public getErrors(): IRecordInfo<M>[] {
+    return this._info.filter((info) => info.level === 'error')
+  }
+
   public getMetadata(): Object {
     return this.metadata
   }

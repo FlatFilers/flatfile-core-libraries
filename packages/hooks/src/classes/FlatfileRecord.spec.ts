@@ -93,6 +93,20 @@ describe('FlatfileRecord', () => {
     })
   })
 
+  it('returns the errors for a record', () => {
+    person.addInfo('name', 'Rad name')
+    person.addError('age', 'So immature')
+
+    const errors = person.getErrors()
+    expect(errors.length).toBe(1)
+    expect(errors[0]).toEqual({
+      field: 'age',
+      message: 'So immature',
+      level: 'error',
+      stage: 'other',
+    })
+  })
+
   it('does not return an updated record if a record value that does not exist is changed', () => {
     person.set('job', 'engineer')
 
