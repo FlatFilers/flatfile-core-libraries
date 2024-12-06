@@ -229,6 +229,9 @@ export class FlatfileRecord<
     return null
   }
 
+  /**
+   * Returns an array of the error-level messages for the record
+   */
   public getErrors(): IRecordInfo<M>[] {
     return this._info.filter((info) => info.level === 'error')
   }

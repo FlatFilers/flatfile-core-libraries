@@ -107,6 +107,23 @@ describe('FlatfileRecord', () => {
     })
   })
 
+  it('returns an empty array when there are no errors', () => {
+    person.addInfo('name', 'Rad name')
+    person.addInfo('age', 'What a name')
+
+    const errors = person.getErrors()
+    expect(errors.length).toBe(0)
+  })
+
+  it('returns multiple errors for a record', () => {
+    person.addError('name', 'Invalid name')
+    person.addError('age', 'Invalid age')
+
+    const errors = person.getErrors()
+    expect(errors.length).toBe(2)
+    expect(errors.every((e) => e.level === 'error')).toBe(true)
+  })
+
   it('does not return an updated record if a record value that does not exist is changed', () => {
     person.set('job', 'engineer')
 
