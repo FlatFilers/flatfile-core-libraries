@@ -232,7 +232,16 @@ export class FlatfileRecord<
   /**
    * Returns an array of the error-level messages for the record
    */
-  public getErrors(): IRecordInfo<M>[] {
+  public getErrors(fields?: keyof M | (keyof M)[]): IRecordInfo<M>[] {
+    if (fields) {
+      const fieldsArray = Array.isArray(fields)
+        ? fields
+        : [fields].filter(Boolean)
+      return this._info.filter(
+        (info) => info.level === 'error' && fieldsArray.includes(info.field)
+      )
+    }
+
     return this._info.filter((info) => info.level === 'error')
   }
 

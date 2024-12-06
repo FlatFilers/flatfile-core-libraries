@@ -127,6 +127,30 @@ describe('FlatfileRecord', () => {
     expect(errors.every((e) => e.level === 'error')).toBe(true)
   })
 
+  it('returns the errors for a specific field', () => {
+    person.addError('name', 'Invalid name')
+    person.addError('age', 'Invalid age')
+
+    const error = person.getErrors('name')
+    expect(error).toEqual([
+      {
+        field: 'name',
+        message: 'Invalid name',
+        level: 'error',
+        stage: 'other',
+      },
+    ])
+  })
+
+  it('returns the errors for specific fields', () => {
+    person.addError('name', 'Invalid name')
+    person.addError('age', 'Invalid age')
+
+    const errors = person.getErrors(['name', 'age'])
+    expect(errors.length).toBe(2)
+    expect(errors.every((e) => e.level === 'error')).toBe(true)
+  })
+
   it('does not return an updated record if a record value that does not exist is changed', () => {
     person.set('job', 'engineer')
 
