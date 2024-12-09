@@ -45,7 +45,7 @@ export const config: Pick<
   ],
   actions: [
     {
-      label: 'Submit',
+      label: 'jobs.submit.button.defaultLabel',
       operation: 'contacts:submit',
       description: 'Would you like to submit your workbook?',
       mode: 'foreground',

@@ -1,5 +1,5 @@
-import { FlatfileListener } from '@flatfile/listener'
 import api, { Flatfile } from '@flatfile/api'
+import { FlatfileListener } from '@flatfile/listener'
 // @ts-ignore
 import Color from 'color'
 
@@ -32,7 +32,7 @@ export const config: Pick<
   ],
   actions: [
     {
-      label: 'Submit',
+      label: 'jobs.submit.button.defaultLabel',
       operation: 'colors:submit',
       description: 'Would you like to submit your workbook?',
       mode: 'foreground',
