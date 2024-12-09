@@ -45,6 +45,7 @@ Options:
   -k, --token <string>  the authentication token to use (or set env FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN)
   -h, --api-url <url>   (optional) the API URL to use (or set env FLATFILE_API_URL)
   -e, --env <string>    (optional) the Environment to use (or set env FLATFILE_ENVIRONMENT_ID)
+  --skip-deployed-check (optional) skip check for deployed agents
   --help                display help for command
 ```
 

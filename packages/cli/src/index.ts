@@ -10,13 +10,13 @@ import { writeErrorToFile } from './shared/utils/error'
 import { switchInit } from './switch.init'
 import { switchVersion } from './switch.version'
 import { createEnvironmentAction } from './x/actions/create.environment.action'
-import { deployAction } from './x/actions/deploy.action'
 import { deleteAction } from './x/actions/delete.action'
+import { deployAction } from './x/actions/deploy.action'
 import { developAction } from './x/actions/develop.action'
+import { listAgentsAction } from './x/actions/list-agents.action'
 import { publishAction } from './x/actions/publish.action'
 import { publishPubSub } from './x/actions/publish.pubsub'
 import { quickstartAction } from './x/actions/quickstart.action'
-import { listAgentsAction } from './x/actions/list-agents.action'
 
 dotenv.config()
 
@@ -77,6 +77,10 @@ program
   .option(
     '-e, --env <env-id>',
     '(optional) the Environment to use (or set env FLATFILE_ENVIRONMENT_ID)'
+  )
+  .option(
+    '--skip-deployed-check',
+    '(optional) bypass check for deployed agents'
   )
   .action(developAction)
 
