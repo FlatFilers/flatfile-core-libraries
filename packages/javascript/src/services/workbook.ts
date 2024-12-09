@@ -1,5 +1,5 @@
-import { UpdateSpaceInfo } from '../types'
 import { Flatfile } from '@flatfile/api'
+import { UpdateSpaceInfo } from '../types'
 
 export const createWorkbook = async (data: UpdateSpaceInfo) => {
   const { apiUrl, accessToken, workbook, spaceId, environmentId } = data
@@ -46,7 +46,7 @@ export const createWorkbookFromSheet = (
           {
             operation: 'simpleSubmitAction',
             mode: 'foreground',
-            label: 'Submit',
+            label: 'jobs.submit.button.defaultLabel',
             description: 'Action for handling data inside of onSubmit',
             primary: true,
           },
