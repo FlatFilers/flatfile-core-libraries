@@ -1,6 +1,6 @@
 import api, { Flatfile } from '@flatfile/api'
-import { recordHook } from '@flatfile/plugin-record-hook'
 import { FlatfileListener } from '@flatfile/listener'
+import { recordHook } from '@flatfile/plugin-record-hook'
 
 export const config: Pick<
   Flatfile.CreateWorkbookConfig,
@@ -46,7 +46,7 @@ export const config: Pick<
   ],
   actions: [
     {
-      label: 'Submit',
+      label: 'jobs.submit.button.defaultLabel',
       operation: 'contacts:submit',
       description: 'Would you like to submit your workbook?',
       mode: 'foreground',
