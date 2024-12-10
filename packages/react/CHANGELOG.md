@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.13.3
+
+### Patch Changes
+
+- 958163c: This release replaces a lodash function with vanilla JS and moves dependencies to the proper packages.
+
 ## 7.13.2
 
 ### Patch Changes

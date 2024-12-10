@@ -1,6 +1,6 @@
 {
   "name": "@flatfile/configure",
-  "version": "1.1.1",
+  "version": "1.1.2",
   "description": "",
   "private": false,
   "main": "dist/index.js",
@@ -46,7 +46,7 @@
   },
   "dependencies": {
     "@flatfile/hooks": "^1.5.0",
-    "@flatfile/schema": "^0.2.16",
+    "@flatfile/schema": "^0.2.18",
     "date-fns": "^2.29.1",
     "lodash": "^4.17.21",
     "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz"
