@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.13.2
+
+### Patch Changes
+
+- 950aa70: This release translates the "Submit" button
+
 ## 7.13.1
 
 ### Patch Changes
