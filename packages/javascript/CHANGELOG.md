@@ -1,5 +1,11 @@
 # @flatfile/javascript
 
+## 1.5.3
+
+### Patch Changes
+
+- 950aa70: This release translates the "Submit" button
+
 ## 1.5.2
 
 ### Patch Changes
