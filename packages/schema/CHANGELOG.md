@@ -1,5 +1,11 @@
 # @flatfile/schema
 
+## 0.2.18
+
+### Patch Changes
+
+- 958163c: This release replaces a lodash function with vanilla JS and moves dependencies to the proper packages.
+
 ## 0.2.17
 
 ### Patch Changes
