@@ -32,7 +32,8 @@ export const OnSubmitAction = (
         info:
           onSubmitSettings?.startingJobMessage === null
             ? undefined
-            : onSubmitSettings?.startingJobMessage ?? 'Starting job',
+            : onSubmitSettings?.startingJobMessage ??
+              'jobs.messages.startingJob',
         progress: 10,
       })
       const job = new JobHandler(jobId)

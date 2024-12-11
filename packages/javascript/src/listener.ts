@@ -73,7 +73,10 @@ export const createSimpleListener = ({
         configure.on('job:ready', async (event) => {
           const { jobId, spaceId, workbookId } = event.context
           try {
-            await api.jobs.ack(jobId, { info: 'Starting job', progress: 10 })
+            await api.jobs.ack(jobId, {
+              info: 'jobs.messages.startingJob',
+              progress: 10,
+            })
 
             const job = new JobHandler(jobId)
             const { data: workbookSheets } = await api.sheets.list({

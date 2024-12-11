@@ -75,7 +75,7 @@ export const usePortal = (
                       const { jobId, spaceId, workbookId } = event.context
                       try {
                         await api.jobs.ack(jobId, {
-                          info: 'Starting job',
+                          info: 'jobs.messages.startingJob',
                           progress: 10,
                         })
 
