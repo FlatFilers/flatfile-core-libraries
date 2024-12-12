@@ -1,5 +1,13 @@
 # @flatfile/javascript
 
+## 1.5.4
+
+### Patch Changes
+
+- 4b21272: This release translates the "Starting job" message
+- Updated dependencies [4b21272]
+  - @flatfile/embedded-utils@1.3.5
+
 ## 1.5.3
 
 ### Patch Changes
