@@ -1,5 +1,13 @@
 ## 1.0.17
 
+## 1.0.21
+
+### Patch Changes
+
+- 4b21272: This release translates the "Starting job" message
+- Updated dependencies [4b21272]
+  - @flatfile/embedded-utils@1.3.5
+
 ## 1.0.20
 
 ### Patch Changes
