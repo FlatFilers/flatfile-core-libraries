@@ -4,16 +4,15 @@ import ora from 'ora'
 import { apiKeyClient } from './auth.action'
 import { getAuth } from '../../shared/get-auth'
 import { messages } from '../../shared/messages'
-import { prompt } from 'prompts'
+import { prompt } from '../../shared/utils/prompts'
 
 export async function deleteAction(
-  options?: Partial<{
+  options: Partial<{
     slug: string
     agentId: string
-    token: string
-    apiUrl: string
+    endpoint: string
   }>
-): Promise<void> {
+) {
   const { slug, agentId } = options ?? {}
 
   let authRes

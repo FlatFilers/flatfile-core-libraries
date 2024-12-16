@@ -6,18 +6,20 @@
     "exclude": [
         "dist",
         "build",
-        "node_modules",
-        "./node_modules",
-        "./node_modules/*",
+        "node_modules"
     ],
     "compilerOptions": {
         "lib": [
             "ESNext"
         ],
         "module": "ESNext",
-        "target": "es2020",
+        "target": "ESNext",
+        "moduleResolution": "bundler",
+        "allowImportingTsExtensions": true,
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "skipLibCheck": true,
-    },
+        "outDir": "dist",
+        "types": ["bun-types"]
+    }
 }
