@@ -1,6 +1,9 @@
 import { FlatfileClient } from '@flatfile/api'
 import { config } from '../../config'
 import { apiKeyClient } from './auth.action'
+import { render } from 'ink'
+import React from 'react'
+import { ApiOutput } from '../components/ApiOutput'
 
 export async function executeApiAction(
   resource: string,
@@ -8,10 +11,24 @@ export async function executeApiAction(
   options: any,
   ...args: any[]
 ) {
+  const { waitUntilExit } = render(
+    React.createElement(ApiOutput, {
+      loading: true,
+      resource,
+      method
+    })
+  )
+
   try {
     const apiKey = options.apiKey || process.env.FLATFILE_API_KEY || process.env.FLATFILE_BEARER_TOKEN
     if (!apiKey) {
-      console.error('API key is required. Set FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN in your .env file')
+      render(
+        React.createElement(ApiOutput, {
+          error: 'API key is required. Set FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN in your .env file',
+          resource,
+          method
+        })
+      )
       process.exit(1)
     }
 
@@ -21,14 +38,26 @@ export async function executeApiAction(
     // Get the resource from the client (e.g., client.workbooks, client.spaces)
     const resourceObj = (client as any)[resource]
     if (!resourceObj) {
-      console.error(`Resource '${resource}' not found in API client`)
+      render(
+        React.createElement(ApiOutput, {
+          error: `Resource '${resource}' not found in API client`,
+          resource,
+          method
+        })
+      )
       process.exit(1)
     }
 
     // Get the method from the resource (e.g., create, list, delete)
     const methodFn = resourceObj[method]
     if (!methodFn) {
-      console.error(`Method '${method}' not found for resource '${resource}'`)
+      render(
+        React.createElement(ApiOutput, {
+          error: `Method '${method}' not found for resource '${resource}'`,
+          resource,
+          method
+        })
+      )
       process.exit(1)
     }
 
@@ -44,10 +73,25 @@ export async function executeApiAction(
 
     // Execute the API call
     const result = await methodFn.call(resourceObj, ...methodArgs)
-    console.log(JSON.stringify(result, null, 2))
+    
+    render(
+      React.createElement(ApiOutput, {
+        data: result,
+        resource,
+        method
+      })
+    )
+
+    await waitUntilExit()
     return result
   } catch (error: any) {
-    console.error('Error:', error?.message || error)
+    render(
+      React.createElement(ApiOutput, {
+        error: error?.message || error,
+        resource,
+        method
+      })
+    )
     process.exit(1)
   }
 } 

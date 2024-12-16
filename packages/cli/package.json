@@ -1,49 +1,29 @@
 {
   "name": "flatfile",
   "version": "3.8.0",
-  "description": "",
   "type": "module",
   "main": "./dist/index.js",
   "bin": {
     "flatfile": "./dist/index.js"
   },
-  "files": [
-    "dist",
-    "templates"
-  ],
   "scripts": {
-    "prebuild": "rm -rf dist",
-    "build": "bun build ./src/index.ts --outdir ./dist --target node",
-    "dev": "bun build ./src/index.ts --outdir ./dist --target node --watch",
-    "lint": "TIMING=1 eslint \"src/**/*.{ts,tsx,js,jsx}\" --fix",
-    "clean": "rm -rf .turbo && rm -rf node_modules && rm -rf dist",
-    "test": "bun test"
+    "build": "bun build ./src/index.ts --outdir ./dist --target node --external ink --external react --external ink-spinner",
+    "dev": "bun build ./src/index.ts --outdir ./dist --target node --watch --external ink --external react --external ink-spinner"
   },
   "dependencies": {
-    "@aws-sdk/client-cloudwatch-logs": "^3.0.0",
     "@flatfile/api": "^1.5.17",
-    "@flatfile/cross-env-config": "^0.0.6",
-    "@flatfile/listener": "^1.0.4",
-    "@flatfile/listener-driver-pubsub": "^2.0.8",
-    "axios": "^1.6.0",
     "commander": "^9.3.0",
     "dotenv": "^16.0.1",
-    "figlet": "^1.5.2",
-    "graphql": "^16.5.0",
-    "graphql-request": "^4.3.0",
-    "node-fetch": "^2.6.7",
-    "prompts": "^2.4.2",
-    "rc": "^1.2.8",
-    "uuid": "^9.0.0",
-    "zod": "^3.19.1"
+    "ink": "^4.4.1",
+    "ink-spinner": "^5.0.0",
+    "react": "^18.2.0"
   },
   "devDependencies": {
-    "@types/node": "^18.0.0",
-    "typescript": "^5.0.0",
-    "bun-types": "latest"
+    "@types/react": "^18.2.45",
+    "bun-types": "latest",
+    "typescript": "^5.0.0"
   },
   "engines": {
-    "node": ">=16",
     "bun": ">=1.0.0"
   }
 }

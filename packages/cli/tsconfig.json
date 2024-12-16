@@ -1,25 +1,22 @@
 {
-    "extends": "@flatfile/ts-config-platform-sdk/base.json",
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "bundler",
+        "types": [
+            "bun-types"
+        ],
+        "jsx": "react-jsx",
+        "allowJs": true,
+        "esModuleInterop": true,
+        "strict": true,
+        "skipLibCheck": true
+    },
     "include": [
-        "./src"
+        "src/**/*"
     ],
     "exclude": [
-        "dist",
-        "build",
-        "node_modules"
-    ],
-    "compilerOptions": {
-        "lib": [
-            "ESNext"
-        ],
-        "module": "ESNext",
-        "target": "ESNext",
-        "moduleResolution": "bundler",
-        "allowImportingTsExtensions": true,
-        "resolveJsonModule": true,
-        "esModuleInterop": true,
-        "skipLibCheck": true,
-        "outDir": "dist",
-        "types": ["bun-types"]
-    }
+        "node_modules",
+        "dist"
+    ]
 }
