@@ -17,6 +17,7 @@ import { publishAction } from './x/actions/publish.action'
 import { publishPubSub } from './x/actions/publish.pubsub'
 import { quickstartAction } from './x/actions/quickstart.action'
 import { listAgentsAction } from './x/actions/list-agents.action'
+import { executeApiAction } from './x/actions/api.action'
 
 dotenv.config()
 
@@ -143,5 +144,41 @@ program
   .option('-t, --team <team-id>', 'the Team ID to publish to')
   .option('--api-url <url>', 'the API url to use')
   .action(publishPubSub)
+
+program
+  .command('api <resource> <method> [args...]')
+  .description('Execute Flatfile API commands (e.g., workbooks create, spaces list)')
+  .option('-k, --apiKey <key>', 'the API Key to use (or set env FLATFILE_API_KEY)')
+  .option('-u, --apiUrl <url>', 'the API URL to use (or set env FLATFILE_API_URL)')
+  .option('--json <json>', 'JSON string of parameters to pass to the API call')
+  .allowUnknownOption(true) // Allow passing additional options as parameters
+  .action((resource, method, args, options) => {
+    let params = { ...options }
+
+    // Parse JSON parameters if provided
+    if (options.json) {
+      try {
+        const jsonParams = JSON.parse(options.json)
+        params = { ...params, ...jsonParams }
+      } catch (error) {
+        console.error('Failed to parse JSON parameters:', error)
+        process.exit(1)
+      }
+    }
+
+    // Convert any remaining unknown options into parameters
+    const rawArgs = options.args || []
+    for (let i = 0; i < rawArgs.length; i += 2) {
+      if (rawArgs[i].startsWith('--')) {
+        const key = rawArgs[i].slice(2)
+        const value = rawArgs[i + 1]
+        if (value && !value.startsWith('--')) {
+          params[key] = value
+        }
+      }
+    }
+
+    return executeApiAction(resource, method, params, ...args)
+  })
 
 program.parse()

@@ -7,7 +7,11 @@
   "scripts": {
     "develop": "flatfile develop index.ts",
     "deploy": "flatfile deploy index.ts",
-    "paginate": "flatfile develop paginate-records.ts"
+    "paginate": "flatfile develop paginate-records.ts",
+    "flatfile": "flatfile",
+    "logs": "aws logs tail /aws/lambda/agent_us_ag_1oz3Oy4N --follow --region us-west-2",
+    "spaces:list": "flatfile api spaces list",
+    "workbooks:get": "flatfile api workbooks get 'us_wb_ewnlxUPw'"
   },
   "keywords": [],
   "author": "",
