@@ -32,6 +32,8 @@ export async function listAgentsAction(
       environmentId: environment?.id!,
     })
 
+    console.log("Data", data)
+
     if (!data || data.length === 0) {
       validatingSpinner.fail('No agents found')
       process.exit(1)
