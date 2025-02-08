@@ -17,7 +17,7 @@ import { publishAction } from './x/actions/publish.action'
 import { publishPubSub } from './x/actions/publish.pubsub'
 import { quickstartAction } from './x/actions/quickstart.action'
 import { listAgentsAction } from './x/actions/list-agents.action'
-import { downloadAction } from './x/actions/download.action'
+import { updateAction } from './x/actions/update.action'
 
 dotenv.config()
 
@@ -150,6 +150,6 @@ program
   .description('download a file')
   .option('-t, --team <team-id>', 'the Team ID to download from')
   .option('--api-url <url>', 'the API url to use')
-  .action(downloadAction)
+  .action(updateAction)
 
 program.parse()

@@ -4,10 +4,10 @@ import tar from 'tar';
 import ora from 'ora';
 import { Command } from 'commander';
 
-export const downloadAction = (program: Command) => {
+export const updateAction = (program: Command) => {
   program
-    .command('download')
-    .description('Download an agent code from Flatfile API')
+    .command('upadte')
+    .description('Update an agent code from Flatfile API')
     .option('-s, --slug <slug>', 'the slug of the agent to download')
     .option('-k, --token <token>', 'the authentication token')
     .option('-h, --api-url <url>', '(optional) the API URL')
