@@ -1,7 +1,7 @@
+import type { Flatfile } from '@flatfile/api'
 import { AuthenticatedClient } from './authenticated.client'
 import { EventCallback, FlatfileEvent } from './flatfile.event'
 import { glob, objectMatches } from './glob.match'
-import type { Flatfile } from '@flatfile/api'
 
 /**
  * EventHandler is a Flatfile flavored implementation of EventTarget
@@ -166,7 +166,11 @@ export class EventHandler extends AuthenticatedClient {
   ): Promise<void> {
     const listeners = this.getListeners(event, recursive)
     for (const cb of listeners) {
-      await cb.callback(event)
+      try {
+        await cb.callback(event)
+      } catch (error) {
+        console.error('Error in event listener:', error)
+      }
     }
   }
 
