@@ -146,10 +146,20 @@ program
   .action(publishPubSub)
 
 program
-  .command('download <file>')
-  .description('download a file')
-  .option('-t, --team <team-id>', 'the Team ID to download from')
-  .option('--api-url <url>', 'the API url to use')
+  .command('update <slug>')
+  .description('Update an agent code from Flatfile API')
+  .option(
+    '-k, --token <string>',
+    'the authentication token to use (or set env FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN)'
+  )
+  .option(
+    '-h, --api-url <url>',
+    '(optional) the API URL to use (or set env FLATFILE_API_URL)'
+  )
+  .option(
+    '-e, --env <env-id>',
+    '(optional) the Environment to use (or set env FLATFILE_ENVIRONMENT_ID)'
+  )
   .action(updateAction)
 
 program.parse()
