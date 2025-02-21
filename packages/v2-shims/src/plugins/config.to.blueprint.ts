@@ -26,6 +26,8 @@ export const configToBlueprint = (schema: ISettings): BlueprintOutput => {
       if (field.type === 'select') {
         out.type = PlatformTypes.Enum
         out.config = { options: field.options }
+      } else if (field.type === 'number') {
+        out.type = PlatformTypes.Num; 
       }
     }
     if (field.validators) {
