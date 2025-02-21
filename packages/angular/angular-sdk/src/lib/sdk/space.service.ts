@@ -42,6 +42,10 @@ export class SpaceService {
     }
 
     const {
+      name,
+      namespace,
+      languageOverride,
+      translationsPath,
       workbook,
       document,
       themeConfig,
@@ -60,6 +64,10 @@ export class SpaceService {
     }
 
     return initNewSpace({
+      name,
+      namespace,
+      languageOverride,
+      translationsPath,
       publishableKey,
       workbook: createdWorkbook,
       document,
@@ -117,7 +125,7 @@ export class SpaceService {
         apiUrl: spaceProps.apiUrl,
         workbook: spaceProps.workbook || this.spaceResponse.workbooks?.[0],
       }
-
+      console.dir(formattedSpaceProps, { depth: null })
       this._spaceInitialized.set(formattedSpaceProps)
       this._loading.set(false)
       return formattedSpaceProps
