@@ -12,9 +12,12 @@ export default function Home() {
       publishableKey={PUBLISHABLE_KEY}
       config={{
         preload: true,
+        spaceUrl: 'http://localhost:6789'
       }}
+      apiUrl="http://localhost:3000"
+      externalActorId="test-damon-1"
     >
-      <App />
-    </FlatfileProvider>
+      <App id="2" />
+      </FlatfileProvider>
   )
 }

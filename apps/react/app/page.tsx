@@ -14,7 +14,10 @@ export default function Home() {
       config={{
         preload: true,
         displayAsModal: false,
+        spaceUrl: 'http://localhost:6789'
       }}
+      apiUrl="http://localhost:3000"
+      externalActorId="test-damon-2"
     >
       <App id="1" />
     </FlatfileProvider>
