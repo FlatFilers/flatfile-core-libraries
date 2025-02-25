@@ -23,7 +23,6 @@ export const initializeSpace = async (
     workbook,
     sheet,
     onSubmit,
-    externalActorId,
   } = flatfileOptions
   try {
     if (!publishableKey) {
