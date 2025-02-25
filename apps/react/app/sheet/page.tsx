@@ -15,7 +15,7 @@ export default function Home() {
         spaceUrl: 'http://localhost:6789'
       }}
       apiUrl="http://localhost:3000"
-      externalActorId="test-damon-1"
+      externalActorId="test-3"
     >
       <App id="2" />
       </FlatfileProvider>

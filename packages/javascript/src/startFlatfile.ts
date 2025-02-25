@@ -62,6 +62,7 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
     labels,
     translationsPath, // used inside the Space iframe only, not the wrapper
     languageOverride, // used for both the wrapper and the Space iframe
+    externalActorId,
   } = options
   const simpleOnboardingOptions = options as SimpleOnboarding
   const isReusingSpace = !!(space?.id && space?.accessToken)
@@ -141,6 +142,7 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
         translationsPath,
         userInfo,
         workbook: createdWorkbook,
+        externalActorId,
       })
 
       spaceResult = initialResourceResponse.space

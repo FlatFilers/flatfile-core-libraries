@@ -22,6 +22,7 @@ const useInitializeSpace = (flatfileOptions: SimpleOnboarding) => {
         workbook,
         sheet,
         onSubmit,
+        externalActorId,
       } = flatfileOptions
 
       if (!publishableKey) {
@@ -33,6 +34,7 @@ const useInitializeSpace = (flatfileOptions: SimpleOnboarding) => {
         name,
         autoConfigure: false,
         ...spaceBody,
+        ...(externalActorId && { externalActorId }),
       }
 
       createdWorkbook.value = workbook
