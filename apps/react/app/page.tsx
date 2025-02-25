@@ -5,6 +5,8 @@ import App from './App'
 
 export default function Home() {
   const PUBLISHABLE_KEY = process.env.NEXT_PUBLIC_FLATFILE_PUBLISHABLE_KEY
+  const spaceUrl = process.env.NEXT_PUBLIC_FLATFILE_SPACE_URL || 'https://platform.flatfile.com/s'
+  const apiUrl = process.env.NEXT_PUBLIC_FLATFILE_API_URL || 'https://platform.flatfile.com/api'
   if (!PUBLISHABLE_KEY) {
     return <>No Publishable Key Available</>
   }
@@ -13,9 +15,9 @@ export default function Home() {
       publishableKey={PUBLISHABLE_KEY}
       config={{
         preload: true,
-        spaceUrl: 'http://localhost:6789'
+        spaceUrl,
       }}
-      apiUrl="http://localhost:3000"
+      apiUrl={apiUrl}
       externalActorId="test-1"
     >
       <App id="1" />
