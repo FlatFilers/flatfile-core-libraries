@@ -125,7 +125,6 @@ export class SpaceService {
         apiUrl: spaceProps.apiUrl,
         workbook: spaceProps.workbook || this.spaceResponse.workbooks?.[0],
       }
-      console.dir(formattedSpaceProps, { depth: null })
       this._spaceInitialized.set(formattedSpaceProps)
       this._loading.set(false)
       return formattedSpaceProps

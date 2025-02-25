@@ -1,6 +1,6 @@
 {
   "name": "@flatfile/angular-sdk",
-  "version": "1.5.1",
+  "version": "1.5.3",
   "homepage": "https://flatfile.com/",
   "description": "Flatfile SDK for Angular",
   "license": "MIT",
