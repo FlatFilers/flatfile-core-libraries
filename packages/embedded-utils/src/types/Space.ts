@@ -231,6 +231,7 @@ interface BaseSpace {
   labels?: string[]
   translationsPath?: string
   languageOverride?: string
+  externalActorId?: string
 }
 
 export interface IUserInfo {

@@ -10,6 +10,7 @@ export interface BaseSpace {
   environmentId?: string
   apiUrl?: string
   config?: IFrameTypes
+  externalActorId?: string
 }
 
 export interface CreateSpaceWithPublishableKey extends BaseSpace {
