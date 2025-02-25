@@ -13,11 +13,10 @@ export default function Home() {
       publishableKey={PUBLISHABLE_KEY}
       config={{
         preload: true,
-        displayAsModal: false,
         spaceUrl: 'http://localhost:6789'
       }}
       apiUrl="http://localhost:3000"
-      externalActorId="test-damon-2"
+      externalActorId="test-1"
     >
       <App id="1" />
     </FlatfileProvider>

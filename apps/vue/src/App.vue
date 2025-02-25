@@ -15,6 +15,7 @@ export default defineComponent({
       publishableKey,
       workbook,
       listener,
+      externalActorId: 'test-1',
       document: {
         title: 'Instructions',
         body:
