@@ -17,7 +17,7 @@ import { publishAction } from './x/actions/publish.action'
 import { publishPubSub } from './x/actions/publish.pubsub'
 import { quickstartAction } from './x/actions/quickstart.action'
 import { listAgentsAction } from './x/actions/list-agents.action'
-import { updateAction } from './x/actions/update.action'
+import { updateAction } from './x/actions/download.action'
 
 dotenv.config()
 
@@ -146,8 +146,8 @@ program
   .action(publishPubSub)
 
 program
-  .command('update <slug>')
-  .description('Update an agent code from Flatfile API')
+  .command('download <slug>')
+  .description('Download the code for a deployed agent')
   .option(
     '-k, --token <string>',
     'the authentication token to use (or set env FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN)'
