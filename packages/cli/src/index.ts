@@ -161,7 +161,7 @@ program
     '(optional) the Environment to use (or set env FLATFILE_ENVIRONMENT_ID)'
   )
   .option(
-    '-e, --exportType <exportType>',
+    '-x, --exportType <exportType>',
     '(optional) the type of export to use (SOURCE or AUTOBUILD_INLINED)'
   )
   .action(downloadAction)
