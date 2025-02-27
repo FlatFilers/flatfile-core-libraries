@@ -6,6 +6,7 @@ export const createSpaceInternal = async ({
   space,
   workbook,
   document,
+  externalActorId,
 }: CREATE_SPACE_INTERNAL) => {
   const createSpaceEndpoint = `${apiUrl}/v1/internal/spaces/init?publishableKey=${publishableKey}`
   let spaceRequestBody: any = {
@@ -23,6 +24,13 @@ export const createSpaceInternal = async ({
     spaceRequestBody = {
       ...spaceRequestBody,
       document,
+    }
+  }
+
+  if (externalActorId) {
+    spaceRequestBody = {
+      ...spaceRequestBody,
+      externalActorId,
     }
   }
 

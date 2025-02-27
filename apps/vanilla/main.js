@@ -128,6 +128,7 @@ const BASE_OPTIONS = {
   },
   listener,
   namespace: 'my-namespace',
+  externalActorId: 'test-1',
 }
 // ---Create a new Space + Workbook and load an iFrame
 window.initializeFlatfile = async (publishableKey) => {
