@@ -8,7 +8,7 @@ import { program } from 'commander'
 import { messages } from '../../shared/messages'
 import { execSync } from 'child_process';
 
-export async function updateAction(
+export async function downloadAction(
   slug: string,
   options?: Partial<{
     apiUrl: string
