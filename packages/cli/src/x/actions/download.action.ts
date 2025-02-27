@@ -25,34 +25,34 @@ export async function downloadAction(
   }
   const { apiKey, apiUrl, environment } = authRes
 
-  // Create and authenticated API client
   const apiClient = apiKeyClient({ apiUrl, apiKey: apiKey! })
-  const spinner = ora('Fetching agents...').start();
+  const spinner = ora('Fetching agents...').start()
   
   try {
     spinner.text = 'Searching for agent...';
     const { data: agents } = await apiClient.agents.list({
       environmentId: environment?.id!,
-    });
+    })
 
     if (!agents || agents.length === 0) {
-      spinner.fail(`No agents found in this environment`);
-      return;
+      spinner.fail(`No agents found in this environment`)
+      return
     }
 
-    const matchingAgents = agents.filter(agent => agent.slug === slug);
+    const matchingAgents = agents.filter(agent => agent.slug === slug)
     
     if (matchingAgents.length === 0) {
-      spinner.fail(`No agent found with slug: ${slug}`);
+      spinner.fail(`No agent found with slug: ${slug}`)
       return;
     }
 
     const agent = matchingAgents[0];
-    spinner.succeed(`Found agent: ${agent.slug}`);
+    spinner.succeed(`Found agent: ${agent.slug}`)
+
+    // @ts-ignore
+    const exportType = options?.exportType || (agent.isSystem ? 'AUTOBUILD_INLINED' : 'SOURCE');
     
-    const exportType = options?.exportType || 'SOURCE';
-    
-    spinner.text = 'Creating agent export job...';
+    spinner.text = 'Creating agent export job...'
     
     const jobResponse = await axios({
       method: 'POST',
@@ -73,24 +73,23 @@ export async function downloadAction(
         trigger: 'immediate',
         status: 'executing'
       }
-    });
+    })
     
     const jobId = jobResponse.data.data.id;
-    spinner.succeed(`Export job created with ID: ${jobId}`);
+    spinner.succeed(`Create agent export job created: ${jobId}`)
     
-    spinner.text = 'Waiting for export job to complete...';
+    spinner.text = 'Waiting for export job to complete...'
     
-    let jobCompleted = false;
-    let downloadUrl = '';
-    let attempts = 0;
-    const maxAttempts = 30;
+    let jobCompleted = false
+    let downloadUrl = ''
+    let attempts = 0
+    const maxAttempts = 30
     
     while (!jobCompleted && attempts < maxAttempts) {
-      attempts++;
+      attempts++
       
       try {
-        spinner.text = `Checking job status... (attempt ${attempts}/${maxAttempts})`;
-        
+        spinner.text = `Checking job status... (attempt ${attempts}/${maxAttempts})`
         const jobStatusResponse = await axios({
           method: 'GET',
           url: `${apiUrl}/v1/jobs/${jobId}`,
@@ -98,94 +97,80 @@ export async function downloadAction(
             'Authorization': `Bearer ${apiKey}`,
             'Content-Type': 'application/json'
           }
-        });
+        })
         
         const job = jobStatusResponse.data.data;        
         if (job.status === 'complete') {
           jobCompleted = true;
-          spinner.succeed(`Job completed with status: ${job.status}`);
-          
           if (job.outcome?.next?.type === 'download' && job.outcome.next.url) {
-            downloadUrl = job.outcome.next.url;
-            console.log('downloadUrl', downloadUrl);
-            spinner.succeed('Export job completed successfully with download URL');
-          } else {
-            spinner.fail('Job completed but no download URL was provided');
-            console.log('Job outcome:', JSON.stringify(job.outcome, null, 2));
-            return;
+            downloadUrl = job.outcome.next.url
+            spinner.succeed('Export job completed successfully')
           }
         } else if (job.status === 'failed') {
-          spinner.fail(`Export job failed: ${job.info || 'Unknown error'}`);
-          console.log('Job details:', JSON.stringify(job, null, 2));
+          spinner.fail(`Export job failed: ${job.info || 'Unknown error'}`)
           return;
         } else if (job.status === 'executing' || job.status === 'queued' || job.status === 'ready') {
-          spinner.text = `Job in progress with status: ${job.status} (attempt ${attempts}/${maxAttempts})`;
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          spinner.text = `Job in progress with status: ${job.status} (attempt ${attempts}/${maxAttempts})`
+          await new Promise(resolve => setTimeout(resolve, 2000))
         } else {
-          spinner.text = `Job has status: ${job.status} (attempt ${attempts}/${maxAttempts})`;
-          console.log(`Job with unexpected status: ${job.status}`, JSON.stringify(job, null, 2));
-          await new Promise(resolve => setTimeout(resolve, 2000));
+          spinner.text = `Job has status: ${job.status} (attempt ${attempts}/${maxAttempts})`
+          await new Promise(resolve => setTimeout(resolve, 2000))
         }
       } catch (error: any) {
-        console.error('Error checking job status:', error);
+        console.error('Error checking job status:', error)
         
         if (error.response) {
-          console.log('Error response status:', error.response.status);
-          console.log('Error response data:', JSON.stringify(error.response.data, null, 2));
+          console.log('Error response status:', error.response.status)
+          console.log('Error response data:', JSON.stringify(error.response.data, null, 2))
         }
         
-        spinner.text = `Error checking job status, retrying... (attempt ${attempts}/${maxAttempts})`;
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        spinner.text = `Error checking job status, retrying... (attempt ${attempts}/${maxAttempts})`
+        await new Promise(resolve => setTimeout(resolve, 2000))
       }
     }
     
     if (!jobCompleted) {
-      spinner.fail(`Export job timed out after ${maxAttempts} attempts`);
-      console.log('The job may still be processing. You can try again later or check the job status in the Flatfile dashboard.');
-      return;
+      spinner.fail(`Export job timed out after ${maxAttempts} attempts`)
+      console.log('The job may still be processing. You can try again later or check the job status in the Flatfile dashboard.')
+      return
     }
     
     spinner.text = 'Downloading agent export...';
     const downloadResponse = await axios.get(`${apiUrl}${downloadUrl}`, { 
-      responseType: 'arraybuffer',  // Use arraybuffer instead of blob for Node.js
+      responseType: 'arraybuffer',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
       }
     });
     
-    const tempDir = path.join(process.cwd(), '.flatfile');
-    await fs.ensureDir(tempDir);
-    const tempFilePath = path.join(tempDir, `${slug}-${exportType.toLowerCase()}.tgz`);
+    const tempDir = path.join(process.cwd(), '.flatfile')
+    await fs.ensureDir(tempDir)
+    const tempFilePath = path.join(tempDir, `${slug}-${exportType.toLowerCase()}.tgz`)
     
-    await fs.writeFile(tempFilePath, Buffer.from(downloadResponse.data));
-    
-    const stats = await fs.stat(tempFilePath);
-    console.log(`File written successfully. Size: ${stats.size} bytes`);
-    
-    spinner.succeed(`Downloaded agent export to ${tempFilePath}`);
-    
-    spinner.text = 'Extracting agent export...';
-    
-    const targetDir = path.join(process.cwd(), slug);
-    await fs.ensureDir(targetDir);
-    await fs.emptyDir(targetDir);
+    await fs.writeFile(tempFilePath, Buffer.from(downloadResponse.data))
+    spinner.succeed('Downloaded agent export')
         
     try {
-      execSync(`tar -xzf "${tempFilePath}" -C "${targetDir}"`, { stdio: 'inherit' });
-      await fs.remove(tempFilePath);
+      const beforeExtraction = await fs.readdir(process.cwd())
+      execSync(`tar -xzf "${tempFilePath}"`, { stdio: 'inherit' })
+      const afterExtraction = await fs.readdir(process.cwd())
+      const newDirs = afterExtraction.filter(item => {
+        return !beforeExtraction.includes(item) && 
+               fs.statSync(path.join(process.cwd(), item)).isDirectory();
+      })
+      const extractedDir = newDirs.length > 0 ? newDirs[0] : slug
+      await fs.remove(tempFilePath)
       
-      spinner.succeed(`Successfully extracted agent to ${targetDir}`);
-      console.log(`\nAgent ${slug} has been downloaded and extracted to ${targetDir}`);
+      spinner.succeed(`Successfully extracted agent to ./${extractedDir}`)
     } catch (extractError) {
-      const debugFilePath = path.join(process.cwd(), `${slug}-debug.tgz`);
-      await fs.copyFile(tempFilePath, debugFilePath);
-      throw extractError;
+      const debugFilePath = path.join(process.cwd(), `${slug}-debug.tgz`)
+      await fs.copyFile(tempFilePath, debugFilePath)
+      throw extractError
     }
   } catch (error: any) {
-    spinner.fail('An error occurred during the agent export process.');
+    spinner.fail('An error occurred during the agent export process.')
     if (error.response) {
-      console.log('Error response status:', error.response.status);
-      console.log('Error response data:', JSON.stringify(error.response.data, null, 2));
+      console.log('Error', JSON.stringify(error.response.data, null, 2))
     }
   }
 }; 
