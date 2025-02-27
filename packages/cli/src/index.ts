@@ -17,7 +17,7 @@ import { publishAction } from './x/actions/publish.action'
 import { publishPubSub } from './x/actions/publish.pubsub'
 import { quickstartAction } from './x/actions/quickstart.action'
 import { listAgentsAction } from './x/actions/list-agents.action'
-import { updateAction } from './x/actions/download.action'
+import { downloadAction } from './x/actions/download.action'
 
 dotenv.config()
 
@@ -160,6 +160,6 @@ program
     '-e, --env <env-id>',
     '(optional) the Environment to use (or set env FLATFILE_ENVIRONMENT_ID)'
   )
-  .action(updateAction)
+  .action(downloadAction)
 
 program.parse()
