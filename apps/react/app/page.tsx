@@ -16,9 +16,9 @@ export default function Home() {
       config={{
         preload: true,
         spaceUrl,
+        externalActorId: 'test-2',
       }}
       apiUrl={apiUrl}
-      externalActorId="test-1"
     >
       <App id="1" />
     </FlatfileProvider>

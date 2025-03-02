@@ -44,7 +44,6 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   environmentId,
   apiUrl = 'https://platform.flatfile.com/api',
   config,
-  externalActorId,
 }) => {
   const onClose = useRef<undefined | (() => void)>()
   useAttachStyleSheet(config?.styleSheetOptions)
@@ -102,7 +101,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       space: { ...createSpace.space, autoConfigure },
       workbook: createSpace.workbook,
       document: createSpace.document,
-      externalActorId,
+      ...(config?.externalActorId ? { externalActorId: config.externalActorId } : {}),
     }
     debugLogger('Created space:', { createSpaceConfig })
     const { data: createdSpace } = await createSpaceInternal(createSpaceConfig)
