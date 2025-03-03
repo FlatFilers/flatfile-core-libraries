@@ -1,5 +1,13 @@
 # @flatfile/react
 
+## 7.13.5
+
+### Patch Changes
+
+- dfe1b5f: Adds externalActorId to the React and Javascript packages to enable repeat guests for portal users
+- Updated dependencies [dfe1b5f]
+  - @flatfile/embedded-utils@1.3.6
+
 ## 7.13.4
 
 ### Patch Changes

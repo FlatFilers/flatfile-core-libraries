@@ -1,5 +1,11 @@
 # embedded-utils
 
+## 1.3.6
+
+### Patch Changes
+
+- dfe1b5f: Adds `externalActorId` to the React and Javascript packages to enable repeat guests for portal users
+
 ## 1.3.5
 
 ### Patch Changes

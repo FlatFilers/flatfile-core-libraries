@@ -1,5 +1,11 @@
 # flatfile
 
+## 3.8.1
+
+### Patch Changes
+
+- 8c81c99: Update rollup version
+
 ## 3.8.0
 
 ### Minor Changes
