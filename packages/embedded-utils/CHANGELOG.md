@@ -4,7 +4,7 @@
 
 ### Patch Changes
 
-- dfe1b5f: Adds externalActorId to the React and Javascript packages to enable repeat guests for portal users
+- dfe1b5f: Adds `externalActorId` to the React and Javascript packages to enable repeat guests for portal users
 
 ## 1.3.5
 
