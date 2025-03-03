@@ -49,6 +49,5 @@
   },
   "overrides": {
     "semver": "^7.5.3"
-  },
-  "packageManager": "npm@9.6.6"
+  }
 }
