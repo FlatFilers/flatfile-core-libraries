@@ -17,5 +17,6 @@ export type IFrameTypes = Partial<
     resetOnClose?: boolean
     styleSheetOptions?: StyleSheetOptions
     debug?: boolean
+    externalActorId?: string
   }
 >
