@@ -161,6 +161,34 @@ export async function deployAction(
     return program.error(messages.noPackageJSON)
   }
 
+  // Check for TypeScript configuration
+  const tsconfigPath = path.join(process.cwd(), 'tsconfig.json')
+  if (fs.existsSync(tsconfigPath)) {
+    try {
+      const tsconfig = JSON.parse(fs.readFileSync(tsconfigPath, 'utf8'))
+      const compilerOptions = tsconfig.compilerOptions || {}
+
+      if (!compilerOptions.sourceMap || !compilerOptions.inlineSources) {
+        const { updateTsConfig } = await prompts({
+          type: 'confirm',
+          name: 'updateTsConfig',
+          message:
+            "It looks like you're using TypeScript for your agent. If you would like your TypeScript types to be stored with uploaded agent and available for download with Agent Exports, you must specify the TSConfig options, sourceMap: true, inlineSources: true. Would you like your tsconfig.json to be updated to include those options?",
+        })
+
+        if (updateTsConfig) {
+          compilerOptions.sourceMap = true
+          compilerOptions.inlineSources = true
+          tsconfig.compilerOptions = compilerOptions
+          fs.writeFileSync(tsconfigPath, JSON.stringify(tsconfig, null, 2))
+          console.log(chalk.green('Successfully updated tsconfig.json'))
+        }
+      }
+    } catch (e) {
+      console.warn(chalk.yellow('Warning: Could not parse tsconfig.json'))
+    }
+  }
+
   const liteMode = process.env.FLATFILE_COMPILE_MODE === 'no-minify'
 
   try {
@@ -227,6 +255,7 @@ export async function deployAction(
         minify: liteMode,
         target: 'es2020',
         sourceMap: true,
+        sourceMapIncludeSources: true,
         sourceMapRegister: false,
         cache: false,
         // TODO: add debug flag to add this and other debug options
