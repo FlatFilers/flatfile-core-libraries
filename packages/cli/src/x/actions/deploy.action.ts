@@ -149,11 +149,14 @@ export async function deployAction(
 
   const slug = options?.slug || process.env.FLATFILE_AGENT_SLUG
 
+  let packageJson
   try {
-    const data = await readPackageJson(path.join(process.cwd(), 'package.json'))
+    packageJson = await readPackageJson(
+      path.join(process.cwd(), 'package.json')
+    )
     if (
-      !data.dependencies?.['@flatfile/listener'] &&
-      !data.devDependencies?.['@flatfile/listener']
+      !packageJson.dependencies?.['@flatfile/listener'] &&
+      !packageJson.devDependencies?.['@flatfile/listener']
     ) {
       return program.error(messages.listenerNotInstalled)
     }
@@ -173,7 +176,7 @@ export async function deployAction(
           type: 'confirm',
           name: 'updateTsConfig',
           message:
-            "It looks like you're using TypeScript for your agent. If you would like your TypeScript types to be stored with uploaded agent and available for download with Agent Exports, you must specify the TSConfig options, sourceMap: true, inlineSources: true. Would you like your tsconfig.json to be updated to include those options?",
+            "It looks like you're using TypeScript for your agent. If you would like your TypeScript types to be stored with uploaded agent and available for download with Agent Exports, you must specify the TSConfig options, sourceMap: true, inlineSources: true.\n\nWould you like your tsconfig.json to be updated to include those options?  (y/n)",
         })
 
         if (updateTsConfig) {
@@ -250,7 +253,7 @@ export async function deployAction(
       const {
         err,
         code,
-        map: sourceMap,
+        map: sourceMapBase,
       } = await ncc(path.join(outDir, '_entry.js'), {
         minify: liteMode,
         target: 'es2020',
@@ -265,6 +268,12 @@ export async function deployAction(
 
       const deployFile = path.join(outDir, 'deploy.js')
       fs.writeFileSync(deployFile, code, 'utf8')
+
+      // Update the sourceMap to include the package to json so that it can be
+      // pulled out during agent extraction
+      const sourceMapJs = JSON.parse(sourceMapBase)
+      sourceMapJs.x_package = JSON.stringify(packageJson)
+      const sourceMap = JSON.stringify(sourceMapJs)
       const mapFile = path.join(outDir, 'deploy.js.map')
       fs.writeFileSync(mapFile, sourceMap, 'utf8')
       const activeTopics: Flatfile.EventTopic[] = await getActiveTopics(
