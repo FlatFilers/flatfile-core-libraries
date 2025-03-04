@@ -1,5 +1,11 @@
 # flatfile
 
+## 3.9.0
+
+### Minor Changes
+
+- 0bb9621: Updates Flatfile CLI to include Typescript types (if available) and package.json in source map when deploying an agent.
+
 ## 3.8.1
 
 ### Patch Changes
