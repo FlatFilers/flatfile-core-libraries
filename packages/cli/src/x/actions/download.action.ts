@@ -14,7 +14,7 @@ export async function downloadAction(
     apiUrl: string
     token: string
     env: string
-    exportType: 'SOURCE' | 'AUTOBUILD_INLINED'
+    exportType: 'AUTOBUILD_INLINED' | null
   }>
 ): Promise<void> {
   let authRes
@@ -49,8 +49,8 @@ export async function downloadAction(
     const agent = matchingAgents[0];
     spinner.succeed(`Found agent: ${agent.slug}`)
 
-    // @ts-ignore
-    const exportType = options?.exportType || (agent.isSystem ? 'AUTOBUILD_INLINED' : 'SOURCE');
+    // Set exportType to SOURCE by default, only use AUTOBUILD_INLINED if explicitly passed
+    const exportType = options?.exportType || 'SOURCE';
     
     spinner.text = 'Creating agent export job...'
     
