@@ -17,6 +17,7 @@ import { publishAction } from './x/actions/publish.action'
 import { publishPubSub } from './x/actions/publish.pubsub'
 import { quickstartAction } from './x/actions/quickstart.action'
 import { listAgentsAction } from './x/actions/list-agents.action'
+import { downloadAction } from './x/actions/download.action'
 
 dotenv.config()
 
@@ -143,5 +144,26 @@ program
   .option('-t, --team <team-id>', 'the Team ID to publish to')
   .option('--api-url <url>', 'the API url to use')
   .action(publishPubSub)
+
+program
+  .command('download <slug>')
+  .description('Download the code for a deployed agent')
+  .option(
+    '-k, --token <string>',
+    'the authentication token to use (or set env FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN)'
+  )
+  .option(
+    '-h, --api-url <url>',
+    '(optional) the API URL to use (or set env FLATFILE_API_URL)'
+  )
+  .option(
+    '-e, --env <env-id>',
+    '(optional) the Environment to use (or set env FLATFILE_ENVIRONMENT_ID)'
+  )
+  .option(
+    '-x, --exportType <exportType>',
+    '(optional) the type of export to use (SOURCE or AUTOBUILD_INLINED)'
+  )
+  .action(downloadAction)
 
 program.parse()
