@@ -1,5 +1,11 @@
 # flatfile
 
+## 3.9.1
+
+### Patch Changes
+
+- d1dafe5: Add download agent command to cli
+
 ## 3.9.0
 
 ### Minor Changes
