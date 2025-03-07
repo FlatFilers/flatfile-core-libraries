@@ -11,19 +11,13 @@ export const CloseButton = ({
     type="button"
     className="flatfile-close-button"
     aria-label="Close"
-    style={{
-      position: 'absolute',
-      margin: '30px',
-      top: '30px',
-      right: '30px',
-    }}
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
-      width="24"
-      height="24"
+      width="20"
+      height="20"
       viewBox="0 0 100 100"
-      style={{ margin: 'auto' }}
+      style={{ margin: 'auto', display: 'block' }}
     >
       <line x1="10" y1="10" x2="90" y2="90" stroke="white" strokeWidth="10" />
       <line x1="10" y1="90" x2="90" y2="10" stroke="white" strokeWidth="10" />
