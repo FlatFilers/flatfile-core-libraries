@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.13.6
+
+### Patch Changes
+
+- 9709f6a: Fix overlap flatfile close button
+
 ## 7.13.5
 
 ### Patch Changes

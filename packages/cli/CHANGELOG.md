@@ -1,5 +1,11 @@
 # flatfile
 
+## 3.9.2
+
+### Patch Changes
+
+- 15cb818: Fix date format listing agents
+
 ## 3.9.1
 
 ### Patch Changes
