@@ -1,5 +1,11 @@
 # @flatfile/javascript
 
+## 1.5.6
+
+### Patch Changes
+
+- d145e67: Update sync-xhr settings for embedded iframe
+
 ## 1.5.5
 
 ### Patch Changes

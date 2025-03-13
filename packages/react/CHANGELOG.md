@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.13.7
+
+### Patch Changes
+
+- d145e67: Update sync-xhr settings for embedded iframe
+
 ## 7.13.6
 
 ### Patch Changes
