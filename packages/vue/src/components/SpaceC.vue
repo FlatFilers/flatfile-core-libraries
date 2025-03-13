@@ -20,7 +20,7 @@
       :data-testid="mountElement"
       :src="spaceUrl"
       :style="getIframeStyles(iframeStyles)"
-      allow="clipboard-read; clipboard-write"
+      allow="clipboard-read; clipboard-write; sync-xhr 'self' '*.flatfile.com'"
       id="flatfile_iframe"
       title="Embedded Portal Content"
     ></iframe>

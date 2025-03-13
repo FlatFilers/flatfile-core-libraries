@@ -196,7 +196,7 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
       {!initError && !unmountIFrame && (
         <>
           <iframe
-            allow="clipboard-read; clipboard-write"
+            allow="clipboard-read; clipboard-write; sync-xhr 'self' '*.flatfile.com'"
             className={mountElement}
             data-testid={mountElement}
             src={spaceUrl}
