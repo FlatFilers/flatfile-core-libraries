@@ -42,7 +42,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/FlatFilers/platform-sdk-mono.git"
+    "url": "git+https://github.com/FlatFilers/flatfile-core-libraries.git"
   },
   "files": [
     "dist/**"
