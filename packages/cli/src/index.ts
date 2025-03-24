@@ -145,24 +145,18 @@ program
   .option('--api-url <url>', 'the API url to use')
   .action(publishPubSub)
 
-program
-  .command('download <slug>')
-  .description('Download the code for a deployed agent')
+  program
+  .command('download')
+  .description('Download an Agent')
+  .option('-s, --slug <slug>', 'the slug of the agent to download')
+  .option('-ag, --agentId <id>', 'the id of the agent to download')
   .option(
-    '-k, --token <string>',
+    '-k, --token <token>',
     'the authentication token to use (or set env FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN)'
   )
   .option(
     '-h, --api-url <url>',
     '(optional) the API URL to use (or set env FLATFILE_API_URL)'
-  )
-  .option(
-    '-e, --env <env-id>',
-    '(optional) the Environment to use (or set env FLATFILE_ENVIRONMENT_ID)'
-  )
-  .option(
-    '-x, --exportType <exportType>',
-    '(optional) the type of export to use (SOURCE or AUTOBUILD_INLINED)'
   )
   .action(downloadAction)
 
