@@ -62,8 +62,7 @@ export async function downloadAction(
 
     spinner.succeed(`Found agent: ${agent.slug}`)
 
-    // @ts-ignore
-    const exportType = agent.isSystem ? 'SYSTEM_COMBINED' : 'SOURCE';
+    const exportType = (agent as { isSystem?: boolean }).isSystem ? 'SYSTEM_COMBINED' : 'SOURCE';
         
     spinner.text = 'Creating agent export job...'
     
