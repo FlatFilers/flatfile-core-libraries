@@ -1,4 +1,4 @@
-import { Component, effect, Input, OnInit } from '@angular/core'
+import { Component, effect, Input, OnInit, OnDestroy, EffectRef } from '@angular/core'
 import { type ISpace } from '@flatfile/embedded-utils'
 import { SpaceFramePropsType } from './space-frame/spaceFrame.component'
 import { SpaceService } from './space.service'
@@ -8,7 +8,7 @@ import { SpaceService } from './space.service'
   templateUrl: './space.component.html',
   styleUrls: ['./space.component.scss'],
 })
-export class Space implements OnInit {
+export class Space implements OnInit, OnDestroy {
   @Input() spaceProps!: ISpace
   @Input() openDirectly = false
   @Input() config?: {
@@ -22,16 +22,24 @@ export class Space implements OnInit {
   error?: { message: string }
   loading = false
   closeInstance = false
+  private effectRef: EffectRef
+  private isDestroyed = false
 
   constructor(private readonly spaceService: SpaceService) {
-    effect(() => {
+    this.effectRef = effect(() => {
+      if (this.isDestroyed) return
+
       this.loading = this.spaceService.loading()
-      this.spaceFrameProps = this.spaceService.spaceInitialized()
-        ? ({
-            ...this.spaceService.spaceInitialized(),
-            handleCloseInstance: this.handleCloseInstance.bind(this),
-          } as SpaceFramePropsType)
-        : undefined
+      const spaceInitialized = this.spaceService.spaceInitialized()
+      
+      if (spaceInitialized) {
+        this.spaceFrameProps = {
+          ...spaceInitialized,
+          handleCloseInstance: this.handleCloseInstance.bind(this),
+        } as SpaceFramePropsType
+      } else {
+        this.spaceFrameProps = undefined
+      }
     })
   }
 
@@ -48,5 +56,11 @@ export class Space implements OnInit {
   handleCloseInstance(): void {
     this.closeInstance = true
     this.spaceFrameProps = undefined
+    this.spaceService.closeEmbed()
+  }
+
+  ngOnDestroy(): void {
+    this.effectRef.destroy()
+    this.spaceService.closeEmbed()
   }
 }
