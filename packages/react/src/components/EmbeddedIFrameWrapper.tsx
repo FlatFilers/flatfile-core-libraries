@@ -18,7 +18,7 @@ export const EmbeddedIFrameWrapper = (
     handleCloseInstance: () => void
   }
 ): JSX.Element => {
-  const { open, sessionSpace, ready, iframe } = useContext(FlatfileContext)
+  const { open, sessionSpace, ready, iframe, onClose } = useContext(FlatfileContext)
 
   const [showExitWarnModal, setShowExitWarnModal] = useState(false)
   const {
@@ -99,6 +99,7 @@ export const EmbeddedIFrameWrapper = (
             setShowExitWarnModal(false)
             if (closeSpace && typeof closeSpace.onClose === 'function') {
               closeSpace.onClose({})
+              onClose.current?.()
             }
           }}
           onCancel={() => setShowExitWarnModal(false)}
