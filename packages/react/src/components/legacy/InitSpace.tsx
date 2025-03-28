@@ -201,7 +201,6 @@ export const InitSpace = (props: IReactInitSpaceProps): JSX.Element => {
             data-testid={mountElement}
             src={spaceUrl}
             style={getIframeStyles(iframeStyles!)}
-            title="Embedded Portal Content"
           />
           <button
             onClick={() => setShowExitWarnModal(true)}

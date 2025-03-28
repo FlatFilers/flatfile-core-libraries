@@ -22,7 +22,6 @@
       :style="getIframeStyles(iframeStyles)"
       allow="clipboard-read; clipboard-write; sync-xhr 'self' '*.flatfile.com'"
       id="flatfile_iframe"
-      title="Embedded Portal Content"
     ></iframe>
     <div
       @click="showExitWarnModal = true"

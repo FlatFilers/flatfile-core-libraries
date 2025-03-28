@@ -114,7 +114,6 @@ export const EmbeddedIFrameWrapper = (
         data-testid={mountElement}
         ref={iframe}
         src={iframeSrc}
-        title="Embedded Portal Content"
         style={{
           ...getIframeStyles(iframeStyles!),
           ...(preload ? openVisible(open) : { opacity: 1 }),
