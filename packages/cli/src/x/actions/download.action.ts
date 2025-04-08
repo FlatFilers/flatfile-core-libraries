@@ -9,14 +9,16 @@ import { messages } from '../../shared/messages'
 import { execSync } from 'child_process';
 
 export async function downloadAction(
-  slug: string,
   options?: Partial<{
+    slug: string
+    agentId: string
     apiUrl: string
     token: string
     env: string
-    exportType: 'AUTOBUILD_INLINED' | null
   }>
 ): Promise<void> {
+  const { slug, agentId } = options ?? {}
+
   let authRes
   try {
     authRes = await getAuth(options)
@@ -24,6 +26,11 @@ export async function downloadAction(
     return program.error(messages.error(e))
   }
   const { apiKey, apiUrl, environment } = authRes
+
+  if (!slug && !agentId) {
+    ora({ text: 'No slug or agentId provided' }).fail()
+    process.exit(1)
+  }
 
   const apiClient = apiKeyClient({ apiUrl, apiKey: apiKey! })
   const spinner = ora('Fetching agents...').start()
@@ -39,19 +46,23 @@ export async function downloadAction(
       return
     }
 
-    const matchingAgents = agents.filter(agent => agent.slug === slug)
+    const agent = agents.find((agent) => {
+      if (slug) {
+        return agent.slug === slug
+      } else if (agentId) {
+        return agent.id === agentId
+      }
+    })
     
-    if (matchingAgents.length === 0) {
-      spinner.fail(`No agent found with slug: ${slug}`)
+    if (!agent) {
+      spinner.fail(`No agent found with ${slug ? `slug: ${slug}` : `id: ${agentId}`}`)
       return;
     }
 
-    const agent = matchingAgents[0];
     spinner.succeed(`Found agent: ${agent.slug}`)
 
-    // Set exportType to SOURCE by default, only use AUTOBUILD_INLINED if explicitly passed
-    const exportType = options?.exportType || 'SOURCE';
-    
+    const exportType = (agent as any)?.config?.autobuildId ? 'SYSTEM_COMBINED' : 'SOURCE';
+
     spinner.text = 'Creating agent export job...'
     
     const jobResponse = await axios({
