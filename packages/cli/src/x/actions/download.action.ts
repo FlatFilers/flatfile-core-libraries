@@ -15,7 +15,6 @@ export async function downloadAction(
     apiUrl: string
     token: string
     env: string
-    exportType: 'SYSTEM_COMBINED' | null
   }>
 ): Promise<void> {
   const { slug, agentId } = options ?? {}
@@ -63,7 +62,7 @@ export async function downloadAction(
     spinner.succeed(`Found agent: ${agent.slug}`)
 
     const exportType = (agent as any)?.config?.autobuildId ? 'SYSTEM_COMBINED' : 'SOURCE';
-        
+
     spinner.text = 'Creating agent export job...'
     
     const jobResponse = await axios({
