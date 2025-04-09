@@ -1,5 +1,15 @@
 # flatfile
 
+## 3.10.0
+
+### Minor Changes
+
+- 15b551a: Added --ci Flag to Avoid Input Prompting
+
+### Patch Changes
+
+- 1d76dd9: Add system combined type to downloading agents
+
 ## 3.9.2
 
 ### Patch Changes
