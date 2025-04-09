@@ -23,6 +23,7 @@ type ListenerTopics = Flatfile.EventTopic | '**'
 async function handleAgentSelection(
   data: Flatfile.Agent[] | undefined,
   slug: string | undefined,
+  ci: boolean,
   validatingSpinner: ora.Ora
 ) {
   // Directly return if there's no data or if a slug is already provided
@@ -31,6 +32,17 @@ async function handleAgentSelection(
   }
 
   if (data.length > 1) {
+    if (ci) {
+      // At this point, the user as not provided a slug and there are multiple
+      // agents in the environment so we need to fail
+      console.log(
+        `${chalk.red(
+          'Error:'
+        )} You must provide a slug when deploying in CI and your environment contains more than one existing agent.`
+      )
+      process.exit(1)
+    }
+
     // Inform the user about multiple agents in the environment
     validatingSpinner.fail(
       `${chalk.yellow(
@@ -126,6 +138,7 @@ export async function deployAction(
     topics: string
     apiUrl: string
     token: string
+    ci: boolean
   }>
 ): Promise<void> {
   const outDir = path.join(process.cwd(), '.flatfile')
@@ -166,7 +179,7 @@ export async function deployAction(
 
   // Check for TypeScript configuration
   const tsconfigPath = path.join(process.cwd(), 'tsconfig.json')
-  if (fs.existsSync(tsconfigPath)) {
+  if (!options?.ci && fs.existsSync(tsconfigPath)) {
     try {
       const tsconfig = JSON.parse(fs.readFileSync(tsconfigPath, 'utf8'))
       const compilerOptions = tsconfig.compilerOptions || {}
@@ -242,6 +255,7 @@ export async function deployAction(
     const selectedAgent = await handleAgentSelection(
       data,
       slug,
+      options?.ci ?? false,
       validatingSpinner
     )
 
