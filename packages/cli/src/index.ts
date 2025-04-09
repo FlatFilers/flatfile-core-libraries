@@ -61,6 +61,7 @@ program
     '-h, --api-url <url>',
     '(optional) the API URL to use (or set env FLATFILE_API_URL)'
   )
+  .option('--ci', 'deploy in CI mode; Will not prompt for confirmation')
   .action(deployAction)
 
 program
