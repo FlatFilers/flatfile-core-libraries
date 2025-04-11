@@ -23,6 +23,7 @@ type ListenerTopics = Flatfile.EventTopic | '**'
 async function handleAgentSelection(
   data: Flatfile.Agent[] | undefined,
   slug: string | undefined,
+  ci: boolean,
   validatingSpinner: ora.Ora
 ) {
   // Directly return if there's no data or if a slug is already provided
@@ -31,6 +32,17 @@ async function handleAgentSelection(
   }
 
   if (data.length > 1) {
+    if (ci) {
+      // At this point, the user as not provided a slug and there are multiple
+      // agents in the environment so we need to fail
+      console.log(
+        `${chalk.red(
+          'Error:'
+        )} You must provide a slug when deploying in CI and your environment contains more than one existing agent.`
+      )
+      process.exit(1)
+    }
+
     // Inform the user about multiple agents in the environment
     validatingSpinner.fail(
       `${chalk.yellow(
@@ -126,6 +138,7 @@ export async function deployAction(
     topics: string
     apiUrl: string
     token: string
+    ci: boolean
   }>
 ): Promise<void> {
   const outDir = path.join(process.cwd(), '.flatfile')
@@ -149,16 +162,47 @@ export async function deployAction(
 
   const slug = options?.slug || process.env.FLATFILE_AGENT_SLUG
 
+  let packageJson
   try {
-    const data = await readPackageJson(path.join(process.cwd(), 'package.json'))
+    packageJson = await readPackageJson(
+      path.join(process.cwd(), 'package.json')
+    )
     if (
-      !data.dependencies?.['@flatfile/listener'] &&
-      !data.devDependencies?.['@flatfile/listener']
+      !packageJson.dependencies?.['@flatfile/listener'] &&
+      !packageJson.devDependencies?.['@flatfile/listener']
     ) {
       return program.error(messages.listenerNotInstalled)
     }
   } catch (e) {
     return program.error(messages.noPackageJSON)
+  }
+
+  // Check for TypeScript configuration
+  const tsconfigPath = path.join(process.cwd(), 'tsconfig.json')
+  if (!options?.ci && fs.existsSync(tsconfigPath)) {
+    try {
+      const tsconfig = JSON.parse(fs.readFileSync(tsconfigPath, 'utf8'))
+      const compilerOptions = tsconfig.compilerOptions || {}
+
+      if (!compilerOptions.sourceMap || !compilerOptions.inlineSources) {
+        const { updateTsConfig } = await prompts({
+          type: 'confirm',
+          name: 'updateTsConfig',
+          message:
+            "It looks like you're using TypeScript for your agent. If you would like your TypeScript types to be stored with uploaded agent and available for download with Agent Exports, you must specify the TSConfig options, sourceMap: true, inlineSources: true.\n\nWould you like your tsconfig.json to be updated to include those options?  (y/n)",
+        })
+
+        if (updateTsConfig) {
+          compilerOptions.sourceMap = true
+          compilerOptions.inlineSources = true
+          tsconfig.compilerOptions = compilerOptions
+          fs.writeFileSync(tsconfigPath, JSON.stringify(tsconfig, null, 2))
+          console.log(chalk.green('Successfully updated tsconfig.json'))
+        }
+      }
+    } catch (e) {
+      console.warn(chalk.yellow('Warning: Could not parse tsconfig.json'))
+    }
   }
 
   const liteMode = process.env.FLATFILE_COMPILE_MODE === 'no-minify'
@@ -211,6 +255,7 @@ export async function deployAction(
     const selectedAgent = await handleAgentSelection(
       data,
       slug,
+      options?.ci ?? false,
       validatingSpinner
     )
 
@@ -222,11 +267,12 @@ export async function deployAction(
       const {
         err,
         code,
-        map: sourceMap,
+        map: sourceMapBase,
       } = await ncc(path.join(outDir, '_entry.js'), {
         minify: liteMode,
         target: 'es2020',
         sourceMap: true,
+        sourceMapIncludeSources: true,
         sourceMapRegister: false,
         cache: false,
         // TODO: add debug flag to add this and other debug options
@@ -236,6 +282,12 @@ export async function deployAction(
 
       const deployFile = path.join(outDir, 'deploy.js')
       fs.writeFileSync(deployFile, code, 'utf8')
+
+      // Update the sourceMap to include the package to json so that it can be
+      // pulled out during agent extraction
+      const sourceMapJs = JSON.parse(sourceMapBase)
+      sourceMapJs.x_package = JSON.stringify(packageJson)
+      const sourceMap = JSON.stringify(sourceMapJs)
       const mapFile = path.join(outDir, 'deploy.js.map')
       fs.writeFileSync(mapFile, sourceMap, 'utf8')
       const activeTopics: Flatfile.EventTopic[] = await getActiveTopics(

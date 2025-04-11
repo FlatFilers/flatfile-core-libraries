@@ -7,7 +7,7 @@ export const agentTable = (agents: any[], withTopics: boolean) => {
         const agentInfo = [
           a.slug, 
           a.id, 
-          `${new Date(a.updated_at).toLocaleDateString()} ${new Date(a.updated_at).toLocaleTimeString()}`, // human readable or leave as ISO string?
+          `${new Date(a.updatedAt).toLocaleDateString()} ${new Date(a.updatedAt).toLocaleTimeString()}`, // human readable or leave as ISO string?
         ]
         if (withTopics) {
           agentInfo.push(a.topics?.join('\n'))

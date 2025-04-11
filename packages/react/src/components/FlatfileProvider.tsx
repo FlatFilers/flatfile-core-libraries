@@ -101,6 +101,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       space: { ...createSpace.space, autoConfigure },
       workbook: createSpace.workbook,
       document: createSpace.document,
+      ...(config?.externalActorId ? { externalActorId: config.externalActorId } : {}),
     }
     debugLogger('Created space:', { createSpaceConfig })
     const { data: createdSpace } = await createSpaceInternal(createSpaceConfig)

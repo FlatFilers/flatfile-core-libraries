@@ -1,5 +1,39 @@
 # flatfile
 
+## 3.10.0
+
+### Minor Changes
+
+- 15b551a: Added --ci Flag to Avoid Input Prompting
+
+### Patch Changes
+
+- 1d76dd9: Add system combined type to downloading agents
+
+## 3.9.2
+
+### Patch Changes
+
+- 15cb818: Fix date format listing agents
+
+## 3.9.1
+
+### Patch Changes
+
+- d1dafe5: Add download agent command to cli
+
+## 3.9.0
+
+### Minor Changes
+
+- 0bb9621: Updates Flatfile CLI to include Typescript types (if available) and package.json in source map when deploying an agent.
+
+## 3.8.1
+
+### Patch Changes
+
+- 8c81c99: Update rollup version
+
 ## 3.8.0
 
 ### Minor Changes

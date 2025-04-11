@@ -30,6 +30,7 @@ export const initNewSpace = async ({
   workbook,
   document,
   isAutoConfig,
+  externalActorId,
 }: InitSpaceType): Promise<InitialResourceData> => {
   const createSpaceEndpoint = `${apiUrl}/v1/internal/spaces/init?publishableKey=${publishableKey}`
 
@@ -92,6 +93,10 @@ export const initNewSpace = async ({
     if (document.defaultPage) {
       setDefaultPage({ document: document.title })
     }
+  }
+  
+  if (externalActorId) {
+    addResourceToRequestBody(externalActorId, 'externalActorId')
   }
 
   const response = await fetch(createSpaceEndpoint, {

@@ -59,19 +59,19 @@
 }
 .flatfile-close-button {
   position: relative;
-  top: 20px;
-  right: -20px;
-  width: 25px;
-  height: 25px;
-  border-radius: 100%;
+  top: 0px;
+  right: 20px;
+  width: 20px;
+  height: 20px;
+  border-radius: 4px;
   cursor: pointer;
   border: none;
   background: rgb(29, 31, 74);
-  box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.5);
+  box-shadow: none;
   transition: 0.25s ease-in-out;
 
   &:hover {
-    box-shadow: 0px 0px 10px 0px rgba(0, 0, 0, 0.8);
+    background: #3c3c3c;
   }
 }
 .flatfile_button-group {

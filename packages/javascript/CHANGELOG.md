@@ -1,5 +1,19 @@
 # @flatfile/javascript
 
+## 1.5.6
+
+### Patch Changes
+
+- d145e67: Update sync-xhr settings for embedded iframe
+
+## 1.5.5
+
+### Patch Changes
+
+- dfe1b5f: Adds externalActorId to the React and Javascript packages to enable repeat guests for portal users
+- Updated dependencies [dfe1b5f]
+  - @flatfile/embedded-utils@1.3.6
+
 ## 1.5.4
 
 ### Patch Changes

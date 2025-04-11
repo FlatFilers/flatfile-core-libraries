@@ -17,6 +17,7 @@ import { publishAction } from './x/actions/publish.action'
 import { publishPubSub } from './x/actions/publish.pubsub'
 import { quickstartAction } from './x/actions/quickstart.action'
 import { listAgentsAction } from './x/actions/list-agents.action'
+import { downloadAction } from './x/actions/download.action'
 
 dotenv.config()
 
@@ -60,6 +61,7 @@ program
     '-h, --api-url <url>',
     '(optional) the API URL to use (or set env FLATFILE_API_URL)'
   )
+  .option('--ci', 'deploy in CI mode; Will not prompt for confirmation')
   .action(deployAction)
 
 program
@@ -143,5 +145,20 @@ program
   .option('-t, --team <team-id>', 'the Team ID to publish to')
   .option('--api-url <url>', 'the API url to use')
   .action(publishPubSub)
+
+  program
+  .command('download')
+  .description('Download an Agent')
+  .option('-s, --slug <slug>', 'the slug of the agent to download')
+  .option('-ag, --agentId <id>', 'the id of the agent to download')
+  .option(
+    '-k, --token <token>',
+    'the authentication token to use (or set env FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN)'
+  )
+  .option(
+    '-h, --api-url <url>',
+    '(optional) the API URL to use (or set env FLATFILE_API_URL)'
+  )
+  .action(downloadAction)
 
 program.parse()

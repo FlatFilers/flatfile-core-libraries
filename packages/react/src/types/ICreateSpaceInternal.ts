@@ -5,4 +5,5 @@ export type CREATE_SPACE_INTERNAL = {
   space: Flatfile.SpaceConfig
   workbook?: Flatfile.CreateWorkbookConfig
   document?: Flatfile.DocumentConfig
+  externalActorId?: string
 }
