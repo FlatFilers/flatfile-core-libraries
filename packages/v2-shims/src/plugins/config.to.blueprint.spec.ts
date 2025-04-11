@@ -89,6 +89,7 @@ describe('v2ConfigToBlueprint', () => {
             { value: 'option1', label: 'Option 1' },
             { value: 'option2', label: 'Option 2' },
           ],
+          allowCustomOptions: true,
         },
       ],
     }
@@ -100,6 +101,7 @@ describe('v2ConfigToBlueprint', () => {
       { value: 'option1', label: 'Option 1' },
       { value: 'option2', label: 'Option 2' },
     ])
+    expect(result.sheets[0].fields[0].config?.allowCustom).toBe(true)
   })
 
   it('should handle validators and constraints', async () => {
