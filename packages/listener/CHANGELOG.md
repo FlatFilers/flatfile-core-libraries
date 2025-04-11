@@ -1,5 +1,11 @@
 # @flatfile/listener
 
+## 1.1.2
+
+### Patch Changes
+
+- 934736f: Event handlers now more gracefully recover from errors.
+
 ## 1.1.1
 
 ### Patch Changes
