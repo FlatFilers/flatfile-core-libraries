@@ -17,9 +17,6 @@ import stripAnsi from "strip-ansi"
  * @param {boolean} [logData.isStreaming] - Whether this is a streaming response
  */
 export function logHttpRequest(logData) {
-  // Log to Debugger
-  Debugger.logHttpRequest(logData)
-
   // Log to global.httpLogger if it exists
   if (typeof global.httpLogger === "function") {
     const endTime = new Date()
@@ -34,6 +31,9 @@ export function logHttpRequest(logData) {
       responseSize: logData.responseSize || 0,
       isStreaming: logData.isStreaming,
     })
+  } else {
+    // Log to Debugger
+    Debugger.logHttpRequest(logData)
   }
 }
 
