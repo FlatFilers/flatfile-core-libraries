@@ -10,6 +10,7 @@ A lightweight, flexible HTTP request logger for Node.js applications that provid
 - ⚡ Minimal performance impact
 - 🧩 Works with both Node.js HTTP/HTTPS modules and global fetch
 - 🔌 Integrates with Flatfile's debugging tools
+- 📝 Full TypeScript support with type definitions
 
 ## Installation
 
