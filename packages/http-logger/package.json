@@ -1,0 +1,15 @@
+{
+  "name": "@flatfile/http-logger",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@flatfile/utils-debugger": "^0.0.6",
+    "strip-ansi": "^7.1.0"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": ""
+}
