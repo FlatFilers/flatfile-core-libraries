@@ -2,6 +2,10 @@
   "name": "@flatfile/http-logger",
   "version": "1.0.0",
   "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./init": "./init.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -11,5 +15,5 @@
   },
   "author": "",
   "license": "ISC",
-  "description": ""
+  "description": "A lightweight, flexible HTTP request logger for Node.js applications"
 }
