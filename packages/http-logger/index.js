@@ -14,6 +14,7 @@ import stripAnsi from "strip-ansi"
  * @param {number} logData.statusCode - Response status code
  * @param {number} [logData.requestSize] - Size of request in bytes
  * @param {number} [logData.responseSize] - Size of response in bytes
+ * @param {boolean} [logData.isStreaming] - Whether this is a streaming response
  */
 export function logHttpRequest(logData) {
   // Log to Debugger
@@ -31,6 +32,7 @@ export function logHttpRequest(logData) {
       statusCode: logData.statusCode,
       requestSize: logData.requestSize || 0,
       responseSize: logData.responseSize || 0,
+      isStreaming: logData.isStreaming,
     })
   }
 }
@@ -55,6 +57,40 @@ function getSizeFromHeaders(headers) {
   }
 
   return undefined
+}
+
+/**
+ * Checks if the response is likely to be a streaming response
+ * @param {Object} headers - Response headers
+ * @returns {boolean} True if it's likely a streaming response
+ */
+function isLikelyStreaming(headers) {
+  if (!headers) return false
+
+  // Check for streaming indicators in headers
+  const transferEncoding =
+    headers["transfer-encoding"] ||
+    headers["Transfer-Encoding"] ||
+    (typeof headers.get === "function" && headers.get("transfer-encoding"))
+
+  if (transferEncoding && transferEncoding.toLowerCase() === "chunked") {
+    return true
+  }
+
+  // Check for content-type that indicates streaming
+  const contentType =
+    headers["content-type"] ||
+    headers["Content-Type"] ||
+    (typeof headers.get === "function" && headers.get("content-type"))
+
+  if (contentType) {
+    const type = contentType.toLowerCase()
+    return type.includes("stream") ||
+           type.includes("event-stream") ||
+           type.includes("octet-stream")
+  }
+
+  return false
 }
 
 /**
@@ -122,30 +158,47 @@ export function instrumentRequests() {
 
         const request = original.apply(this, [options, callback])
 
-        // If no Content-Length header, track request size manually
+        // If no Content-Length header, track request size manually without breaking streaming
         if (requestSize === undefined) {
           requestSize = 0
           const originalWrite = request.write
           request.write = function (chunk, encoding, callback) {
-            const chunkSize = chunk ? (Buffer.isBuffer(chunk) ? chunk.length : Buffer.byteLength(chunk, encoding)) : 0
-            requestSize += chunkSize
+            if (chunk) {
+              const chunkSize = Buffer.isBuffer(chunk) ? chunk.length : Buffer.byteLength(chunk, encoding || 'utf8')
+              requestSize += chunkSize
+            }
             return originalWrite.apply(this, arguments)
+          }
+
+          // Also track the end method to ensure we catch all data
+          const originalEnd = request.end
+          request.end = function(chunk, encoding, callback) {
+            if (chunk) {
+              const chunkSize = Buffer.isBuffer(chunk) ? chunk.length : Buffer.byteLength(chunk, encoding || 'utf8')
+              requestSize += chunkSize
+            }
+            return originalEnd.apply(this, arguments)
           }
         }
 
         request.on("response", (response) => {
-          // Try to get response size from Content-Length header first
+          // Check if this is likely a streaming response
+          const isStreaming = isLikelyStreaming(response.headers)
+
+          // Try to get response size from Content-Length header
           let responseSize = getSizeFromHeaders(response.headers)
 
-          // If no Content-Length header, track response size manually
-          if (responseSize === undefined) {
+          // For non-streaming responses without Content-Length, track size
+          // but for streaming ones, we'll just mark it as streaming
+          if (responseSize === undefined && !isStreaming) {
             responseSize = 0
             response.on("data", (chunk) => {
               responseSize += chunk.length
             })
           }
 
-          response.on("end", () => {
+          // Log immediately when headers are received for streaming responses
+          if (isStreaming) {
             logHttpRequest({
               error: response.statusCode >= 400,
               method: options.method,
@@ -154,9 +207,25 @@ export function instrumentRequests() {
               headers: response.headers,
               statusCode: response.statusCode,
               requestSize,
-              responseSize,
+              responseSize: responseSize || 0,
+              isStreaming: true,
             })
-          })
+          } else {
+            // For non-streaming, log when response is complete
+            response.on("end", () => {
+              logHttpRequest({
+                error: response.statusCode >= 400,
+                method: options.method,
+                url: options.href || options.proto + "://" + options.host + options.path,
+                startTime,
+                headers: response.headers,
+                statusCode: response.statusCode,
+                requestSize,
+                responseSize,
+                isStreaming: false,
+              })
+            })
+          }
         })
         return request
       }
@@ -203,18 +272,60 @@ export function instrumentRequests() {
     try {
       const response = await originalFetch(input, init)
 
-      // Try to get response size from Content-Length header first
+      // Check if this is likely a streaming response
+      const isStreaming = isLikelyStreaming(response.headers) ||
+                          (response.bodyUsed === false && response.body &&
+                           typeof response.body.getReader === 'function');
+
+      // Try to get response size from Content-Length header
       let responseSize = getSizeFromHeaders(response.headers)
 
-      // If no Content-Length header and response can be cloned, measure it
-      if (responseSize === undefined && response.clone && typeof response.clone === "function") {
+      // For non-streaming responses without Content-Length, try to safely measure size
+      // but ONLY if the response is not streaming and hasn't been used yet
+      if (responseSize === undefined && !isStreaming &&
+          response.bodyUsed === false && response.clone &&
+          typeof response.clone === "function") {
         try {
-          const clonedResponse = response.clone()
-          const buffer = await clonedResponse.arrayBuffer()
-          responseSize = buffer.byteLength
+          // Only attempt to measure size for small responses (< 10MB)
+          const contentType = response.headers.get('content-type') || '';
+          const isBinary = contentType.includes('image/') ||
+                          contentType.includes('audio/') ||
+                          contentType.includes('video/') ||
+                          contentType.includes('application/octet-stream');
+
+          // Skip size measurement for binary content or when we suspect large files
+          if (!isBinary) {
+            const clonedResponse = response.clone();
+
+            // Set a size limit to avoid memory issues (10MB)
+            const MAX_SIZE = 10 * 1024 * 1024;
+            const reader = clonedResponse.body.getReader();
+            let bytesRead = 0;
+            let done = false;
+
+            while (!done && bytesRead < MAX_SIZE) {
+              const { value, done: doneReading } = await reader.read();
+              done = doneReading;
+              if (value) {
+                bytesRead += value.length;
+              }
+
+              // If we hit the limit, stop measuring
+              if (bytesRead >= MAX_SIZE) {
+                break;
+              }
+            }
+
+            responseSize = bytesRead;
+
+            // If we hit the limit, mark this as an approximate size
+            if (bytesRead >= MAX_SIZE) {
+              responseSize = MAX_SIZE; // Indicate we hit the limit
+            }
+          }
         } catch (e) {
           // If reading the response fails, we'll just log zero size
-          responseSize = 0
+          responseSize = 0;
         }
       }
 
@@ -223,10 +334,11 @@ export function instrumentRequests() {
         method,
         url,
         startTime,
-        headers,
+        headers: Object.fromEntries(response.headers.entries()),
         statusCode: response.status,
         requestSize,
-        responseSize,
+        responseSize: responseSize || 0,
+        isStreaming: isStreaming,
       }
 
       logHttpRequest(logDetails)
