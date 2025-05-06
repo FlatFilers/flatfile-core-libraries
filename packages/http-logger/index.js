@@ -148,7 +148,9 @@ export function instrumentRequests() {
     if (!httpModule.__instrumented) {
       httpModule.__instrumented = true
       httpModule.request = function (options, callback) {
-        if ((options.href || options.host)?.includes("pndsn") || (options.href || options.host)?.endsWith("/ack")) {
+        const host = options.host || options.hostname || options.href
+        const protocol = options.protocol || options.proto || options.href?.split(":").shift()
+        if ((host)?.includes("pndsn") || (host)?.endsWith("/ack")) {
           return original(options, callback)
         }
         const startTime = new Date()
@@ -202,7 +204,7 @@ export function instrumentRequests() {
             logHttpRequest({
               error: response.statusCode >= 400,
               method: options.method,
-              url: options.href || options.proto + "://" + options.host + options.path,
+              url: options.href || protocol + "://" + options.host + options.path,
               startTime,
               headers: response.headers,
               statusCode: response.statusCode,
@@ -216,7 +218,7 @@ export function instrumentRequests() {
               logHttpRequest({
                 error: response.statusCode >= 400,
                 method: options.method,
-                url: options.href || options.proto + "://" + options.host + options.path,
+                url: options.href || protocol + "://" + options.host + options.path,
                 startTime,
                 headers: response.headers,
                 statusCode: response.statusCode,
