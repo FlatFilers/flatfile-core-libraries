@@ -149,7 +149,10 @@ export function instrumentRequests() {
       httpModule.__instrumented = true
       httpModule.request = function (options, callback) {
         const host = options.host || options.hostname || options.href
-        const protocol = options.protocol || options.proto || options.href?.split(":").shift()
+        const protocol = options.protocol || options.proto || options.href?.split(":").shift() || 'http'
+        // Remove trailing colon from protocol if it exists
+        const cleanProtocol = protocol.replace(/:$/, '')
+
         if ((host)?.includes("pndsn") || (host)?.endsWith("/ack")) {
           return original(options, callback)
         }
@@ -204,7 +207,7 @@ export function instrumentRequests() {
             logHttpRequest({
               error: response.statusCode >= 400,
               method: options.method,
-              url: options.href || protocol + "://" + options.host + options.path,
+              url: options.href || cleanProtocol + "://" + host + options.path,
               startTime,
               headers: response.headers,
               statusCode: response.statusCode,
@@ -218,7 +221,7 @@ export function instrumentRequests() {
               logHttpRequest({
                 error: response.statusCode >= 400,
                 method: options.method,
-                url: options.href || protocol + "://" + options.host + options.path,
+                url: options.href || cleanProtocol + "://" + host + options.path,
                 startTime,
                 headers: response.headers,
                 statusCode: response.statusCode,
