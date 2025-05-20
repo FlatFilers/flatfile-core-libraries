@@ -101,7 +101,9 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       space: { ...createSpace.space, autoConfigure },
       workbook: createSpace.workbook,
       document: createSpace.document,
-      ...(config?.externalActorId ? { externalActorId: config.externalActorId } : {}),
+      ...(config?.externalActorId
+        ? { externalActorId: config.externalActorId }
+        : {}),
     }
     debugLogger('Created space:', { createSpaceConfig })
     const { data: createdSpace } = await createSpaceInternal(createSpaceConfig)
@@ -266,7 +268,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   }
 
   const resetSpace = ({ reset }: ClosePortalOptions = {}) => {
-    console.log('resetting space', { FLATFILE_PROVIDER_CONFIG, providerValue })
+    debugLogger('resetting space', { FLATFILE_PROVIDER_CONFIG, providerValue })
     setOpen(false)
 
     if (reset ?? FLATFILE_PROVIDER_CONFIG.resetOnClose) {
