@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.13.8
+
+### Patch Changes
+
+- af1d56b: Removes extraneous debug statement
+
 ## 7.13.7
 
 ### Patch Changes
