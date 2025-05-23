@@ -42,6 +42,7 @@ export interface FlatfileContextType {
   listener: FlatfileListener
   setListener: (listener: FlatfileListener) => void
   accessToken?: string
+  setPublishableKey: (publishableKey?: string | null) => void
   setAccessToken: (accessToken?: string | null) => void
   addSheet: (config: any) => void
   removeSheet: (sheetSlug: string) => void
@@ -75,6 +76,7 @@ export const FlatfileContext = createContext<FlatfileContextType>({
   listener: new FlatfileListener(),
   setListener: () => {},
   accessToken: undefined,
+  setPublishableKey: () => {},
   setAccessToken: () => {},
   addSheet: () => {},
   removeSheet: () => {},

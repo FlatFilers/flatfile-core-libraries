@@ -25,7 +25,7 @@ export const useFlatfile: (useFlatfileOptions?: UseFlatfileOptions) => {
     }
   }, [context.onClose.current, useFlatfileOptions.onClose])
 
-  const { open, setOpen, setListener, listener, apiUrl, resetSpace, ready } =
+  const { open, setOpen, setListener, listener, apiUrl, resetSpace, ready, setAccessToken, setPublishableKey } =
     context
 
   const openPortal = useCallback(() => {
@@ -41,6 +41,8 @@ export const useFlatfile: (useFlatfileOptions?: UseFlatfileOptions) => {
   )
 
   return {
+    setAccessToken,
+    setPublishableKey,
     openPortal,
     closePortal,
     open,

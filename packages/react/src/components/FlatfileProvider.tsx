@@ -47,6 +47,9 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
 }) => {
   const onClose = useRef<undefined | (() => void)>()
   useAttachStyleSheet(config?.styleSheetOptions)
+  const [internalPublishableKey, setInternalPublishableKey] = useState<
+    string | undefined | null
+  >(publishableKey)
   const [internalAccessToken, setInternalAccessToken] = useState<
     string | undefined | null
   >(accessToken)
@@ -90,20 +93,17 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   const [ready, setReady] = useState<boolean>(false)
 
   const handleCreateSpace = async () => {
-    if (!publishableKey) {
+    if (!internalPublishableKey) {
       return
     }
     // autoConfigure if no workbook or workbook.sheets are provided as they should be handled in the listener space:configure event
     const autoConfigure = !createSpace.workbook?.sheets
     const createSpaceConfig = {
       apiUrl,
-      publishableKey,
+      publishableKey: internalPublishableKey,
       space: { ...createSpace.space, autoConfigure },
       workbook: createSpace.workbook,
       document: createSpace.document,
-      ...(config?.externalActorId
-        ? { externalActorId: config.externalActorId }
-        : {}),
     }
     debugLogger('Created space:', { createSpaceConfig })
     const { data: createdSpace } = await createSpaceInternal(createSpaceConfig)
@@ -129,7 +129,6 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       const { data: reUsedSpace } = await getSpace({
         space: { id: createSpace.space.id, accessToken: internalAccessToken },
         apiUrl,
-        spaceUrl: config?.spaceUrl,
       })
       debugLogger('Found space:', { reUsedSpace })
 
@@ -361,9 +360,9 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   useEffect(() => {
     if (ready && open) {
       const createOrUpdateSpace = async () => {
-        if (publishableKey && !internalAccessToken) {
+        if (internalPublishableKey && !internalAccessToken) {
           await handleCreateSpace()
-        } else if (internalAccessToken && !publishableKey) {
+        } else if (internalAccessToken && !internalPublishableKey) {
           await handleReUseSpace()
         }
       }
@@ -373,7 +372,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
 
   const providerValue = useMemo(
     (): FlatfileContextType => ({
-      ...(publishableKey ? { publishableKey } : {}),
+      ...(internalPublishableKey ? { publishableKey: internalPublishableKey } : {}),
       ...(internalAccessToken ? { accessToken: internalAccessToken } : {}),
       apiUrl,
       environmentId,
@@ -384,6 +383,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       setSessionSpace,
       setListener,
       listener,
+      setPublishableKey: setInternalPublishableKey,
       setAccessToken: setInternalAccessToken,
       addSheet,
       updateSheet,
@@ -401,7 +401,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       iframe,
     }),
     [
-      publishableKey,
+      internalPublishableKey,
       internalAccessToken,
       apiUrl,
       environmentId,
