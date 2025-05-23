@@ -370,6 +370,40 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     }
   }, [ready, open])
 
+
+    /**
+   * Some customer simultaneously support creating new spaces, and re-using existing spaces.
+   * When using and EXISTING space, the expectation is that the accessToken is set, but the publishableKey is not.
+   * (see the useEffect above for selecting between createSpace and handleReUseSpace)
+   * 
+   * This function allows the consumer to override the publishableKey when needed via the useFlatfile hook.
+   * 
+   * @param publishableKey 
+   */
+  const handleOverridePublishableKey = (publishableKey?: string | null) => {
+    if (internalAccessToken) {
+      setInternalAccessToken(null)
+    }
+    setInternalPublishableKey(publishableKey)
+  }
+
+
+  /**
+   * Some customer simultaneously support creating new spaces, and re-using existing spaces.
+   * When using and EXISTING space, the expectation is that the accessToken is set, but the publishableKey is not.
+   * (see the useEffect above for selecting between createSpace and handleReUseSpace)
+   * 
+   * This function allows the consumer to override the accessToken when needed via the useFlatfile hook.
+   * 
+   * @param accessToken 
+   */
+  const handleOverrideAccessToken = (accessToken?: string | null) => {
+    if (internalPublishableKey) {
+      setInternalPublishableKey(null)
+    }
+    setInternalAccessToken(accessToken)
+  }
+
   const providerValue = useMemo(
     (): FlatfileContextType => ({
       ...(internalPublishableKey ? { publishableKey: internalPublishableKey } : {}),
@@ -383,8 +417,8 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       setSessionSpace,
       setListener,
       listener,
-      setPublishableKey: setInternalPublishableKey,
-      setAccessToken: setInternalAccessToken,
+      setPublishableKey: handleOverridePublishableKey,
+      setAccessToken: handleOverrideAccessToken,
       addSheet,
       updateSheet,
       removeSheet,
