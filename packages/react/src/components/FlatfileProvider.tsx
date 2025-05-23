@@ -371,9 +371,9 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   }, [ready, open])
 
 
-    /**
+  /**
    * Some customer simultaneously support creating new spaces, and re-using existing spaces.
-   * When using and EXISTING space, the expectation is that the accessToken is set, but the publishableKey is not.
+   * When creating a NEW space, the expectation is that the publishableKey is set, but the accessToken is not.
    * (see the useEffect above for selecting between createSpace and handleReUseSpace)
    * 
    * This function allows the consumer to override the publishableKey when needed via the useFlatfile hook.
@@ -390,7 +390,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
 
   /**
    * Some customer simultaneously support creating new spaces, and re-using existing spaces.
-   * When using and EXISTING space, the expectation is that the accessToken is set, but the publishableKey is not.
+   * For re-using an EXISTING space, the expectation is that the accessToken is set, but the publishableKey is not.
    * (see the useEffect above for selecting between createSpace and handleReUseSpace)
    * 
    * This function allows the consumer to override the accessToken when needed via the useFlatfile hook.
