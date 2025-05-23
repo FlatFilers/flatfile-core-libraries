@@ -129,6 +129,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       const { data: reUsedSpace } = await getSpace({
         space: { id: createSpace.space.id, accessToken: internalAccessToken },
         apiUrl,
+        spaceUrl: config?.spaceUrl,
       })
       debugLogger('Found space:', { reUsedSpace })
 

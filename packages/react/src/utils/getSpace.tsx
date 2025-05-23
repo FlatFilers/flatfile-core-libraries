@@ -32,7 +32,10 @@ export const getSpace = async (
     }
 
     if (!spaceResponse.data.guestLink) {
-      const guestLink = `${spaceUrl}space/${space?.id}?token=${spaceResponse.data.accessToken}`
+      const normalizedSpaceUrl = spaceUrl.endsWith('/')
+        ? spaceUrl.slice(0, -1)
+        : spaceUrl
+      const guestLink = `${normalizedSpaceUrl}/space/${space?.id}?token=${spaceResponse.data.accessToken}`
       spaceResponse.data.guestLink = guestLink
     }
 
