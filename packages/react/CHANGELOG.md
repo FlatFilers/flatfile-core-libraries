@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.13.9
+
+### Patch Changes
+
+- def4066: Fixes issue when using spaceUrl with an existing space
+
 ## 7.13.8
 
 ### Patch Changes
