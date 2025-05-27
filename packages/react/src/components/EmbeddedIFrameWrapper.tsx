@@ -1,5 +1,6 @@
 import React, {
   JSX,
+  useCallback,
   useContext,
   useEffect,
   useLayoutEffect,
@@ -38,28 +39,111 @@ export const EmbeddedIFrameWrapper = (
   const preloadUrl = `${spacesUrl}/space-init`
   const isIFrameLoaded = useIsIFrameLoaded(iframe)
 
-  useEffect(() => {
-    if (sessionSpace && iframe.current) {
+  const retryTimeoutsRef = useRef<Set<number>>(new Set())
+  const acknowledgedMessagesRef = useRef<Set<string>>(new Set())
+
+  const sendInitializeMessage = useCallback(
+    (retryCount = 0) => {
+      if (
+        !sessionSpace?.space?.id ||
+        !sessionSpace?.space?.accessToken ||
+        !iframe.current
+      ) {
+        return
+      }
+
       const targetOrigin = new URL(spacesUrl).origin
-      if (sessionSpace.space?.id && sessionSpace.space?.accessToken) {
-        iframe.current.contentWindow?.postMessage(
-          {
-            flatfileEvent: {
-              topic: 'portal:initialize',
-              payload: {
-                status: 'complete',
-                spaceUrl: `${targetOrigin}/space/${
-                  sessionSpace.space.id
-                }?token=${encodeURIComponent(sessionSpace.space.accessToken)}`,
-                initialResources: sessionSpace,
-              },
+      const messageId = `init_${Date.now()}_${Math.random()
+        .toString(36)
+        .substring(2, 11)}`
+
+      // Don't send if already acknowledged
+      if (acknowledgedMessagesRef.current.has(messageId)) {
+        return
+      }
+
+      console.debug(
+        `Sending portal:initialize message (attempt ${
+          retryCount + 1
+        }), messageId: ${messageId}`
+      )
+
+      iframe.current.contentWindow?.postMessage(
+        {
+          flatfileEvent: {
+            topic: 'portal:initialize',
+            payload: {
+              status: 'complete',
+              messageId,
+              spaceUrl: `${targetOrigin}/space/${
+                sessionSpace.space.id
+              }?token=${encodeURIComponent(sessionSpace.space.accessToken)}`,
+              initialResources: sessionSpace,
             },
           },
-          targetOrigin
+        },
+        targetOrigin
+      )
+
+      // Set up retry logic (max 5 retries with exponential backoff)
+      if (retryCount < 5) {
+        const retryDelay = Math.min(500 * Math.pow(2, retryCount), 8000) // Cap at 8 seconds
+        const timeoutId = setTimeout(() => {
+          retryTimeoutsRef.current.delete(timeoutId as unknown as number)
+          if (!acknowledgedMessagesRef.current.has(messageId)) {
+            console.debug(
+              `No acknowledgment received for messageId ${messageId}, retrying...`
+            )
+            sendInitializeMessage(retryCount + 1)
+          }
+        }, retryDelay) as unknown as number
+
+        retryTimeoutsRef.current.add(timeoutId)
+      } else {
+        console.warn(
+          `Failed to receive acknowledgment after ${
+            retryCount + 1
+          } attempts for messageId: ${messageId}`
         )
       }
+    },
+    [sessionSpace, iframe, spacesUrl]
+  )
+
+  // Listen for acknowledgment messages
+  useEffect(() => {
+    const handleMessage = (event: MessageEvent) => {
+      const { flatfileEvent } = event.data
+      if (
+        flatfileEvent?.topic === 'portal:initialize:ack' &&
+        flatfileEvent?.payload?.status === 'acknowledged'
+      ) {
+        const messageId = flatfileEvent.payload.originalMessageId
+        if (messageId) {
+          console.debug(`Received acknowledgment for messageId: ${messageId}`)
+          acknowledgedMessagesRef.current.add(messageId)
+        }
+      }
     }
-  }, [sessionSpace, iframe.current, isIFrameLoaded])
+
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [])
+
+  // Send initial message
+  useEffect(() => {
+    if (sessionSpace && iframe.current && isIFrameLoaded) {
+      sendInitializeMessage()
+    }
+  }, [sessionSpace, iframe.current, isIFrameLoaded, sendInitializeMessage])
+
+  // Cleanup timeouts on unmount
+  useEffect(() => {
+    return () => {
+      retryTimeoutsRef.current.forEach((timeoutId) => clearTimeout(timeoutId))
+      retryTimeoutsRef.current.clear()
+    }
+  }, [])
 
   const spaceLink = sessionSpace?.space?.guestLink || null
   const openVisible = (open: boolean): React.CSSProperties => ({

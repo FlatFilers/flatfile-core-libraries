@@ -16,9 +16,19 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
     removeMessageListener?.()
     document.querySelector('.flatfile_outer-shell')?.remove?.()
     mountIFrameWrapper?.remove?.()
+    // Clean up retry timeouts
+    retryTimeouts.forEach((timeoutId) => clearTimeout(timeoutId))
+    retryTimeouts.clear()
+    // Remove message listener
+    if (messageListener) {
+      window.removeEventListener('message', messageListener)
+    }
   }
 
   let removeMessageListener: (() => void) | undefined
+  const retryTimeouts = new Set<number>()
+  const acknowledgedMessages = new Set<string>()
+  let messageListener: ((event: MessageEvent) => void) | null = null
 
   let i18n: { t(key: string, defaultText: string): string } = {
     t(_key: string, defaultText: string) {
@@ -199,21 +209,86 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
       )
     } else {
       const targetOrigin = new URL(spacesUrl).origin
-      mountIFrameElement.contentWindow?.postMessage(
-        {
-          flatfileEvent: {
-            topic: 'portal:initialize',
-            payload: {
-              status: 'complete',
-              spaceUrl: `${targetOrigin}/space/${
-                spaceResult.id
-              }?token=${encodeURIComponent(spaceResult.accessToken)}`,
-              initialResourceResponse,
+
+      // Set up message listener for acknowledgments
+      messageListener = (event: MessageEvent) => {
+        const { flatfileEvent } = event.data
+        if (
+          flatfileEvent?.topic === 'portal:initialize:ack' &&
+          flatfileEvent?.payload?.status === 'acknowledged'
+        ) {
+          const messageId = flatfileEvent.payload.originalMessageId
+          if (messageId) {
+            console.debug(`Received acknowledgment for messageId: ${messageId}`)
+            acknowledgedMessages.add(messageId)
+          }
+        }
+      }
+      window.addEventListener('message', messageListener)
+
+      // Function to send initialize message with retry logic
+      const sendInitializeMessage = (retryCount = 0) => {
+        if (!mountIFrameElement?.contentWindow) {
+          return
+        }
+
+        const messageId = `init_${Date.now()}_${Math.random()
+          .toString(36)
+          .substring(2, 11)}`
+
+        // Don't send if already acknowledged
+        if (acknowledgedMessages.has(messageId)) {
+          return
+        }
+
+        console.debug(
+          `Sending portal:initialize message (attempt ${
+            retryCount + 1
+          }), messageId: ${messageId}`
+        )
+
+        mountIFrameElement.contentWindow.postMessage(
+          {
+            flatfileEvent: {
+              topic: 'portal:initialize',
+              payload: {
+                status: 'complete',
+                messageId,
+                spaceUrl: `${targetOrigin}/space/${
+                  spaceResult.id
+                }?token=${encodeURIComponent(spaceResult.accessToken)}`,
+                initialResourceResponse,
+              },
             },
           },
-        },
-        targetOrigin
-      )
+          targetOrigin
+        )
+
+        // Set up retry logic (max 5 retries with exponential backoff)
+        if (retryCount < 5) {
+          const retryDelay = Math.min(500 * Math.pow(2, retryCount), 8000) // Cap at 8 seconds
+          const timeoutId = setTimeout(() => {
+            retryTimeouts.delete(timeoutId as unknown as number)
+            if (!acknowledgedMessages.has(messageId)) {
+              console.debug(
+                `No acknowledgment received for messageId ${messageId}, retrying...`
+              )
+              sendInitializeMessage(retryCount + 1)
+            }
+          }, retryDelay) as unknown as number
+
+          retryTimeouts.add(timeoutId)
+        } else {
+          console.warn(
+            `Failed to receive acknowledgment after ${
+              retryCount + 1
+            } attempts for messageId: ${messageId}`
+          )
+        }
+      }
+
+      // Send initial message
+      sendInitializeMessage()
     }
 
     if (mountIFrameWrapper) {
