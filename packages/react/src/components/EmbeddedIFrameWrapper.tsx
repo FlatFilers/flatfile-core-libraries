@@ -43,7 +43,7 @@ export const EmbeddedIFrameWrapper = (
   const acknowledgedMessagesRef = useRef<Set<string>>(new Set())
 
   const sendInitializeMessage = useCallback(
-    (retryCount = 0) => {
+    (retryCount = 0, messageId?: string) => {
       if (
         !sessionSpace?.space?.id ||
         !sessionSpace?.space?.accessToken ||
@@ -53,9 +53,13 @@ export const EmbeddedIFrameWrapper = (
       }
 
       const targetOrigin = new URL(spacesUrl).origin
-      const messageId = `init_${Date.now()}_${Math.random()
-        .toString(36)
-        .substring(2, 11)}`
+
+      // Generate messageId only on first attempt
+      if (!messageId) {
+        messageId = `init_${Date.now()}_${Math.random()
+          .toString(36)
+          .substring(2, 11)}`
+      }
 
       // Don't send if already acknowledged
       if (acknowledgedMessagesRef.current.has(messageId)) {
@@ -90,11 +94,11 @@ export const EmbeddedIFrameWrapper = (
         const retryDelay = Math.min(500 * Math.pow(2, retryCount), 8000) // Cap at 8 seconds
         const timeoutId = setTimeout(() => {
           retryTimeoutsRef.current.delete(timeoutId as unknown as number)
-          if (!acknowledgedMessagesRef.current.has(messageId)) {
+          if (!acknowledgedMessagesRef.current.has(messageId!)) {
             console.debug(
               `No acknowledgment received for messageId ${messageId}, retrying...`
             )
-            sendInitializeMessage(retryCount + 1)
+            sendInitializeMessage(retryCount + 1, messageId)
           }
         }, retryDelay) as unknown as number
 

@@ -227,14 +227,17 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
       window.addEventListener('message', messageListener)
 
       // Function to send initialize message with retry logic
-      const sendInitializeMessage = (retryCount = 0) => {
+      const sendInitializeMessage = (retryCount = 0, messageId?: string) => {
         if (!mountIFrameElement?.contentWindow) {
           return
         }
 
-        const messageId = `init_${Date.now()}_${Math.random()
-          .toString(36)
-          .substring(2, 11)}`
+        // Generate messageId only on first attempt
+        if (!messageId) {
+          messageId = `init_${Date.now()}_${Math.random()
+            .toString(36)
+            .substring(2, 11)}`
+        }
 
         // Don't send if already acknowledged
         if (acknowledgedMessages.has(messageId)) {
@@ -269,11 +272,11 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
           const retryDelay = Math.min(500 * Math.pow(2, retryCount), 8000) // Cap at 8 seconds
           const timeoutId = setTimeout(() => {
             retryTimeouts.delete(timeoutId as unknown as number)
-            if (!acknowledgedMessages.has(messageId)) {
+            if (!acknowledgedMessages.has(messageId!)) {
               console.debug(
                 `No acknowledgment received for messageId ${messageId}, retrying...`
               )
-              sendInitializeMessage(retryCount + 1)
+              sendInitializeMessage(retryCount + 1, messageId)
             }
           }, retryDelay) as unknown as number
 
