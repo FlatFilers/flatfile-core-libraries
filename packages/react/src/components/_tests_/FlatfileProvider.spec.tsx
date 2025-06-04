@@ -30,6 +30,7 @@ export const FlatfileProviderValue: FlatfileContextType = {
   resetSpace: jest.fn(),
   ready: false,
   iframe: createRef<HTMLIFrameElement>(),
+  isReusingSpace: false,
 }
 
 fetchMock.enableMocks()
