@@ -18,7 +18,8 @@ export const EmbeddedIFrameWrapper = (
     handleCloseInstance: () => void
   }
 ): JSX.Element => {
-  const { open, sessionSpace, ready, iframe } = useContext(FlatfileContext)
+  const { open, sessionSpace, ready, iframe, isReusingSpace } =
+    useContext(FlatfileContext)
 
   const [showExitWarnModal, setShowExitWarnModal] = useState(false)
   const {
@@ -41,6 +42,11 @@ export const EmbeddedIFrameWrapper = (
   useEffect(() => {
     if (sessionSpace && iframe.current) {
       const targetOrigin = new URL(spacesUrl).origin
+      const urlParams = new URLSearchParams({
+        token: sessionSpace.space.accessToken,
+        replayEvents: String(!isReusingSpace),
+      })
+
       if (sessionSpace.space?.id && sessionSpace.space?.accessToken) {
         iframe.current.contentWindow?.postMessage(
           {
@@ -48,9 +54,7 @@ export const EmbeddedIFrameWrapper = (
               topic: 'portal:initialize',
               payload: {
                 status: 'complete',
-                spaceUrl: `${targetOrigin}/space/${
-                  sessionSpace.space.id
-                }?token=${encodeURIComponent(sessionSpace.space.accessToken)}`,
+                spaceUrl: `${targetOrigin}/space/${sessionSpace.space.id}?${urlParams}`,
                 initialResources: sessionSpace,
               },
             },
@@ -61,7 +65,13 @@ export const EmbeddedIFrameWrapper = (
     }
   }, [sessionSpace, iframe.current, isIFrameLoaded])
 
-  const spaceLink = sessionSpace?.space?.guestLink || null
+  let spaceLink: string | null = sessionSpace?.space?.guestLink || null
+  if (spaceLink && isReusingSpace) {
+    const url = new URL(spaceLink)
+    url.searchParams.set('replayEvents', 'false')
+    spaceLink = url.toString()
+  }
+
   const openVisible = (open: boolean): React.CSSProperties => ({
     opacity: ready && open ? 1 : 0,
     pointerEvents: ready && open ? 'all' : 'none',
@@ -69,7 +79,7 @@ export const EmbeddedIFrameWrapper = (
     left: ready && open ? '0' : '-200vw',
     top: ready && open ? '0' : '-200vh',
   })
-  const iframeSrc = preload ? preloadUrl : spaceLink
+  const iframeSrc = preload ? preloadUrl : spaceLink!
   const modalRef = useRef<HTMLDivElement | null>(null)
 
   useLayoutEffect(() => {
