@@ -1,5 +1,11 @@
 # @flatfile/javascript
 
+## 1.5.7
+
+### Patch Changes
+
+- bd82163: Prevents loading historical events when reusing existing spaces
+
 ## 1.5.6
 
 ### Patch Changes
