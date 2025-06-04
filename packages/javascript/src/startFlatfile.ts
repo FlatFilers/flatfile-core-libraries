@@ -199,15 +199,18 @@ export async function startFlatfile(options: SimpleOnboarding | ISpace) {
       )
     } else {
       const targetOrigin = new URL(spacesUrl).origin
+      const urlParams = new URLSearchParams({
+        token: spaceResult.accessToken,
+        replayEvents: String(!isReusingSpace),
+      })
+
       mountIFrameElement.contentWindow?.postMessage(
         {
           flatfileEvent: {
             topic: 'portal:initialize',
             payload: {
               status: 'complete',
-              spaceUrl: `${targetOrigin}/space/${
-                spaceResult.id
-              }?token=${encodeURIComponent(spaceResult.accessToken)}`,
+              spaceUrl: `${targetOrigin}/space/${spaceResult.id}?${urlParams}`,
               initialResourceResponse,
             },
           },

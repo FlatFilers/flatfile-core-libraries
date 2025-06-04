@@ -52,6 +52,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   >(accessToken)
   const [listener, setListener] = useState(new FlatfileListener())
   const [open, setOpen] = useState<boolean>(false)
+  const [isReusingSpace, setIsReusingSpace] = useState(false)
   const [sessionSpace, setSessionSpace] = useState<
     { space: ISessionSpace } | undefined
   >(undefined)
@@ -121,6 +122,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   }
 
   const handleReUseSpace = async () => {
+    setIsReusingSpace(true)
     setFLATFILE_PROVIDER_CONFIG({
       ...FLATFILE_PROVIDER_CONFIG,
       resetOnClose: false,
@@ -399,6 +401,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       config: FLATFILE_PROVIDER_CONFIG,
       ready,
       iframe,
+      isReusingSpace,
     }),
     [
       publishableKey,
@@ -414,6 +417,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       iframe,
       FLATFILE_PROVIDER_CONFIG,
       onClose,
+      isReusingSpace,
     ]
   )
 

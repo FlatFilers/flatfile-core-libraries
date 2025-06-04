@@ -21,7 +21,11 @@ export function createIframe(
   // Construct the URL with the space ID and the token
   if (spaceId && token) {
     if (isReusingSpace) {
-      url = `${spacesURL}/space/${spaceId}?token=${encodeURIComponent(token)}`
+      const params = new URLSearchParams({
+        token,
+        replayEvents: 'false',
+      })
+      url = `${spacesURL}/space/${spaceId}?${params}`
     } else {
       url = spacesURL
     }
@@ -34,7 +38,8 @@ export function createIframe(
   const iframe = document.createElement('iframe')
   iframe.src = url
   iframe.id = 'flatfile_iframe'
-  iframe.allow = "clipboard-read; clipboard-write; sync-xhr 'self' '*.flatfile.com'"
+  iframe.allow =
+    "clipboard-read; clipboard-write; sync-xhr 'self' '*.flatfile.com'"
   // Create the wrapper
   const wrapper = document.createElement('div')
   wrapper.classList.add('flatfile_iframe-wrapper')
