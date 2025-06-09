@@ -1,0 +1,26 @@
+{
+  "name": "@flatfile/http-logger",
+  "version": "1.0.4",
+  "main": "index.js",
+  "types": "index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.js"
+    },
+    "./init": {
+      "types": "./init.d.ts",
+      "default": "./init.js"
+    }
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "@flatfile/utils-debugger": "^0.0.6",
+    "strip-ansi": "^7.1.0"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "A lightweight, flexible HTTP request logger for Node.js applications"
+}
