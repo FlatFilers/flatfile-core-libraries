@@ -1,20 +1,19 @@
 import { Flatfile } from '@flatfile/api'
-import { program } from 'commander'
 import chalk from 'chalk'
+import { program } from 'commander'
 import fs from 'fs'
 // @ts-expect-error
 import ncc from '@vercel/ncc'
 import ora from 'ora'
 import path from 'path'
 import prompts from 'prompts'
+import url from 'url'
 import util from 'util'
-
-import { agentTable } from '../helpers/agent.table'
-import { apiKeyClient } from './auth.action'
 import { getAuth } from '../../shared/get-auth'
 import { getEntryFile } from '../../shared/get-entry-file'
 import { messages } from '../../shared/messages'
-import url from 'url'
+import { agentTable } from '../helpers/agent.table'
+import { apiKeyClient } from './auth.action'
 
 const readPackageJson = util.promisify(require('read-package-json'))
 

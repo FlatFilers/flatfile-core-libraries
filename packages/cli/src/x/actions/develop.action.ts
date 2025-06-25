@@ -6,11 +6,10 @@ import ncc from '@vercel/ncc'
 import ora from 'ora'
 import path from 'path'
 import prompts from 'prompts'
-
-import { apiKeyClient } from './auth.action'
 import { getAuth } from '../../shared/get-auth'
 import { getEntryFile } from '../../shared/get-entry-file'
 import { messages } from '../../shared/messages'
+import { apiKeyClient } from './auth.action'
 
 export async function developAction(
   file?: string | null | undefined,

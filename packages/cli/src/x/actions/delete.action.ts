@@ -1,10 +1,10 @@
 import chalk from 'chalk'
 import { program } from 'commander'
 import ora from 'ora'
-import { apiKeyClient } from './auth.action'
+import prompts from 'prompts'
 import { getAuth } from '../../shared/get-auth'
 import { messages } from '../../shared/messages'
-import prompts from 'prompts'
+import { apiKeyClient } from './auth.action'
 
 export async function deleteAction(
   options?: Partial<{
