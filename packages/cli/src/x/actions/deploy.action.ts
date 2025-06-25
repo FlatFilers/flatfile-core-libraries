@@ -136,6 +136,7 @@ export async function deployAction(
   options?: Partial<{
     slug: string
     topics: string
+    namespace: string
     apiUrl: string
     token: string
     ci: boolean
@@ -161,6 +162,7 @@ export async function deployAction(
   }
 
   const slug = options?.slug || process.env.FLATFILE_AGENT_SLUG
+  const namespace = options?.namespace || process.env.FLATFILE_AGENT_NAMESPACE
 
   let packageJson
   try {
@@ -305,6 +307,7 @@ export async function deployAction(
           source: code,
           sourceMap,
           slug: slug ?? selectedAgent?.slug,
+          ...(namespace && { namespace }),
         },
       })
 

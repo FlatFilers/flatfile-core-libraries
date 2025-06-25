@@ -4,7 +4,7 @@ import ora from 'ora'
 import { apiKeyClient } from './auth.action'
 import { getAuth } from '../../shared/get-auth'
 import { messages } from '../../shared/messages'
-import { prompt } from 'prompts'
+import prompts from 'prompts'
 
 export async function deleteAction(
   options?: Partial<{
@@ -61,7 +61,7 @@ export async function deleteAction(
 
     validatingSpinner.succeed(`Found agent match, ${agent.slug}`)
 
-    const { deleteAgent } = await prompt({
+    const { deleteAgent } = await prompts({
       type: 'confirm',
       name: `deleteAgent`,
       message: chalk.red(

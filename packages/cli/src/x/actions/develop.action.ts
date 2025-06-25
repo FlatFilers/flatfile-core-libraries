@@ -1,6 +1,5 @@
 import { Client } from '@flatfile/listener'
 import { program } from 'commander'
-import { PubSubDriver } from '@flatfile/listener-driver-pubsub'
 import fs from 'fs'
 // @ts-expect-error
 import ncc from '@vercel/ncc'
@@ -59,7 +58,7 @@ export async function developAction(
     })
     if (agents?.data && agents?.data?.length > 0) {
       console.error(messages.warnDeployedAgents(agents.data))
-  
+
       const { developLocally } = await prompts({
         type: 'confirm',
         name: 'developLocally',
@@ -72,9 +71,9 @@ export async function developAction(
         }).fail()
         process.exit(1)
       }
-
     }
 
+    const { PubSubDriver } = await import('@flatfile/listener-driver-pubsub')
     const driver = new PubSubDriver(environment.id)
 
     const watcher = ncc(file, {
