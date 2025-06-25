@@ -161,7 +161,6 @@ export async function deployAction(
   }
 
   const slug = options?.slug || process.env.FLATFILE_AGENT_SLUG
-  const namespace = options?.namespace || process.env.FLATFILE_AGENT_NAMESPACE
 
   let packageJson
   try {
@@ -259,6 +258,29 @@ export async function deployAction(
       options?.ci ?? false,
       validatingSpinner
     )
+
+    let namespace = options?.namespace
+    if (!namespace && !process.env.FLATFILE_AGENT_NAMESPACE) {
+      const input = await prompts({
+        type: 'text',
+        name: 'namespace',
+        message: 'Enter a namespace',
+      })
+      namespace = input.namespace
+    }
+
+    const namespacePrefixes = ['space:', 'workbook:', 'sheet:']
+    if (
+      namespace &&
+      !namespacePrefixes.some((prefix) => namespace.startsWith(prefix))
+    ) {
+      ora({
+        text: `Namespace "${namespace}" is not a valid namespace. Please choose one of the following prefixes: ${namespacePrefixes
+          .map((prefix) => `'${prefix}'`)
+          .join(', ')}`,
+      }).fail()
+      process.exit(1)
+    }
 
     const deployingSpinner = ora({
       text: `Deploying event listener to Flatfile`,
