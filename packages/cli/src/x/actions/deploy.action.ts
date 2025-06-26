@@ -17,6 +17,11 @@ import { apiKeyClient } from './auth.action'
 
 const readPackageJson = util.promisify(require('read-package-json'))
 
+const onCancel = (prompt: any) => {
+  console.log(chalk.yellow('Exiting...'))
+  process.exit(0)
+}
+
 type ListenerTopics = Flatfile.EventTopic | '**'
 
 async function handleAgentSelection(
@@ -50,11 +55,14 @@ async function handleAgentSelection(
     )
 
     // Confirm if the user wants to select an agent
-    const { selectAgent } = await prompts({
-      type: 'confirm',
-      name: 'selectAgent',
-      message: 'Would you like to select an agent to deploy to? (y/n)',
-    })
+    const { selectAgent } = await prompts(
+      {
+        type: 'confirm',
+        name: 'selectAgent',
+        message: 'Would you like to select an agent to deploy to? (y/n)',
+      },
+      { onCancel }
+    )
 
     if (!selectAgent) {
       console.log(
@@ -66,15 +74,18 @@ async function handleAgentSelection(
     }
 
     // Allow the user to select an agent
-    const { agent } = await prompts({
-      type: 'select',
-      name: 'agent',
-      message: 'Select an agent to deploy to',
-      choices: data.map((a) => ({
-        title: a.slug || '<no-slug>',
-        value: a.slug,
-      })),
-    })
+    const { agent } = await prompts(
+      {
+        type: 'select',
+        name: 'agent',
+        message: 'Select an agent to deploy to',
+        choices: data.map((a) => ({
+          title: a.slug || '<no-slug>',
+          value: a.slug,
+        })),
+      },
+      { onCancel }
+    )
 
     // Find and return the selected agent
     return data.find((a) => a.slug === agent)
@@ -185,12 +196,15 @@ export async function deployAction(
       const compilerOptions = tsconfig.compilerOptions || {}
 
       if (!compilerOptions.sourceMap || !compilerOptions.inlineSources) {
-        const { updateTsConfig } = await prompts({
-          type: 'confirm',
-          name: 'updateTsConfig',
-          message:
-            "It looks like you're using TypeScript for your agent. If you would like your TypeScript types to be stored with uploaded agent and available for download with Agent Exports, you must specify the TSConfig options, sourceMap: true, inlineSources: true.\n\nWould you like your tsconfig.json to be updated to include those options?  (y/n)",
-        })
+        const { updateTsConfig } = await prompts(
+          {
+            type: 'confirm',
+            name: 'updateTsConfig',
+            message:
+              "It looks like you're using TypeScript for your agent. If you would like your TypeScript types to be stored with uploaded agent and available for download with Agent Exports, you must specify the TSConfig options, sourceMap: true, inlineSources: true.\n\nWould you like your tsconfig.json to be updated to include those options?  (y/n)",
+          },
+          { onCancel }
+        )
 
         if (updateTsConfig) {
           compilerOptions.sourceMap = true
@@ -259,27 +273,29 @@ export async function deployAction(
       validatingSpinner
     )
 
-    let namespace = options?.namespace
-    if (!namespace && !process.env.FLATFILE_AGENT_NAMESPACE) {
-      const input = await prompts({
-        type: 'text',
-        name: 'namespace',
-        message: 'Enter a namespace',
-      })
-      namespace = input.namespace
-    }
-
     const namespacePrefixes = ['space:', 'workbook:', 'sheet:']
-    if (
-      namespace &&
-      !namespacePrefixes.some((prefix) => namespace.startsWith(prefix))
-    ) {
-      ora({
-        text: `Namespace "${namespace}" is not a valid namespace. Please choose one of the following prefixes: ${namespacePrefixes
-          .map((prefix) => `'${prefix}'`)
-          .join(', ')}`,
-      }).fail()
-      process.exit(1)
+    let namespace = options?.namespace
+    if (!selectedAgent && !namespace && !process.env.FLATFILE_AGENT_NAMESPACE) {
+      const input = await prompts(
+        {
+          type: 'text',
+          name: 'namespace',
+          message: 'Enter a namespace (optional)',
+          validate: (value) => {
+            if (
+              value &&
+              !namespacePrefixes.some((prefix) => value.startsWith(prefix))
+            ) {
+              return `"${value}" is not a valid namespace. Please choose one of the following prefixes: ${namespacePrefixes
+                .map((prefix) => `'${prefix}'`)
+                .join(', ')}`
+            }
+            return true
+          },
+        },
+        { onCancel }
+      )
+      namespace = input.namespace
     }
 
     const deployingSpinner = ora({
