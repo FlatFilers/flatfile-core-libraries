@@ -25,7 +25,10 @@ export const configToBlueprint = (schema: ISettings): BlueprintOutput => {
       }
       if (field.type === 'select') {
         out.type = PlatformTypes.Enum
-        out.config = { options: field.options }
+        out.config = {
+          options: field.options,
+          ...(field.allowCustomOptions && { allowCustom: field.allowCustomOptions })
+        }
       }
     }
     if (field.validators) {
@@ -84,6 +87,7 @@ type Constraint = {
 
 type Config = {
   options?: IFieldOptionDictionary[]
+  allowCustom?: boolean
 }
 
 type INewField = {
