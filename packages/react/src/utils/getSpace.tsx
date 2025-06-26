@@ -1,6 +1,5 @@
 import { Flatfile } from '@flatfile/api'
 import { getErrorMessage } from '@flatfile/embedded-utils'
-import { authenticate } from './authenticate'
 import { IReactSpaceProps } from '../types'
 
 export const getSpace = async (
@@ -20,9 +19,20 @@ export const getSpace = async (
       throw new Error('Missing required accessToken for Space')
     }
 
-    const limitedAccessApi = authenticate(space?.accessToken, apiUrl)
     try {
-      spaceResponse = await limitedAccessApi.spaces.get(space?.id)
+      const response = await fetch(`${apiUrl}/v1/spaces/${space.id}`, {
+        headers: {
+          Authorization: `Bearer ${space.accessToken}`,
+        },
+      })
+
+      if (!response.ok) {
+        throw new Error(
+          `Failed to get space: ${response.status} ${response.statusText}`
+        )
+      }
+
+      spaceResponse = await response.json()
     } catch (error) {
       throw new Error(`Failed to get space: ${getErrorMessage(error)}`)
     }
