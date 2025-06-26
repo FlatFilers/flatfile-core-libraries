@@ -1,5 +1,11 @@
 # flatfile
 
+## 3.11.0
+
+### Minor Changes
+
+- 72f8d68: This release adds the ability to namespace an agent
+
 ## 3.10.0
 
 ### Minor Changes
