@@ -54,6 +54,10 @@ program
     eg: 'commit:created,commit:updated'`
   )
   .option(
+    '-n, --namespace <namespace>',
+    'the namespace of the app to deploy the agent to'
+  )
+  .option(
     '-k, --token <token>',
     'the authentication token to use (or set env FLATFILE_API_KEY or FLATFILE_BEARER_TOKEN)'
   )
@@ -146,7 +150,7 @@ program
   .option('--api-url <url>', 'the API url to use')
   .action(publishPubSub)
 
-  program
+program
   .command('download')
   .description('Download an Agent')
   .option('-s, --slug <slug>', 'the slug of the agent to download')
