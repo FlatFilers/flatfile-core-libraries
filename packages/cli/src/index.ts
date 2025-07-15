@@ -10,14 +10,18 @@ import { writeErrorToFile } from './shared/utils/error'
 import { switchInit } from './switch.init'
 import { switchVersion } from './switch.version'
 import { createEnvironmentAction } from './x/actions/create.environment.action'
-import { deployAction } from './x/actions/deploy.action'
 import { deleteAction } from './x/actions/delete.action'
+import { deployAction } from './x/actions/deploy.action'
 import { developAction } from './x/actions/develop.action'
+import { downloadAction } from './x/actions/download.action'
+import { listAgentsAction } from './x/actions/list-agents.action'
+import { loginAction } from './x/actions/login.action'
+import { logoutAction } from './x/actions/logout.action'
 import { publishAction } from './x/actions/publish.action'
 import { publishPubSub } from './x/actions/publish.pubsub'
 import { quickstartAction } from './x/actions/quickstart.action'
-import { listAgentsAction } from './x/actions/list-agents.action'
-import { downloadAction } from './x/actions/download.action'
+
+import { whoamiAction } from './x/actions/whoami.action'
 
 dotenv.config()
 
@@ -164,5 +168,27 @@ program
     '(optional) the API URL to use (or set env FLATFILE_API_URL)'
   )
   .action(downloadAction)
+
+program
+  .command('login')
+  .description('Login to Flatfile using OAuth Device Authorization Flow')
+  .option(
+    '-r, --region <region>',
+    'region to authenticate with (us, au, ca, eu, uk)',
+    'us'
+  )
+  .action(loginAction)
+
+program
+  .command('logout')
+  .description('Logout from Flatfile and clear stored credentials')
+  .action(logoutAction)
+
+program
+  .command('whoami')
+  .description('Show current authenticated user information')
+  .action(whoamiAction)
+
+
 
 program.parse()
