@@ -18,6 +18,7 @@
     "test": "jest --runInBand --forceExit --passWithNoTests"
   },
   "dependencies": {
+    "@flatfile/api": "^1.19.0",
     "@flatfile/cross-env-config": "^0.0.6",
     "@flatfile/listener": "^1.0.4",
     "@flatfile/listener-driver-pubsub": "^2.0.8",
@@ -51,7 +52,6 @@
   },
   "devDependencies": {
     "@babel/preset-env": "^7.20.2",
-    "@flatfile/api": "^1.15.2",
     "@rollup/plugin-babel": "^6.0.3",
     "@types/fs-extra": "^11.0.4",
     "@types/inquirer": "^9.0.2",

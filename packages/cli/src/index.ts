@@ -9,6 +9,7 @@ import { publishAction as legacyPublishAction } from './legacy/actions/publish'
 import { writeErrorToFile } from './shared/utils/error'
 import { switchInit } from './switch.init'
 import { switchVersion } from './switch.version'
+import { configureAction } from './x/actions/configure.action'
 import { createEnvironmentAction } from './x/actions/create.environment.action'
 import { deleteAction } from './x/actions/delete.action'
 import { deployAction } from './x/actions/deploy.action'
@@ -189,6 +190,9 @@ program
   .description('Show current authenticated user information')
   .action(whoamiAction)
 
-
+program
+  .command('configure')
+  .description('Configure .env file with Flatfile credentials for the current project')
+  .action(configureAction)
 
 program.parse()

@@ -8,13 +8,13 @@ import { loadCredentials } from './credentials'
  */
 export async function getAuthenticatedClient(): Promise<FlatfileClient> {
   const credentials = await loadCredentials()
-  
+
   if (!credentials) {
     program.error('Not authenticated. Run `flatfile login` to authenticate.')
   }
 
   return new FlatfileClient({
-    environment: `${credentials.base_url}/api/v1`,
+    apiUrl: credentials.base_url,
     token: credentials.access_token,
   })
 }
