@@ -1,5 +1,11 @@
 # flatfile
 
+## 3.11.1
+
+### Patch Changes
+
+- f5a5303: This release updates the Flatfile dependencies in the cli package
+
 ## 3.11.0
 
 ### Minor Changes
