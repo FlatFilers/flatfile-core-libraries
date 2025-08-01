@@ -223,7 +223,7 @@ export async function deployAction(
 
   try {
     const data = fs.readFileSync(
-      path.join(__dirname, '..', 'templates', 'entry.js'),
+      path.join(__dirname, '../../../', 'templates', 'entry.js'),
       'utf8'
     )
     const result = data.replace(
@@ -303,21 +303,17 @@ export async function deployAction(
     }).start()
 
     try {
-      const {
-        err,
-        code,
-        map: sourceMapBase,
-      } = await ncc(path.join(outDir, '_entry.js'), {
-        minify: liteMode,
-        target: 'es2020',
-        sourceMap: true,
-        sourceMapIncludeSources: true,
-        sourceMapRegister: false,
-        cache: false,
-        // TODO: add debug flag to add this and other debug options
-        quiet: true,
-        // debugLog: false
-      })
+      let code: string
+      let err: any
+      let sourceMapBase: string
+
+      if (process.versions.bun) {
+        // Runtime is bun, so we can use Bun.build
+        ;({ code, sourceMapBase, err } = await bundleWithBun(outDir, liteMode));
+      } else {
+        // Runtime is node, so we can use ncc
+        ;({ code, sourceMapBase, err } = await bundleWithNcc(outDir, liteMode));
+      }
 
       const deployFile = path.join(outDir, 'deploy.js')
       fs.writeFileSync(deployFile, code, 'utf8')
@@ -361,4 +357,64 @@ export async function deployAction(
   } catch (e) {
     return program.error(messages.error(e))
   }
+}
+
+async function bundleWithBun(outDir: string, liteMode: boolean) {
+  // Kick off the build
+  // @ts-expect-error Bun is not defined in the global scope
+  // eslint-disable-next-line no-undef
+  const result = await Bun.build({
+    entrypoints: [path.join(outDir, "_entry.js")],
+    outdir: outDir,                  // write files to disk
+    bundle: true,                    // bundle dependencies
+    minify: liteMode,                // equivalent to ncc’s `minify`
+    target: "node",                  // same as ncc’s `target`
+    sourcemap: "linked",             // generate source maps
+    format: "esm",                   // or "cjs" if you need CommonJS
+    // note: Bun.build doesn’t support sourceMapIncludeSources,
+    // sourceMapRegister, cache or quiet flags––you can control
+    // logs via `result.logs` below.
+  });
+
+  // Check for build errors
+  let err: any
+  if (!result.success) {
+    err = 'Build failed:'
+    for (const msg of result.logs) {
+      err += `\n${msg}`
+    }
+  }
+
+  // Extract code and source map from the outputs
+  let code = "";
+  let sourceMapBase = "";
+  for (const artifact of result.outputs) {
+    if (artifact.kind === "entry-point") {
+      code = await artifact.text();
+    } else if (artifact.kind === "sourcemap") {
+      sourceMapBase = await artifact.text();
+    }
+  }
+
+  return { code, sourceMapBase, err };
+}
+
+async function bundleWithNcc(outDir: string, liteMode: boolean) {
+  const {
+    err,
+    code,
+    map: sourceMapBase,
+  } = await ncc(path.join(outDir, '_entry.js'), {
+    minify: liteMode,
+    target: 'es2020',
+    sourceMap: true,
+    sourceMapIncludeSources: true,
+    sourceMapRegister: false,
+    cache: false,
+    // TODO: add debug flag to add this and other debug options
+    quiet: true,
+    // debugLog: false
+  })
+
+  return { code, sourceMapBase, err };
 }
