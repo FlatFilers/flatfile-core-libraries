@@ -23,6 +23,15 @@ export const initializeSpace = async (
     workbook,
     sheet,
     onSubmit,
+    themeConfig,
+    sidebarConfig,
+    spaceInfo,
+    userInfo,
+    metadata,
+    namespace,
+    labels,
+    translationsPath,
+    languageOverride,
   } = flatfileOptions
   try {
     if (!publishableKey) {
@@ -30,10 +39,22 @@ export const initializeSpace = async (
     }
 
     const limitedAccessApi = authenticate(publishableKey, apiUrl)
+    
     const spaceRequestBody = {
       name,
       autoConfigure: false,
-      labels: ['embedded'],
+      labels: ['embedded', ...(labels || [])],
+      ...(namespace ? { namespace } : {}),
+      ...(translationsPath ? { translationsPath } : {}),
+      ...(languageOverride ? { languageOverride } : {}),
+      metadata: {
+        theme: themeConfig,
+        sidebarConfig: sidebarConfig || { showSidebar: false },
+        userInfo,
+        spaceInfo,
+        ...(spaceBody?.metadata || {}),
+        ...(metadata || {}),
+      },
       ...spaceBody,
     }
 
