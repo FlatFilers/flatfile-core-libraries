@@ -52,6 +52,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   >(accessToken)
   const [listener, setListener] = useState(new FlatfileListener())
   const [open, setOpen] = useState<boolean>(false)
+  const [isReusingSpace, setIsReusingSpace] = useState(false)
   const [sessionSpace, setSessionSpace] = useState<
     { space: ISessionSpace } | undefined
   >(undefined)
@@ -101,7 +102,9 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       space: { ...createSpace.space, autoConfigure },
       workbook: createSpace.workbook,
       document: createSpace.document,
-      ...(config?.externalActorId ? { externalActorId: config.externalActorId } : {}),
+      ...(config?.externalActorId
+        ? { externalActorId: config.externalActorId }
+        : {}),
     }
     debugLogger('Created space:', { createSpaceConfig })
     const { data: createdSpace } = await createSpaceInternal(createSpaceConfig)
@@ -119,6 +122,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   }
 
   const handleReUseSpace = async () => {
+    setIsReusingSpace(true)
     setFLATFILE_PROVIDER_CONFIG({
       ...FLATFILE_PROVIDER_CONFIG,
       resetOnClose: false,
@@ -127,6 +131,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       const { data: reUsedSpace } = await getSpace({
         space: { id: createSpace.space.id, accessToken: internalAccessToken },
         apiUrl,
+        spaceUrl: config?.spaceUrl,
       })
       debugLogger('Found space:', { reUsedSpace })
 
@@ -266,7 +271,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
   }
 
   const resetSpace = ({ reset }: ClosePortalOptions = {}) => {
-    console.log('resetting space', { FLATFILE_PROVIDER_CONFIG, providerValue })
+    debugLogger('resetting space', { FLATFILE_PROVIDER_CONFIG, providerValue })
     setOpen(false)
 
     if (reset ?? FLATFILE_PROVIDER_CONFIG.resetOnClose) {
@@ -396,6 +401,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       config: FLATFILE_PROVIDER_CONFIG,
       ready,
       iframe,
+      isReusingSpace,
     }),
     [
       publishableKey,
@@ -411,6 +417,7 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
       iframe,
       FLATFILE_PROVIDER_CONFIG,
       onClose,
+      isReusingSpace,
     ]
   )
 

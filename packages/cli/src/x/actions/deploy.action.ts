@@ -1,28 +1,33 @@
 import { Flatfile } from '@flatfile/api'
-import { program } from 'commander'
 import chalk from 'chalk'
+import { program } from 'commander'
 import fs from 'fs'
 // @ts-expect-error
 import ncc from '@vercel/ncc'
 import ora from 'ora'
 import path from 'path'
 import prompts from 'prompts'
+import url from 'url'
 import util from 'util'
-
-import { agentTable } from '../helpers/agent.table'
-import { apiKeyClient } from './auth.action'
 import { getAuth } from '../../shared/get-auth'
 import { getEntryFile } from '../../shared/get-entry-file'
 import { messages } from '../../shared/messages'
-import url from 'url'
+import { agentTable } from '../helpers/agent.table'
+import { apiKeyClient } from './auth.action'
 
 const readPackageJson = util.promisify(require('read-package-json'))
+
+const onCancel = (prompt: any) => {
+  console.log(chalk.yellow('Exiting...'))
+  process.exit(0)
+}
 
 type ListenerTopics = Flatfile.EventTopic | '**'
 
 async function handleAgentSelection(
   data: Flatfile.Agent[] | undefined,
   slug: string | undefined,
+  ci: boolean,
   validatingSpinner: ora.Ora
 ) {
   // Directly return if there's no data or if a slug is already provided
@@ -31,6 +36,17 @@ async function handleAgentSelection(
   }
 
   if (data.length > 1) {
+    if (ci) {
+      // At this point, the user as not provided a slug and there are multiple
+      // agents in the environment so we need to fail
+      console.log(
+        `${chalk.red(
+          'Error:'
+        )} You must provide a slug when deploying in CI and your environment contains more than one existing agent.`
+      )
+      process.exit(1)
+    }
+
     // Inform the user about multiple agents in the environment
     validatingSpinner.fail(
       `${chalk.yellow(
@@ -39,11 +55,14 @@ async function handleAgentSelection(
     )
 
     // Confirm if the user wants to select an agent
-    const { selectAgent } = await prompts({
-      type: 'confirm',
-      name: 'selectAgent',
-      message: 'Would you like to select an agent to deploy to? (y/n)',
-    })
+    const { selectAgent } = await prompts(
+      {
+        type: 'confirm',
+        name: 'selectAgent',
+        message: 'Would you like to select an agent to deploy to? (y/n)',
+      },
+      { onCancel }
+    )
 
     if (!selectAgent) {
       console.log(
@@ -55,15 +74,18 @@ async function handleAgentSelection(
     }
 
     // Allow the user to select an agent
-    const { agent } = await prompts({
-      type: 'select',
-      name: 'agent',
-      message: 'Select an agent to deploy to',
-      choices: data.map((a) => ({
-        title: a.slug || '<no-slug>',
-        value: a.slug,
-      })),
-    })
+    const { agent } = await prompts(
+      {
+        type: 'select',
+        name: 'agent',
+        message: 'Select an agent to deploy to',
+        choices: data.map((a) => ({
+          title: a.slug || '<no-slug>',
+          value: a.slug,
+        })),
+      },
+      { onCancel }
+    )
 
     // Find and return the selected agent
     return data.find((a) => a.slug === agent)
@@ -124,8 +146,10 @@ export async function deployAction(
   options?: Partial<{
     slug: string
     topics: string
+    namespace: string
     apiUrl: string
     token: string
+    ci: boolean
   }>
 ): Promise<void> {
   const outDir = path.join(process.cwd(), '.flatfile')
@@ -166,18 +190,21 @@ export async function deployAction(
 
   // Check for TypeScript configuration
   const tsconfigPath = path.join(process.cwd(), 'tsconfig.json')
-  if (fs.existsSync(tsconfigPath)) {
+  if (!options?.ci && fs.existsSync(tsconfigPath)) {
     try {
       const tsconfig = JSON.parse(fs.readFileSync(tsconfigPath, 'utf8'))
       const compilerOptions = tsconfig.compilerOptions || {}
 
       if (!compilerOptions.sourceMap || !compilerOptions.inlineSources) {
-        const { updateTsConfig } = await prompts({
-          type: 'confirm',
-          name: 'updateTsConfig',
-          message:
-            "It looks like you're using TypeScript for your agent. If you would like your TypeScript types to be stored with uploaded agent and available for download with Agent Exports, you must specify the TSConfig options, sourceMap: true, inlineSources: true.\n\nWould you like your tsconfig.json to be updated to include those options?  (y/n)",
-        })
+        const { updateTsConfig } = await prompts(
+          {
+            type: 'confirm',
+            name: 'updateTsConfig',
+            message:
+              "It looks like you're using TypeScript for your agent. If you would like your TypeScript types to be stored with uploaded agent and available for download with Agent Exports, you must specify the TSConfig options, sourceMap: true, inlineSources: true.\n\nWould you like your tsconfig.json to be updated to include those options?  (y/n)",
+          },
+          { onCancel }
+        )
 
         if (updateTsConfig) {
           compilerOptions.sourceMap = true
@@ -242,8 +269,34 @@ export async function deployAction(
     const selectedAgent = await handleAgentSelection(
       data,
       slug,
+      options?.ci ?? false,
       validatingSpinner
     )
+
+    const namespacePrefixes = ['space:', 'workbook:', 'sheet:']
+    let namespace = options?.namespace
+    if (!selectedAgent && !namespace && !process.env.FLATFILE_AGENT_NAMESPACE) {
+      const input = await prompts(
+        {
+          type: 'text',
+          name: 'namespace',
+          message: 'Enter a namespace (optional)',
+          validate: (value) => {
+            if (
+              value &&
+              !namespacePrefixes.some((prefix) => value.startsWith(prefix))
+            ) {
+              return `"${value}" is not a valid namespace. Please choose one of the following prefixes: ${namespacePrefixes
+                .map((prefix) => `'${prefix}'`)
+                .join(', ')}`
+            }
+            return true
+          },
+        },
+        { onCancel }
+      )
+      namespace = input.namespace
+    }
 
     const deployingSpinner = ora({
       text: `Deploying event listener to Flatfile`,
@@ -291,6 +344,7 @@ export async function deployAction(
           source: code,
           sourceMap,
           slug: slug ?? selectedAgent?.slug,
+          ...(namespace && { namespace }),
         },
       })
 

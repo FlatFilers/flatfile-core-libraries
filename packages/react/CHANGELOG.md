@@ -1,5 +1,23 @@
 # @flatfile/react
 
+## 7.13.10
+
+### Patch Changes
+
+- bd82163: Prevents loading historical events when reusing existing spaces
+
+## 7.13.9
+
+### Patch Changes
+
+- def4066: Fixes issue when using spaceUrl with an existing space
+
+## 7.13.8
+
+### Patch Changes
+
+- af1d56b: Removes extraneous debug statement
+
 ## 7.13.7
 
 ### Patch Changes

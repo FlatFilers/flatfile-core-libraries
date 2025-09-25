@@ -1,5 +1,11 @@
 ## 1.0.17
 
+## 1.0.23
+
+### Patch Changes
+
+- dffe4b2: add missing props to space creation
+
 ## 1.0.22
 
 ### Patch Changes

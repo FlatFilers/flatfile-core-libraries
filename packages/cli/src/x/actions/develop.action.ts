@@ -1,17 +1,15 @@
 import { Client } from '@flatfile/listener'
 import { program } from 'commander'
-import { PubSubDriver } from '@flatfile/listener-driver-pubsub'
 import fs from 'fs'
 // @ts-expect-error
 import ncc from '@vercel/ncc'
 import ora from 'ora'
 import path from 'path'
 import prompts from 'prompts'
-
-import { apiKeyClient } from './auth.action'
 import { getAuth } from '../../shared/get-auth'
 import { getEntryFile } from '../../shared/get-entry-file'
 import { messages } from '../../shared/messages'
+import { apiKeyClient } from './auth.action'
 
 export async function developAction(
   file?: string | null | undefined,
@@ -59,7 +57,7 @@ export async function developAction(
     })
     if (agents?.data && agents?.data?.length > 0) {
       console.error(messages.warnDeployedAgents(agents.data))
-  
+
       const { developLocally } = await prompts({
         type: 'confirm',
         name: 'developLocally',
@@ -72,9 +70,9 @@ export async function developAction(
         }).fail()
         process.exit(1)
       }
-
     }
 
+    const { PubSubDriver } = await import('@flatfile/listener-driver-pubsub')
     const driver = new PubSubDriver(environment.id)
 
     const watcher = ncc(file, {

@@ -60,6 +60,7 @@ export interface FlatfileContextType {
   config?: IFrameTypes
   iframe: RefObject<HTMLIFrameElement>
   ready: boolean
+  isReusingSpace: boolean
 }
 
 export const FlatfileContext = createContext<FlatfileContextType>({
@@ -90,6 +91,7 @@ export const FlatfileContext = createContext<FlatfileContextType>({
   config: undefined,
   ready: false,
   iframe: createRef<HTMLIFrameElement>(),
+  isReusingSpace: false,
 })
 export const useFlatfileInternal = () => useContext(FlatfileContext)
 export default FlatfileContext

@@ -1,5 +1,27 @@
 # flatfile
 
+## 3.11.1
+
+### Patch Changes
+
+- f5a5303: This release updates the Flatfile dependencies in the cli package
+
+## 3.11.0
+
+### Minor Changes
+
+- 72f8d68: This release adds the ability to namespace an agent
+
+## 3.10.0
+
+### Minor Changes
+
+- 15b551a: Added --ci Flag to Avoid Input Prompting
+
+### Patch Changes
+
+- 1d76dd9: Add system combined type to downloading agents
+
 ## 3.9.2
 
 ### Patch Changes

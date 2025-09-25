@@ -2,7 +2,16 @@ import dotenv from 'dotenv'
 import rc from 'rc'
 import { z } from 'zod'
 
-const interpolation = require('interpolate-json').interpolation
+// Simple template variable expansion function
+const interpolation = {
+  expand: (obj: any): any => {
+    const stringify = JSON.stringify(obj)
+    const expanded = stringify.replace(/\$\{([^}]+)\}/g, (match, key) => {
+      return obj[key] !== undefined ? obj[key] : match
+    })
+    return JSON.parse(expanded)
+  }
+}
 
 /**
  * Get the configuration for this Flatfile deployment.

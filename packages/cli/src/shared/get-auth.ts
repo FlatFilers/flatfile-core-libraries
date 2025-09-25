@@ -1,7 +1,7 @@
 import { FlatfileClient } from '@flatfile/api'
 import { program } from 'commander'
 import ora from 'ora'
-import prompt from 'prompts'
+import prompts from 'prompts'
 import { config } from '../config'
 import { apiKeyClient } from '../x/actions/auth.action'
 import { docUrls, messages } from './messages'
@@ -25,7 +25,7 @@ export async function getAuth(options: any): Promise<{
     process.env.FLATFILE_BEARER_TOKEN
 
   if (!apiKey) {
-    const input = await prompt({
+    const input = await prompts({
       type: 'select',
       name: 'auth_type',
       message: 'Select an authentication mode',
@@ -47,7 +47,7 @@ export async function getAuth(options: any): Promise<{
     })
     switch (input.auth_type) {
       case 'api_key':
-        const res = await prompt({
+        const res = await prompts({
           type: 'password',
           name: 'apiKey',
           message: 'Enter your secret api key',
@@ -55,7 +55,7 @@ export async function getAuth(options: any): Promise<{
         apiKey = res.apiKey
         break
       case 'password':
-        const auth = await prompt([
+        const auth = await prompts([
           {
             type: 'text',
             name: 'email',
@@ -133,7 +133,7 @@ async function getEnvironment(options: any, apiUrl: string, apiKey: string) {
       environment = foundEnv?.[0]
     }
   } else if (environments.data?.length! > 1) {
-    const res = await prompt({
+    const res = await prompts({
       type: 'select',
       name: 'environment',
       message: 'Select an Environment',
