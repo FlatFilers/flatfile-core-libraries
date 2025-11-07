@@ -1,5 +1,11 @@
 # @flatfile/react
 
+## 7.13.11
+
+### Patch Changes
+
+- 1797c63: Support react 19
+
 ## 7.13.10
 
 ### Patch Changes
