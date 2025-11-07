@@ -1,5 +1,11 @@
 # flatfile
 
+## 3.11.2
+
+### Patch Changes
+
+- 021741d: Fix security vulnerability by moving Rollup plugins to devDependencies and upgrading @rollup/plugin-commonjs to v26.0.3 to eliminate vulnerable inflight dependency
+
 ## 3.11.1
 
 ### Patch Changes
