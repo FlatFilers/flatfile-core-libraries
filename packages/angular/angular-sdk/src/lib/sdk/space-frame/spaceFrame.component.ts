@@ -1,4 +1,4 @@
-import { Component, Input, OnInit } from '@angular/core'
+import { Component, Input, OnInit, OnDestroy } from '@angular/core'
 import {
   ISpace,
   SimpleOnboarding,
@@ -21,55 +21,54 @@ export type SpaceFramePropsType = ISpace & {
   templateUrl: './spaceFrame.component.html',
   styleUrls: ['./spaceFrame.component.scss'],
 })
-export class SpaceFrame implements OnInit {
+export class SpaceFrame implements OnInit, OnDestroy {
   title = 'space-frame'
   showExitWarnModal = false
-  spaceCloseModalProps: SpaceCloseModalPropsType =
-    {} as SpaceCloseModalPropsType
+  spaceCloseModalProps: SpaceCloseModalPropsType = {} as SpaceCloseModalPropsType
   iframeWrapperStyle = {}
   iframeStyle = {}
   handlePostMessageInstance: (
     event: MessageEvent<{ flatfileEvent: FlatfileEvent }>
   ) => void = () => {}
 
-  @Input({ required: true }) spaceFrameProps: SpaceFramePropsType =
-    {} as SpaceFramePropsType
+  @Input({ required: true }) spaceFrameProps: SpaceFramePropsType = {} as SpaceFramePropsType
   @Input({ required: true }) loading: boolean = false
+
+  private removeMessageListener?: () => void
+  private isDestroyed = false
 
   async created() {
     const { listener, apiUrl, closeSpace, workbook } = this.spaceFrameProps
 
-    function closeSpaceNow() {
-      removeMessageListener?.()
+    // Clean up any existing listener before creating a new one
+    if (this.removeMessageListener) {
+      this.removeMessageListener()
     }
+
     const accessToken = this.spaceFrameProps.localAccessToken
-    let removeMessageListener: (() => void) | undefined
     const simpleListenerSlug = workbook?.sheets?.[0].slug || 'slug'
 
     if (listener) {
-      removeMessageListener = await createListener(
+      this.removeMessageListener = await createListener(
         accessToken,
         apiUrl!,
         listener,
         closeSpace,
-        closeSpaceNow,
-        // TODO: add onInit for translations
+        () => this.removeMessageListener?.(),
         () => {}
       )
     } else {
-      removeMessageListener = await createListener(
+      this.removeMessageListener = await createListener(
         accessToken,
         apiUrl!,
         createSimpleListener({
           onRecordHook: (this.spaceFrameProps as SimpleOnboarding).onRecordHook,
           onSubmit: (this.spaceFrameProps as SimpleOnboarding).onSubmit,
           slug: simpleListenerSlug,
-          submitSettings: (this.spaceFrameProps as SimpleOnboarding)
-            .submitSettings,
+          submitSettings: (this.spaceFrameProps as SimpleOnboarding).submitSettings,
         }),
         closeSpace,
-        closeSpaceNow,
-        // TODO: add onInit for translations
+        () => this.removeMessageListener?.(),
         () => {}
       )
     }
@@ -84,6 +83,7 @@ export class SpaceFrame implements OnInit {
     if (closeSpace?.onClose && typeof closeSpace.onClose === 'function') {
       closeSpace.onClose({})
     }
+    this.removeMessageListener?.()
     handleCloseInstance && handleCloseInstance()
   }
 
@@ -106,9 +106,8 @@ export class SpaceFrame implements OnInit {
 
     if (!this.spaceFrameProps.localAccessToken)
       throw new Error('please wait until access token is received')
-    const accessToken = this.spaceFrameProps.localAccessToken
-
-    window.CROSSENV_FLATFILE_API_KEY = accessToken
+    
+    window.CROSSENV_FLATFILE_API_KEY = this.spaceFrameProps.localAccessToken
 
     this.spaceCloseModalProps = {
       onConfirm: this.handleConfirm.bind(this),
@@ -123,6 +122,7 @@ export class SpaceFrame implements OnInit {
   }
 
   ngOnDestroy(): void {
+    this.removeMessageListener?.()
     window.removeEventListener('message', this.handlePostMessageInstance)
   }
 }
