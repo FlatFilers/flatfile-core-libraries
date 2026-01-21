@@ -97,9 +97,38 @@ async function getEnvironment(options: any, apiUrl: string, apiKey: string) {
     text: `Looking for environments...`,
   }).start()
 
+  const apiClient = apiKeyClient({ apiUrl, apiKey: apiKey! })
+  const providedEnvironmentId =
+    options?.env || process.env.FLATFILE_ENVIRONMENT_ID
+
+  if (providedEnvironmentId) {
+    try {
+      const environmentResponse = await apiClient.environments.get(
+        providedEnvironmentId
+      )
+      envSpinner.succeed(`Environment "${environmentResponse.data?.name}" found`)
+      return environmentResponse.data
+    } catch (e: any) {
+      envSpinner.stop()
+      if (!e.response) {
+        return program.error(messages.apiResponse(e))
+      }
+      if (e.response?.status === 401) {
+        return program.error(messages.noApiKey)
+      } else if (e.response?.status === 404) {
+        return program.error(
+          messages.error(`Environment not found: ${providedEnvironmentId}`)
+        )
+      } else {
+        return program.error(
+          messages.error(`${e.response.status}:${e.response.statusText}`)
+        )
+      }
+    }
+  }
+
   let environments
   try {
-    const apiClient = apiKeyClient({ apiUrl, apiKey: apiKey! })
     environments = await apiClient.environments.list({ pageSize: 100 })
   } catch (e: any) {
     envSpinner.stop()
@@ -122,17 +151,9 @@ async function getEnvironment(options: any, apiUrl: string, apiKey: string) {
   envSpinner.succeed(
     `${environments.data?.length} environment(s) found for these credentials`
   )
-  const providedEnvironmentId =
-    options?.env || process.env.FLATFILE_ENVIRONMENT_ID
+
   let environment
-  if (providedEnvironmentId) {
-    const foundEnv = environments.data?.filter(
-      (e) => e.id === providedEnvironmentId
-    )
-    if (foundEnv?.length !== 0) {
-      environment = foundEnv?.[0]
-    }
-  } else if (environments.data?.length! > 1) {
+  if (environments.data?.length! > 1) {
     const res = await prompts({
       type: 'select',
       name: 'environment',
