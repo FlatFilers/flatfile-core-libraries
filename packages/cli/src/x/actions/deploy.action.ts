@@ -275,7 +275,7 @@ export async function deployAction(
 
     const namespacePrefixes = ['space:', 'workbook:', 'sheet:']
     let namespace = options?.namespace
-    if (!selectedAgent && !namespace && !process.env.FLATFILE_AGENT_NAMESPACE) {
+    if (!selectedAgent && !namespace && !process.env.FLATFILE_AGENT_NAMESPACE && !options?.ci) {
       const input = await prompts(
         {
           type: 'text',
