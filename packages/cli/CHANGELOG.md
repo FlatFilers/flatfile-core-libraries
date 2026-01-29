@@ -1,5 +1,11 @@
 # flatfile
 
+## 3.12.0
+
+### Minor Changes
+
+- a3cada0: add --env flag to deploy command and fetch environment directly by ID
+
 ## 3.11.2
 
 ### Patch Changes
