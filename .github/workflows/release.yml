@@ -14,6 +14,10 @@ jobs:
   release:
     name: Release
     runs-on: ubuntu-latest
+    permissions:
+      contents: write      # For creating releases
+      pull-requests: write # For changesets PR
+      id-token: write      # For npm OIDC
     env:
       NODE_OPTIONS: --max-old-space-size=4096
     steps:
@@ -22,10 +26,10 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: Setup Node.js 18.x
+      - name: Setup Node.js 24.x
         uses: actions/setup-node@v3
         with:
-          node-version: 18.x
+          node-version: 24.x
           cache: 'npm'
 
       - name: Install Dependencies
@@ -48,4 +52,3 @@ jobs:
           publish: npm run release
         env:
           GITHUB_TOKEN: ${{ steps.release_token.outputs.token }}
-          NPM_TOKEN: ${{ secrets.NPM_TOKEN  }}
