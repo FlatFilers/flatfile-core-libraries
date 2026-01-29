@@ -38,6 +38,18 @@ jobs:
       - name: Build
         run: npm run build
 
+      - name: Debug package.json
+        run: |
+          echo "=== Root package.json ==="
+          cat package.json | grep -A 3 repository || echo "No repository field"
+          echo ""
+          echo "=== Checking dist/build output ==="
+          find . -name "package.json" -type f | while read f; do
+            echo "File: $f"
+            cat "$f" | grep -A 3 repository || echo "No repository field"
+            echo ""
+          done
+
       - name: Get Release token
         id: release_token
         uses: peter-murray/workflow-application-token-action@v3
