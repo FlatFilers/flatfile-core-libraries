@@ -25,6 +25,9 @@ export const useCreateListener = ({
   // set the api key to fully authenticate into Flatfile api
   // todo: should we use CrossEnvConfig here?
   ;(window as any).CROSSENV_FLATFILE_API_KEY = accessToken
+  if (apiUrl) {
+    ;(window as any).CROSSENV_FLATFILE_API_URL = apiUrl
+  }
 
   useEffect(() => {
     if (listener && accessToken)
