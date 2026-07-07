@@ -295,6 +295,10 @@ export const FlatfileProvider: React.FC<ExclusiveFlatfileProviderProps> = ({
     onClose.current?.()
   }
 
+  useEffect(() => {
+    setInternalAccessToken(accessToken)
+  }, [accessToken])
+
   // Listen to the postMessage event from the created iFrame
   useEffect(() => {
     const ff = (message: MessageEvent) =>
