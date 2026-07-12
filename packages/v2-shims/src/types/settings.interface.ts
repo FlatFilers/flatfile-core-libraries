@@ -151,7 +151,7 @@ export interface IFieldBase {
   shortDescription?: string
   alternates?: string[]
   validators?: IValidator[]
-  type?: 'checkbox' | 'string'
+  type?: 'checkbox' | 'string' | 'number'
   sizeHint?: number
 }
 
