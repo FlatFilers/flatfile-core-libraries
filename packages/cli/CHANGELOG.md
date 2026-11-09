@@ -1,5 +1,12 @@
 # flatfile
 
+## 3.12.1
+
+### Patch Changes
+
+- a3c9136: Update the CLI's uuid dependency so new installs resolve outside the reported uuid advisory range.
+- 43f4071: Update the CLI's tsup dependency so new installs resolve past the reported tsup and esbuild advisory ranges.
+
 ## 3.12.0
 
 ### Minor Changes
