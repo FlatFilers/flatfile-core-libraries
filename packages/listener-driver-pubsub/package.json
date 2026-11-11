@@ -2,6 +2,10 @@
   "name": "@flatfile/listener-driver-pubsub",
   "version": "3.0.0",
   "description": "A driver for streaming events from Flatfile via a pubsub pattern",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/FlatFilers/flatfile-core-libraries.git"
+  },
   "main": "dist/index.js",
   "module": "dist/index.mjs",
   "types": "dist/index.d.ts",
