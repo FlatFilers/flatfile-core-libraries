@@ -8,14 +8,11 @@ import ora from 'ora'
 import path from 'path'
 import prompts from 'prompts'
 import url from 'url'
-import util from 'util'
 import { getAuth } from '../../shared/get-auth'
 import { getEntryFile } from '../../shared/get-entry-file'
 import { messages } from '../../shared/messages'
 import { agentTable } from '../helpers/agent.table'
 import { apiKeyClient } from './auth.action'
-
-const readPackageJson = util.promisify(require('read-package-json'))
 
 const onCancel = (prompt: any) => {
   console.log(chalk.yellow('Exiting...'))
@@ -175,8 +172,8 @@ export async function deployAction(
 
   let packageJson
   try {
-    packageJson = await readPackageJson(
-      path.join(process.cwd(), 'package.json')
+    packageJson = JSON.parse(
+      fs.readFileSync(path.join(process.cwd(), 'package.json'), 'utf8')
     )
     if (
       !packageJson.dependencies?.['@flatfile/listener'] &&

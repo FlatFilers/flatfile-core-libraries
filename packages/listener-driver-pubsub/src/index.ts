@@ -2,7 +2,7 @@ import api, { Flatfile } from '@flatfile/api'
 import { EventDriver } from '@flatfile/listener'
 import { axiosInterceptor, Debugger } from '@flatfile/utils-debugger'
 import axios from 'axios'
-import PubNub, { PubnubStatus } from 'pubnub'
+import PubNub from 'pubnub'
 
 export class PubSubDriver extends EventDriver {
   public events = new Map()
@@ -39,7 +39,7 @@ export class PubSubDriver extends EventDriver {
 
         pubnub.setToken(token.token!)
         pubnub.addListener({
-          status: (event: PubNub.StatusEvent | PubnubStatus) => {
+          status: (event: PubNub.StatusEvent | PubNub.Status) => {
             if (
               event.category === 'PNConnectedCategory' &&
               event.operation === 'PNSubscribeOperation'
@@ -50,8 +50,12 @@ export class PubSubDriver extends EventDriver {
               resolve(pubnub)
             }
             if ('error' in event && event.error) {
+              const errorData =
+                'errorData' in event
+                  ? (event.errorData as { message?: string } | undefined)
+                  : undefined
               Debugger.logError(
-                event.errorData?.message,
+                errorData?.message,
                 event.operation,
                 event.category
               )
