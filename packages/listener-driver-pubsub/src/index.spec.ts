@@ -72,4 +72,93 @@ describe('PubSubDriver', () => {
     })
     await driver.shutdown()
   })
+
+  describe('status listener', () => {
+    const token = (value: string) => ({
+      data: {
+        subscribeKey: 'subscribe-key',
+        accountId: 'account-id',
+        token: value,
+      },
+    })
+
+    async function startAndGetStatusListener() {
+      // @ts-ignore
+      MockedFlatfileApi.events.getEventToken.mockResolvedValueOnce(
+        token('token-1')
+      )
+      const driver = new PubSubDriver('test-env-id')
+      await driver.start(true)
+      // @ts-ignore
+      const pubnub = MockedPubNub.mock.results[0].value
+      const { status } = pubnub.addListener.mock.calls[0][0]
+      return { pubnub, status }
+    }
+
+    const flushPromises = () => new Promise((r) => setImmediate(r))
+
+    it('reauthenticates and reconnects on PNAccessDeniedCategory', async () => {
+      const { pubnub, status } = await startAndGetStatusListener()
+      // @ts-ignore
+      MockedFlatfileApi.events.getEventToken.mockResolvedValueOnce(
+        token('token-2')
+      )
+
+      status({
+        error: true,
+        category: 'PNAccessDeniedCategory',
+        operation: 'PNSubscribeOperation',
+        statusCode: 403,
+        errorData: new Error('Forbidden'),
+      })
+      await flushPromises()
+
+      expect(MockedDebugger.logError).toHaveBeenCalledWith(
+        'Forbidden',
+        'PNSubscribeOperation',
+        'PNAccessDeniedCategory'
+      )
+      expect(MockedFlatfileApi.events.getEventToken).toHaveBeenCalledTimes(2)
+      expect(pubnub.setToken).toHaveBeenLastCalledWith('token-2')
+      expect(pubnub.reconnect).toHaveBeenCalledTimes(1)
+    })
+
+    it('logs other errors without reconnecting', async () => {
+      const { pubnub, status } = await startAndGetStatusListener()
+
+      status({
+        error: true,
+        category: 'PNNetworkIssuesCategory',
+        operation: 'PNSubscribeOperation',
+        statusCode: 0,
+        errorData: { message: 'socket hang up' },
+      })
+      await flushPromises()
+
+      expect(MockedDebugger.logError).toHaveBeenCalledWith(
+        'socket hang up',
+        'PNSubscribeOperation',
+        'PNNetworkIssuesCategory'
+      )
+      expect(MockedFlatfileApi.events.getEventToken).toHaveBeenCalledTimes(1)
+      expect(pubnub.reconnect).not.toHaveBeenCalled()
+    })
+
+    it('logs an undefined message when errorData has none', async () => {
+      const { status } = await startAndGetStatusListener()
+
+      status({
+        error: true,
+        category: 'PNUnknownCategory',
+        statusCode: 500,
+        errorData: 'unexpected payload',
+      })
+
+      expect(MockedDebugger.logError).toHaveBeenCalledWith(
+        undefined,
+        undefined,
+        'PNUnknownCategory'
+      )
+    })
+  })
 })
