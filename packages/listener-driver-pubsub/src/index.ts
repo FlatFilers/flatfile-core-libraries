@@ -50,12 +50,10 @@ export class PubSubDriver extends EventDriver {
               resolve(pubnub)
             }
             if ('error' in event && event.error) {
-              const errorData =
-                'errorData' in event
-                  ? (event.errorData as { message?: string } | undefined)
-                  : undefined
               Debugger.logError(
-                errorData?.message,
+                errorMessage(
+                  'errorData' in event ? event.errorData : undefined
+                ),
                 event.operation,
                 event.category
               )
@@ -117,4 +115,21 @@ export class PubSubDriver extends EventDriver {
     this.pubnub?.unsubscribeAll()
     this.pubnub?.stop()
   }
+}
+
+/**
+ * Extract a readable message from pubnub's `Status.errorData` (`Error | Payload`)
+ */
+function errorMessage(
+  errorData: PubNub.Status['errorData']
+): string | undefined {
+  if (
+    errorData &&
+    typeof errorData === 'object' &&
+    'message' in errorData &&
+    typeof errorData.message === 'string'
+  ) {
+    return errorData.message
+  }
+  return undefined
 }
