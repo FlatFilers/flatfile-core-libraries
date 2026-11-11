@@ -1,5 +1,18 @@
 # flatfile
 
+## 4.0.0
+
+### Major Changes
+
+- 48ce47a: Use `@flatfile/listener-driver-pubsub` 3, upgrade `zod` to ^4.6.6, and replace the deprecated `read-package-json` with a direct `package.json` read. Together these clear the remaining pubnub, zod and glob/minimatch advisories in fresh installs of the CLI.
+
+  **Breaking:** requires Node.js 22 or later.
+
+### Patch Changes
+
+- Updated dependencies [48ce47a]
+  - @flatfile/listener-driver-pubsub@3.0.0
+
 ## 3.12.1
 
 ### Patch Changes
