@@ -132,5 +132,22 @@ describe('v2ConfigToBlueprint', () => {
     ])
   })
 
+  it('should convert number field type to number', async () => {
+    const input: ISettings = {
+      type: 'Sample',
+      fields: [
+        {
+          key: 'sampleKey',
+          label: 'sampleLabel',
+          type: 'number', 
+        },
+      ],
+    };
+  
+    const result = await configToBlueprint(input);
+  
+    expect(result.sheets[0].fields[0].type).toBe(PlatformTypes.Num); 
+  });
+
   // You can also add negative tests, like testing how the function behaves with invalid input
 })
